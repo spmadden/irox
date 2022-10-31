@@ -1,0 +1,16 @@
+[package]
+name = "rust-osm"
+version = "0.1.0"
+rust-version = "1.64"
+edition = "2021"
+authors = ["Sean Madden <sean@seanmadden.net>"]
+license = "MIT OR Apache-2.0"
+description = "Tools to manipulate OpenStreetMap (OSM) data"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+flate2 = "1.0.24"
+clap = {version ="4.0.18", features = ["derive", "cargo"]}
+log = "0.4.17"
+simplelog = "0.12.0"
