@@ -1,0 +1,13 @@
+[package]
+name = "crates-caching-proxy-libs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hyper = {version = "0.14"}
+serde = {version = "1.0", features = ["derive"]}
+toml = {version = "0.7"}
+clap ={ version = "4.1", features = ["derive"]}
+git2 ={ }

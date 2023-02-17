@@ -1,0 +1,22 @@
+[proxy-config]
+# local directory to cache downloads
+cache-directory = "~/.cache/rust-proxy"
+
+# local listening port
+listen-port = 8000
+
+# local listening ipv4 or ipv6 address
+listen-address = ["0.0.0.0"]
+
+# DNS hostname to advertise in the download JSON
+# the index will be available at "http://{dns-hostname}:{listen-port}/index/"
+# the API will be available at "http://{dns-hostname}:{listen-port}/api/"
+# the download cache will be available at "http://{dns-hostname}:{listen-port}/static.crates.io/"
+dns-hostname = "localhost"
+
+# crates.io upstream index URL
+crates-io-upstream-index = "https://github.com/rust-lang/crates.io-index.git"
+
+
+[static.crates.io]
+base-url = "https://static.crates.io/"
