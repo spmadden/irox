@@ -1,0 +1,16 @@
+[package]
+name = "irox-usgstopo"
+version = "0.1.0"
+edition = "2021"
+description = "CLI tool to extract raster and vector information from a USGS Topo GeoPDF"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pdf = {path = "../pdf-rs/pdf/pdf"}
+clap = {version = "4.1.4", features = ["derive", "cargo", "env"]}
+# shadow-rs = {version = "0.20.0", features = []}
+lazy_static = {version = "1.4.0"}
+
+[build-dependencies]
+# shadow-rs = {version = "0.20.0", features = []}
