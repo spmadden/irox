@@ -18,6 +18,7 @@ members = [
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
     "interfaces/influxdb_v1",
+    "interfaces/sqlite3",
     "interfaces/win-location-api",
     "libraries/carto",
     "libraries/egui_extras",
@@ -71,6 +72,7 @@ irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
+irox-sqlite3 = {version = "^0", path = "interfaces/sqlite3"}
 irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}
 
 irox-carto = {version = "^0", path = "libraries/carto"}
