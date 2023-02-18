@@ -30,6 +30,7 @@ members = [
     "interfaces/gnss",
     "interfaces/chronyc",
     "interfaces/influxdb_v1",
+    "interfaces/sqlite3",
     "interfaces/win-location-api",
     "libraries/app-helpers",
     "libraries/bits",
@@ -128,6 +129,7 @@ irox-eieio-nmea0183 = { version = "^0", path = "eieio/nmea0183" }
 irox-gnss = {version = "^0", path = "interfaces/gnss"}
 irox-influxdb_v1 = { version = "^0", path = "interfaces/influxdb_v1" }
 irox-winlocation-api = { version = "^0", path = "interfaces/win-location-api" }
+irox-sqlite3 = {version = "^0", path = "interfaces/sqlite3"}
 
 irox-app-helpers = { version = "^0", path = "libraries/app-helpers" }
 irox-bits = { version = "^0", path = "libraries/bits" }
