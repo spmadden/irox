@@ -11,7 +11,8 @@ listen-address = ["0.0.0.0"]
 # DNS hostname to advertise in the download JSON
 # the index will be available at "http://{dns-hostname}:{listen-port}/index/"
 # the API will be available at "http://{dns-hostname}:{listen-port}/api/"
-# the download cache will be available at "http://{dns-hostname}:{listen-port}/static.crates.io/"
+# the download command will be available at "http://{dns-hostname}:{listen-port}/dl/"
+# the static download cache will be available at "http://{dns-hostname}:{listen-port}/static.crates.io/"
 dns-hostname = "localhost"
 
 # crates.io upstream index URL

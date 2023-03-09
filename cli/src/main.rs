@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    crates_caching_proxy_libs::server::main()
 }

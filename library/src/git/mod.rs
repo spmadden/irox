@@ -1,41 +1,50 @@
-use std::{time::{Instant, Duration}, io::Write};
+pub mod smarthttp;
+
+use std::{
+    io::Write,
+    time::{Duration, Instant},
+};
 
 use git2::{Oid, PackBuilderStage, Progress, RemoteCallbacks};
 
 use crate::units::{human_bytes, human_bytes_frac};
 
-pub fn stdout_pack_progress<'a>(stage: PackBuilderStage, current: usize, total: usize) {
+pub fn stdout_pack_progress(stage: PackBuilderStage, current: usize, total: usize) {
     let pct = current as f32 / total as f32;
     print!("{stage:?}: {current}/{total} : {pct:.2}%\r")
 }
 
 #[allow(unused_must_use)]
-pub fn stdout_sideband_progress<'a>(msg: &[u8]) -> bool {
+pub fn stdout_sideband_progress(msg: &[u8]) -> bool {
     let msg = String::from_utf8_lossy(msg);
     if (msg.starts_with("Counting") || msg.starts_with("Compressing")) && !msg.ends_with("done.") {
         print!("\r{msg}");
-    }else {
+    } else {
         println!("{msg}");
     }
     std::io::stdout().flush();
-    
+
     true
 }
 
-pub fn stdout_update_tips<'a>(msg: &str, old_oid: Oid, new_oid: Oid) -> bool {
+pub fn stdout_update_tips(msg: &str, old_oid: Oid, new_oid: Oid) -> bool {
     println!("Updated {msg}: {old_oid} -> {new_oid}");
     true
 }
 
 pub struct TransferProgress {
-    pub last_call : Instant, 
-    pub last_bytes : usize,
-    pub every_dur : Duration
+    pub last_call: Instant,
+    pub last_bytes: usize,
+    pub every_dur: Duration,
 }
 
 impl TransferProgress {
     pub fn new_update_every_duration(dur: Duration) -> TransferProgress {
-        TransferProgress { last_call: Instant::now(), last_bytes: 0, every_dur: dur }
+        TransferProgress {
+            last_call: Instant::now(),
+            last_bytes: 0,
+            every_dur: dur,
+        }
     }
 
     #[allow(unused_must_use)]
@@ -65,7 +74,6 @@ impl TransferProgress {
         );
 
         std::io::stdout().flush();
-        
     }
 }
 
@@ -83,7 +91,7 @@ pub fn stdout_callbacks<'a>() -> RemoteCallbacks<'a> {
     cbs.pack_progress(stdout_pack_progress);
     cbs.transfer_progress(move |p| {
         transfer_progress.update(p);
-        return true
+        true
     });
     cbs.sideband_progress(stdout_sideband_progress);
     cbs.update_tips(stdout_update_tips);
