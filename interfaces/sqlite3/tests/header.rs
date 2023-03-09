@@ -1,12 +1,12 @@
-use std::fs::File;
-
-use irox_sqlite::header::Header;
+use irox_sqlite::db::Database;
 
 #[test]
 fn read_header() {
-    let mut file = File::open("E:\\charts\\NOAA MBTiles\\ncds_06.mbtiles").expect("open");
+    // let mut file = File::open().expect("open");
 
-    let header = Header::read_from(&mut file).expect("ugh.");
+    let mut db = Database::open_db(&"E:\\charts\\NOAA MBTiles\\ncds_03.mbtiles").expect("Ugh.");
+    println!("{:?}", db);
 
-    println!("{:?}", header);
+    let page = db.read_page(0).expect("Ugh");
+    println!("{:?}", page);
 }

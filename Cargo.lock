@@ -1849,6 +1849,7 @@ name = "irox-sqlite3"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "irox-tools",
 ]
 
 [[package]]

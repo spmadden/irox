@@ -1,14 +1,15 @@
 use std::fmt::Display;
 
-
 #[derive(Debug, Clone)]
 pub struct Error {
-    msg: String
+    msg: String,
 }
 
 impl Error {
-    pub fn new(msg: &str) -> Error{
-        Error {msg: msg.to_string()}
+    pub fn new(msg: &str) -> Error {
+        Error {
+            msg: msg.to_string(),
+        }
     }
 }
 
@@ -18,12 +19,12 @@ impl Display for Error {
     }
 }
 
-impl std::error::Error for Error {
-
-}
+impl std::error::Error for Error {}
 
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
-        Error { msg: format!("IOE: {}", value.to_string()) }
+        Error {
+            msg: format!("IOE: {}", value.to_string()),
+        }
     }
 }

@@ -2,6 +2,7 @@ use std::io::{Read, Seek};
 
 use crate::{error::Error, header::Header};
 
+#[derive(Debug)]
 pub struct PageHeader {
     /// the integer identifier of this page
     page_id: u32,
@@ -36,24 +37,33 @@ pub struct PageHeader {
     rightmost_pointer: u32,
 }
 
+#[derive(Debug)]
 pub struct InteriorIndex {
     page_header: PageHeader,
     rightmost_pointer: u32,
 }
 
+#[derive(Debug)]
 pub struct InteriorTable {
     page_header: PageHeader,
     rightmost_pointer: u32,
 }
 
+#[derive(Debug)]
 pub struct LeafIndex {
     page_header: PageHeader,
 }
 
+#[derive(Debug)]
 pub struct LeafTable {
     page_header: PageHeader,
 }
 
+pub struct DataExtension {
+    data: [u8],
+}
+
+#[derive(Debug)]
 pub enum PageType {
     Unknown,
     InteriorIndexBTree(InteriorIndex),
@@ -64,18 +74,61 @@ pub enum PageType {
 
 pub fn read_page<T: Read + Seek>(
     buffer: &mut T,
-    page_num: u32,
+    page_id: u32,
     db_header: &Header,
 ) -> Result<PageType, Error> {
     let page_count = db_header.page_count;
-    if page_num >= page_count {
-        return Err(Error::new(format!("Page number {page_num} >= {page_count}").as_str()));
+    let page_size = db_header.page_size as u32;
+    if page_id >= page_count {
+        return Err(Error::new(
+            format!("Page number {page_id} >= {page_count}").as_str(),
+        ));
     }
 
-    let page_offset = db_header.page_size as u32 * page_num;
-    
+    let mut page_offset = page_size as u64 * page_id as u64;
+    if page_id == 0 {
+        page_offset = 100; // from the 100 byte header
+    }
 
-    todo!()
+    buffer.seek(std::io::SeekFrom::Start(page_offset))?;
+
+    // read header
+    let page_type: u8 = buffer.read_u8()?;
+    let first_freeblock = buffer.read_be_u16()?;
+    let num_cells = buffer.read_be_u16()?;
+    let first_cell = buffer.read_be_u16()?;
+    let num_fragmented_free_bytes = buffer.read_u8()?;
+
+    let mut rightmost_pointer = 0;
+    if page_type == INTERIOR_INDEX || page_type == INTERIOR_TABLE {
+        rightmost_pointer = buffer.read_be_u32()?;
+    }
+
+    let page_header = PageHeader {
+        page_id,
+        page_size,
+        page_offset,
+        page_type,
+        first_freeblock,
+        num_cells,
+        first_cell,
+        num_fragmented_free_bytes,
+        rightmost_pointer,
+    };
+
+    match page_type {
+        INTERIOR_INDEX => Ok(PageType::InteriorIndexBTree(InteriorIndex {
+            page_header,
+            rightmost_pointer,
+        })),
+        INTERIOR_TABLE => Ok(PageType::InteriorTableBTree(InteriorTable {
+            page_header,
+            rightmost_pointer,
+        })),
+        LEAF_INDEX => Ok(PageType::LeafIndexBTree(LeafIndex { page_header })),
+        LEAF_TABLE => Ok(PageType::LeafTableBTree(LeafTable { page_header })),
+        _ => Err(Error::new("Invalid page type")),
+    }
 }
 
 pub const INTERIOR_INDEX: u8 = 0x02;
