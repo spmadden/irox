@@ -7,7 +7,7 @@
 
 #![forbid(unsafe_code)]
 
-pub mod header;
-pub mod error;
-pub mod page;
 pub mod db;
+pub mod error;
+pub mod header;
+pub mod page;
