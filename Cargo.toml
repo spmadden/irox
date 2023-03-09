@@ -32,6 +32,7 @@ members = [
     "libraries/enums_derive",
     "libraries/git-tools",
     "libraries/log",
+    "libraries/mbtiles",
     "libraries/network",
     "libraries/progress",
     "libraries/stats",
@@ -100,6 +101,7 @@ irox-enums = { version = "^0", path = "libraries/enums" }
 irox-enums_derive = { version = "^0", path = "libraries/enums_derive" }
 irox-git-tools = { version = "^0", path = "libraries/git-tools" }
 irox-log = { version = "^0", path = "libraries/log" }
+irox-mbtiles = { version = "^0", path = "libraries/mbtiles" }
 irox-networking = { version = "^0", path = "libraries/network" }
 irox-progress = { version = "^0", path = "libraries/progress" }
 irox-stats = { version = "^0", path = "libraries/stats" }

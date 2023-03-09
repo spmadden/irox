@@ -2210,6 +2210,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-mbtiles"
+version = "0.1.0"
+dependencies = [
+ "rusqlite",
+]
+
+[[package]]
 name = "irox-networking"
 version = "0.4.3"
 dependencies = [
