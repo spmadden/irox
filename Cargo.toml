@@ -4,6 +4,7 @@ edition = "2021"
 
 [workspace]
 members = [
+	"libraries/carto",
 	"libraries/units",
 	"libraries/tools"
 ]
