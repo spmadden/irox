@@ -1,6 +1,6 @@
 mod pbf;
 mod osm;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
@@ -45,7 +45,7 @@ fn main() {
     
 
     match args.command {
-        Commands::Convert { file, outdir } => todo!(),
+        Commands::Convert { file: _, outdir: _ } => todo!(),
         Commands::Info { file } => info(file),
     }
 }

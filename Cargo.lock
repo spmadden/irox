@@ -202,7 +202,16 @@ dependencies = [
  "clap",
  "flate2",
  "log",
+ "rust-pbf",
  "simplelog",
+]
+
+[[package]]
+name = "rust-pbf"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]

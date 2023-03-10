@@ -177,3 +177,7 @@ impl<R:Read+Seek> PBFStream<R> {
     }
 
 }
+
+// trait PBF {
+    
+// }

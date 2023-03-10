@@ -1,21 +1,27 @@
 use std::{
     fmt::Display,
     fs::File,
-    io::{BufRead, Cursor},
     path::Path,
 };
 
 use log::info;
+use rust_pbf::PBF;
 
 use crate::pbf::{self, FieldID};
 
 use self::error::OSMError;
 
-#[derive(Debug)]
+#[derive(Debug, PBF)] 
 pub struct BlobHeader {
+
+    #[FieldID = 1]
     type_str: String,
+
+    #[FieldID = 2]
     datasize: u32,
-    indexdata: Option<Vec<u8>>,
+
+    #[FieldID = 3]
+    indexdata: [u8;32],
 }
 impl Display for BlobHeader {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
