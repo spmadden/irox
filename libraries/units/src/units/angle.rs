@@ -1,10 +1,11 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub enum AngleUnits {
+    #[default]
     Degrees,
     Radians,
 }
 
-basic_unit!(Angle, AngleUnits);
+basic_unit!(Angle, AngleUnits, Degrees);
 
 impl Angle {
     pub fn as_units(&self, units: AngleUnits) -> Angle {

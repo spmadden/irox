@@ -1,5 +1,5 @@
 use crate::{
-    geos::EllipticalShape,
+    geo::EllipticalShape,
     units::{angle::Angle, length::Length},
 };
 
@@ -17,7 +17,7 @@ pub struct EllipticalCoordinate {
 }
 
 impl EllipticalCoordinate {
-    pub fn new(
+    pub const fn new(
         latitude: Angle,
         longitude: Angle,
         reference_frame: EllipticalShape,
@@ -52,6 +52,14 @@ pub struct CartesianCoordinate {
 impl CartesianCoordinate {
     pub fn new(x: Length, y: Length, z: Length) -> CartesianCoordinate {
         CartesianCoordinate { x, y, z }
+    }
+
+    pub fn new_meters(x_meters: f64, y_meters: f64, z_meters: f64) -> CartesianCoordinate {
+        Self::new(
+            Length::new_meters(x_meters),
+            Length::new_meters(y_meters),
+            Length::new_meters(z_meters),
+        )
     }
 
     pub fn get_x(&self) -> &Length {

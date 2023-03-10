@@ -1,13 +1,13 @@
 macro_rules! basic_unit {
-    ($struct_type:ident, $units_type: ident) => {
-        #[derive(Debug, Clone, Copy)]
+    ($struct_type:ident, $units_type: ident, $default_units: ident) => {
+        #[derive(Debug, Clone, Copy, Default)]
         pub struct $struct_type {
             value: f64,
             units: $units_type,
         }
 
         impl $struct_type {
-            pub fn new(value: f64, units: $units_type) -> Self {
+            pub const fn new(value: f64, units: $units_type) -> Self {
                 Self { value, units }
             }
 
@@ -19,6 +19,8 @@ macro_rules! basic_unit {
                 self.units
             }
         }
+
+        pub const ZERO: $struct_type = $struct_type::new(0.0, $units_type::$default_units);
     };
 }
 

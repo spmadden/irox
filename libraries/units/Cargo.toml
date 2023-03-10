@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-[workspace]
-name = "irox"
-version = "0.1.0"
-edition = "2021"
-
-=======
 [package]
-name = "rust-units"
+name = "irox-units"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
->>>>>>> 05af9b6 (More coordinate impls)
