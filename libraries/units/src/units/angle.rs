@@ -8,6 +8,14 @@ pub enum AngleUnits {
 basic_unit!(Angle, AngleUnits, Degrees);
 
 impl Angle {
+    pub fn new_radians(value: f64) -> Angle {
+        Self::new(value, AngleUnits::Radians)
+    }
+
+    pub fn new_degrees(value: f64) -> Angle {
+        Self::new(value, AngleUnits::Degrees)
+    }
+
     pub fn as_units(&self, units: AngleUnits) -> Angle {
         match units {
             AngleUnits::Degrees => self.as_degrees(),
