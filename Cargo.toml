@@ -47,6 +47,7 @@ members = [
     "tools/halflifes",
     "tools/influx-cli",
     "tools/sonar-sdf-convert",
+    "tools/tiledownloader",
 ]
 
 [workspace.dependencies]
