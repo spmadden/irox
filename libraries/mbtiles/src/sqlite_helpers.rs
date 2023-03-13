@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2024 IROX Contributors
+//
+
+use std::future::Future;
+
 use sqlite::{Connection, State, Statement};
 
 use crate::{Error, Result};

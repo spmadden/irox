@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2024 IROX Contributors
+//
+
 pub mod error;
 pub mod format;
 
@@ -79,21 +83,26 @@ impl MBTiles {
 
     pub fn set_tile(
         &mut self,
-        tile_column: i64,
-        tile_row: i64,
-        zoom_level: i64,
+        tile_column: u64,
+        tile_row: u64,
+        zoom_level: u8,
         tile_data: &impl AsRef<[u8]>,
     ) -> Result<()> {
         let mut st = self.connection.prepare(
-            "insert into tiles tile_row, tile_column, zoom_level, tile_data 
+            "insert or replace into 
+            tiles (tile_row, tile_column, zoom_level, tile_data) 
             values (:tile_row, :tile_column, :zoom_level, :tile_data);",
         )?;
-        st.bind((":tile_row", tile_row))?;
-        st.bind((":tile_column", tile_column))?;
-        st.bind((":zoom_level", zoom_level))?;
+        st.bind((":tile_row", tile_row as i64))?;
+        st.bind((":tile_column", tile_column as i64))?;
+        st.bind((":zoom_level", zoom_level as i64))?;
         st.bind((":tile_data", tile_data.as_ref()))?;
 
         st.execute()
+    }
+
+    pub fn update_min_max_zooms(&mut self, new_zoom: u8) -> Result<()> {
+        update_min_max_zooms(&self.connection, new_zoom)
     }
 
     pub fn connection(&mut self) -> &Connection {
@@ -122,13 +131,13 @@ impl MBTiles {
                 return;
             };
 
-            let Ok(tile_row) = row.try_read("tile_row") else {
+            let Ok(tile_row) : std::result::Result<i64, _> = row.try_read("tile_row") else {
                 return;
             };
-            let Ok(tile_column) = row.try_read("tile_column") else {
+            let Ok(tile_column): std::result::Result<i64, _> = row.try_read("tile_column") else {
                 return;
             };
-            let Ok(zoom_level) = row.try_read("zoom_level") else {
+            let Ok(zoom_level): std::result::Result<i64, _> = row.try_read("zoom_level") else {
                 return;
             };
             let Ok(tile_data) = row.try_read("tile_data") else {
@@ -136,9 +145,9 @@ impl MBTiles {
             };
 
             let tile = Tile {
-                tile_row,
-                tile_column,
-                zoom_level,
+                tile_row: tile_row as u64,
+                tile_column: tile_column as u64,
+                zoom_level: zoom_level as u8,
                 tile_data,
             };
             cb(&tile);
@@ -170,7 +179,12 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         pragma.set(&conn, *val)?
     }
 
-    conn.execute("CREATE TABLE metadata (name text, value text);")?;
+    conn.execute(
+        "CREATE TABLE metadata (
+        name text primary key, 
+        value text
+    );",
+    )?;
     conn.execute("CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);")?;
     conn.execute("CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);")?;
 
@@ -205,7 +219,11 @@ pub fn get_metadata(conn: &Connection, name: &str) -> Result<String> {
 }
 
 pub fn set_metadata(conn: &Connection, name: &str, value: &impl AsRef<str>) -> Result<()> {
-    let mut st = conn.prepare("insert into metadata (name, value) values (:name, :value);")?;
+    let mut st = conn.prepare(
+        "insert or replace into 
+        metadata (name, value) 
+        values (:name, :value);",
+    )?;
     st.bind((":name", name))?;
     st.bind((":value", value.as_ref()))?;
 
@@ -216,9 +234,54 @@ pub fn get_name(conn: &Connection) -> Result<String> {
     get_metadata(conn, "name")
 }
 
+pub fn contains_metadata(conn: &Connection, name: &str) -> Result<bool> {
+    let mut st = conn.prepare("select count(*) from metadata where name = :name")?;
+    st.bind((":name", name))?;
+
+    if let Some(row) = st.into_iter().next() {
+        let row = row?;
+        let res: i64 = row.try_read(0)?;
+        return Ok(res > 0);
+    }
+    Ok(false)
+}
+
 pub fn get_format(conn: &Connection) -> Result<ImageFormat> {
     let value = get_metadata(conn, "format")?;
     ImageFormat::try_from(&value)
+}
+
+pub fn update_min_max_zooms(conn: &Connection, new_zoom: u8) -> Result<()> {
+    let zoomstr = format!("{new_zoom}");
+    let mut newmin = false;
+    let mut newmax = false;
+    if !contains_metadata(conn, "minzoom")? {
+        set_metadata(conn, "minzoom", &zoomstr)?;
+        newmin = true;
+    }
+    if !contains_metadata(conn, "maxzoom")? {
+        set_metadata(conn, "maxzoom", &zoomstr)?;
+        newmax = true;
+    }
+
+    if newmin && newmax {
+        return Ok(());
+    }
+
+    let minzoom_str = get_metadata(conn, "minzoom")?;
+    let maxzoom_str = get_metadata(conn, "maxzoom")?;
+
+    let minzoom: u8 = minzoom_str.parse()?;
+    if new_zoom < minzoom {
+        set_metadata(conn, "minzoom", &zoomstr)?;
+    }
+
+    let maxzoom: u8 = maxzoom_str.parse()?;
+    if new_zoom > maxzoom {
+        set_metadata(conn, "maxzoom", &zoomstr)?;
+    }
+
+    Ok(())
 }
 
 #[derive(Debug, Clone, Default)]
@@ -231,8 +294,8 @@ pub struct CreateOptions {
 }
 
 pub struct Tile<'a> {
-    pub tile_row: i64,
-    pub tile_column: i64,
-    pub zoom_level: i64,
+    pub tile_row: u64,
+    pub tile_column: u64,
+    pub zoom_level: u8,
     pub tile_data: &'a [u8],
 }
