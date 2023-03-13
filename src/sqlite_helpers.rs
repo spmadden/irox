@@ -1,3 +1,5 @@
+use std::future::Future;
+
 use sqlite::{Connection, State, Statement};
 
 use crate::{Error, Result};

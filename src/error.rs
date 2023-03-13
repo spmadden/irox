@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, num::ParseIntError};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -12,6 +12,7 @@ pub enum Error {
 
     TileNotFound(String),
     UnknownFormat(String),
+    NumberFormatError(ParseIntError),
 }
 
 impl Error {
@@ -58,4 +59,10 @@ impl From<sqlite::Error> for Error {
 
 pub fn unwrap<T, E: Into<Error>>(val: std::result::Result<T, E>) -> Result<T> {
     val.map_err(|e| e.into())
+}
+
+impl From<ParseIntError> for Error {
+    fn from(value: ParseIntError) -> Self {
+        Error::NumberFormatError(value)
+    }
 }
