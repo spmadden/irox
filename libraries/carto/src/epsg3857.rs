@@ -17,17 +17,20 @@ impl SphericalMercatorProjection {
         SphericalMercatorProjection { zoom_level }
     }
 
-    pub fn tile_x(&self, coordinate: &EllipticalCoordinate) -> f64 {
+    pub fn tile_x_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
         let lon_deg = coordinate.get_longitude().as_degrees().value();
         let offset = (lon_deg + 180.) / 360.;
-
-        offset * (1 << self.zoom_level) as f64
+        let max_tile = (1 << self.zoom_level) as f64;
+        offset * max_tile
     }
 
-    pub fn tile_y(&self, coordinate: &EllipticalCoordinate) -> f64 {
+    pub fn tile_y_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
         let lat_rad = coordinate.get_latitude().as_radians().value();
-        let offset = (1. - (lat_rad.tan() + 1. / lat_rad.cos()).ln()) / 2.;
-        offset * (1 << self.zoom_level) as f64
+
+        let y = lat_rad.tan().asinh();
+        let y = (1. - (y / PI)) / 2.;
+        let max_tile = (1 << self.zoom_level) as f64;
+        max_tile * y
     }
 
     pub fn latitude(&self, tile_y: f64) -> Angle {
@@ -38,6 +41,10 @@ impl SphericalMercatorProjection {
     pub fn longitude(&self, tile_x: f64) -> Angle {
         let offset = tile_x / (1 << self.zoom_level) as f64;
         Angle::new_radians(offset * TAU - PI)
+    }
+
+    pub fn max_tile_index(&self) -> u64 {
+        (1 << self.zoom_level) - 1
     }
 }
 
@@ -50,8 +57,8 @@ impl Projection for SphericalMercatorProjection {
         &self,
         coord: &irox_units::coordinate::EllipticalCoordinate,
     ) -> irox_units::coordinate::CartesianCoordinate {
-        let x = self.tile_x(coord) * TILE_TO_PIXEL;
-        let y = self.tile_y(coord) * TILE_TO_PIXEL;
+        let x = self.tile_x_index(coord) * TILE_TO_PIXEL;
+        let y = self.tile_y_index(coord) * TILE_TO_PIXEL;
         let z = self.zoom_level as f64;
 
         CartesianCoordinate::new_meters(x, y, z)
@@ -89,6 +96,8 @@ const TILE_TO_PIXEL: f64 = 40.743_665_431_525_21;
 
 #[cfg(test)]
 mod test {
+    use irox_units::coordinate::EllipticalCoordinate;
+
     use super::SphericalMercatorProjection;
 
     #[test]
@@ -97,5 +106,21 @@ mod test {
 
         assert_eq!(0.0, sm1.latitude(1.0).as_degrees().value());
         assert_eq!(0.0, sm1.longitude(1.0).as_degrees().value());
+    }
+
+    #[test]
+    pub fn test2() {
+        let sm = SphericalMercatorProjection::new(10);
+
+        let coord = EllipticalCoordinate::new_degrees_wgs84(24.846_562, -81.914);
+
+        assert_eq!(439, sm.tile_y_index(&coord) as u64);
+        assert_eq!(279, sm.tile_x_index(&coord) as u64);
+
+        let max_tile = 1 << sm.zoom_level;
+        assert_eq!(2_u64.pow(sm.zoom_level.into()), max_tile as u64);
+
+        let invy = max_tile - 439 - 1;
+        assert_eq!(invy, 584);
     }
 }
