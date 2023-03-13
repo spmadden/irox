@@ -8,11 +8,11 @@ pub enum AngleUnits {
 basic_unit!(Angle, AngleUnits, Degrees);
 
 impl Angle {
-    pub fn new_radians(value: f64) -> Angle {
+    pub const fn new_radians(value: f64) -> Angle {
         Self::new(value, AngleUnits::Radians)
     }
 
-    pub fn new_degrees(value: f64) -> Angle {
+    pub const fn new_degrees(value: f64) -> Angle {
         Self::new(value, AngleUnits::Degrees)
     }
 

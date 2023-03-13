@@ -1,6 +1,9 @@
 use crate::{
-    geo::EllipticalShape,
-    units::{angle::Angle, length::Length},
+    geo::{standards, EllipticalShape},
+    units::{
+        angle::{Angle, AngleUnits},
+        length::Length,
+    },
 };
 
 #[derive(Debug, Clone)]
@@ -17,6 +20,8 @@ pub struct EllipticalCoordinate {
 }
 
 impl EllipticalCoordinate {
+    ///
+    /// Constructs a new EllipticalCoordinate object
     pub const fn new(
         latitude: Angle,
         longitude: Angle,
@@ -27,6 +32,16 @@ impl EllipticalCoordinate {
             longitude,
             reference_frame,
         }
+    }
+
+    ///
+    /// Constructs a new EllipticalCoordinate object assuming [`AngleUnits::Degrees`] and [`standards::WGS84_SHAPE`]
+    pub const fn new_degrees_wgs84(latitude: f64, longitude: f64) -> EllipticalCoordinate {
+        Self::new(
+            Angle::new(latitude, AngleUnits::Degrees),
+            Angle::new(longitude, AngleUnits::Degrees),
+            standards::WGS84_SHAPE,
+        )
     }
 
     pub fn get_latitude(&self) -> &Angle {
