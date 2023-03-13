@@ -43,7 +43,7 @@ fn main() {
         return;
     };
 
-    let (tx, rx) = std::sync::mpsc::channel();
+    let (tx, rx) = std::sync::mpsc::sync_channel(10);
     std::thread::spawn(move || {
         let mut pb = create_progress_bar(0);
         let mut num_done = 0;
@@ -125,12 +125,24 @@ fn main() {
                 url_template: config.url.clone(),
                 zoom_level,
             };
-            let mut set = JoinSet::new();
+
+            let (task_add, task_recv) = std::sync::mpsc::sync_channel(10);
+
+            rt.spawn(async move {
+                loop {
+                    let Ok(task) = task_recv.recv() else {
+                        return;
+                    };
+                    if let Err(e) = task.await {
+                        eprintln!("Error {e:?}");
+                    }
+                }
+            });
 
             for address in params.into_iter() {
                 let tx = tx.clone();
                 let client = client.clone();
-                set.spawn(async move {
+                if let Err(e) = task_add.send(rt.spawn(async move {
                     let bldr = client.get(&address.url);
                     let req = bldr.build().unwrap();
                     let res = client.execute(req).await;
@@ -146,13 +158,10 @@ fn main() {
                     })) {
                         eprintln!("Error {e:?}");
                     };
-                });
+                })) {
+                    eprintln!("Error {e}");
+                };
                 task::yield_now().await;
-            }
-            while let Some(res) = set.join_next().await {
-                if let Err(e) = res {
-                    eprintln!("Error Joining: {e:?}");
-                }
             }
         }
 
@@ -164,7 +173,7 @@ fn main() {
 
 fn create_progress_bar(total_tiles: u64) -> ProgressBar {
     let pb = ProgressBar::new(total_tiles);
-    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {len}/{human_len} ({eta})")
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {human_pos}/{human_len} ({eta_precise})")
         .unwrap()
         .progress_chars("#>-"));
     pb
