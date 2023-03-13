@@ -1,0 +1,23 @@
+[package]
+name = "irox-tiledownloader"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+irox-carto = { version = "*", path = "../irox-carto" }
+irox-units = { version = "*", path = "../irox-units" }
+irox-mbtiles = { version = "*", path = "../irox-mbtiles" }
+irox-tools = { version = "*", path = "../irox-tools" }
+
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+clap = { version = "4", features = [
+    "derive",
+    "cargo",
+    "wrap_help",
+    "error-context",
+] }
+reqwest = { version = "*", features = ["gzip", "brotli", "deflate", "socks"] }
+bytes = { version = "*" }
+indicatif = { version = "*" }

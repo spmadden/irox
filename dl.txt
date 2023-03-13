@@ -1,0 +1,1 @@
+curl "https://encdirect.noaa.gov/arcgis/rest/services/encdirect/enc_harbour/MapServer/export?bbox=-81.8249,24.5358,-81.7506,24.584&size=256,256&format=png32&transparent=true&f=image" --output - > img.png
