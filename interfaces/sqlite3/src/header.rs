@@ -1,7 +1,7 @@
-use irox_tools::bits::Bits;
 use std::io::{Read, Seek};
 
 use crate::error::Error;
+use irox_tools::bits::Bits;
 
 #[derive(Debug, Clone, Default)]
 pub struct Header {
@@ -85,9 +85,11 @@ impl Header {
 
         let mut buf = hdr.as_slice();
 
-        let mut out = Header::default();
-        out.header = String::from_utf8_lossy(&buf[..16]).to_string();
-        buf.advance(16);
+        let mut out = Header {
+            header: String::from_utf8_lossy(&buf[..16]).to_string(),
+            ..Default::default()
+        };
+        buf.advance(16)?;
         out.page_size = buf.read_be_u16()?;
         out.write_version = buf.read_u8()?;
         out.read_version = buf.read_u8()?;
@@ -108,7 +110,7 @@ impl Header {
         out.incremental_vacuum_mode = buf.read_be_u32()?;
         out.application_id = buf.read_be_u32()?;
 
-        buf.advance(20);
+        buf.advance(20)?;
 
         out.version_valid_for = buf.read_be_u32()?;
         out.sqlite_version_number = buf.read_be_u32()?;

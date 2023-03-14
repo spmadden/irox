@@ -1,6 +1,7 @@
 use std::io::{Read, Seek};
 
 use crate::{error::Error, header::Header};
+use irox_tools::bits::Bits;
 
 #[derive(Debug)]
 pub struct PageHeader {
