@@ -1,7 +1,7 @@
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use irox_carto::epsg3857::SphericalMercatorProjection;
-use irox_mbtiles::CreateOptions;
+use irox_mbtiles::{CreateOptions, OpenOptions};
 use irox_tiledownloader::{config::Config, status::DownloadStatus, tile::TileData, url::URLParams};
 use irox_units::coordinate::EllipticalCoordinate;
 use reqwest::{
@@ -36,6 +36,7 @@ fn main() {
 
     let options = CreateOptions {
         name: config.name.clone(),
+        pragmas: OpenOptions::safe_performance().pragmas,
         ..Default::default()
     };
     let Ok(mut outfile) = irox_mbtiles::MBTiles::open_or_create_options(&config.out_file, &options)
@@ -150,6 +151,10 @@ fn main() {
                         return;
                     };
 
+                    if response.status() != 200 {
+                        return;
+                    }
+
                     let data = response.bytes().await.unwrap();
 
                     if let Err(e) = tx.send(DownloadStatus::TileDataAvailable(TileData {
@@ -173,7 +178,7 @@ fn main() {
 
 fn create_progress_bar(total_tiles: u64) -> ProgressBar {
     let pb = ProgressBar::new(total_tiles);
-    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {human_pos}/{human_len} ({eta_precise})")
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {per_sec} {human_pos}/{human_len} ({eta_precise})")
         .unwrap()
         .progress_chars("#>-"));
     pb
