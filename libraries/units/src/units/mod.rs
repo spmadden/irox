@@ -24,6 +24,10 @@ macro_rules! basic_unit {
     };
 }
 
+pub trait FromUnits<T> {
+    fn from(&self, value: T, units: Self) -> T;
+}
+
 pub mod angle;
 pub mod datasize;
 pub mod length;
