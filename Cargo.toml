@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 sqlite = { version = "0.30" }
+irox-units = { version = "*", path = "../irox-units" }
