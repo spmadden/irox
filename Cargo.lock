@@ -2213,6 +2213,7 @@ dependencies = [
 name = "irox-mbtiles"
 version = "0.1.0"
 dependencies = [
+ "irox-units",
  "rusqlite",
 ]
 

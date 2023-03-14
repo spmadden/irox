@@ -17,3 +17,4 @@ workspace = true
 
 [dependencies]
 rusqlite.workspace = true
+irox-units.workspace = true

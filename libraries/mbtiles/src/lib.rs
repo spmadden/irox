@@ -8,10 +8,11 @@ pub mod format;
 pub mod merger;
 pub mod sqlite_helpers;
 
-use std::{collections::HashMap, fmt::Debug, path::Path};
+use std::{fmt::Debug, path::Path};
 
 pub use error::*;
 pub use format::*;
+use irox_units::units::{datasize::DataSizeUnits, FromUnits};
 use sqlite::Connection;
 
 pub use sqlite_helpers::*;
@@ -25,7 +26,14 @@ pub struct MBTiles {
 
 impl MBTiles {
     pub fn open(path: &impl AsRef<Path>) -> Result<MBTiles> {
+        Self::open_options(path, &OpenOptions::default())
+    }
+    pub fn open_options(path: &impl AsRef<Path>, options: &OpenOptions) -> Result<MBTiles> {
         let conn = Connection::open(path)?;
+
+        for pragma in &options.pragmas {
+            pragma.set(&conn)?
+        }
 
         let mut tables: Vec<String> = Vec::new();
         for row in conn.prepare("select name from sqlite_master;")? {
@@ -83,6 +91,7 @@ impl MBTiles {
 
     pub fn set_tile(
         &mut self,
+        index: u64,
         tile_column: u64,
         tile_row: u64,
         zoom_level: u8,
@@ -90,9 +99,10 @@ impl MBTiles {
     ) -> Result<()> {
         let mut st = self.connection.prepare(
             "insert or replace into 
-            tiles (tile_row, tile_column, zoom_level, tile_data) 
-            values (:tile_row, :tile_column, :zoom_level, :tile_data);",
+            tiles (tile_index, tile_row, tile_column, zoom_level, tile_data) 
+            values (:index, :tile_row, :tile_column, :zoom_level, :tile_data);",
         )?;
+        st.bind((":index", index as i64))?;
         st.bind((":tile_row", tile_row as i64))?;
         st.bind((":tile_column", tile_column as i64))?;
         st.bind((":zoom_level", zoom_level as i64))?;
@@ -111,6 +121,7 @@ impl MBTiles {
 
     pub fn insert_tile(&mut self, tile: &Tile) -> Result<()> {
         self.set_tile(
+            tile.index(),
             tile.tile_column,
             tile.tile_row,
             tile.zoom_level,
@@ -160,7 +171,11 @@ impl Debug for MBTiles {
         let mut st = f.debug_struct("MBTiles");
         st.field("name", &self.name).field("format", &self.format);
 
-        for pragma in &[Pragma::ApplicationId, Pragma::CacheSize, Pragma::PageSize] {
+        for pragma in &[
+            Pragma::ApplicationId(0),
+            Pragma::CacheSizeBytes(0),
+            Pragma::PageSizeBytes(0),
+        ] {
             st.field(pragma.name(), &pragma.get(&self.connection));
         }
 
@@ -175,8 +190,8 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
     }
 
     let conn = sqlite::Connection::open(path)?;
-    for (pragma, val) in &options.pragmas {
-        pragma.set(&conn, *val)?
+    for pragma in &options.pragmas {
+        pragma.set(&conn)?
     }
 
     conn.execute(
@@ -185,8 +200,7 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         value text
     );",
     )?;
-    conn.execute("CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);")?;
-    conn.execute("CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);")?;
+    conn.execute("CREATE TABLE tiles (tile_index integer primary key autoincrement, zoom_level integer, tile_column integer, tile_row integer, tile_data blob);")?;
 
     set_metadata(&conn, "name", &options.name)?;
     set_metadata(&conn, "format", &options.format.extension())?;
@@ -210,7 +224,7 @@ pub fn get_metadata(conn: &Connection, name: &str) -> Result<String> {
     st.bind((":name", name))?;
 
     let Some(result) = st.into_iter().next() else {
-        return Error::not_found("no rows returned");
+        return Error::not_found(format!("Could not find metadata with name {name}").as_str());
     };
     let row = result?;
     let value: &str = row.try_read(0)?;
@@ -290,7 +304,27 @@ pub struct CreateOptions {
 
     pub format: ImageFormat,
 
-    pub pragmas: HashMap<Pragma, i64>,
+    pub pragmas: Vec<Pragma>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct OpenOptions {
+    pub pragmas: Vec<Pragma>,
+}
+
+impl OpenOptions {
+    pub fn safe_performance() -> OpenOptions {
+        OpenOptions {
+            pragmas: vec![
+                Pragma::JournalMode(JournalMode::WAL),
+                Pragma::LockingMode(LockingMode::Exclusive),
+                Pragma::CacheSizeBytes(DataSizeUnits::Bytes.from(1, DataSizeUnits::GigaBytes)),
+                Pragma::SynchronousMode(SynchronousMode::Normal),
+                Pragma::ApplicationId(APPLICATION_ID),
+                Pragma::PageSizeBytes(16384),
+            ],
+        }
+    }
 }
 
 pub struct Tile<'a> {
@@ -299,3 +333,18 @@ pub struct Tile<'a> {
     pub zoom_level: u8,
     pub tile_data: &'a [u8],
 }
+
+impl<'a> Tile<'a> {
+    pub fn index(&self) -> u64 {
+        let mut val = ((self.zoom_level & ZOOM_MASK) as u64) << ZOOM_SHIFT;
+        val |= (self.tile_row & ROWCOL_MASK) << Y_SHIFT;
+        val |= (self.tile_column & ROWCOL_MASK) << X_SHIFT;
+        val
+    }
+}
+
+pub const ZOOM_MASK: u8 = 0x0;
+pub const ZOOM_SHIFT: u8 = 58;
+pub const ROWCOL_MASK: u64 = 0x1FFF_FFFF;
+pub const Y_SHIFT: u8 = 29;
+pub const X_SHIFT: u8 = 0;
