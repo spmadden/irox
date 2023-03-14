@@ -66,7 +66,7 @@ impl MBTiles {
     ) -> Result<MBTiles> {
         let path_ref = path.as_ref();
         if path_ref.exists() {
-            return Self::open(path);
+            return Self::open_options(path, &options.into());
         }
 
         create_mbtiles_db(path, options)
@@ -97,6 +97,11 @@ impl MBTiles {
         zoom_level: u8,
         tile_data: &impl AsRef<[u8]>,
     ) -> Result<()> {
+        if tile_data.as_ref().len() == 872 {
+            // skip transparent PNGs.
+            return Ok(());
+        }
+
         let mut st = self.connection.prepare(
             "insert or replace into 
             tiles (tile_index, tile_row, tile_column, zoom_level, tile_data) 
@@ -162,6 +167,18 @@ impl MBTiles {
                 tile_data,
             };
             cb(&tile);
+        }
+    }
+}
+
+impl Drop for MBTiles {
+    fn drop(&mut self) {
+        if let Err(e) = self.connection.execute("commit;") {
+            eprintln!("Error committing DB: {e}")
+        }
+
+        if let Err(e) = Pragma::JournalMode(JournalMode::Delete).set(&self.connection) {
+            eprintln!("Error clearing journal: {e}");
         }
     }
 }
@@ -307,6 +324,14 @@ pub struct CreateOptions {
     pub pragmas: Vec<Pragma>,
 }
 
+impl From<&CreateOptions> for OpenOptions {
+    fn from(value: &CreateOptions) -> Self {
+        OpenOptions {
+            pragmas: value.pragmas.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct OpenOptions {
     pub pragmas: Vec<Pragma>,
@@ -316,12 +341,12 @@ impl OpenOptions {
     pub fn safe_performance() -> OpenOptions {
         OpenOptions {
             pragmas: vec![
+                Pragma::ApplicationId(APPLICATION_ID),
+                Pragma::PageSizeBytes(16384),
                 Pragma::JournalMode(JournalMode::WAL),
                 Pragma::LockingMode(LockingMode::Exclusive),
                 Pragma::CacheSizeBytes(DataSizeUnits::Bytes.from(1, DataSizeUnits::GigaBytes)),
                 Pragma::SynchronousMode(SynchronousMode::Normal),
-                Pragma::ApplicationId(APPLICATION_ID),
-                Pragma::PageSizeBytes(16384),
             ],
         }
     }
