@@ -7,7 +7,7 @@ description = "CLI tool to extract raster and vector information from a USGS Top
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pdf = {path = "../pdf-rs/pdf/pdf"}
+pdf = {path = "../../pdf-rs/pdf/pdf"}
 clap = {version = "4.1.4", features = ["derive", "cargo", "env"]}
 # shadow-rs = {version = "0.20.0", features = []}
 lazy_static = {version = "1.4.0"}
