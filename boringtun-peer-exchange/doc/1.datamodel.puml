@@ -1,0 +1,36 @@
+@startuml DataModel
+
+hide empty members
+
+enum PacketType {
+    + INVALID = 0
+    + GET_PEERS = 1
+    + PEERS = 2
+}
+
+class Packet {
+    + type[u8] : PacketType
+    + length[u8;2] : u16
+    + data[u8;N] : raw
+}
+Packet -> PacketType
+
+class Peer {
+    + public_key[u8;32] : raw
+    + public_ipv4[u8;4] : u32
+    + public_ipv6[u8;16] : u128
+    + public_port[u8;2] : u16
+}
+
+class GetPeersPacket extends Packet {
+    + my_info : Peer
+}
+GetPeersPacket --> Peer
+
+class PeersPacket extends Packet {
+    + num_peers[u8;1] : u8
+    + peer_info[num_peers] : Peer
+}
+PeersPacket --> Peer
+
+@enduml

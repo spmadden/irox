@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor "User"
+participant "Peer A" as peer1
+participant "Peer Exchange Server" as Server
+participant "Peer B" as peer2
+
+group "Peer A STUN Connection"
+peer1 -> Server : STUN Bind Packet
+
+end group
+
+autonumber
+group "Peer A Updates Server"
+peer1 -> Server : Initiate Wireguard Tunnel
+peer1 -> Server : GetPeerUpdate Request
+peer1 <- Server : PeerUpdate Response
+end group
+autonumber
+
+group "Peer B Updates Server"
+peer2 -> Server : Initiate Wireguard Tunnel
+peer2 -> Server : GetPeerUpdate Request
+peer2 <- Server : PeerUpdate Response
+end group
+
+autonumber
+group "Peer Connection"
+peer1 -> peer2 : Initiate Wireguard Tunnel
+peer1 <- peer2 : Initiate Wireguard Tunnel
+end group
+
+@enduml
