@@ -1,4 +1,5 @@
 use super::FromUnits;
+use crate::units::Unit;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub enum DataSizeUnits {
@@ -13,55 +14,55 @@ pub enum DataSizeUnits {
 
 macro_rules! from_units_datasize {
     ($type:ident) => {
-        impl FromUnits<$type> for DataSizeUnits {
+        impl crate::units::FromUnits<$type> for DataSizeUnits {
             fn from(&self, value: $type, units: Self) -> $type {
                 match self {
                     DataSizeUnits::Bytes => match units {
                         DataSizeUnits::Bytes => value,
-                        DataSizeUnits::KiloBytes => value / KB as $type,
-                        DataSizeUnits::MegaBytes => value / MB as $type,
-                        DataSizeUnits::GigaBytes => value / GB as $type,
-                        DataSizeUnits::TeraBytes => value / TB as $type,
-                        DataSizeUnits::PetaBytes => value / PB as $type,
+                        DataSizeUnits::KiloBytes => value * KB as $type,
+                        DataSizeUnits::MegaBytes => value * MB as $type,
+                        DataSizeUnits::GigaBytes => value * GB as $type,
+                        DataSizeUnits::TeraBytes => value * TB as $type,
+                        DataSizeUnits::PetaBytes => value * PB as $type,
                     },
                     DataSizeUnits::KiloBytes => match units {
-                        DataSizeUnits::Bytes => value * KB as $type,
+                        DataSizeUnits::Bytes => value / KB as $type,
                         DataSizeUnits::KiloBytes => value,
-                        DataSizeUnits::MegaBytes => value / KB as $type,
-                        DataSizeUnits::GigaBytes => value / MB as $type,
-                        DataSizeUnits::TeraBytes => value / GB as $type,
-                        DataSizeUnits::PetaBytes => value / TB as $type,
+                        DataSizeUnits::MegaBytes => value * KB as $type,
+                        DataSizeUnits::GigaBytes => value * MB as $type,
+                        DataSizeUnits::TeraBytes => value * GB as $type,
+                        DataSizeUnits::PetaBytes => value * TB as $type,
                     },
                     DataSizeUnits::MegaBytes => match units {
-                        DataSizeUnits::Bytes => value * MB as $type,
-                        DataSizeUnits::KiloBytes => value * KB as $type,
+                        DataSizeUnits::Bytes => value / MB as $type,
+                        DataSizeUnits::KiloBytes => value / KB as $type,
                         DataSizeUnits::MegaBytes => value,
-                        DataSizeUnits::GigaBytes => value / KB as $type,
-                        DataSizeUnits::TeraBytes => value / MB as $type,
-                        DataSizeUnits::PetaBytes => value / GB as $type,
+                        DataSizeUnits::GigaBytes => value * KB as $type,
+                        DataSizeUnits::TeraBytes => value * MB as $type,
+                        DataSizeUnits::PetaBytes => value * GB as $type,
                     },
                     DataSizeUnits::GigaBytes => match units {
-                        DataSizeUnits::Bytes => value * GB as $type,
-                        DataSizeUnits::KiloBytes => value * MB as $type,
-                        DataSizeUnits::MegaBytes => value * KB as $type,
+                        DataSizeUnits::Bytes => value / GB as $type,
+                        DataSizeUnits::KiloBytes => value / MB as $type,
+                        DataSizeUnits::MegaBytes => value / KB as $type,
                         DataSizeUnits::GigaBytes => value,
-                        DataSizeUnits::TeraBytes => value / KB as $type,
-                        DataSizeUnits::PetaBytes => value / MB as $type,
+                        DataSizeUnits::TeraBytes => value * KB as $type,
+                        DataSizeUnits::PetaBytes => value * MB as $type,
                     },
                     DataSizeUnits::TeraBytes => match units {
-                        DataSizeUnits::Bytes => value * TB as $type,
-                        DataSizeUnits::KiloBytes => value * GB as $type,
-                        DataSizeUnits::MegaBytes => value * MB as $type,
-                        DataSizeUnits::GigaBytes => value * KB as $type,
+                        DataSizeUnits::Bytes => value / TB as $type,
+                        DataSizeUnits::KiloBytes => value / GB as $type,
+                        DataSizeUnits::MegaBytes => value / MB as $type,
+                        DataSizeUnits::GigaBytes => value / KB as $type,
                         DataSizeUnits::TeraBytes => value,
-                        DataSizeUnits::PetaBytes => value / KB as $type,
+                        DataSizeUnits::PetaBytes => value * KB as $type,
                     },
                     DataSizeUnits::PetaBytes => match units {
-                        DataSizeUnits::Bytes => value * PB as $type,
-                        DataSizeUnits::KiloBytes => value * TB as $type,
-                        DataSizeUnits::MegaBytes => value * GB as $type,
-                        DataSizeUnits::GigaBytes => value * MB as $type,
-                        DataSizeUnits::TeraBytes => value * KB as $type,
+                        DataSizeUnits::Bytes => value / PB as $type,
+                        DataSizeUnits::KiloBytes => value / TB as $type,
+                        DataSizeUnits::MegaBytes => value / GB as $type,
+                        DataSizeUnits::GigaBytes => value / MB as $type,
+                        DataSizeUnits::TeraBytes => value / KB as $type,
                         DataSizeUnits::PetaBytes => value,
                     },
                 }
@@ -77,6 +78,16 @@ from_units_datasize!(u64);
 from_units_datasize!(usize);
 
 basic_unit!(DataSize, DataSizeUnits, Bytes);
+
+impl Unit<DataSizeUnits> for DataSize {
+    fn as_unit(&self, units: DataSizeUnits) -> Self
+    where
+        Self: Sized,
+    {
+        let value: f64 = units.from(self.value, self.units);
+        DataSize { value, units }
+    }
+}
 
 impl DataSize {
     pub fn new_bytes(&self, value: u64) -> DataSize {
