@@ -1,4 +1,4 @@
-use irox_units::coordinate::{CartesianCoordinate, EllipticalCoordinate};
+use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate};
 
 pub trait Projection {
     fn get_center_coords(&self) -> &EllipticalCoordinate;

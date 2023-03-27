@@ -1,12 +1,12 @@
 use std::f64::consts::{PI, TAU};
 
 use irox_units::{
-    coordinate::{CartesianCoordinate, EllipticalCoordinate},
-    geo::standards::WGS84_SHAPE,
     units::angle::{self, Angle},
 };
 
 use crate::proj::Projection;
+use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
+use crate::geo::standards::WGS84_SHAPE;
 
 pub struct SphericalMercatorProjection {
     zoom_level: u8,
@@ -33,14 +33,14 @@ impl SphericalMercatorProjection {
         max_tile * y
     }
 
-    pub fn latitude(&self, tile_y: f64) -> Angle {
+    pub fn latitude(&self, tile_y: f64) -> Latitude {
         let offset = 1. - (2. * tile_y) / (1 << self.zoom_level) as f64;
-        Angle::new_radians((PI * offset).sinh().atan())
+        Latitude(Angle::new_radians((PI * offset).sinh().atan()))
     }
 
-    pub fn longitude(&self, tile_x: f64) -> Angle {
+    pub fn longitude(&self, tile_x: f64) -> Longitude {
         let offset = tile_x / (1 << self.zoom_level) as f64;
-        Angle::new_radians(offset * TAU - PI)
+        Longitude(Angle::new_radians(offset * TAU - PI))
     }
 
     pub fn max_tile_index(&self) -> u64 {
@@ -88,7 +88,7 @@ pub const LOWER_RIGHT_COORDINATE_X: f64 = -LOWER_LEFT_COORDINATE_X;
 pub const LOWER_RIGHT_COORDINATE_Y: f64 = LOWER_LEFT_COORDINATE_Y;
 
 pub static CENTER_COORDS: EllipticalCoordinate =
-    EllipticalCoordinate::new(angle::ZERO, angle::ZERO, WGS84_SHAPE);
+    EllipticalCoordinate::new(Latitude(angle::ZERO), Longitude(angle::ZERO), WGS84_SHAPE);
 
 // pub const BOUNDS: Bounds<CartesianCoordinate> = Bounds::new()
 
@@ -96,7 +96,7 @@ const TILE_TO_PIXEL: f64 = 40.743_665_431_525_21;
 
 #[cfg(test)]
 mod test {
-    use irox_units::coordinate::EllipticalCoordinate;
+    use crate::coordinate::EllipticalCoordinate;
 
     use super::SphericalMercatorProjection;
 
