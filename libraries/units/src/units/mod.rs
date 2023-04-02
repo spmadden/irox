@@ -36,6 +36,15 @@ macro_rules! basic_unit {
             }
         }
 
+        impl std::ops::Add for $struct_type {
+            type Output = $struct_type;
+
+            fn add(self, rhs: Self) -> Self::Output {
+                let val = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
+            }
+        }
+
         impl std::ops::Add for &$struct_type {
             type Output = $struct_type;
 
@@ -61,6 +70,24 @@ macro_rules! basic_unit {
             }
         }
 
+        impl std::ops::Sub for $struct_type {
+            type Output = $struct_type;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                let val = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
+            }
+        }
+
+        impl<'a> std::ops::Sub<&'a $struct_type> for &'a $struct_type {
+            type Output = $struct_type;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                let val = crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
+                crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
+            }
+        }
+
         impl std::ops::Div<f64> for $struct_type {
             type Output = $struct_type;
 
@@ -68,6 +95,17 @@ macro_rules! basic_unit {
                 crate::units::UnitStruct::<$units_type>::new(self.value() / rhs, self.units())
             }
         }
+
+        impl std::ops::Div for $struct_type {
+            type Output = f64;
+
+            fn div(self, rhs: Self) -> Self::Output {
+                let upper = self.value();
+                let lower = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                upper / lower
+            }
+        }
+
         impl std::ops::Mul<f64> for $struct_type {
             type Output = $struct_type;
 
@@ -75,11 +113,26 @@ macro_rules! basic_unit {
                 crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
             }
         }
+
         impl std::ops::Mul<f64> for &$struct_type {
             type Output = $struct_type;
 
             fn mul(self, rhs: f64) -> Self::Output {
                 crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
+            }
+        }
+        impl std::ops::Mul<&$struct_type> for f64 {
+            type Output = $struct_type;
+
+            fn mul(self, rhs: &$struct_type) -> Self::Output {
+                rhs * self
+            }
+        }
+        impl std::ops::Mul<$struct_type> for f64 {
+            type Output = $struct_type;
+
+            fn mul(self, rhs: $struct_type) -> Self::Output {
+                rhs * self
             }
         }
 

@@ -40,20 +40,22 @@ macro_rules! from_units_angle {
             fn from(&self, value: $type, units: Self) -> $type {
                 match self {
                     AngleUnits::Degrees => match units {
-                        AngleUnits::Radians => value * DEG_2_RAD as $type,
+                        AngleUnits::Radians => value * RAD_2_DEG as $type,
                         AngleUnits::Degrees => value as $type,
-                        AngleUnits::Minutes => value * DEG_2_MIN as $type,
-                        AngleUnits::Seconds => value * DEG_2_SEC as $type,
-                        AngleUnits::Revolutions => value / REV_2_DEG as $type,
-                        AngleUnits::Mils => value * DEG_2_MIL as $type,
-                    },
-                    AngleUnits::Radians => match units {
-                        AngleUnits::Degrees => value * RAD_2_DEG as $type,
-                        AngleUnits::Radians => value as $type,
+
                         AngleUnits::Minutes => value * RAD_2_DEG as $type * DEG_2_MIN as $type,
                         AngleUnits::Seconds => value * RAD_2_DEG as $type * DEG_2_SEC as $type,
                         AngleUnits::Revolutions => value / REV_2_RAD as $type,
                         AngleUnits::Mils => value * RAD_2_MIL as $type,
+                    },
+                    AngleUnits::Radians => match units {
+                        AngleUnits::Degrees => value * DEG_2_RAD as $type,
+                        AngleUnits::Radians => value as $type,
+
+                        AngleUnits::Minutes => value * DEG_2_MIN as $type,
+                        AngleUnits::Seconds => value * DEG_2_SEC as $type,
+                        AngleUnits::Revolutions => value / REV_2_DEG as $type,
+                        AngleUnits::Mils => value * DEG_2_MIL as $type,
                     },
                     _ => todo!(),
                 }
@@ -85,6 +87,17 @@ impl Angle {
 
     pub const fn new_degrees(value: f64) -> Angle {
         Self::new(value, AngleUnits::Degrees)
+    }
+
+    pub fn new_dms(degrees: i32, minutes: u32, seconds: f64) -> Angle {
+        let mult: f64 = match degrees {
+            ..=0 => -1.0,
+            _ => 1.0,
+        };
+        let minutes: f64 = minutes as f64 * mult;
+        let seconds: f64 = seconds * mult;
+        let value = degrees as f64 + minutes / 60. + seconds / 3600.;
+        Self::new_degrees(value)
     }
 
     pub fn as_degrees(&self) -> Angle {
