@@ -9,7 +9,7 @@ use std::{fmt::Debug, path::Path};
 pub use error::*;
 pub use format::*;
 use irox_units::units::{datasize::DataSizeUnits, FromUnits};
-use sqlite::Connection;
+use sqlite::{Connection, ConnectionWithFullMutex};
 
 pub use sqlite_helpers::*;
 
@@ -17,7 +17,7 @@ pub struct MBTiles {
     name: String,
     format: ImageFormat,
 
-    connection: Connection,
+    connection: ConnectionWithFullMutex,
 }
 
 impl MBTiles {
@@ -25,10 +25,25 @@ impl MBTiles {
         Self::open_options(path, &OpenOptions::default())
     }
     pub fn open_options(path: &impl AsRef<Path>, options: &OpenOptions) -> Result<MBTiles> {
-        let conn = Connection::open(path)?;
+
+        let mut conn = Connection::open_with_full_mutex(path)?;
 
         for pragma in &options.pragmas {
-            pragma.set(&conn)?
+            match pragma {
+                Pragma::PageSizeBytes(_) => {
+                    pragma.set(&conn)?;
+                    conn.execute("VACUUM;")?;
+                    conn = Connection::open_with_full_mutex(path)?;
+                },
+                _ => {}
+            }
+        }
+
+        for pragma in &options.pragmas {
+            match pragma {
+                Pragma::PageSizeBytes(_) => {},
+                p => p.set(&conn)?
+            }
         }
 
         let mut tables: Vec<String> = Vec::new();
@@ -169,10 +184,6 @@ impl MBTiles {
 
 impl Drop for MBTiles {
     fn drop(&mut self) {
-        if let Err(e) = self.connection.execute("commit;") {
-            eprintln!("Error committing DB: {e}")
-        }
-
         if let Err(e) = Pragma::JournalMode(JournalMode::Delete).set(&self.connection) {
             eprintln!("Error clearing journal: {e}");
         }
@@ -202,9 +213,24 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         return Error::io_exists(format!("DB already exists: {path:?}").as_str());
     }
 
-    let conn = sqlite::Connection::open(path)?;
+    let conn = sqlite::Connection::open_with_full_mutex(path)?;
+
     for pragma in &options.pragmas {
-        pragma.set(&conn)?
+        match pragma {
+            Pragma::PageSizeBytes(_) => {
+                pragma.set(&conn)?;
+                conn.execute("VACUUM;")?;
+                // conn = Connection::open(path)?;
+            },
+            _ => {}
+        }
+    }
+
+    for pragma in &options.pragmas {
+        match pragma {
+            Pragma::PageSizeBytes(_) => {},
+            _ => pragma.set(&conn)?
+        }
     }
 
     conn.execute(
