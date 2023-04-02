@@ -160,7 +160,24 @@ pub fn print_primitive(res: Result<Primitive, PdfError>, level: usize, resolver:
                     println!("{}filter: {:?}", tabs(level + 1), filter);
                 }
 
-                print_single_prim(level + 1, resolver, &"prim".into(), &str.info);
+                print_single_prim(level + 1, resolver, &"info".into(), &str.info);
+
+                let data = str.data(resolver);
+                if let Ok(data) = data {
+                    println!("{}data size: {} bytes", tabs(level + 1), data.len());
+                    if let Primitive::Dictionary(dict) = &str.info.info {
+                        if let Some(subt) = dict.get("Subtype") {
+                            if let Primitive::Name(name) = subt {
+                                if "XML" == name.as_str() {
+                                    println!("====STREAM DATA FOLLOWS===");
+                                    println!("{}", String::from_utf8_lossy(&data));
+                                    println!("====STREAM DATA ENDS===");
+                                }
+                            }
+                        }
+                    }
+                }
+
                 println!("{}}}", tabs(level));
             }
             _ => println!("{}", prim.get_debug_name()),
