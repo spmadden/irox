@@ -49,7 +49,7 @@ impl EllipticalCoordinate {
         Self::new(
             Latitude(Angle::new(latitude, AngleUnits::Degrees)),
             Longitude(Angle::new(longitude, AngleUnits::Degrees)),
-            standards::WGS84_SHAPE,
+            standards::wgs84::WGS84_SHAPE,
         )
     }
 

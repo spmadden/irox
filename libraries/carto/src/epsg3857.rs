@@ -1,12 +1,10 @@
 use std::f64::consts::{PI, TAU};
 
-use irox_units::{
-    units::angle::{self, Angle},
-};
+use irox_units::units::angle::{self, Angle};
 
-use crate::proj::Projection;
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
-use crate::geo::standards::WGS84_SHAPE;
+use crate::geo::standards::wgs84::WGS84_SHAPE;
+use crate::proj::Projection;
 
 pub struct SphericalMercatorProjection {
     zoom_level: u8,
@@ -18,14 +16,14 @@ impl SphericalMercatorProjection {
     }
 
     pub fn tile_x_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
-        let lon_deg = coordinate.get_longitude().as_degrees().value();
+        let lon_deg = coordinate.get_longitude().0.as_degrees().value();
         let offset = (lon_deg + 180.) / 360.;
         let max_tile = (1 << self.zoom_level) as f64;
         offset * max_tile
     }
 
     pub fn tile_y_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
-        let lat_rad = coordinate.get_latitude().as_radians().value();
+        let lat_rad = coordinate.get_latitude().0.as_radians().value();
 
         let y = lat_rad.tan().asinh();
         let y = (1. - (y / PI)) / 2.;
@@ -49,14 +47,11 @@ impl SphericalMercatorProjection {
 }
 
 impl Projection for SphericalMercatorProjection {
-    fn get_center_coords(&self) -> &irox_units::coordinate::EllipticalCoordinate {
+    fn get_center_coords(&self) -> &EllipticalCoordinate {
         &CENTER_COORDS
     }
 
-    fn project_to_cartesian(
-        &self,
-        coord: &irox_units::coordinate::EllipticalCoordinate,
-    ) -> irox_units::coordinate::CartesianCoordinate {
+    fn project_to_cartesian(&self, coord: &EllipticalCoordinate) -> CartesianCoordinate {
         let x = self.tile_x_index(coord) * TILE_TO_PIXEL;
         let y = self.tile_y_index(coord) * TILE_TO_PIXEL;
         let z = self.zoom_level as f64;
@@ -64,10 +59,7 @@ impl Projection for SphericalMercatorProjection {
         CartesianCoordinate::new_meters(x, y, z)
     }
 
-    fn project_to_elliptical(
-        &self,
-        coord: &irox_units::coordinate::CartesianCoordinate,
-    ) -> irox_units::coordinate::EllipticalCoordinate {
+    fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate {
         let lat = self.latitude(coord.get_y().as_meters().value());
         let lon = self.longitude(coord.get_x().as_meters().value());
 
@@ -104,8 +96,8 @@ mod test {
     pub fn test1() {
         let sm1 = SphericalMercatorProjection::new(1);
 
-        assert_eq!(0.0, sm1.latitude(1.0).as_degrees().value());
-        assert_eq!(0.0, sm1.longitude(1.0).as_degrees().value());
+        assert_eq!(0.0, sm1.latitude(1.0).0.as_degrees().value());
+        assert_eq!(0.0, sm1.longitude(1.0).0.as_degrees().value());
     }
 
     #[test]

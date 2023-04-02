@@ -1,34 +1,7 @@
-use crate::units::length::{Length, LengthUnits};
-
-use super::{Ellipse, Ellipsoid, EllipticalShape};
-
-#[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy)]
-#[non_exhaustive]
-pub enum StandardShapes {
-    /// Standard WGS84
-    WGS84,
-
-    /// An average of the WGS84 axes
-    WGS84_MeanRadius,
-
-    /// A sphere with the same surface area as WGS84
-    WGS84_EqualAreaSphere,
-
-    /// A sphere with the same volume as WGS84
-    WGS84_EqualVolumeSphere,
-}
-
-impl From<StandardShapes> for Ellipse {
-    fn from(value: StandardShapes) -> Self {
-        match value {
-            StandardShapes::WGS84 => WGS84_PARAMS,
-            StandardShapes::WGS84_MeanRadius => WGS84_MEAN_RADIUS_PARAMS,
-            StandardShapes::WGS84_EqualAreaSphere => WGS84_EQUAL_AREA_SPHERE_PARAMS,
-            StandardShapes::WGS84_EqualVolumeSphere => WGS84_EQUAL_VOLUME_SPHERE_PARAMS,
-        }
-    }
-}
+use crate::geo::ellipse::Ellipse;
+use crate::geo::ellipsoid::Ellipsoid;
+use crate::geo::EllipticalShape;
+use irox_units::units::length::{Length, LengthUnits};
 
 pub const WGS84_SEMI_MAJOR_LENGTH: Length = Length::new(6_378_137.0, LengthUnits::Meters);
 pub const WGS84_INVERSE_FLATTENING: f64 = 298.257_223_563;
