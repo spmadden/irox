@@ -155,9 +155,9 @@ impl Pragma {
 
     pub fn set(&self, conn: &Connection) -> Result<()> {
         let name = self.name();
-        let mut st = conn.prepare(format!("pragma {name} = {};", self.value()))?;
 
-        st.execute()
+        conn.execute(format!("pragma {name} = {};", self.value()))?;
+        Ok(())
     }
 }
 
