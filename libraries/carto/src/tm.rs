@@ -111,19 +111,18 @@ impl Projection for TransverseMercator {
         let tan_phi = phi.tan();
         let cos2_phi = cos_phi.powi(2);
         let cos3_phi = cos_phi.powi(3);
-        let cos4_phi = cos_phi.powi(4);
         let cos5_phi = cos_phi.powi(5);
-        let cos6_phi = cos_phi.powi(6);
         let cos7_phi = cos_phi.powi(7);
+
         let tan2_phi = tan_phi.powi(2);
         let tan4_phi = tan_phi.powi(4);
         let tan6_phi = tan_phi.powi(6);
 
         let ep2 = self.shape.second_eccentricity_squared;
         let ep2cos2 = ep2 * cos2_phi;
-        let ep4cos4 = ep2 * ep2 * cos4_phi;
-        let ep6cos6 = ep2cos2 * ep4cos4;
-        let ep8cos8 = ep4cos4.powi(2);
+        let ep4cos4 = ep2cos2.powi(2);
+        let ep6cos6 = ep2cos2.powi(3);
+        let ep8cos8 = ep2cos2.powi(4);
 
         let t1 = self.scale_factor
             * MeridianCalculators::DeakinHunterKarney
@@ -169,25 +168,27 @@ impl Projection for TransverseMercator {
     }
 
     fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate {
-        let phi_eps = 1e-10;
+        let phi_eps = 1e-9;
 
         let northing = coord.get_y();
         let easting = coord.get_x();
+        let k0 = self.scale_factor;
 
-        let mut phi0 = self.center.get_latitude().0.as_radians().value();
-        let mut phi_prime = (northing - &self.false_northing) / self.shape.semi_major_axis + phi0;
+        let scaled_axis = self.shape.semi_major_axis;
+        let phi0 = self.center.get_latitude().0.as_radians().value();
+        let mut phi_prime = (northing - &self.false_northing) / scaled_axis + phi0;
         loop {
             let dphi = phi_prime - phi0;
             let m = MeridianCalculators::DeakinHunterKarney
                 .get(&self.shape)
-                .meridional_arc_distance(&Angle::new_radians(dphi));
+                .meridional_arc_distance(&Angle::new_radians(dphi))
+                * k0;
 
             let phip_eps = northing - &self.false_northing - m;
-            if phip_eps.as_meters().value() < phi_eps {
+            if phip_eps.as_meters().value().abs() < phi_eps {
                 break;
             }
-            phi0 = phi_prime;
-            phi_prime = (northing - &self.false_northing - m) / self.shape.semi_major_axis + phi0;
+            phi_prime += (northing - &self.false_northing - m) / scaled_axis;
         }
 
         let phiplat = Latitude(Angle::new_radians(phi_prime));
@@ -198,6 +199,8 @@ impl Projection for TransverseMercator {
             .as_meters()
             .value();
         let v3 = v.powi(3);
+        let v5 = v.powi(5);
+        let v7 = v.powi(7);
         let p = self
             .shape
             .radius_curvature_meridian(&phiplat)
@@ -215,16 +218,24 @@ impl Projection for TransverseMercator {
 
         let tan_phip = phi_prime.tan();
         let tan2_phip = tan_phip.powi(2);
+        let tan4_phip = tan_phip.powi(4);
+        let tan6_phip = tan_phip.powi(6);
 
         let cos_phip = phi_prime.cos();
         let cos2_phip = cos_phip.powi(2);
 
-        let k0 = self.scale_factor;
         let k02 = k0.powi(2);
+        let k03 = k0.powi(3);
         let k04 = k0.powi(4);
+        let k05 = k0.powi(5);
+        let k06 = k0.powi(6);
+        let k07 = k0.powi(7);
+        let k08 = k0.powi(8);
 
         let e2cos2 = self.shape.second_eccentricity_squared * cos2_phip;
         let e4cos4 = e2cos2.powi(2);
+        let e6cos6 = e2cos2.powi(4);
+        let e8cos8 = e2cos2.powi(6);
 
         let t10 = tan_phip / (2. * p * v * k02);
 
@@ -232,17 +243,38 @@ impl Projection for TransverseMercator {
         let t11b = 5. + 3. * tan2_phip + e2cos2 - 4. * e4cos4 - 9. * tan2_phip * e2cos2;
         let t11 = t11a * t11b;
 
-        let t12 = 0.0;
-        let t13 = 0.0;
-        let t14 = 0.0;
-        let t15 = 0.0;
-        let t16 = 0.0;
-        let t17 = 0.0;
+        let t12a = tan_phip / (720. * p * v5 * k06);
+        let t12b =
+            61. + 90. * tan2_phip + 46. * e2cos2 + 45. * tan4_phip - 252. * tan2_phip * e2cos2;
+        let t12c = 3. * e4cos4 + 100. * e6cos6 - 66. * tan2_phip * e4cos4;
+        let t12d = 90. * tan4_phip * e2cos2 + 88. * e8cos8 + 225. * tan4_phip * e4cos4;
+        let t12e = 84. * tan2_phip * e6cos6 - 192. * tan2_phip * e8cos8;
+        let t12 = t12a * (t12b - t12c - t12d + t12e);
 
-        let phi = phi_prime - de2 * t10 + de4 * t11 - de6 * t12 + de8 * t13;
+        let t13a = tan_phip / (40320. * p * v7 * k08);
+        let t13b = 1385. + 3633. * tan2_phip + 4095. * tan4_phip + 1575. * tan6_phip;
+        let t13 = t13a * t13b;
+
+        let t14 = v * cos_phip * k0;
+
+        let t15a = 6. * v3 * cos_phip * k03;
+        let t15b = 1. + 2. * tan2_phip + e2cos2;
+        let t15 = t15b / t15a;
+
+        let t16a = 120. * v5 * cos_phip * k05;
+        let t16b = 5. + 6. * e2cos2 + 28. * tan2_phip - 3. * e4cos4 + 8. * tan2_phip * e2cos2;
+        let t16c =
+            24. * tan4_phip - 4. * e6cos6 + 4. * tan2_phip * e4cos4 + 24. * tan2_phip * e6cos6;
+        let t16 = (t16b + t16c) / t16a;
+
+        let t17a = 5040. * v7 * cos_phip * k07;
+        let t17b = 61. + 622. * tan2_phip + 1320. * tan4_phip + 720. * tan6_phip;
+        let t17 = t17b / t17a;
+
+        let phi = (phi_prime - de2 * t10 + de4 * t11 - de6 * t12 + de8 * t13);
 
         let lam0 = self.center.get_longitude().0.as_radians().value();
-        let lam = lam0 + de * t14 - de3 * t15 + de5 * t16 - de7 * t17;
+        let lam = lam0 + de / t14 - de3 * t15 + de5 * t16 - de7 * t17;
 
         EllipticalCoordinate::new(
             Latitude(Angle::new_radians(phi)),
@@ -259,7 +291,6 @@ mod test {
     use crate::proj::Projection;
     use crate::tm::TransverseMercator;
 
-    use crate::geo::ellipsoid::Ellipsoid;
     use irox_tools::assert_eq_eps;
     use irox_units::units::angle::Angle;
 
@@ -360,7 +391,15 @@ mod test {
             let deltax = point.x - result.get_x().as_meters().value();
             assert_eq_eps!(point.x, result.get_x().as_meters().value(), 4e-3);
 
-            println!("Delta (x, y) = ({}, {})", deltax, deltay);
+            println!("Delta (x, y) = ({deltax}, {deltay})");
+
+            let elli = tm.project_to_elliptical(&result);
+            let deltalat = elli.get_latitude().0.as_degrees().value() - point.test_lat;
+            let deltalon = elli.get_longitude().0.as_degrees().value() - point.test_lon;
+            println!("{elli:?}");
+            println!("Delta (lat,lon) = ({deltalat}, {deltalon})");
+            assert!(deltalat.abs() < 1e-10);
+            assert!(deltalon.abs() < 1e-10)
         }
     }
 }
