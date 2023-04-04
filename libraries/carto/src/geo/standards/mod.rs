@@ -1,10 +1,14 @@
 use crate::geo::ellipsoid::Ellipsoid;
-use crate::geo::standards::hayford_international::HAYFORD_PARAMS;
+use crate::geo::standards::hayford_international::INTERNATIONAL_PARAMS;
 use crate::geo::standards::wgs84::*;
 use crate::geo::EllipticalShape;
 
 use crate::geo::ellipse::Ellipse;
+use crate::geo::standards::airy::AIRY_PARAMS;
+use crate::geo::standards::grs80::GRS80_PARAMS;
 
+pub mod airy;
+pub mod grs80;
 pub mod hayford_international;
 pub mod wgs84;
 
@@ -26,6 +30,12 @@ pub enum StandardShapes {
 
     /// Hayford Ellipsoid ca 1924
     Hayford_International,
+
+    /// ITRS GRS80 Ellipsoid ca 1979
+    GRS80,
+
+    /// Airy Ellipsoid ca 1830
+    Airy,
 }
 
 impl From<&StandardShapes> for Ellipse {
@@ -36,7 +46,9 @@ impl From<&StandardShapes> for Ellipse {
             StandardShapes::WGS84_EqualAreaSphere => WGS84_EQUAL_AREA_SPHERE_PARAMS,
             StandardShapes::WGS84_EqualVolumeSphere => WGS84_EQUAL_VOLUME_SPHERE_PARAMS,
 
-            StandardShapes::Hayford_International => HAYFORD_PARAMS,
+            StandardShapes::Hayford_International => INTERNATIONAL_PARAMS,
+            StandardShapes::Airy => AIRY_PARAMS,
+            StandardShapes::GRS80 => GRS80_PARAMS,
         }
     }
 }
