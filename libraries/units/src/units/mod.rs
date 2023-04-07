@@ -174,3 +174,4 @@ pub mod angle;
 pub mod compass;
 pub mod datasize;
 pub mod length;
+pub mod speed;
