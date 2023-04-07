@@ -11,22 +11,46 @@ pub enum LengthUnits {
     #[default]
     Meters,
 
+    /// SI Derived unit kilometers
+    Kilometers,
+
     /// US Imperial "Foot"
     Feet,
+
+    /// US Imperial "Mile"
+    Mile,
+
+    /// Nautical Mile, classically 1 arcminute on the Earth
+    NauticalMile,
 }
 macro_rules! from_units_length {
     ($type:ident) => {
         impl crate::units::FromUnits<$type> for LengthUnits {
             fn from(&self, value: $type, units: Self) -> $type {
                 match self {
+                    // target
                     LengthUnits::Meters => match units {
+                        // source
                         LengthUnits::Meters => value as $type,
-                        LengthUnits::Feet => value * METERS_TO_FEET as $type,
+                        LengthUnits::Feet => value * FEET_TO_METERS as $type,
+                        LengthUnits::Kilometers => value * KILOMETERS_TO_METERS as $type,
+                        LengthUnits::Mile => value * MILES_TO_METERS as $type,
+                        LengthUnits::NauticalMile => value * NAUTICAL_MILES_TO_METERS as $type,
                     },
                     LengthUnits::Feet => match units {
                         LengthUnits::Meters => value * FEET_TO_METERS as $type,
                         LengthUnits::Feet => value as $type,
+                        LengthUnits::Kilometers => {
+                            FromUnits::<$type>::from(&LengthUnits::Meters, value, units)
+                                * METERS_TO_KILOMETERS as $type
+                        }
+                        LengthUnits::Mile => {
+                            FromUnits::<$type>::from(&LengthUnits::Meters, value, units)
+                                * METERS_TO_MILES as $type
+                        }
+                        _ => todo!(),
                     },
+                    _ => todo!(),
                 }
             }
         }
@@ -73,3 +97,27 @@ impl Length {
 
 pub const FEET_TO_METERS: f64 = 3.048E-01; // Exact, as per NIST 811.2008
 pub const METERS_TO_FEET: f64 = 1. / FEET_TO_METERS;
+pub const MILES_TO_METERS: f64 = 1.609_344E3; // Exact, as per NIST 811.2008
+pub const METERS_TO_MILES: f64 = 1. / MILES_TO_METERS;
+pub const KILOMETERS_TO_METERS: f64 = 1000.;
+pub const METERS_TO_KILOMETERS: f64 = 1. / KILOMETERS_TO_METERS;
+pub const NAUTICAL_MILES_TO_METERS: f64 = 1.852E3;
+pub const METERS_TO_NAUTICAL_MILE: f64 = 1. / NAUTICAL_MILES_TO_METERS;
+
+#[cfg(test)]
+mod tests {
+    use crate::units::length::{LengthUnits, FEET_TO_METERS, METERS_TO_FEET};
+    use crate::units::FromUnits;
+
+    #[test]
+    pub fn test_feet_meters() {
+        assert_eq!(
+            LengthUnits::Feet.from(1.0, LengthUnits::Meters),
+            FEET_TO_METERS
+        );
+        assert_eq!(
+            LengthUnits::Meters.from(1.0, LengthUnits::Feet),
+            METERS_TO_FEET
+        );
+    }
+}
