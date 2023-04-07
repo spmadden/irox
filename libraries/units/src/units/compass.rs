@@ -68,24 +68,39 @@ impl FromUnits<Angle> for CompassReference {
 }
 
 /// Represents a heading - the compass direction that the entity is pointing
+pub type Heading = Compass<HeadingType>;
+
+/// Type with no functions, used only as a compile-time type-check
 #[derive(Debug, Copy, Clone, Default)]
-pub struct Heading;
+pub struct HeadingType;
 
 /// Represents a track - the compass direction that the entity is travelling
+pub type Track = Compass<TrackType>;
+
+/// Type with no functions, used only as a compile-time type-check
 #[derive(Debug, Copy, Clone, Default)]
-pub struct Track;
+pub struct TrackType;
 
 /// Represents a bearing - the compass direction of your desired destination
+pub type Bearing = Compass<BearingType>;
+
+/// Type with no functions, used only as a compile-time type-check
 #[derive(Debug, Copy, Clone, Default)]
-pub struct Bearing;
+pub struct BearingType;
 
 /// Represents a course - the compass direction of your desired track
+pub type Course = Compass<CourseType>;
+
+/// Type with no functions, used only as a compile-time type-check
 #[derive(Debug, Copy, Clone, Default)]
-pub struct Course;
+pub struct CourseType;
 
 /// Represents a azimuth - the compass direction of a generic pointing angle
+pub type Azimuth = Compass<AzimuthType>;
+
+/// Type with no functions, used only as a compile-time type-check
 #[derive(Debug, Copy, Clone, Default)]
-pub struct Azimuth;
+pub struct AzimuthType;
 
 /// Represents a compass needle and the direction that it's pointing
 #[derive(Debug, Copy, Clone, Default)]
@@ -98,12 +113,12 @@ pub struct Compass<T> {
 
 impl<T> Compass<T> {
     ///
-    /// Creates a new heading type - see [`Heading`] for details.
+    /// Creates a new heading type - see [`HeadingType`] for details.
     pub const fn new_heading(
         angle: Angle,
         direction: RotationDirection,
         reference: CompassReference,
-    ) -> Compass<Heading> {
+    ) -> Compass<HeadingType> {
         Compass {
             angle,
             direction,
@@ -118,7 +133,7 @@ impl<T> Compass<T> {
         angle: Angle,
         direction: RotationDirection,
         reference: CompassReference,
-    ) -> Compass<Track> {
+    ) -> Compass<TrackType> {
         Compass {
             angle,
             direction,
@@ -133,7 +148,7 @@ impl<T> Compass<T> {
         angle: Angle,
         direction: RotationDirection,
         reference: CompassReference,
-    ) -> Compass<Bearing> {
+    ) -> Compass<BearingType> {
         Compass {
             angle,
             direction,
@@ -148,7 +163,7 @@ impl<T> Compass<T> {
         angle: Angle,
         direction: RotationDirection,
         reference: CompassReference,
-    ) -> Compass<Course> {
+    ) -> Compass<CourseType> {
         Compass {
             angle,
             direction,
@@ -163,7 +178,7 @@ impl<T> Compass<T> {
         angle: Angle,
         direction: RotationDirection,
         reference: CompassReference,
-    ) -> Compass<Azimuth> {
+    ) -> Compass<AzimuthType> {
         Compass {
             angle,
             direction,
@@ -226,9 +241,9 @@ impl<T, B> CompassOffset<T, B> {
 }
 
 /// Represents the relative angle from a particular entities heading
-pub type RelativeBearing = CompassOffset<Heading, Bearing>;
+pub type RelativeBearing = CompassOffset<HeadingType, BearingType>;
 
-impl Compass<Heading> {
+impl Compass<HeadingType> {
     ///
     /// Converts this heading into a relative bearing using the specified offset and direction
     pub fn relative_bearing(self, direction: RotationDirection, offset: Angle) -> RelativeBearing {
