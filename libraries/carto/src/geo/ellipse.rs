@@ -5,13 +5,26 @@ use irox_units::units::length::{Length, LengthUnits};
 pub struct Ellipse {
     semi_major_axis: Length,
     inverse_flattening: f64,
+    name: &'static str,
 }
 
 impl Ellipse {
+    pub const fn named(
+        name: &'static str,
+        semi_major_axis: Length,
+        inverse_flattening: f64,
+    ) -> Ellipse {
+        Ellipse {
+            name,
+            semi_major_axis,
+            inverse_flattening,
+        }
+    }
     pub const fn new(semi_major_axis: Length, inverse_flattening: f64) -> Ellipse {
         Ellipse {
             semi_major_axis,
             inverse_flattening,
+            name: "unnamed",
         }
     }
 
@@ -26,6 +39,7 @@ impl Ellipse {
         Ellipse {
             semi_major_axis: radius,
             inverse_flattening: 0.0,
+            name: "unnamed",
         }
     }
 
@@ -39,6 +53,10 @@ impl Ellipse {
 
     pub const fn inverse_flattening(&self) -> f64 {
         self.inverse_flattening
+    }
+
+    pub const fn name(&self) -> &'static str {
+        self.name
     }
 
     pub fn semi_minor_axis_b(&self) -> Length {
