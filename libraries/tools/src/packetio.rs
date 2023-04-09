@@ -1,11 +1,29 @@
 //!
 //! Traits for packetization of data and movement of packets of data
 
+use crate::bits::{Bits, MutBits};
 use std::collections::VecDeque;
 use std::io::{ErrorKind, Read};
 
 /// A packet is a series of bytes
-pub type Packet = Vec<u8>;
+pub type PacketData = Vec<u8>;
+
+pub trait Packet {
+    type PacketType;
+    type Error;
+
+    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error>;
+
+    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error>;
+
+    fn get_type(&self) -> Self::PacketType;
+}
+
+pub trait PacketBuilder<P: Packet> {
+    type Error;
+
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<P, Self::Error>;
+}
 
 ///
 /// This trait represents a way to packetize a stream of data
@@ -14,7 +32,7 @@ pub trait Packetization {
     type Error;
 
     /// Reads the next packet from the source reader
-    fn read_next_packet<T: Read>(&mut self, source: &mut T) -> Result<Vec<u8>, Self::Error>;
+    fn read_next_packet<T: Bits>(&mut self, source: &mut T) -> Result<PacketData, Self::Error>;
 }
 
 ///
@@ -24,7 +42,7 @@ pub trait PacketTransport {
     type Error;
 
     /// Polls the next packet from the underlying transport
-    fn poll_next_packet(&mut self) -> Result<Vec<u8>, Self::Error>;
+    fn poll_next_packet(&mut self) -> Result<PacketData, Self::Error>;
 
     /// Start the underlying transport up
     fn start(&mut self) -> Result<(), Self::Error>;
@@ -48,7 +66,7 @@ where
     type Error = std::io::Error;
 
     /// Polls the next packet from the underlying transport
-    fn poll_next_packet(&mut self) -> Result<Vec<u8>, Self::Error> {
+    fn poll_next_packet(&mut self) -> Result<PacketData, Self::Error> {
         self.chunker.read_next_packet(&mut self.reader)
     }
 
@@ -85,7 +103,7 @@ pub struct DelimitedPacketizer {
 impl Packetization for DelimitedPacketizer {
     type Error = std::io::Error;
 
-    fn read_next_packet<T: Read>(&mut self, source: &mut T) -> Result<Vec<u8>, Self::Error> {
+    fn read_next_packet<T: Bits>(&mut self, source: &mut T) -> Result<PacketData, Self::Error> {
         if self.delimiter.is_empty() {
             return Err(std::io::Error::new(
                 ErrorKind::InvalidData,
