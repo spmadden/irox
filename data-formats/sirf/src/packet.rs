@@ -1,17 +1,20 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
 use crate::input::x08_50bpsdata::FiftyBPSData;
 use crate::input::x1e_navsvstate::NavLibSVState;
+use crate::input::x29_geonavdata::GeodeticNavigationData;
 use crate::input::x32_sbasparams::SBASParameters;
 use crate::input::{
     x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1e_navsvstate,
-    x32_sbasparams,
+    x29_geonavdata, x32_sbasparams,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_tools::read::{read_exact, read_exact_vec, read_until};
-use std::any::Any;
 use std::io::{ErrorKind, Read, Write};
 
 pub const START_LEN: usize = 2;
@@ -47,6 +50,7 @@ pub enum PacketType {
 
     NavLibSVState(NavLibSVState) = 0x1E,
 
+    GeodeticNavigationData(GeodeticNavigationData) = 0x29,
     SBASParameters(SBASParameters) = 0x32,
 
     Unknown(u8) = 0x256,
@@ -116,6 +120,9 @@ impl PacketBuilder<PacketType> for PacketParser {
             0x07 => PacketType::ClockStatusData(x07_clockstatus::BUILDER.build_from(&mut payload)?),
             0x08 => PacketType::FiftyBPSData(x08_50bpsdata::BUILDER.build_from(&mut payload)?),
             0x1E => PacketType::NavLibSVState(x1e_navsvstate::BUILDER.build_from(&mut payload)?),
+            0x29 => PacketType::GeodeticNavigationData(
+                x29_geonavdata::BUILDER.build_from(&mut payload)?,
+            ),
             0x32 => PacketType::SBASParameters(x32_sbasparams::BUILDER.build_from(&mut payload)?),
             e => PacketType::Unknown(e),
         })
