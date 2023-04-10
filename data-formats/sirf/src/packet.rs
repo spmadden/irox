@@ -1,7 +1,8 @@
-use crate::input::x02mesnavdata::MeasuredNavigationData;
-use crate::input::x04meastrackdata::MeasuredTrackData;
-use crate::input::x07clockstatus::ClockStatus;
-use crate::input::{x02mesnavdata, x04meastrackdata, x07clockstatus};
+use crate::input::x02_mesnavdata::MeasuredNavigationData;
+use crate::input::x04_meastrackdata::MeasuredTrackData;
+use crate::input::x07_clockstatus::ClockStatus;
+use crate::input::x08_50bpsdata::FiftyBPSData;
+use crate::input::{x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata};
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_tools::read::{read_exact, read_exact_vec, read_until};
@@ -37,6 +38,7 @@ pub enum PacketType {
     RawTrackerDataOut = 0x05,
     SoftwareVersionString = 0x06,
     ClockStatusData(ClockStatus) = 0x07,
+    FiftyBPSData(FiftyBPSData) = 0x08,
 
     Unknown(u8) = 0x256,
 }
@@ -96,13 +98,14 @@ impl PacketBuilder<PacketType> for PacketParser {
         let msg_type = payload[0];
         let mut payload = &mut &payload[1..];
         Ok(match msg_type {
-            0x02 => {
-                PacketType::MeasuredNavigationData(x02mesnavdata::BUILDER.build_from(&mut payload)?)
-            }
-            0x04 => PacketType::MeasuredTrackingData(
-                x04meastrackdata::BUILDER.build_from(&mut payload)?,
+            0x02 => PacketType::MeasuredNavigationData(
+                x02_mesnavdata::BUILDER.build_from(&mut payload)?,
             ),
-            0x07 => PacketType::ClockStatusData(x07clockstatus::BUILDER.build_from(&mut payload)?),
+            0x04 => PacketType::MeasuredTrackingData(
+                x04_meastrackdata::BUILDER.build_from(&mut payload)?,
+            ),
+            0x07 => PacketType::ClockStatusData(x07_clockstatus::BUILDER.build_from(&mut payload)?),
+            0x08 => PacketType::FiftyBPSData(x08_50bpsdata::BUILDER.build_from(&mut payload)?),
             e => PacketType::Unknown(e),
         })
     }
