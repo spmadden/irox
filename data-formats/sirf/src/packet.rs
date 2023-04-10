@@ -2,9 +2,11 @@ use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
 use crate::input::x08_50bpsdata::FiftyBPSData;
-use crate::input::x1E_navsvstate::NavLibSVState;
+use crate::input::x1e_navsvstate::NavLibSVState;
+use crate::input::x32_sbasparams::SBASParameters;
 use crate::input::{
-    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1E_navsvstate,
+    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1e_navsvstate,
+    x32_sbasparams,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -44,6 +46,8 @@ pub enum PacketType {
     FiftyBPSData(FiftyBPSData) = 0x08,
 
     NavLibSVState(NavLibSVState) = 0x1E,
+
+    SBASParameters(SBASParameters) = 0x32,
 
     Unknown(u8) = 0x256,
 }
@@ -111,7 +115,8 @@ impl PacketBuilder<PacketType> for PacketParser {
             ),
             0x07 => PacketType::ClockStatusData(x07_clockstatus::BUILDER.build_from(&mut payload)?),
             0x08 => PacketType::FiftyBPSData(x08_50bpsdata::BUILDER.build_from(&mut payload)?),
-            0x1E => PacketType::NavLibSVState(x1E_navsvstate::BUILDER.build_from(&mut payload)?),
+            0x1E => PacketType::NavLibSVState(x1e_navsvstate::BUILDER.build_from(&mut payload)?),
+            0x32 => PacketType::SBASParameters(x32_sbasparams::BUILDER.build_from(&mut payload)?),
             e => PacketType::Unknown(e),
         })
     }
