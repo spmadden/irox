@@ -5,12 +5,13 @@ use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
 use crate::input::x08_50bpsdata::FiftyBPSData;
+use crate::input::x1c_navmeasure::NavLibMeasurement;
 use crate::input::x1e_navsvstate::NavLibSVState;
 use crate::input::x29_geonavdata::GeodeticNavigationData;
 use crate::input::x32_sbasparams::SBASParameters;
 use crate::input::{
-    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1e_navsvstate,
-    x29_geonavdata, x32_sbasparams,
+    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1c_navmeasure,
+    x1e_navsvstate, x29_geonavdata, x32_sbasparams,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -32,28 +33,38 @@ pub const MAX_PACKET_SIZE: usize =
     START_LEN + PAYLOAD_LEN_LEN + MAX_PAYLOAD_LEN + CKSUM_LEN + END_LEN;
 
 #[derive(Debug, Clone)]
-#[repr(u16)]
 pub enum PacketType {
     // Messages to the SiRF device
     // AdvancedPowerManagement = 0x35,
     // InitializeDataSource = 0x80,
 
     // Messages from the SiRF device
-    ReferenceNavigationData = 0x01,
-    MeasuredNavigationData(MeasuredNavigationData) = 0x02,
-    TrueTrackerData = 0x03,
-    MeasuredTrackingData(MeasuredTrackData) = 0x04,
-    RawTrackerDataOut = 0x05,
-    SoftwareVersionString = 0x06,
-    ClockStatusData(ClockStatus) = 0x07,
-    FiftyBPSData(FiftyBPSData) = 0x08,
+    ReferenceNavigationData,
+    MeasuredNavigationData(MeasuredNavigationData),
+    TrueTrackerData,
+    MeasuredTrackingData(MeasuredTrackData),
+    RawTrackerDataOut,
+    SoftwareVersionString,
+    ClockStatusData(ClockStatus),
+    FiftyBPSData(FiftyBPSData),
 
-    NavLibSVState(NavLibSVState) = 0x1E,
+    NavLibMeasurement(NavLibMeasurement),
+    NavLibSVState(NavLibSVState),
 
-    GeodeticNavigationData(GeodeticNavigationData) = 0x29,
-    SBASParameters(SBASParameters) = 0x32,
+    GeodeticNavigationData(GeodeticNavigationData),
+    SBASParameters(SBASParameters),
+    TrackerLoadStatus(u8),
 
-    Unknown(u8) = 0x256,
+    ExtendedEphemeris(u8),
+
+    NavLibraryAuxMsg(u8),
+    GPIOStateOutput(u8),
+    DOPValues,
+
+    HWCtrlOutput(u8),
+    TCXOLearningOutput(u8),
+
+    Unknown(u8, u8),
 }
 
 impl Packet for PacketType {
@@ -119,12 +130,21 @@ impl PacketBuilder<PacketType> for PacketParser {
             ),
             0x07 => PacketType::ClockStatusData(x07_clockstatus::BUILDER.build_from(&mut payload)?),
             0x08 => PacketType::FiftyBPSData(x08_50bpsdata::BUILDER.build_from(&mut payload)?),
+            0x1C => {
+                PacketType::NavLibMeasurement(x1c_navmeasure::BUILDER.build_from(&mut payload)?)
+            }
             0x1E => PacketType::NavLibSVState(x1e_navsvstate::BUILDER.build_from(&mut payload)?),
             0x29 => PacketType::GeodeticNavigationData(
                 x29_geonavdata::BUILDER.build_from(&mut payload)?,
             ),
             0x32 => PacketType::SBASParameters(x32_sbasparams::BUILDER.build_from(&mut payload)?),
-            e => PacketType::Unknown(e),
+            0x33 => PacketType::TrackerLoadStatus(payload[0]),
+            0x38 => PacketType::ExtendedEphemeris(payload[0]),
+            0x40 => PacketType::NavLibraryAuxMsg(payload[0]),
+            0x41 => PacketType::GPIOStateOutput(payload[0]),
+            0x5B => PacketType::HWCtrlOutput(payload[0]),
+            0x5D => PacketType::TCXOLearningOutput(payload[0]),
+            e => PacketType::Unknown(e, 0x0),
         })
     }
 }
