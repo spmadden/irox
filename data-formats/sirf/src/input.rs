@@ -5,6 +5,7 @@ pub mod x02_mesnavdata;
 pub mod x04_meastrackdata;
 pub mod x07_clockstatus;
 pub mod x08_50bpsdata;
+pub mod x1c_navmeasure;
 pub mod x1e_navsvstate;
 pub mod x29_geonavdata;
 pub mod x32_sbasparams;
