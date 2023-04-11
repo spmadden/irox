@@ -9,9 +9,10 @@ use crate::input::x1c_navmeasure::NavLibMeasurement;
 use crate::input::x1e_navsvstate::NavLibSVState;
 use crate::input::x29_geonavdata::GeodeticNavigationData;
 use crate::input::x32_sbasparams::SBASParameters;
+use crate::input::x33x6_trackerload::TrackerLoadStatus;
 use crate::input::{
     x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1c_navmeasure,
-    x1e_navsvstate, x29_geonavdata, x32_sbasparams,
+    x1e_navsvstate, x29_geonavdata, x32_sbasparams, x33x6_trackerload,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -53,7 +54,7 @@ pub enum PacketType {
 
     GeodeticNavigationData(GeodeticNavigationData),
     SBASParameters(SBASParameters),
-    TrackerLoadStatus(u8),
+    TrackerLoadStatus(TrackerLoadStatus),
 
     ExtendedEphemeris(u8),
 
@@ -138,7 +139,12 @@ impl PacketBuilder<PacketType> for PacketParser {
                 x29_geonavdata::BUILDER.build_from(&mut payload)?,
             ),
             0x32 => PacketType::SBASParameters(x32_sbasparams::BUILDER.build_from(&mut payload)?),
-            0x33 => PacketType::TrackerLoadStatus(payload[0]),
+            0x33 => match payload[0] {
+                0x06 => PacketType::TrackerLoadStatus(
+                    x33x6_trackerload::BUILDER.build_from(&mut &payload[1..])?,
+                ),
+                e => PacketType::Unknown(0x33, e),
+            },
             0x38 => PacketType::ExtendedEphemeris(payload[0]),
             0x40 => PacketType::NavLibraryAuxMsg(payload[0]),
             0x41 => PacketType::GPIOStateOutput(payload[0]),

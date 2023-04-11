@@ -9,4 +9,5 @@ pub mod x1c_navmeasure;
 pub mod x1e_navsvstate;
 pub mod x29_geonavdata;
 pub mod x32_sbasparams;
+pub mod x33x6_trackerload;
 pub mod x35_advpwrmgmt;
