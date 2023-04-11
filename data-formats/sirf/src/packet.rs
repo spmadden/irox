@@ -5,14 +5,15 @@ use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
 use crate::input::x08_50bpsdata::FiftyBPSData;
+use crate::input::x09_cputhroughput::CPUThroughput;
 use crate::input::x1c_navmeasure::NavLibMeasurement;
 use crate::input::x1e_navsvstate::NavLibSVState;
 use crate::input::x29_geonavdata::GeodeticNavigationData;
 use crate::input::x32_sbasparams::SBASParameters;
 use crate::input::x33x6_trackerload::TrackerLoadStatus;
 use crate::input::{
-    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x1c_navmeasure,
-    x1e_navsvstate, x29_geonavdata, x32_sbasparams, x33x6_trackerload,
+    x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x09_cputhroughput,
+    x1c_navmeasure, x1e_navsvstate, x29_geonavdata, x32_sbasparams, x33x6_trackerload,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -48,6 +49,7 @@ pub enum PacketType {
     SoftwareVersionString,
     ClockStatusData(ClockStatus),
     FiftyBPSData(FiftyBPSData),
+    CPUThroughput(CPUThroughput),
 
     NavLibMeasurement(NavLibMeasurement),
     NavLibSVState(NavLibSVState),
@@ -131,6 +133,7 @@ impl PacketBuilder<PacketType> for PacketParser {
             ),
             0x07 => PacketType::ClockStatusData(x07_clockstatus::BUILDER.build_from(&mut payload)?),
             0x08 => PacketType::FiftyBPSData(x08_50bpsdata::BUILDER.build_from(&mut payload)?),
+            0x09 => PacketType::CPUThroughput(x09_cputhroughput::BUILDER.build_from(&mut payload)?),
             0x1C => {
                 PacketType::NavLibMeasurement(x1c_navmeasure::BUILDER.build_from(&mut payload)?)
             }
