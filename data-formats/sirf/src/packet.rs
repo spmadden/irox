@@ -11,9 +11,11 @@ use crate::input::x1e_navsvstate::NavLibSVState;
 use crate::input::x29_geonavdata::GeodeticNavigationData;
 use crate::input::x32_sbasparams::SBASParameters;
 use crate::input::x33x6_trackerload::TrackerLoadStatus;
+use crate::input::xff_asciidata::AsciiData;
 use crate::input::{
     x02_mesnavdata, x04_meastrackdata, x07_clockstatus, x08_50bpsdata, x09_cputhroughput,
     x1c_navmeasure, x1e_navsvstate, x29_geonavdata, x32_sbasparams, x33x6_trackerload,
+    xff_asciidata,
 };
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -65,7 +67,19 @@ pub enum PacketType {
     DOPValues,
 
     HWCtrlOutput(u8),
+    CWInterferenceReport(),
+    CWMitigationReport(),
     TCXOLearningOutput(u8),
+
+    StatsUnknown(u8),
+    StatsTTFF(),
+    StatsTTFF2(),
+    DataLogCompatRecord(),
+    DataLogTerminator(),
+    DataLogStatusOutput(),
+    DataLogRecordOutput(),
+
+    AsciiString(AsciiData),
 
     Unknown(u8, u8),
 }
@@ -152,7 +166,22 @@ impl PacketBuilder<PacketType> for PacketParser {
             0x40 => PacketType::NavLibraryAuxMsg(payload[0]),
             0x41 => PacketType::GPIOStateOutput(payload[0]),
             0x5B => PacketType::HWCtrlOutput(payload[0]),
+            0x5C => match payload[0] {
+                0x01 => PacketType::CWInterferenceReport(),
+                0x02 => PacketType::CWMitigationReport(),
+                _ => PacketType::Unknown(0x5C, payload[0]),
+            },
             0x5D => PacketType::TCXOLearningOutput(payload[0]),
+            0xE1 => match payload[0] {
+                0x6 => PacketType::StatsTTFF(),
+                0x7 => PacketType::StatsTTFF(),
+                0x21 => PacketType::DataLogCompatRecord(),
+                0x22 => PacketType::DataLogTerminator(),
+                0x23 => PacketType::DataLogStatusOutput(),
+                0x24 => PacketType::DataLogRecordOutput(),
+                _ => PacketType::StatsUnknown(payload[0]),
+            },
+            0xFF => PacketType::AsciiString(xff_asciidata::BUILDER.build_from(&mut payload)?),
             e => PacketType::Unknown(e, 0x0),
         })
     }
