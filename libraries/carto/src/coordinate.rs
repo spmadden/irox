@@ -21,10 +21,12 @@ pub struct Latitude(pub Angle);
 pub struct Longitude(pub Angle);
 
 /// Represents a Latitude and Longitude on a Elliptical Shape
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct EllipticalCoordinate {
     latitude: Latitude,
     longitude: Longitude,
+    altitude: Option<Length>,
+    timestamp: Option<f64>,
     reference_frame: EllipticalShape,
 }
 
@@ -40,6 +42,8 @@ impl EllipticalCoordinate {
             latitude,
             longitude,
             reference_frame,
+            altitude: None,
+            timestamp: None,
         }
     }
 
@@ -63,6 +67,20 @@ impl EllipticalCoordinate {
 
     pub fn get_reference_frame(&self) -> &EllipticalShape {
         &self.reference_frame
+    }
+
+    pub fn with_altitude(self, altitude: Length) -> EllipticalCoordinate {
+        EllipticalCoordinate {
+            altitude: Some(altitude),
+            ..self
+        }
+    }
+
+    pub fn with_timestamp(self, timestamp: f64) -> EllipticalCoordinate {
+        EllipticalCoordinate {
+            timestamp: Some(timestamp),
+            ..self
+        }
     }
 }
 
