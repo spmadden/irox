@@ -23,8 +23,8 @@ default:
 # Use cargo to test the project
 test:cargo:
   script:
-    - rustc --version && cargo --version  # Print version info for debugging
     - rustup component add rustfmt
+    - rustc --version && cargo --version  # Print version info for debugging
     - cargo fmt --check
     - cargo clippy --no-deps --all-targets -- -Dwarnings
     - cargo check --workspace --all-targets --all-features
