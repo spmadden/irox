@@ -30,9 +30,10 @@ pub fn read_until<T: Read>(input: &mut T, search: &[u8]) -> Result<(), Error> {
 /// Reads the exact amount of bytes into an array and returns it
 /// ```
 /// # use irox_tools::read::read_exact;
-/// # let mut input : Vec<u8> = Vec::new();
+/// # let mut input : Vec<u8> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+/// # let mut input = input.as_slice();
 ///
-/// let buf : [u8;10] = read_exact(&mut input)?;
+/// let buf : [u8;10] = read_exact(&mut input).expect("Expected at least 10 bytes.");
 /// ```
 pub fn read_exact<T: Read, const N: usize>(input: &mut T) -> Result<[u8; N], Error> {
     let mut buf: [u8; N] = [0; N];
