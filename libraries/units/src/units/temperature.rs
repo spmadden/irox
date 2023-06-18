@@ -80,11 +80,12 @@ pub fn fahrenheit2celsius(far: f64) -> f64 {
 
 #[cfg(test)]
 mod test {
-    use crate::units::temperature::celsius2kelvin;
+    use crate::units::temperature::{celsius2kelvin, CELSIUS_KELVIN_OFFSET};
 
     #[test]
     pub fn test() {
         let val: f32 = 0.0;
         let out = celsius2kelvin(val as f64);
+        assert_eq!(out, CELSIUS_KELVIN_OFFSET)
     }
 }

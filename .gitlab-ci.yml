@@ -24,8 +24,10 @@ default:
 test:cargo:
   script:
     - rustc --version && cargo --version  # Print version info for debugging
-    - cargo test --workspace --verbose
-
+    - rustup component add rustfmt
+    - cargo fmt --check
+    - cargo clippy --no-deps --all-targets -- -Dwarnings
+    - cargo check --workspace --all-targets --all-features
 # Optional: Use a third party library to generate gitlab junit reports
 test:junit-report:
   variables:
@@ -34,8 +36,6 @@ test:junit-report:
 #    Should be specified in Cargo.toml
     - cargo install junitify
     - cargo test -- --format=json --report-time -Z unstable-options | junitify --out $CI_PROJECT_DIR/tests/
-    - cargo fmt --check
-    - cargo clippy -- -Dwarnings -Wclippy::arithmetic_side_effects -Wclippy::cargo_common_metadata
   artifacts:
     when: always
     reports:
