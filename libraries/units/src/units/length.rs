@@ -26,10 +26,10 @@ pub enum LengthUnits {
 macro_rules! from_units_length {
     ($type:ident) => {
         impl crate::units::FromUnits<$type> for LengthUnits {
-            fn from(&self, value: $type, units: Self) -> $type {
+            fn from(&self, value: $type, source_unit: Self) -> $type {
                 match self {
                     // target
-                    LengthUnits::Meters => match units {
+                    LengthUnits::Meters => match source_unit {
                         // source
                         LengthUnits::Meters => value as $type,
                         LengthUnits::Feet => value * FEET_TO_METERS as $type,
@@ -37,15 +37,15 @@ macro_rules! from_units_length {
                         LengthUnits::Mile => value * MILES_TO_METERS as $type,
                         LengthUnits::NauticalMile => value * NAUTICAL_MILES_TO_METERS as $type,
                     },
-                    LengthUnits::Feet => match units {
-                        LengthUnits::Meters => value * FEET_TO_METERS as $type,
+                    LengthUnits::Feet => match source_unit {
+                        LengthUnits::Meters => value * METERS_TO_FEET as $type,
                         LengthUnits::Feet => value as $type,
                         LengthUnits::Kilometers => {
-                            FromUnits::<$type>::from(&LengthUnits::Meters, value, units)
+                            FromUnits::<$type>::from(&LengthUnits::Meters, value, source_unit)
                                 * METERS_TO_KILOMETERS as $type
                         }
                         LengthUnits::Mile => {
-                            FromUnits::<$type>::from(&LengthUnits::Meters, value, units)
+                            FromUnits::<$type>::from(&LengthUnits::Meters, value, source_unit)
                                 * METERS_TO_MILES as $type
                         }
                         _ => todo!(),
@@ -113,11 +113,8 @@ mod tests {
     pub fn test_feet_meters() {
         assert_eq!(
             LengthUnits::Feet.from(1.0, LengthUnits::Meters),
-            FEET_TO_METERS
+            1.0 / 0.3048
         );
-        assert_eq!(
-            LengthUnits::Meters.from(1.0, LengthUnits::Feet),
-            METERS_TO_FEET
-        );
+        assert_eq!(LengthUnits::Meters.from(1.0, LengthUnits::Feet), 0.3048);
     }
 }

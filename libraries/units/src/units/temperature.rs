@@ -1,7 +1,6 @@
 //!
 //! This module contains the basic types and conversions for the SI "Temperature" quantity
 use crate::units::{FromUnits, Unit};
-use std::ops::{Add, Div, Mul};
 
 ///
 /// Represents a specific temperature unit - SI or otherwise
@@ -23,11 +22,15 @@ pub enum TemperatureUnits {
 macro_rules! from_units_length {
     ($type:ident) => {
         impl crate::units::FromUnits<$type> for TemperatureUnits {
-            fn from(&self, value: $type, units: Self) -> $type {
+            fn from(&self, value: $type, source_unit: Self) -> $type {
                 match self {
                     // target
-                    TemperatureUnits::Kelvin => match units {
+                    TemperatureUnits::Kelvin => match source_unit {
                         // source
+                        TemperatureUnits::Kelvin => value,
+                        TemperatureUnits::Celsius => {
+                            (value + CELSIUS_KELVIN_OFFSET as $type) as $type
+                        }
                         _ => todo!(),
                     },
                     _ => todo!(),
@@ -42,11 +45,14 @@ from_units_length!(f32);
 from_units_length!(f64);
 
 impl Unit<TemperatureUnits> for Temperature {
-    fn as_unit(&self, unit: TemperatureUnits) -> Self
+    fn as_unit(&self, units: TemperatureUnits) -> Self
     where
         Self: Sized,
     {
-        todo!()
+        Temperature {
+            value: units.from(self.value, self.units),
+            units,
+        }
     }
 }
 
