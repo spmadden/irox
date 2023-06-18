@@ -106,7 +106,7 @@ pub const METERS_TO_NAUTICAL_MILE: f64 = 1. / NAUTICAL_MILES_TO_METERS;
 
 #[cfg(test)]
 mod tests {
-    use crate::units::length::{LengthUnits};
+    use crate::units::length::LengthUnits;
     use crate::units::FromUnits;
 
     #[test]
