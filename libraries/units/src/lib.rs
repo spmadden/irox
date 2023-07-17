@@ -1,3 +1,7 @@
 #[macro_use]
-pub mod units;
+
 pub mod bounds;
+pub mod coordinate;
+pub mod geo;
+pub mod geos;
+pub mod units;
