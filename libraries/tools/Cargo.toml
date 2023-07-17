@@ -1,6 +1,6 @@
 [package]
 name = "irox-tools"
 version = "0.1.0"
-edition = { workspace.edition = true }
+edition = { workspace = true }
 
 [dependencies]
