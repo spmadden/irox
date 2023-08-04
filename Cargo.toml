@@ -4,7 +4,9 @@ edition = "2021"
 
 [workspace]
 members = [
+	"data-formats/sirf",
 	"libraries/carto",
 	"libraries/units",
 	"libraries/tools"
 ]
+
