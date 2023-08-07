@@ -223,6 +223,7 @@ impl<T> Compass<T> {
 /// Represents a relative angle from a particular zero point that's not a standard reference like
 /// North or East.  Used for "relative bearings" and the like where the angle is referenced to the
 /// heading of an entity (like, 10 degrees to the right)
+#[derive(Debug, Clone)]
 pub struct CompassOffset<T, B> {
     compass: Compass<T>,
     offset: Angle,
