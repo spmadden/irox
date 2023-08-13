@@ -1,5 +1,9 @@
-use crate::geo::ellipsoid::Ellipsoid;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use irox_units::units::length::{Length, LengthUnits};
+
+use crate::geo::ellipsoid::Ellipsoid;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Ellipse {

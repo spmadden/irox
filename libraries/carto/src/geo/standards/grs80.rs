@@ -1,8 +1,12 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! ITRS GRS80 Ellipsoid ca 1979
 //!
-use crate::geo::ellipse::Ellipse;
 use irox_units::units::length::Length;
+
+use crate::geo::ellipse::Ellipse;
 
 /// ITRS GRS80 Semi-major axis
 pub const GRS80_SEMI_MAJOR_LENGTH: Length = Length::new_meters(6378137.0);

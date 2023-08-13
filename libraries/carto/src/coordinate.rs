@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use crate::{
     geo::{standards, EllipticalShape},
     units::{

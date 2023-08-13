@@ -1,9 +1,13 @@
-use crate::coordinate::Latitude;
-use crate::geo::ellipse::Ellipse;
-use crate::geo::EllipticalShape;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{Azimuth, Compass, CompassReference, RotationDirection};
 use irox_units::units::length::Length;
+
+use crate::coordinate::Latitude;
+use crate::geo::ellipse::Ellipse;
+use crate::geo::EllipticalShape;
 
 impl From<Ellipse> for Ellipsoid {
     fn from(value: Ellipse) -> Self {

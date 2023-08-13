@@ -1,7 +1,11 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
+use irox_units::units::length::{Length, LengthUnits};
+
 use crate::geo::ellipse::Ellipse;
 use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::EllipticalShape;
-use irox_units::units::length::{Length, LengthUnits};
 
 pub const WGS84_SEMI_MAJOR_LENGTH: Length = Length::new(6_378_137.0, LengthUnits::Meters);
 pub const WGS84_INVERSE_FLATTENING: f64 = 298.257_223_563;

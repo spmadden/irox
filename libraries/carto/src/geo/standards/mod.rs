@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
+use crate::geo::ellipse::Ellipse;
 use crate::geo::ellipsoid::Ellipsoid;
+use crate::geo::standards::airy::AIRY_PARAMS;
+use crate::geo::standards::grs80::GRS80_PARAMS;
 use crate::geo::standards::hayford_international::INTERNATIONAL_PARAMS;
 use crate::geo::standards::wgs84::*;
 use crate::geo::EllipticalShape;
-
-use crate::geo::ellipse::Ellipse;
-use crate::geo::standards::airy::AIRY_PARAMS;
-use crate::geo::standards::grs80::GRS80_PARAMS;
 
 pub mod airy;
 pub mod grs80;

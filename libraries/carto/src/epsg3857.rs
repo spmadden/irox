@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use std::f64::consts::{PI, TAU};
 
 use irox_units::units::angle::{self, Angle};

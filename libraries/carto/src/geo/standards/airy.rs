@@ -1,8 +1,12 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! Airy ellipsoid 1830
 //!
-use crate::geo::ellipse::Ellipse;
 use irox_units::units::length::Length;
+
+use crate::geo::ellipse::Ellipse;
 
 /// Airy semi-major axis
 pub const AIRY_SEMI_MAJOR: Length = Length::new_meters(6_377_563.396);

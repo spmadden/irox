@@ -1,8 +1,12 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! Hayford's international ellipsoid ca. 1924
 //!
-use crate::geo::ellipse::Ellipse;
 use irox_units::units::length::Length;
+
+use crate::geo::ellipse::Ellipse;
 
 /// International
 pub const INTERNATIONAL_SEMI_MAJOR_LENGTH: Length = Length::new_meters(6378388.);
