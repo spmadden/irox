@@ -1,0 +1,21 @@
+[package]
+name = "irox"
+description = "irox Rust Tools & Libraries"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+
+[features]
+default = []
+sirf = ["irox-sirf"]
+carto = ["irox-carto"]
+tools = ["irox-tools"]
+units = ["irox-units"]
+
+[dependencies]
+irox-sirf = { version = "*", path = "../data-formats/sirf", optional = true}
+irox-carto = { version = "*", path = "../libraries/carto", optional = true}
+irox-tools = { version = "*", path = "../libraries/tools", optional = true}
+irox-units = { version = "*", path = "../libraries/units", optional = true}

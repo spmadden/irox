@@ -1,6 +1,12 @@
 [package]
 name = "irox-units"
-version = "0.1.0"
+description = "Physical Quantities, Units, & Reference Frames Library"
+keywords = ["coordinate", "transforms", "epsg", "projections"]
+categories = ["aerospace", "data-structures", "science", "mathematics"]
+version = { workspace = true }
 edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+homepage = { workspace = true }
 
 [dependencies]

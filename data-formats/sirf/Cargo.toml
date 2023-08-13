@@ -1,9 +1,13 @@
 [package]
 name = "irox-sirf"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "SiRF Binary format Encoders and Decoders for GPS Devices"
+keywords = ["sirf", "encoder", "decoder", "gps"]
+categories = ["aerospace", "parser-implementations", "science::geo", "encoding"]
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+homepage = { workspace = true }
 
 [dependencies]
 irox-tools = {version = "*", path = "../../libraries/tools"}

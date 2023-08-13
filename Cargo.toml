@@ -1,9 +1,13 @@
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
+authors = ["Sean P. Madden <sean@seanmadden.net>"]
+homepage = "https://github.com/spmadden/irox"
+license = "MIT"
 
 [workspace]
 members = [
+	"irox",
 	"data-formats/sirf",
 	"libraries/carto",
 	"libraries/units",

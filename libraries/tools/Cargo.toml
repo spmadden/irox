@@ -1,6 +1,12 @@
 [package]
 name = "irox-tools"
-version = "0.1.0"
+description = "Stuff that should have been in the Rust STL, but aren't"
+keywords = ["tools"]
+categories = ["algorithms", "data-structures", "mathematics", "encoding", "network-programming"]
+version = { workspace = true }
 edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+homepage = { workspace = true }
 
 [dependencies]
