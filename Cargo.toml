@@ -4,6 +4,7 @@ edition = "2021"
 authors = ["Sean P. Madden <sean@seanmadden.net>"]
 homepage = "https://github.com/spmadden/irox"
 license = "MIT"
+exclude = ["doc"]
 
 [workspace]
 members = [

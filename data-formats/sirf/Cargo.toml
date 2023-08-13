@@ -3,11 +3,12 @@ name = "irox-sirf"
 description = "SiRF Binary format Encoders and Decoders for GPS Devices"
 keywords = ["sirf", "encoder", "decoder", "gps"]
 categories = ["aerospace", "parser-implementations", "science::geo", "encoding"]
-version = { workspace = true }
-edition = { workspace = true }
-authors = { workspace = true }
-license = { workspace = true }
-homepage = { workspace = true }
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+exclude.workspace = true
 
 [dependencies]
-irox-tools = {version = "*", path = "../../libraries/tools"}
+irox-tools = {version = "0.1", path = "../../libraries/tools"}

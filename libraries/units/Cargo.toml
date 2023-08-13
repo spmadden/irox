@@ -3,10 +3,11 @@ name = "irox-units"
 description = "Physical Quantities, Units, & Reference Frames Library"
 keywords = ["coordinate", "transforms", "epsg", "projections"]
 categories = ["aerospace", "data-structures", "science", "mathematics"]
-version = { workspace = true }
-edition = { workspace = true }
-authors = { workspace = true }
-license = { workspace = true }
-homepage = { workspace = true }
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+exclude.workspace = true
 
 [dependencies]
