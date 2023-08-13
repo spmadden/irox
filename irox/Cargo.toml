@@ -15,7 +15,7 @@ tools = ["irox-tools"]
 units = ["irox-units"]
 
 [dependencies]
-irox-sirf = { version = "*", path = "../data-formats/sirf", optional = true}
-irox-carto = { version = "*", path = "../libraries/carto", optional = true}
-irox-tools = { version = "*", path = "../libraries/tools", optional = true}
-irox-units = { version = "*", path = "../libraries/units", optional = true}
+irox-sirf = { version = "0.1", path = "../data-formats/sirf", optional = true}
+irox-carto = { version = "0.1", path = "../libraries/carto", optional = true}
+irox-tools = { version = "0.1", path = "../libraries/tools", optional = true}
+irox-units = { version = "0.1", path = "../libraries/units", optional = true}

@@ -11,7 +11,7 @@ homepage.workspace = true
 exclude.workspace = true
 
 [dependencies]
-irox-units = { version = "*", path = "../units" }
+irox-units = { version = "0.1", path = "../units" }
 
 [dev-dependencies]
-irox-tools = {version = "*", path = "../tools"}
+irox-tools = {version = "0.1", path = "../tools"}
