@@ -1,7 +1,11 @@
-use crate::input::util;
-use crate::packet::PacketType;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
+
+use crate::input::util;
+use crate::packet::PacketType;
 
 pub const MESSAGE_ID: usize = 0x02;
 pub const PAYLOAD_SIZE: usize = 41;

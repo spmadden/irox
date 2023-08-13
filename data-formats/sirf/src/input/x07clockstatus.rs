@@ -1,7 +1,11 @@
-use crate::input::util::read_gpstow;
-use crate::packet::PacketType;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
+
+use crate::input::util::read_gpstow;
+use crate::packet::PacketType;
 
 #[derive(Default, Debug, Clone)]
 pub struct ClockStatus {

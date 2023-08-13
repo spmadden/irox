@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use irox_tools::bits::{Bits, MutBits};
 
 pub fn write_gpstow<T: MutBits>(out: &mut T, val: f64) -> Result<(), std::io::Error> {
