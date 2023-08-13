@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 pub struct Bounds<T> {
     upper_left: T,
     upper_right: T,

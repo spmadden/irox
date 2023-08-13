@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! This module contains the basic types and conversions for the SI "Length" quantity
 use crate::units::{FromUnits, Unit};

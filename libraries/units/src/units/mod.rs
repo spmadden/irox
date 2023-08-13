@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 ///
 /// Matches (struct, units, default) to make a new basic struct
 macro_rules! basic_unit {

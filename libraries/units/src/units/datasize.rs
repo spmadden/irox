@@ -1,5 +1,9 @@
-use super::FromUnits;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use crate::units::Unit;
+
+use super::FromUnits;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub enum DataSizeUnits {

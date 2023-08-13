@@ -1,6 +1,10 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
+use std::marker::PhantomData;
+
 use crate::units::angle::Angle;
 use crate::units::FromUnits;
-use std::marker::PhantomData;
 
 ///
 /// The direction that a compass needle moves for "positive" increases
