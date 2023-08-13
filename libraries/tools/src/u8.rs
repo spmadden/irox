@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! A collection of utilities for the u8 built-in
 //!

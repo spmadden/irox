@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use self::looping_forever::LoopingForever;
 
 pub mod looping_forever;

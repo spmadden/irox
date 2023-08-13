@@ -1,9 +1,13 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 //!
 //! Traits for packetization of data and movement of packets of data
 
-use crate::bits::{Bits, MutBits};
 use std::collections::VecDeque;
 use std::io::{ErrorKind, Read};
+
+use crate::bits::{Bits, MutBits};
 
 /// A packet is a series of bytes
 pub type PacketData = Vec<u8>;

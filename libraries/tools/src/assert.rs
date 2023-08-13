@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 #[macro_export]
 macro_rules! assert_eq_eps {
     ($left:expr, $right:expr, $eps:expr) => {
