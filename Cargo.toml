@@ -8,10 +8,16 @@ exclude = ["doc"]
 
 [workspace]
 members = [
-	"irox",
-	"data-formats/sirf",
-	"libraries/carto",
-	"libraries/units",
+    "irox",
+    "data-formats/sirf",
+    "libraries/carto",
+    "libraries/egui_irox_extras",
+    "libraries/units",
 	"libraries/tools"
 ]
 
+[workspace.dependencies]
+egui = { version = "0.22", features = ["persistence"] }
+eframe = { version = "0.22", features = ["persistence"] }
+ron = { version = "0.8", features = ["integer128"] }
+serde = { version = "1.0", features = ["derive"] }

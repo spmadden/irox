@@ -1,0 +1,16 @@
+[package]
+name = "egui_irox_extras"
+description = "Extras & tweaks for the egui framework"
+keywords = ["egui", "gui"]
+categories = ["gui"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+exclude.workspace = true
+
+[dependencies]
+egui.workspace = true
+eframe.workspace = true
+ron.workspace = true

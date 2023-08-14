@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
+//!
+//! Stuff that should have been in [`egui`], but isn't.
+//!
+
+/// Historical frame rendering statistics
+pub mod frame_history;
+
+/// Utilities around [`egui::style`]
+pub mod styles;
+
+/// [`eframe::App`] composition tools
+pub mod composite;
