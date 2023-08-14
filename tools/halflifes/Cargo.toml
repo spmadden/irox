@@ -1,0 +1,18 @@
+[package]
+name = "halflifes"
+description = "GUI Tool to calculate the halflives of things"
+keywords = ["gui", "tool"]
+categories = ["science", "visualization"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+exclude.workspace = true
+
+[dependencies]
+eframe.workspace = true
+egui.workspace = true
+ron.workspace = true
+serde.workspace = true
+egui_irox_extras = {version = "0.1", path = "../../libraries/egui_irox_extras"}

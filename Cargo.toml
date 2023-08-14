@@ -13,7 +13,8 @@ members = [
     "libraries/carto",
     "libraries/egui_irox_extras",
     "libraries/units",
-	"libraries/tools"
+	"libraries/tools",
+    "tools/halflifes"
 ]
 
 [workspace.dependencies]
