@@ -1,0 +1,17 @@
+[package]
+name = "irox-influxdb_v1"
+description = "InfluxDB v1 API Client"
+keywords = ["db", "api", "influxdb"]
+categories = ["api-bindings", "database"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ureq.workspace = true
+irox-networking = {version = "0.1", path = "../network"}
