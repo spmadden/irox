@@ -9,6 +9,7 @@ exclude = ["doc"]
 [workspace]
 members = [
     "irox",
+    "data-formats/csv",
     "data-formats/sirf",
     "libraries/carto",
     "libraries/egui_irox_extras",
