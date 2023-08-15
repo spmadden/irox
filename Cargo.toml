@@ -12,6 +12,7 @@ members = [
     "data-formats/sirf",
     "libraries/carto",
     "libraries/egui_irox_extras",
+    "libraries/network",
     "libraries/units",
 	"libraries/tools",
     "tools/halflifes"
