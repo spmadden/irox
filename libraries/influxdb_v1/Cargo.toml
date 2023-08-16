@@ -14,4 +14,5 @@ exclude.workspace = true
 
 [dependencies]
 ureq.workspace = true
+url.workspace = true
 irox-networking = {version = "0.1", path = "../network"}

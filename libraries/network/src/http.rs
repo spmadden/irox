@@ -20,4 +20,11 @@ impl HttpProtocol {
             HttpProtocol::HTTPS => 443,
         }
     }
+
+    pub const fn name(&self) -> &'static str {
+        match self {
+            HttpProtocol::HTTP => "http",
+            HttpProtocol::HTTPS => "https",
+        }
+    }
 }

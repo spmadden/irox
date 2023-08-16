@@ -21,8 +21,10 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "0.22", features = ["persistence"] }
-eframe = { version = "0.22", features = ["persistence"] }
-ron = { version = "0.8", features = ["integer128"] }
-serde = { version = "1.0", features = ["derive"] }
-ureq = {version = "2.7", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
+egui = { version = "^0", features = ["persistence"] }
+eframe = { version = "^0", features = ["persistence"] }
+ron = { version = "^0", features = ["integer128"] }
+serde = { version = "^1", features = ["derive"] }
+ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}   
+url = {version = "^2", features = []}
+clap = {version = "^4", features = ["derive"]}
