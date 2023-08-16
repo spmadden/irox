@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::Write;
+use std::io::{Read, Write};
 
 mod types;
 
@@ -51,3 +51,10 @@ impl WriterBuilder {
         }
     }
 }
+
+pub enum Token {
+    Field(String),
+    Newline,
+}
+
+pub struct Tokenizer {}
