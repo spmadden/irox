@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use log::debug;
 use url::Url;
 
 use error::{Error, ErrorType};
@@ -123,5 +124,42 @@ impl InfluxDB {
             200 | 204 => Ok(()),
             _ => Error::err(ErrorType::RequestErrorCode(status), "Bad Ping Response"),
         }
+    }
+
+    pub fn query(&self, query: impl AsRef<str>) -> Result<String, Error> {
+        let mut url = self.base_url.clone();
+        url.set_path("query");
+        let req = self
+            .agent
+            .request_url("POST", &url)
+            .send_form(&[("q", query.as_ref())])?;
+
+        let status = req.status();
+        if status != 200 {
+            return Error::err(ErrorType::RequestErrorCode(status), "Query error");
+        }
+        Ok(req.into_string()?)
+    }
+
+    pub fn query_csv(&self, query: impl AsRef<str>) -> Result<String, Error> {
+        let mut url = self.base_url.clone();
+        url.set_path("query");
+        let req = self
+            .agent
+            .request_url("POST", &url)
+            .set("Accept", "application/csv")
+            .send_form(&[("q", query.as_ref())])?;
+
+        let status = req.status();
+        if status != 200 {
+            return Error::err(ErrorType::RequestErrorCode(status), "Query error");
+        }
+        Ok(req.into_string()?)
+    }
+
+    pub fn list_databases(&self) -> Result<Vec<String>, Error> {
+        let res = self.query_csv("SHOW DATABASES")?;
+        debug!("{}", res);
+        Ok(vec![])
     }
 }

@@ -3,12 +3,12 @@
 
 use std::fmt::Display;
 
-
 #[derive(Debug, Clone)]
 pub enum ErrorType {
     UrlParseError,
     RequestTransportError,
-    RequestErrorCode(u16)
+    RequestErrorCode(u16),
+    IOError,
 }
 
 #[derive(Debug, Clone)]
@@ -20,7 +20,8 @@ pub struct Error {
 impl Error {
     pub fn new(error_type: ErrorType, error: &'static str) -> Error {
         Error {
-            error_type, error: String::from(error)
+            error_type,
+            error: String::from(error),
         }
     }
 
@@ -35,15 +36,13 @@ impl Display for Error {
     }
 }
 
-impl std::error::Error for Error {
-
-}
+impl std::error::Error for Error {}
 
 impl From<url::ParseError> for Error {
     fn from(value: url::ParseError) -> Self {
         Error {
             error_type: ErrorType::UrlParseError,
-            error: format!("{:?}", value)
+            error: format!("{:?}", value),
         }
     }
 }
@@ -52,18 +51,23 @@ impl From<ureq::Error> for Error {
     fn from(value: ureq::Error) -> Self {
         let error = format!("{:?}", value);
         match value {
-            ureq::Error::Status(code, _resp) => {
-                Error {
-                    error_type: ErrorType::RequestErrorCode(code),
-                    error
-                }
+            ureq::Error::Status(code, _resp) => Error {
+                error_type: ErrorType::RequestErrorCode(code),
+                error,
             },
-            ureq::Error::Transport(_resp) => {
-                Error {
-                    error_type: ErrorType::RequestTransportError,
-                    error
-                }
+            ureq::Error::Transport(_resp) => Error {
+                error_type: ErrorType::RequestTransportError,
+                error,
             },
+        }
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
+        Error {
+            error_type: ErrorType::IOError,
+            error: format!("{:?}", value),
         }
     }
 }

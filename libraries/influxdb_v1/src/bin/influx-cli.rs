@@ -12,6 +12,9 @@ use irox_influxdb_v1::{InfluxConnectionBuilder, InfluxDB, InfluxDBConnectionPara
 enum Operation {
     /// Ping the server to check aliveness
     PING,
+
+    /// List the available databases
+    ListDB,
 }
 
 #[derive(Parser, Debug)]
@@ -56,6 +59,7 @@ fn main() -> ExitCode {
     debug!("{:?}", config);
     match config.command {
         Operation::PING => ping(&conn),
+        Operation::ListDB => list_db(&conn),
     }
 }
 
@@ -66,4 +70,17 @@ fn ping(db: &InfluxDB) -> ExitCode {
     }
     info!("PING SUCCESSFUL.");
     ExitCode::SUCCESS
+}
+
+fn list_db(db: &InfluxDB) -> ExitCode {
+    match db.list_databases() {
+        Ok(val) => {
+            info!("{:?}", val);
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            ExitCode::FAILURE
+        }
+    }
 }
