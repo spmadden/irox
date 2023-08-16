@@ -10,9 +10,18 @@ homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 ureq.workspace = true
 url.workspace = true
+clap.workspace = true
+log.workspace = true
 irox-networking = {version = "0.1", path = "../network"}
+env_logger = {workspace = true, optional = true}
+
+[features]
+default = ["cli"]
+cli = ["dep:env_logger"]
+
+[[bin]]
+name = "influx-cli"
+required-features = ["cli"]

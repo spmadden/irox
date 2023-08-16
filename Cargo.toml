@@ -27,4 +27,6 @@ ron = { version = "^0", features = ["integer128"] }
 serde = { version = "^1", features = ["derive"] }
 ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}   
 url = {version = "^2", features = []}
-clap = {version = "^4", features = ["derive"]}
+clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
+log = {version = "^0", features = []}
+env_logger = {version = "^0", features = []}
