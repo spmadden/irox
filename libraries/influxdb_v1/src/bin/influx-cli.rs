@@ -15,6 +15,11 @@ pub struct OptionalDB {
     db: Option<String>,
 }
 
+#[derive(Debug, Parser)]
+pub struct QueryString {
+    query: String,
+}
+
 #[derive(Subcommand, Debug)]
 enum Operation {
     /// Ping the server to check aliveness
@@ -26,6 +31,9 @@ enum Operation {
     ListRetentionPolicies(OptionalDB),
 
     ShowTagKeys(OptionalDB),
+
+    QueryCSV(QueryString),
+    QueryJSON(QueryString),
 }
 
 #[derive(Parser, Debug)]
@@ -73,6 +81,8 @@ fn main() -> ExitCode {
         Operation::ListDB => list_db(&conn),
         Operation::ListRetentionPolicies(pol) => list_retention_policies(&conn, pol),
         Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
+        Operation::QueryCSV(query) => query_csv(&conn, query.query),
+        Operation::QueryJSON(query) => query_json(&conn, query.query),
     }
 }
 
@@ -121,5 +131,31 @@ fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
             error!("{:?}", e);
             ExitCode::FAILURE
         }
+    }
+}
+
+fn query_csv(db: &InfluxDB, query: String) -> ExitCode {
+    match db.query_csv(query) {
+        Ok(val) => {
+            info!("{}", val);
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            ExitCode::FAILURE
+        },
+    }
+}
+
+fn query_json(db: &InfluxDB, query: String) -> ExitCode {
+    match db.query(query) {
+        Ok(val) => {
+            info!("{}", val);
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            ExitCode::FAILURE
+        },
     }
 }
