@@ -128,9 +128,12 @@ impl InfluxDB {
         }
     }
 
-    pub fn query(&self, query: impl AsRef<str>) -> Result<String, Error> {
+    pub fn query(&self, query: impl AsRef<str>, db: Option<String>) -> Result<String, Error> {
         let mut url = self.base_url.clone();
         url.set_path("query");
+        if let Some(db) = db {
+            url.set_query(Some(format!("db={db}").as_str()));
+        }
         let req = self
             .agent
             .request_url("POST", &url)
@@ -143,9 +146,12 @@ impl InfluxDB {
         Ok(req.into_string()?)
     }
 
-    pub fn query_csv(&self, query: impl AsRef<str>) -> Result<String, Error> {
+    pub fn query_csv(&self, query: impl AsRef<str>, db: Option<String>) -> Result<String, Error> {
         let mut url = self.base_url.clone();
         url.set_path("query");
+        if let Some(db) = db {
+            url.set_query(Some(format!("db={db}").as_str()));
+        }
         let req = self
             .agent
             .request_url("POST", &url)
@@ -160,7 +166,7 @@ impl InfluxDB {
     }
 
     pub fn list_databases(&self) -> Result<Vec<String>, Error> {
-        let res = self.query_csv("SHOW DATABASES")?;
+        let res = self.query_csv("SHOW DATABASES", None)?;
         debug!("{}", res);
         let mut out: Vec<String> = Vec::new();
         let mut reader = irox_csv::CSVMapReader::new(res.as_bytes())?;
@@ -178,8 +184,8 @@ impl InfluxDB {
         db: Option<String>,
     ) -> Result<Vec<RetentionPolicy>, Error> {
         let res = match db {
-            Some(db) => self.query_csv(format!("SHOW RETENTION POLICIES ON {}", db)),
-            None => self.query_csv("SHOW RETENTION POLICIES"),
+            Some(db) => self.query_csv(format!("SHOW RETENTION POLICIES ON {}", db), None),
+            None => self.query_csv("SHOW RETENTION POLICIES", None),
         }?;
         debug!("{}", res);
         let mut reader = irox_csv::CSVMapReader::new(res.as_bytes())?;
@@ -193,8 +199,8 @@ impl InfluxDB {
 
     pub fn show_tag_keys(&self, db: Option<String>) -> Result<(), Error> {
         let res = match db {
-            Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {}", db)),
-            None => self.query_csv("SHOW TAG KEYS"),
+            Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {}", db), None),
+            None => self.query_csv("SHOW TAG KEYS", None),
         }?;
         debug!("{}", res);
         let mut reader = irox_csv::CSVMapReader::new(res.as_bytes())?;

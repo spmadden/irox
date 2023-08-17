@@ -17,6 +17,10 @@ pub struct OptionalDB {
 
 #[derive(Debug, Parser)]
 pub struct QueryString {
+    /// Optional Database name
+    #[arg(long)]
+    db: Option<String>,
+
     query: String,
 }
 
@@ -81,8 +85,8 @@ fn main() -> ExitCode {
         Operation::ListDB => list_db(&conn),
         Operation::ListRetentionPolicies(pol) => list_retention_policies(&conn, pol),
         Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
-        Operation::QueryCSV(query) => query_csv(&conn, query.query),
-        Operation::QueryJSON(query) => query_json(&conn, query.query),
+        Operation::QueryCSV(query) => query_csv(&conn, query),
+        Operation::QueryJSON(query) => query_json(&conn, query),
     }
 }
 
@@ -134,8 +138,8 @@ fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     }
 }
 
-fn query_csv(db: &InfluxDB, query: String) -> ExitCode {
-    match db.query_csv(query) {
+fn query_csv(db: &InfluxDB, query: QueryString) -> ExitCode {
+    match db.query_csv(query.query, query.db) {
         Ok(val) => {
             info!("{}", val);
             ExitCode::SUCCESS
@@ -143,12 +147,12 @@ fn query_csv(db: &InfluxDB, query: String) -> ExitCode {
         Err(e) => {
             error!("{:?}", e);
             ExitCode::FAILURE
-        },
+        }
     }
 }
 
-fn query_json(db: &InfluxDB, query: String) -> ExitCode {
-    match db.query(query) {
+fn query_json(db: &InfluxDB, query: QueryString) -> ExitCode {
+    match db.query(query.query, query.db) {
         Ok(val) => {
             info!("{}", val);
             ExitCode::SUCCESS
@@ -156,6 +160,6 @@ fn query_json(db: &InfluxDB, query: String) -> ExitCode {
         Err(e) => {
             error!("{:?}", e);
             ExitCode::FAILURE
-        },
+        }
     }
 }
