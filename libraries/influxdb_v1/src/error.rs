@@ -9,8 +9,8 @@ pub enum ErrorType {
     RequestTransportError,
     RequestErrorCode(u16),
     IOError,
-    CSVError, 
-    MissingKeyError(String)
+    CSVError,
+    MissingKeyError(String),
 }
 
 #[derive(Debug, Clone)]
@@ -78,7 +78,7 @@ impl From<irox_csv::error::CSVError> for Error {
     fn from(value: irox_csv::error::CSVError) -> Self {
         Error {
             error_type: ErrorType::CSVError,
-            error: format!("{:?}", value)
+            error: format!("{:?}", value),
         }
     }
 }

@@ -9,11 +9,10 @@ use log::{debug, error, info};
 use irox_influxdb_v1::{InfluxConnectionBuilder, InfluxDB, InfluxDBConnectionParams};
 
 #[derive(Debug, Parser)]
-pub struct OptionalDB{
-
+pub struct OptionalDB {
     /// Optional Database name
     #[arg(long)]
-    db: Option<String>
+    db: Option<String>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -24,7 +23,9 @@ enum Operation {
     /// List the available databases
     ListDB,
 
-    ListRetentionPolicies(OptionalDB)
+    ListRetentionPolicies(OptionalDB),
+
+    ShowTagKeys(OptionalDB),
 }
 
 #[derive(Parser, Debug)]
@@ -71,7 +72,7 @@ fn main() -> ExitCode {
         Operation::PING => ping(&conn),
         Operation::ListDB => list_db(&conn),
         Operation::ListRetentionPolicies(pol) => list_retention_policies(&conn, pol),
-        
+        Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
     }
 }
 
@@ -102,7 +103,20 @@ fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
         Ok(val) => {
             info!("{:?}", val);
             ExitCode::SUCCESS
-        },
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
+    match db.show_tag_keys(param.db) {
+        Ok(val) => {
+            info!("{:?}", val);
+            ExitCode::SUCCESS
+        }
         Err(e) => {
             error!("{:?}", e);
             ExitCode::FAILURE
