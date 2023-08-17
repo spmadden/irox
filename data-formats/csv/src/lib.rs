@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::{io::{Read, Write}, collections::BTreeMap};
+use std::{
+    collections::BTreeMap,
+    io::{Read, Write},
+};
 
 use error::CSVError;
 
@@ -169,22 +172,23 @@ impl<T: Read + Sized> CSVReader<T> {
     }
 }
 
-pub struct CSVMapReader<T> where T: Read+Sized {
+pub struct CSVMapReader<T>
+where
+    T: Read + Sized,
+{
     reader: CSVReader<T>,
     keys: Vec<String>,
 }
 
-impl <T: Read+Sized> CSVMapReader<T> {
+impl<T: Read + Sized> CSVMapReader<T> {
     pub fn new(read: T) -> Result<CSVMapReader<T>, CSVError> {
         let mut reader = CSVReader::new(read);
         let keys = reader.read_line()?;
         match keys {
-            Some(keys) => {
-                Ok(CSVMapReader { reader, keys })
-            },
+            Some(keys) => Ok(CSVMapReader { reader, keys }),
             None => CSVError::err(
-                error::CSVErrorType::MissingHeaderError, 
-                "Missing header or empty file".to_string()
+                error::CSVErrorType::MissingHeaderError,
+                "Missing header or empty file".to_string(),
             ),
         }
     }
@@ -197,14 +201,15 @@ impl <T: Read+Sized> CSVMapReader<T> {
         let hdrlen = self.keys.len();
         let datalen = data.len();
         if hdrlen != datalen {
-            return CSVError::err(error::CSVErrorType::HeaderDataMismatchError, 
-                format!("Headers length ({}) != data length ({})", hdrlen, datalen)
+            return CSVError::err(
+                error::CSVErrorType::HeaderDataMismatchError,
+                format!("Headers length ({}) != data length ({})", hdrlen, datalen),
             );
         }
 
         Ok(Some(Row {
             keys: self.keys.clone(),
-            data
+            data,
         }))
     }
 }
@@ -216,14 +221,15 @@ pub struct Row {
 
 impl Row {
     pub fn as_map(self) -> Result<BTreeMap<String, String>, CSVError> {
-        let mut out : BTreeMap<String, String> = BTreeMap::new();
-        for (k, v) in self.as_items(){
+        let mut out: BTreeMap<String, String> = BTreeMap::new();
+        for (k, v) in self.as_items() {
             if let Some(_elem) = out.insert(k.clone(), v) {
                 return CSVError::err(
                     error::CSVErrorType::DuplicateKeyInHeaderError,
-                    format!("Duplicate key in header detected: {}", k));
+                    format!("Duplicate key in header detected: {}", k),
+                );
             }
-        };
+        }
         Ok(out)
     }
 

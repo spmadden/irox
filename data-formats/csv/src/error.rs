@@ -14,7 +14,7 @@ pub enum CSVErrorType {
 #[derive(Debug, Clone)]
 pub struct CSVError {
     error_type: CSVErrorType,
-    error: String
+    error: String,
 }
 
 impl Display for CSVError {
@@ -23,15 +23,11 @@ impl Display for CSVError {
     }
 }
 
-impl std::error::Error for CSVError {
-
-}
+impl std::error::Error for CSVError {}
 
 impl CSVError {
     pub fn new(error_type: CSVErrorType, error: String) -> CSVError {
-        CSVError {
-            error, error_type
-        }
+        CSVError { error, error_type }
     }
     pub fn err<T>(error_type: CSVErrorType, error: String) -> Result<T, CSVError> {
         Err(Self::new(error_type, error))
@@ -43,4 +39,3 @@ impl From<std::io::Error> for CSVError {
         CSVError::new(CSVErrorType::IOError, format!("{:?}", value))
     }
 }
-
