@@ -16,6 +16,7 @@ url.workspace = true
 clap.workspace = true
 log.workspace = true
 irox-networking = {version = "0.1", path = "../network"}
+irox-csv = {version = "0.1", path = "../../data-formats/csv"}
 env_logger = {workspace = true, optional = true}
 
 [features]

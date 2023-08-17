@@ -2,12 +2,14 @@
 // Copyright 2023 IROX Contributors
 
 use log::debug;
+use types::RetentionPolicy;
 use url::Url;
 
 use error::{Error, ErrorType};
 use irox_networking::http::HttpProtocol;
 
 pub mod error;
+pub mod types;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct InfluxDBConnectionParams {
@@ -160,6 +162,29 @@ impl InfluxDB {
     pub fn list_databases(&self) -> Result<Vec<String>, Error> {
         let res = self.query_csv("SHOW DATABASES")?;
         debug!("{}", res);
-        Ok(vec![])
+        let mut out : Vec<String> = Vec::new();
+        let mut reader = irox_csv::CSVMapReader::new(res.as_bytes())?;
+        while let Some(row) = reader.next_row()? {
+            let row = row.as_map_lossy();
+            if let Some(name) = row.get("name") {
+                out.push(name.clone());
+            }
+        }
+        Ok(out)
+    }
+
+    pub fn show_retention_policites(&self, db: Option<String>) -> Result<Vec<RetentionPolicy>, Error> {
+        let res = match db {
+            Some(db) => self.query_csv(format!("SHOW RETENTION POLICIES ON {}", db)),
+            None => self.query_csv("SHOW RETENTION POLICIES"),
+        }?;
+        debug!("{}", res);
+        let mut reader = irox_csv::CSVMapReader::new(res.as_bytes())?;
+        let mut out : Vec<RetentionPolicy> = Vec::new();
+        while let Some(row) = reader.next_row()? {
+            out.push(row.as_map_lossy().try_into()?);
+        }
+    
+        Ok(out)
     }
 }
