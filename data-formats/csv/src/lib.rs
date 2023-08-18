@@ -212,6 +212,13 @@ impl<T: Read + Sized> CSVMapReader<T> {
             data,
         }))
     }
+
+    pub fn for_each<F: FnMut(Row)>(mut self, mut func: F) -> Result<(), CSVError> {
+        while let Some(row) = self.next_row()? {
+            func(row);
+        }
+        Ok(())
+    }
 }
 
 pub struct Row {
