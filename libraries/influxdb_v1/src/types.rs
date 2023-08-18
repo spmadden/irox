@@ -3,6 +3,8 @@
 
 use std::collections::BTreeMap;
 
+use irox_tools::types::{NamedPrimitive, Primitives};
+
 use crate::error::{self, Error, ErrorType};
 
 fn get_or_error(key: &'static str, map: &mut BTreeMap<String, String>) -> Result<String, Error> {
@@ -44,5 +46,87 @@ impl TryFrom<BTreeMap<String, String>> for RetentionPolicy {
             default,
             other_values: map,
         })
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct MeasurementDescriptor {
+    pub(crate) name: String,
+    pub(crate) fields: Vec<NamedPrimitive>,
+    pub(crate) tags: Vec<String>,
+}
+
+impl MeasurementDescriptor {
+    pub(crate) fn new(name: String) -> MeasurementDescriptor {
+        MeasurementDescriptor {
+            name,
+            ..Default::default()
+        }
+    }
+
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    pub fn fields(&self) -> &Vec<NamedPrimitive> {
+        &self.fields
+    }
+
+    pub fn tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    pub(crate) fn merge_field_key_map(
+        &mut self,
+        map: &BTreeMap<String, String>,
+    ) -> Result<(), Error> {
+        let Some(name) = map.get("name") else {
+            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), format!("Missing key name"));
+        };
+        if !name.eq(&self.name) {
+            return Error::err_str(
+                ErrorType::NameKeyMismatch,
+                format!("Name mismatch, found {name} expected {}", self.name),
+            );
+        }
+        let Some(field_key) = map.get("fieldKey") else {
+            return Error::err_str(ErrorType::MissingKeyError("fieldKey".to_string()), format!("Missing key fieldKey"));
+        };
+        let Some(field_type) = map.get("fieldType") else {
+            return Error::err_str(ErrorType::MissingKeyError("fieldType".to_string()) , format!("Missing key fieldType"));
+        };
+        let field = match field_type.as_str() {
+            "float" => NamedPrimitive::new(field_key.to_string(), Primitives::f64),
+            "integer" | "timestamp" => NamedPrimitive::new(field_key.to_string(), Primitives::i64),
+            "string" => NamedPrimitive::new(field_key.to_string(), Primitives::str),
+            missing => {
+                return Error::err_str(
+                    ErrorType::UnsupportedType(missing.to_string()),
+                    format!("Unsupported type returned {missing}"),
+                );
+            }
+        };
+        self.fields.push(field);
+        Ok(())
+    }
+
+    pub(crate) fn merge_tag_key_map(
+        &mut self,
+        map: &BTreeMap<String, String>,
+    ) -> Result<(), Error> {
+        let Some(name) = map.get("name") else {
+            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), format!("Missing key name"));
+        };
+        if !name.eq(&self.name) {
+            return Error::err_str(
+                ErrorType::NameKeyMismatch,
+                format!("Name mismatch, found {name} expected {}", self.name),
+            );
+        }
+        let Some(tag_key) = map.get("tagKey") else {
+            return Error::err_str(ErrorType::MissingKeyError("tagKey".to_string()), format!("Missing key tagKey"));
+        };
+        self.tags.push(tag_key.to_string());
+        Ok(())
     }
 }

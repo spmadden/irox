@@ -11,6 +11,8 @@ pub enum ErrorType {
     IOError,
     CSVError,
     MissingKeyError(String),
+    NameKeyMismatch,
+    UnsupportedType(String),
 }
 
 #[derive(Debug, Clone)]
@@ -29,6 +31,10 @@ impl Error {
 
     pub fn err<T>(error_type: ErrorType, error: &'static str) -> Result<T, Error> {
         Err(Self::new(error_type, error))
+    }
+
+    pub fn err_str<T>(error_type: ErrorType, error: String) -> Result<T, Error> {
+        Err(Error { error, error_type })
     }
 }
 

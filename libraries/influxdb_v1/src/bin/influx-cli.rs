@@ -4,9 +4,9 @@
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use log::{debug, error, info};
+use log::{debug, error};
 
-use irox_influxdb_v1::{InfluxConnectionBuilder, InfluxDB, InfluxDBConnectionParams};
+use irox_influxdb_v1::{EncodingType, InfluxConnectionBuilder, InfluxDB, InfluxDBConnectionParams};
 
 #[derive(Debug, Parser)]
 pub struct OptionalDB {
@@ -38,6 +38,7 @@ enum Operation {
 
     QueryCSV(QueryString),
     QueryJSON(QueryString),
+    ShowDescriptors(OptionalDB),
 }
 
 #[derive(Parser, Debug)]
@@ -85,8 +86,9 @@ fn main() -> ExitCode {
         Operation::ListDB => list_db(&conn),
         Operation::ListRetentionPolicies(pol) => list_retention_policies(&conn, pol),
         Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
-        Operation::QueryCSV(query) => query_csv(&conn, query),
-        Operation::QueryJSON(query) => query_json(&conn, query),
+        Operation::QueryCSV(query) => query_string(&conn, query, EncodingType::CSV),
+        Operation::QueryJSON(query) => query_string(&conn, query, EncodingType::JSON),
+        Operation::ShowDescriptors(db) => show_descriptors(&conn, db),
     }
 }
 
@@ -95,14 +97,14 @@ fn ping(db: &InfluxDB) -> ExitCode {
         error!("{:?}", e);
         return ExitCode::FAILURE;
     }
-    info!("PING SUCCESSFUL.");
+    println!("PING SUCCESSFUL.");
     ExitCode::SUCCESS
 }
 
 fn list_db(db: &InfluxDB) -> ExitCode {
     match db.list_databases() {
         Ok(val) => {
-            info!("{:?}", val);
+            println!("{:?}", val);
             ExitCode::SUCCESS
         }
         Err(e) => {
@@ -115,7 +117,7 @@ fn list_db(db: &InfluxDB) -> ExitCode {
 fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     match db.show_retention_policites(param.db) {
         Ok(val) => {
-            info!("{:?}", val);
+            println!("{:?}", val);
             ExitCode::SUCCESS
         }
         Err(e) => {
@@ -128,7 +130,7 @@ fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
 fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     match db.show_tag_keys(param.db) {
         Ok(val) => {
-            info!("{:?}", val);
+            println!("{:?}", val);
             ExitCode::SUCCESS
         }
         Err(e) => {
@@ -138,28 +140,38 @@ fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     }
 }
 
-fn query_csv(db: &InfluxDB, query: QueryString) -> ExitCode {
-    match db.query_csv(query.query, query.db) {
+fn query_string(db: &InfluxDB, query: QueryString, encoding: EncodingType) -> ExitCode {
+    match db.query_string(query.query, encoding, query.db) {
         Ok(val) => {
-            info!("{}", val);
+            println!("{val}");
             ExitCode::SUCCESS
         }
         Err(e) => {
-            error!("{:?}", e);
+            error!("{e:?}");
             ExitCode::FAILURE
         }
     }
 }
 
-fn query_json(db: &InfluxDB, query: QueryString) -> ExitCode {
-    match db.query(query.query, query.db) {
-        Ok(val) => {
-            info!("{}", val);
-            ExitCode::SUCCESS
-        }
+fn show_descriptors(db: &InfluxDB, param: OptionalDB) -> ExitCode {
+    let res = match db.get_descriptors(param.db) {
+        Ok(r) => r,
         Err(e) => {
-            error!("{:?}", e);
-            ExitCode::FAILURE
+            error!("{e:?}");
+            return ExitCode::FAILURE;
         }
+    };
+
+    for meas in res {
+        println!("Measurement ({}) {{", meas.name());
+        for tag in meas.tags() {
+            println!("\ttag {tag}");
+        }
+        for field in meas.fields() {
+            println!("\tfield {} : {:?}", field.name(), field.primitive());
+        }
+        println!("}}");
     }
+
+    ExitCode::SUCCESS
 }
