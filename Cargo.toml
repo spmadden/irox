@@ -24,7 +24,7 @@ members = [
 egui = { version = "^0", features = ["persistence"] }
 eframe = { version = "^0", features = ["persistence"] }
 ron = { version = "^0", features = ["integer128"] }
-serde = { version = "^1", features = ["derive"] }
+serde = { version = "<=1.0.171", features = ["derive"] }
 ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}   
 url = {version = "^2", features = []}
 clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
