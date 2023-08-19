@@ -15,6 +15,7 @@ members = [
     "libraries/egui_irox_extras",
     "libraries/influxdb_v1",
     "libraries/network",
+    "libraries/stats",
     "libraries/units",
 	"libraries/tools",
     "tools/halflifes"
