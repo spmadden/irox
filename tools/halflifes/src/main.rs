@@ -2,11 +2,13 @@
 // Copyright 2023 IROX Contributors
 
 use eframe::{self, Frame, NativeOptions};
+use egui::plot::{AxisBools, Line, Plot, PlotPoints};
 use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, Window};
 
 use egui_irox_extras::composite::CompositeApp;
 use egui_irox_extras::frame_history::FrameHistory;
 use egui_irox_extras::styles::StylePersistingApp;
+use irox_stats::Distribution;
 
 fn main() {
     let native_options = NativeOptions {
@@ -27,18 +29,28 @@ fn main() {
     .expect("Error running");
 }
 
-#[derive(Default)]
 struct HalflifesApp {
     style_ui: bool,
     full_speed: bool,
+    line: Vec<[f64; 2]>,
 
     frame_history: FrameHistory,
 }
 
 impl HalflifesApp {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+        let std = irox_stats::standard::StandardDistribution::default();
+        let line = (-1000..1000)
+            .map(|i| {
+                let x = i as f64 * 0.01;
+                [x, std.pdf(x)]
+            })
+            .collect();
         HalflifesApp {
-            ..Default::default()
+            style_ui: false,
+            full_speed: false,
+            frame_history: FrameHistory::default(),
+            line,
         }
     }
 }
@@ -74,6 +86,20 @@ impl eframe::App for HalflifesApp {
         }
         CentralPanel::default().show(ctx, |ui| {
             ui.heading("Hello!");
+
+            let pts: PlotPoints = self.line.clone().into();
+            let line = Line::new(pts);
+
+            Plot::new("my_plot")
+                // .view_aspect(2.0)
+                // .allow_drag(false)
+                // .allow_scroll(true)
+                .allow_boxed_zoom(false)
+                .allow_zoom(AxisBools { x: true, y: false })
+                .center_y_axis(true)
+                .show(ui, |plot_ui| {
+                    plot_ui.line(line);
+                });
         });
         TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
             self.frame_history.ui(ui);
