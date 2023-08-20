@@ -48,7 +48,7 @@ impl TMBuilder {
         if !self.fn_set {
             let lat = center.get_latitude().0.value();
             let mut false_northing = 0.0;
-            if lat <= 0.0 {
+            if lat < 0.0 {
                 false_northing = 10_000_000.;
             }
             self.tm.false_northing = Length::new_meters(false_northing);
