@@ -46,11 +46,11 @@ impl TMBuilder {
     }
     pub fn with_center(mut self, center: EllipticalCoordinate) -> Self {
         if !self.fn_set {
-            let false_northing = match center.get_latitude().0.value() {
-                0.0.. => 0.0,
-                ..=0.0 => 10_000_000.,
-                _ => unreachable!(),
-            };
+            let lat = center.get_latitude().0.value();
+            let mut false_northing = 0.0;
+            if lat <= 0.0 {
+                false_northing = 10_000_000.;
+            }
             self.tm.false_northing = Length::new_meters(false_northing);
         }
         if !self.fe_set {
@@ -275,7 +275,7 @@ impl Projection for TransverseMercator {
         let t17b = 61. + 622. * tan2_phip + 1320. * tan4_phip + 720. * tan6_phip;
         let t17 = t17b / t17a;
 
-        let phi = (phi_prime - de2 * t10 + de4 * t11 - de6 * t12 + de8 * t13);
+        let phi = phi_prime - de2 * t10 + de4 * t11 - de6 * t12 + de8 * t13;
 
         let lam0 = self.center.get_longitude().0.as_radians().value();
         let lam = lam0 + de / t14 - de3 * t15 + de5 * t16 - de7 * t17;

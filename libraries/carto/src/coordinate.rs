@@ -72,6 +72,14 @@ impl EllipticalCoordinate {
         &self.reference_frame
     }
 
+    pub fn get_altitude(&self) -> &Option<Length> {
+        &self.altitude
+    }
+
+    pub fn get_timestamp(&self) -> &Option<f64> {
+        &self.timestamp
+    }
+
     pub fn with_altitude(self, altitude: Length) -> EllipticalCoordinate {
         EllipticalCoordinate {
             altitude: Some(altitude),
