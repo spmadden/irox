@@ -9,13 +9,24 @@ license.workspace = true
 
 [features]
 default = []
+csv = ["irox-csv"]
 sirf = ["irox-sirf"]
 carto = ["irox-carto"]
+egui-extras = ["irox-egui-extras"]
+influxdb_v1 = ["irox-influxdb_v1"]
+networking = ["irox-networking"]
+stats = ["irox-stats"]
 tools = ["irox-tools"]
 units = ["irox-units"]
 
 [dependencies]
+irox-csv = { version = "0.1", path = "../data-formats/csv", optional = true}
 irox-sirf = { version = "0.1", path = "../data-formats/sirf", optional = true}
+
 irox-carto = { version = "0.1", path = "../libraries/carto", optional = true}
+irox-egui-extras = { version = "0.1", path = "../libraries/egui_extras", optional = true}
+irox-influxdb_v1 = { version = "0.1", path = "../libraries/influxdb_v1", optional = true}
+irox-networking = { version = "0.1", path = "../libraries/network", optional = true}
+irox-stats = { version = "0.1", path = "../libraries/stats", optional = true}
 irox-tools = { version = "0.1", path = "../libraries/tools", optional = true}
 irox-units = { version = "0.1", path = "../libraries/units", optional = true}
