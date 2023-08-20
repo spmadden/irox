@@ -13,7 +13,7 @@ members = [
     "data-formats/csv",
     "data-formats/sirf",
     "libraries/carto",
-    "libraries/egui_irox_extras",
+    "libraries/egui_extras",
     "libraries/influxdb_v1",
     "libraries/network",
     "libraries/stats",

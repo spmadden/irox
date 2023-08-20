@@ -1,5 +1,5 @@
 [package]
-name = "egui_irox_extras"
+name = "irox-egui-extras"
 description = "Extras & tweaks for the egui framework"
 keywords = ["egui", "gui"]
 categories = ["gui"]

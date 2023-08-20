@@ -15,5 +15,5 @@ eframe.workspace = true
 egui.workspace = true
 ron.workspace = true
 serde.workspace = true
-egui_irox_extras = {version = "^0", path = "../../libraries/egui_irox_extras"}
+irox-egui-extras = {version = "^0", path = "../../libraries/egui_extras" }
 irox-stats = {version = "^0", path = "../../libraries/stats"}
