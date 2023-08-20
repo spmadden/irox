@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+#![forbid(unsafe_code)]
+
 pub use irox_units::*;
 
 pub mod coordinate;
