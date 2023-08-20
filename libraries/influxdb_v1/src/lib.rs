@@ -275,10 +275,10 @@ impl InfluxDB {
                 MeasurementDescriptor::new(name.to_string()),
             );
         }
-        let Some(mut meas) = data.get_mut(name) else {
+        let Some(meas) = data.get_mut(name) else {
             return Error::err(ErrorType::NameKeyMismatch, "Missing name in map?");
         };
-        func(&mut meas, &row_map)
+        func(meas, &row_map)
     }
 
     pub fn get_descriptors(&self, db: Option<String>) -> Result<Vec<MeasurementDescriptor>, Error> {
@@ -291,18 +291,18 @@ impl InfluxDB {
         let mut reader = irox_csv::CSVMapReader::new(res)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {
-                meas.merge_tag_key_map(&row_map)
+                meas.merge_tag_key_map(row_map)
             })?;
         }
 
         let res = match &db {
             Some(db) => self.query_csv(format!("SHOW FIELD KEYS ON {db}"), None),
-            None => self.query_csv(format!("SHOW FIELD KEYS"), None),
+            None => self.query_csv("SHOW FIELD KEYS", None),
         }?;
         let mut reader = irox_csv::CSVMapReader::new(res)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {
-                meas.merge_field_key_map(&row_map)
+                meas.merge_field_key_map(row_map)
             })?;
         }
 

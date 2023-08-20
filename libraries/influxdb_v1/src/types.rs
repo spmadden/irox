@@ -81,7 +81,7 @@ impl MeasurementDescriptor {
         map: &BTreeMap<String, String>,
     ) -> Result<(), Error> {
         let Some(name) = map.get("name") else {
-            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), format!("Missing key name"));
+            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), "Missing key name".to_string());
         };
         if !name.eq(&self.name) {
             return Error::err_str(
@@ -90,10 +90,10 @@ impl MeasurementDescriptor {
             );
         }
         let Some(field_key) = map.get("fieldKey") else {
-            return Error::err_str(ErrorType::MissingKeyError("fieldKey".to_string()), format!("Missing key fieldKey"));
+            return Error::err_str(ErrorType::MissingKeyError("fieldKey".to_string()), "Missing key fieldKey".to_string());
         };
         let Some(field_type) = map.get("fieldType") else {
-            return Error::err_str(ErrorType::MissingKeyError("fieldType".to_string()) , format!("Missing key fieldType"));
+            return Error::err_str(ErrorType::MissingKeyError("fieldType".to_string()) , "Missing key fieldType".to_string());
         };
         let field = match field_type.as_str() {
             "float" => NamedPrimitive::new(field_key.to_string(), Primitives::f64),
@@ -115,7 +115,7 @@ impl MeasurementDescriptor {
         map: &BTreeMap<String, String>,
     ) -> Result<(), Error> {
         let Some(name) = map.get("name") else {
-            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), format!("Missing key name"));
+            return Error::err_str(ErrorType::MissingKeyError("name".to_string()), "Missing key name".to_string());
         };
         if !name.eq(&self.name) {
             return Error::err_str(
@@ -124,7 +124,7 @@ impl MeasurementDescriptor {
             );
         }
         let Some(tag_key) = map.get("tagKey") else {
-            return Error::err_str(ErrorType::MissingKeyError("tagKey".to_string()), format!("Missing key tagKey"));
+            return Error::err_str(ErrorType::MissingKeyError("tagKey".to_string()), "Missing key tagKey".to_string());
         };
         self.tags.push(tag_key.to_string());
         Ok(())

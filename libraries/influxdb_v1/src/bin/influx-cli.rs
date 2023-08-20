@@ -27,7 +27,7 @@ pub struct QueryString {
 #[derive(Subcommand, Debug)]
 enum Operation {
     /// Ping the server to check aliveness
-    PING,
+    Ping,
 
     /// List the available databases
     ListDB,
@@ -82,7 +82,7 @@ fn main() -> ExitCode {
 
     debug!("{:?}", config);
     match config.command {
-        Operation::PING => ping(&conn),
+        Operation::Ping => ping(&conn),
         Operation::ListDB => list_db(&conn),
         Operation::ListRetentionPolicies(pol) => list_retention_policies(&conn, pol),
         Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
