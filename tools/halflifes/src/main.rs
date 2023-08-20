@@ -5,9 +5,9 @@ use eframe::{self, Frame, NativeOptions};
 use egui::plot::{AxisBools, Line, Plot, PlotPoints};
 use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, Window};
 
-use egui_irox_extras::composite::CompositeApp;
-use egui_irox_extras::frame_history::FrameHistory;
-use egui_irox_extras::styles::StylePersistingApp;
+use irox_egui_extras::composite::CompositeApp;
+use irox_egui_extras::frame_history::FrameHistory;
+use irox_egui_extras::styles::StylePersistingApp;
 use irox_stats::Distribution;
 
 fn main() {
