@@ -9,8 +9,10 @@ updates:
     assignees:
       - "spmadden"
     commit-message:
-      prefix: "feat(deps)"
+      prefix: "feat"
       include: "scope"
+    ignore:
+      - dependency-name: "serde"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -20,5 +22,5 @@ updates:
     assignees:
       - "spmadden"
     commit-message:
-      prefix: "feat(deps)"
+      prefix: "feat"
       include: "scope"
