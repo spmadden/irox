@@ -34,7 +34,7 @@ impl Packet for MeasuredTrackData {
     type PacketType = ();
     type Error = ();
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
+    fn write_to<T: MutBits>(&self, _out: &mut T) -> Result<(), Self::Error> {
         todo!()
     }
 

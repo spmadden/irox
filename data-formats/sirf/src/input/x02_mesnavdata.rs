@@ -88,7 +88,7 @@ impl Packet for MeasuredNavigationData {
     }
 
     fn get_type(&self) -> Self::PacketType {
-        todo!()
+        PacketType::MeasuredNavigationData(self.clone())
     }
 }
 
@@ -160,7 +160,7 @@ fn write_velocity<T: MutBits>(out: &mut T, val: f32) -> Result<(), std::io::Erro
 
 fn read_velocity<T: Bits>(out: &mut T) -> Result<f32, std::io::Error> {
     let read = out.read_be_i16()?;
-    Ok(read as f32 / VELOCITY_SCALE)
+    Ok(f32::from(read) / VELOCITY_SCALE)
 }
 
 fn write_hdop<T: MutBits>(out: &mut T, val: f32) -> Result<(), std::io::Error> {
@@ -170,5 +170,5 @@ fn write_hdop<T: MutBits>(out: &mut T, val: f32) -> Result<(), std::io::Error> {
 
 fn read_hdop<T: Bits>(out: &mut T) -> Result<f32, std::io::Error> {
     let read = out.read_u8()?;
-    Ok(read as f32 / HDOP_SCALE)
+    Ok(f32::from(read) / HDOP_SCALE)
 }

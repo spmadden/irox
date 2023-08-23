@@ -42,7 +42,7 @@ impl HalflifesApp {
         let std = irox_stats::standard::StandardDistribution::default();
         let line = (-1000..1000)
             .map(|i| {
-                let x = i as f64 * 0.01;
+                let x = f64::from(i) * 0.01;
                 [x, std.pdf(x)]
             })
             .collect();

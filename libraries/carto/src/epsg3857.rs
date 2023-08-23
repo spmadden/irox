@@ -14,36 +14,42 @@ pub struct SphericalMercatorProjection {
 }
 
 impl SphericalMercatorProjection {
+    #[must_use]
     pub fn new(zoom_level: u8) -> SphericalMercatorProjection {
         SphericalMercatorProjection { zoom_level }
     }
 
+    #[must_use]
     pub fn tile_x_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
         let lon_deg = coordinate.get_longitude().0.as_degrees().value();
         let offset = (lon_deg + 180.) / 360.;
-        let max_tile = (1 << self.zoom_level) as f64;
+        let max_tile = f64::from(1 << self.zoom_level);
         offset * max_tile
     }
 
+    #[must_use]
     pub fn tile_y_index(&self, coordinate: &EllipticalCoordinate) -> f64 {
         let lat_rad = coordinate.get_latitude().0.as_radians().value();
 
         let y = lat_rad.tan().asinh();
         let y = (1. - (y / PI)) / 2.;
-        let max_tile = (1 << self.zoom_level) as f64;
+        let max_tile = f64::from(1 << self.zoom_level);
         max_tile * y
     }
 
+    #[must_use]
     pub fn latitude(&self, tile_y: f64) -> Latitude {
-        let offset = 1. - (2. * tile_y) / (1 << self.zoom_level) as f64;
+        let offset = 1. - (2. * tile_y) / f64::from(1 << self.zoom_level);
         Latitude(Angle::new_radians((PI * offset).sinh().atan()))
     }
 
+    #[must_use]
     pub fn longitude(&self, tile_x: f64) -> Longitude {
-        let offset = tile_x / (1 << self.zoom_level) as f64;
+        let offset = tile_x / f64::from(1 << self.zoom_level);
         Longitude(Angle::new_radians(offset * TAU - PI))
     }
 
+    #[must_use]
     pub fn max_tile_index(&self) -> u64 {
         (1 << self.zoom_level) - 1
     }
@@ -57,7 +63,7 @@ impl Projection for SphericalMercatorProjection {
     fn project_to_cartesian(&self, coord: &EllipticalCoordinate) -> CartesianCoordinate {
         let x = self.tile_x_index(coord) * TILE_TO_PIXEL;
         let y = self.tile_y_index(coord) * TILE_TO_PIXEL;
-        let z = self.zoom_level as f64;
+        let z = f64::from(self.zoom_level);
 
         CartesianCoordinate::new_meters(x, y, z)
     }

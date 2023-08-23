@@ -104,7 +104,7 @@ fn ping(db: &InfluxDB) -> ExitCode {
 fn list_db(db: &InfluxDB) -> ExitCode {
     match db.list_databases() {
         Ok(val) => {
-            println!("{:?}", val);
+            println!("{val:?}");
             ExitCode::SUCCESS
         }
         Err(e) => {
@@ -117,7 +117,7 @@ fn list_db(db: &InfluxDB) -> ExitCode {
 fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     match db.show_retention_policites(param.db) {
         Ok(val) => {
-            println!("{:?}", val);
+            println!("{val:?}");
             ExitCode::SUCCESS
         }
         Err(e) => {
@@ -130,7 +130,7 @@ fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
 fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
     match db.show_tag_keys(param.db) {
         Ok(val) => {
-            println!("{:?}", val);
+            println!("{val:?}");
             ExitCode::SUCCESS
         }
         Err(e) => {

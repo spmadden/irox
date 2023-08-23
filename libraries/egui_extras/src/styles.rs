@@ -18,6 +18,7 @@ pub struct StylePersistingApp {
 }
 
 impl StylePersistingApp {
+    #[must_use]
     pub fn new(cc: &CreationContext) -> StylePersistingApp {
         let mut style = cc.egui_ctx.style().clone();
 

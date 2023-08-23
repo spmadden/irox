@@ -31,6 +31,7 @@ pub enum Primitives {
 
 impl Primitives {
     /// Returns the enumeration literal of this primitive
+    #[must_use]
     pub const fn name(&self) -> &'static str {
         match self {
             Primitives::u8 => "u8",
@@ -79,6 +80,7 @@ pub enum PrimitiveValue {
 
 impl PrimitiveValue {
     /// Returns the enumeration literal of this primitive
+    #[must_use]
     pub const fn name(&self) -> &'static str {
         match self {
             PrimitiveValue::u8(_) => "u8",
@@ -101,6 +103,7 @@ impl PrimitiveValue {
     }
 
     /// Returns the type of this primitive
+    #[must_use]
     pub const fn primitive(&self) -> Primitives {
         match self {
             PrimitiveValue::u8(_) => Primitives::u8,
@@ -133,16 +136,19 @@ pub struct NamedPrimitive {
 }
 
 impl NamedPrimitive {
+    #[must_use]
     pub fn new(name: String, primitive: Primitives) -> NamedPrimitive {
         NamedPrimitive { name, primitive }
     }
 
     /// Returns the name of the field
+    #[must_use]
     pub fn name(&self) -> &String {
         &self.name
     }
 
     /// Returns the type of the field
+    #[must_use]
     pub fn primitive(&self) -> Primitives {
         self.primitive
     }
@@ -158,16 +164,19 @@ pub struct NamedPrimitiveValue {
 }
 
 impl NamedPrimitiveValue {
+    #[must_use]
     pub fn new(name: String, value: PrimitiveValue) -> NamedPrimitiveValue {
         NamedPrimitiveValue { name, value }
     }
 
     /// Returns the name of this field
+    #[must_use]
     pub fn name(&self) -> &String {
         &self.name
     }
 
     /// Returns the stored value of the field
+    #[must_use]
     pub fn value(&self) -> &PrimitiveValue {
         &self.value
     }

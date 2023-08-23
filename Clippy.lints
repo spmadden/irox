@@ -1,0 +1,16 @@
+-Dclippy::todo
+-Dclippy::panic
+-Dclippy::panic_in_result_fn
+-Dclippy::exit
+-Dclippy::expect_used
+-Dclippy::get_unwrap
+-Dclippy::index_refutable_slice
+-Dclippy::indexing_slicing
+-Dclippy::manual_assert
+-Dclippy::missing_assert_message
+-Dclippy::unreachable
+-Dclippy::unwrap_in_result
+-Dclippy::unwrap_used
+-Dclippy::pedantic
+-Dwarnings
+-Dunsafe_code

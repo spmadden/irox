@@ -64,14 +64,17 @@ impl MeasurementDescriptor {
         }
     }
 
+    #[must_use]
     pub fn name(&self) -> &String {
         &self.name
     }
 
+    #[must_use]
     pub fn fields(&self) -> &Vec<NamedPrimitive> {
         &self.fields
     }
 
+    #[must_use]
     pub fn tags(&self) -> &Vec<String> {
         &self.tags
     }

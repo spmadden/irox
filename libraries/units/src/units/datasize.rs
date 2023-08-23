@@ -94,10 +94,12 @@ impl Unit<DataSizeUnits> for DataSize {
 }
 
 impl DataSize {
+    #[must_use]
     pub fn new_bytes(&self, value: u64) -> DataSize {
         Self::new(value as f64, DataSizeUnits::Bytes)
     }
 
+    #[must_use]
     pub fn as_bytes(&self) -> u64 {
         match self.units {
             DataSizeUnits::Bytes => self.value as u64,
@@ -109,15 +111,18 @@ impl DataSize {
         }
     }
 
+    #[must_use]
     pub fn human(&self) -> String {
         human_bytes(self.as_bytes())
     }
 
+    #[must_use]
     pub fn human_frac(&self) -> String {
         human_bytes_frac(self.as_bytes())
     }
 }
 
+#[must_use]
 pub fn human_bytes(bytes: u64) -> String {
     if bytes < KB {
         format!("{bytes} bytes")
@@ -139,9 +144,10 @@ pub fn human_bytes(bytes: u64) -> String {
     }
 }
 
+#[must_use]
 pub fn human_bytes_frac(bytes: u64) -> String {
     if bytes < KB {
-        format!("{} bytes", bytes)
+        format!("{bytes} bytes")
     } else if bytes < MB {
         let val = bytes as f64 / KB as f64;
         return format!("{val:.3} KB");

@@ -60,6 +60,7 @@ impl Unit<TemperatureUnits> for Temperature {
 }
 
 impl Temperature {
+    #[must_use]
     pub fn new_celsius(value: f64) -> Temperature {
         Self::new(value, TemperatureUnits::Celsius)
     }
@@ -67,15 +68,19 @@ impl Temperature {
 
 pub const CELSIUS_KELVIN_OFFSET: f64 = 273.15;
 pub const CELSIUS_FARENHEIT_OFFSET: f64 = 32.;
+#[must_use]
 pub fn celsius2kelvin(cel: f64) -> f64 {
     cel + CELSIUS_KELVIN_OFFSET
 }
+#[must_use]
 pub fn kelvin2celsius(kel: f64) -> f64 {
     kel - CELSIUS_KELVIN_OFFSET
 }
+#[must_use]
 pub fn celsius2farenheit(cel: f64) -> f64 {
     cel * 1.8 - CELSIUS_KELVIN_OFFSET
 }
+#[must_use]
 pub fn fahrenheit2celsius(far: f64) -> f64 {
     (far - CELSIUS_KELVIN_OFFSET) / 1.8
 }
@@ -88,7 +93,7 @@ mod test {
     #[test]
     pub fn test() {
         let val: f32 = 0.0;
-        let out = celsius2kelvin(val as f64);
+        let out = celsius2kelvin(f64::from(val));
         assert_eq!(out, CELSIUS_KELVIN_OFFSET)
     }
 }

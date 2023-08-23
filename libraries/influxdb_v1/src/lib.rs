@@ -27,6 +27,7 @@ pub enum EncodingType {
     CSV,
 }
 impl EncodingType {
+    #[must_use]
     pub const fn accept_header(&self) -> &'static str {
         match self {
             EncodingType::JSON => "application/json",
@@ -83,6 +84,7 @@ impl InfluxConnectionBuilder {
         self.host = Some(host.into());
         self
     }
+    #[must_use]
     pub fn maybe_host(mut self, host: Option<String>) -> Self {
         self.host = host;
         self
@@ -93,16 +95,19 @@ impl InfluxConnectionBuilder {
         self
     }
 
+    #[must_use]
     pub fn maybe_port(mut self, port: Option<u16>) -> Self {
         self.port = port;
         self
     }
 
+    #[must_use]
     pub fn with_scheme(mut self, scheme: HttpProtocol) -> Self {
         self.scheme = Some(scheme);
         self
     }
 
+    #[must_use]
     pub fn maybe_scheme(mut self, scheme: Option<HttpProtocol>) -> Self {
         self.scheme = scheme;
         self
@@ -233,7 +238,7 @@ impl InfluxDB {
         db: Option<String>,
     ) -> Result<Vec<RetentionPolicy>, Error> {
         let res = match db {
-            Some(db) => self.query_csv(format!("SHOW RETENTION POLICIES ON {}", db), None),
+            Some(db) => self.query_csv(format!("SHOW RETENTION POLICIES ON {db}"), None),
             None => self.query_csv("SHOW RETENTION POLICIES", None),
         }?;
         let mut out: Vec<RetentionPolicy> = Vec::new();
@@ -249,7 +254,7 @@ impl InfluxDB {
 
     pub fn show_tag_keys(&self, db: Option<String>) -> Result<(), Error> {
         let res = match db {
-            Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {}", db), None),
+            Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {db}"), None),
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
         irox_csv::CSVMapReader::new(res)?.for_each(|row| {

@@ -22,6 +22,7 @@ pub struct Error {
 }
 
 impl Error {
+    #[must_use]
     pub fn new(error_type: ErrorType, error: &'static str) -> Error {
         Error {
             error_type,
@@ -34,7 +35,7 @@ impl Error {
     }
 
     pub fn err_str<T>(error_type: ErrorType, error: String) -> Result<T, Error> {
-        Err(Error { error, error_type })
+        Err(Error { error_type, error })
     }
 }
 
@@ -50,14 +51,14 @@ impl From<url::ParseError> for Error {
     fn from(value: url::ParseError) -> Self {
         Error {
             error_type: ErrorType::UrlParseError,
-            error: format!("{:?}", value),
+            error: format!("{value:?}"),
         }
     }
 }
 
 impl From<ureq::Error> for Error {
     fn from(value: ureq::Error) -> Self {
-        let error = format!("{:?}", value);
+        let error = format!("{value:?}");
         match value {
             ureq::Error::Status(code, _resp) => Error {
                 error_type: ErrorType::RequestErrorCode(code),
@@ -75,7 +76,7 @@ impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Error {
             error_type: ErrorType::IOError,
-            error: format!("{:?}", value),
+            error: format!("{value:?}"),
         }
     }
 }
@@ -84,7 +85,7 @@ impl From<irox_csv::error::CSVError> for Error {
     fn from(value: irox_csv::error::CSVError) -> Self {
         Error {
             error_type: ErrorType::CSVError,
-            error: format!("{:?}", value),
+            error: format!("{value:?}"),
         }
     }
 }

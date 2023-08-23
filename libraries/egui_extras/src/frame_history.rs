@@ -34,18 +34,22 @@ impl FrameHistory {
         self.frame_times.add(now, previous_frame_time); // projected
     }
 
+    #[must_use]
     pub fn mean_frame_time(&self) -> f32 {
         self.frame_times.average().unwrap_or_default()
     }
 
+    #[must_use]
     pub fn mean_time_interval(&self) -> f32 {
         self.frame_times.mean_time_interval().unwrap_or_default()
     }
 
+    #[must_use]
     pub fn fps(&self) -> f32 {
         1.0 / self.mean_time_interval()
     }
 
+    #[must_use]
     pub fn max_fps(&self) -> f32 {
         1.0 / self.mean_frame_time()
     }
@@ -60,14 +64,16 @@ impl FrameHistory {
         ui.horizontal(|ui| {
             ui.label("Frame Stats:");
             ui.label(format!("Count {}", ui.ctx().frame_nr())).on_hover_text("Total number of frames rendered");
-            ui.label(format!("Duration {:.2} ms / frame", mean_frame_time)).on_hover_text("Single-thread CPU time for a single frame, excluding some GPU transfer times");
-            ui.label(format!("Avg FPS {:.1}", avg_fps)).on_hover_text("Average frames per second. With VSync, will max out at the monitor's refresh rate, usually about 60 FPS");
-            ui.label(format!("Util: {:.2}%", utilization)).on_hover_text("Single-thread CPU Render thread utilization, lower is better");
+            ui.label(format!("Duration {mean_frame_time:.2} ms / frame")).on_hover_text("Single-thread CPU time for a single frame, excluding some GPU transfer times");
+            ui.label(format!("Avg FPS {avg_fps:.1}")).on_hover_text("Average frames per second. With VSync, will max out at the monitor's refresh rate, usually about 60 FPS");
+            ui.label(format!("Util: {utilization:.2}%")).on_hover_text("Single-thread CPU Render thread utilization, lower is better");
         });
     }
 
     pub fn graph(&mut self, ui: &mut egui::Ui) -> egui::Response {
-        use egui::*;
+        use egui::{
+            emath, epaint, pos2, vec2, Align2, Pos2, Rect, Sense, Shape, Stroke, TextStyle,
+        };
 
         ui.label("CPU usage history");
 

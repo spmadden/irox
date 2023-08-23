@@ -118,6 +118,7 @@ pub struct Compass<T> {
 impl<T> Compass<T> {
     ///
     /// Creates a new heading type - see [`HeadingType`] for details.
+    #[must_use]
     pub const fn new_heading(
         angle: Angle,
         direction: RotationDirection,
@@ -133,6 +134,7 @@ impl<T> Compass<T> {
 
     ///
     /// Creates a new track type - see ['Track'] for details.
+    #[must_use]
     pub const fn new_track(
         angle: Angle,
         direction: RotationDirection,
@@ -148,6 +150,7 @@ impl<T> Compass<T> {
 
     ///
     /// Creates a new bearing type - see ['Bearing'] for details.
+    #[must_use]
     pub const fn new_bearing(
         angle: Angle,
         direction: RotationDirection,
@@ -163,6 +166,7 @@ impl<T> Compass<T> {
 
     ///
     /// Creates a new course type - see ['Course'] for details.
+    #[must_use]
     pub const fn new_course(
         angle: Angle,
         direction: RotationDirection,
@@ -178,6 +182,7 @@ impl<T> Compass<T> {
 
     ///
     /// Creates a new azimuth type - see ['Azimuth'] for details.
+    #[must_use]
     pub const fn new_azimuth(
         angle: Angle,
         direction: RotationDirection,
@@ -191,18 +196,22 @@ impl<T> Compass<T> {
         }
     }
 
+    #[must_use]
     pub const fn angle(&self) -> &Angle {
         &self.angle
     }
 
+    #[must_use]
     pub const fn direction(&self) -> &RotationDirection {
         &self.direction
     }
 
+    #[must_use]
     pub const fn reference(&self) -> &CompassReference {
         &self.reference
     }
 
+    #[must_use]
     pub fn as_direction_reference(
         &self,
         direction: RotationDirection,
@@ -232,14 +241,17 @@ pub struct CompassOffset<T, B> {
 }
 
 impl<T, B> CompassOffset<T, B> {
+    #[must_use]
     pub fn compass(&self) -> &Compass<T> {
         &self.compass
     }
 
+    #[must_use]
     pub fn offset(&self) -> &Angle {
         &self.offset
     }
 
+    #[must_use]
     pub fn direction(&self) -> &RotationDirection {
         &self.direction
     }
@@ -251,6 +263,7 @@ pub type RelativeBearing = CompassOffset<HeadingType, BearingType>;
 impl Compass<HeadingType> {
     ///
     /// Converts this heading into a relative bearing using the specified offset and direction
+    #[must_use]
     pub fn relative_bearing(self, direction: RotationDirection, offset: Angle) -> RelativeBearing {
         CompassOffset {
             compass: self,

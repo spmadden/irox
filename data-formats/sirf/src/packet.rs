@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::io::{ErrorKind, Read, Write};
+
+use irox_tools::bits::Bits;
+use irox_tools::packetio::{Packet, PacketBuilder};
+use irox_tools::read::{read_exact, read_exact_vec, read_until};
+
 use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
@@ -17,10 +23,6 @@ use crate::input::{
     x1c_navmeasure, x1e_navsvstate, x29_geonavdata, x32_sbasparams, x33x6_trackerload,
     xff_asciidata,
 };
-use irox_tools::bits::Bits;
-use irox_tools::packetio::{Packet, PacketBuilder};
-use irox_tools::read::{read_exact, read_exact_vec, read_until};
-use std::io::{ErrorKind, Read, Write};
 
 pub const START_LEN: usize = 2;
 pub const START_SEQ: [u8; 2] = [0xA0, 0xA2];
@@ -136,8 +138,9 @@ impl PacketBuilder<PacketType> for PacketParser {
             ));
         }
 
-        let msg_type = payload[0];
-        let mut payload = &mut &payload[1..];
+        let Some((msg_type, mut payload)) = payload.split_first() else {
+            return Err(std::io::Error::new(ErrorKind::InvalidData, "Invalid packet"))
+        };
         Ok(match msg_type {
             0x02 => PacketType::MeasuredNavigationData(
                 x02_mesnavdata::BUILDER.build_from(&mut payload)?,
@@ -174,7 +177,7 @@ impl PacketBuilder<PacketType> for PacketParser {
             0x5D => PacketType::TCXOLearningOutput(payload[0]),
             0xE1 => match payload[0] {
                 0x6 => PacketType::StatsTTFF(),
-                0x7 => PacketType::StatsTTFF(),
+                0x7 => PacketType::StatsTTFF2(),
                 0x21 => PacketType::DataLogCompatRecord(),
                 0x22 => PacketType::DataLogTerminator(),
                 0x23 => PacketType::DataLogStatusOutput(),
@@ -182,7 +185,7 @@ impl PacketBuilder<PacketType> for PacketParser {
                 _ => PacketType::StatsUnknown(payload[0]),
             },
             0xFF => PacketType::AsciiString(xff_asciidata::BUILDER.build_from(&mut payload)?),
-            e => PacketType::Unknown(e, 0x0),
+            e => PacketType::Unknown(*e, 0x0),
         })
     }
 }
@@ -200,7 +203,7 @@ fn read_start<T: Read>(input: &mut T) -> Result<(), std::io::Error> {
 fn check_checksum(payload: &[u8], checksum: u16) -> bool {
     let mut calc: u16 = 0;
     for val in payload {
-        calc = calc.wrapping_add(*val as u16);
+        calc = calc.wrapping_add(u16::from(*val));
     }
 
     calc == checksum

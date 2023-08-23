@@ -12,14 +12,17 @@ macro_rules! basic_unit {
         }
 
         impl $struct_type {
+            #[must_use]
             pub const fn new(value: f64, units: $units_type) -> Self {
                 Self { value, units }
             }
 
+            #[must_use]
             pub fn value(&self) -> f64 {
                 self.value
             }
 
+            #[must_use]
             pub fn units(&self) -> $units_type {
                 self.units
             }

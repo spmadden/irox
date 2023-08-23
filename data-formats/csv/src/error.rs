@@ -26,8 +26,9 @@ impl Display for CSVError {
 impl std::error::Error for CSVError {}
 
 impl CSVError {
+    #[must_use]
     pub fn new(error_type: CSVErrorType, error: String) -> CSVError {
-        CSVError { error, error_type }
+        CSVError { error_type, error }
     }
     pub fn err<T>(error_type: CSVErrorType, error: String) -> Result<T, CSVError> {
         Err(Self::new(error_type, error))
@@ -36,6 +37,6 @@ impl CSVError {
 
 impl From<std::io::Error> for CSVError {
     fn from(value: std::io::Error) -> Self {
-        CSVError::new(CSVErrorType::IOError, format!("{:?}", value))
+        CSVError::new(CSVErrorType::IOError, format!("{value:?}"))
     }
 }
