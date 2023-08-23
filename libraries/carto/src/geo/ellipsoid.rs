@@ -67,46 +67,55 @@ impl From<&Ellipsoid> for EllipticalShape {
 
 impl Ellipsoid {
     /// Returns the Semi-Major axis of the Ellipsoid (a)
+    #[must_use]
     pub const fn semi_major_axis_a(&self) -> Length {
         self.semi_major_axis
     }
 
     /// Returns the Semi-Minor axis of the Ellipsoid (b)
+    #[must_use]
     pub const fn semi_minor_axis_b(&self) -> Length {
         self.semi_minor_axis
     }
 
     /// Returns the inverse flattening (1 / f)
+    #[must_use]
     pub const fn inverse_flattening(&self) -> f64 {
         self.inverse_flattening
     }
 
     /// Returns e - the first eccentricity
+    #[must_use]
     pub const fn first_eccentricity(&self) -> f64 {
         self.first_eccentricity
     }
 
     /// Returns e^2 - the first eccentricity squared
+    #[must_use]
     pub const fn first_eccentricity_squared(&self) -> f64 {
         self.first_eccentricity_squared
     }
 
     /// Returns e' - the second eccentricity (e prime)
+    #[must_use]
     pub const fn second_eccentricity(&self) -> f64 {
         self.second_eccentricity
     }
 
     /// Returns e'^2 - the second eccentricity (e prime) squared
+    #[must_use]
     pub const fn second_eccentricity_sq(&self) -> f64 {
         self.second_eccentricity_squared
     }
 
     /// Returns the flattening (f) parameter
+    #[must_use]
     pub fn flattening_f(&self) -> f64 {
         1.0 / self.inverse_flattening
     }
 
     /// n - Rapp Vol1 3.19
+    #[must_use]
     pub fn third_flattening_n_eta(&self) -> f64 {
         let a = self.semi_major_axis;
         let b = self.semi_minor_axis;
@@ -117,6 +126,7 @@ impl Ellipsoid {
     /// Computes the radius of curvature in the meridian (north-south) direction at the indicated
     /// latitude
     /// Rapp Vol1 - 3.87
+    #[must_use]
     pub fn radius_curvature_meridian(&self, latitude: &Latitude) -> Length {
         let upper = self.semi_major_axis * (1. - self.first_eccentricity_squared);
         let sin2 = latitude.0.as_radians().value().sin().powi(2);
@@ -129,6 +139,7 @@ impl Ellipsoid {
     /// Computes the radius of curvature in the prime meridian (east-west) direction at the indicated
     /// latitude
     /// Rapp Vol1 - 3.99
+    #[must_use]
     pub fn radius_curvature_prime_vertical(&self, latitude: &Latitude) -> Length {
         let sin2 = latitude.0.as_radians().value().sin().powi(2);
         let lower = (1. - self.first_eccentricity_squared * sin2).sqrt();
@@ -138,6 +149,7 @@ impl Ellipsoid {
     ///
     /// Computes the radius of curvature in the normal section azimuth at the indicated latitude
     /// Rapp Vol1 - 3.104
+    #[must_use]
     pub fn radius_curvature_azimuthal(
         &self,
         latitude: &Latitude,
@@ -160,6 +172,7 @@ impl Ellipsoid {
     ///
     /// Computes the average radius of curvature at the indicated latitude
     /// Rapp Vol1 - 3.140
+    #[must_use]
     pub fn radius_curvature_average(&self, latitude: &Latitude) -> Length {
         let sin2 = latitude.0.as_radians().value().sin().powi(2);
         let upper = self.semi_major_axis * (1.0 - self.first_eccentricity_squared).sqrt();
@@ -170,6 +183,7 @@ impl Ellipsoid {
     ///
     /// Computes the radius of a sphere that has the same surface area of this ellipsoid
     /// Rapp Vol1 - 3.144
+    #[must_use]
     pub fn spherical_radius_equal_area_approximation(&self) -> Length {
         let e2 = self.first_eccentricity_squared;
         let e4 = e2 * e2;
@@ -181,6 +195,7 @@ impl Ellipsoid {
     ///
     /// Computes the radius of a sphere that has the same interior volume of this ellipsoid
     /// Rapp Vol1 - 3.149
+    #[must_use]
     pub fn spherical_radius_equal_volume_approximation(&self) -> Length {
         let e2 = self.first_eccentricity_squared;
         let e4 = e2 * e2;
@@ -196,6 +211,7 @@ pub enum MeridianCalculators {
 }
 
 impl MeridianCalculators {
+    #[must_use]
     pub fn get(&self, ellipsoid: &Ellipsoid) -> Box<dyn MeridianCalculator> {
         let out: Box<dyn MeridianCalculator> = match self {
             MeridianCalculators::DeakinHunterKarney => {
@@ -218,6 +234,7 @@ pub struct DeakinHunterKarneyMeridianCalculator {
 }
 
 impl DeakinHunterKarneyMeridianCalculator {
+    #[must_use]
     pub fn new(ellipsoid: &Ellipsoid) -> DeakinHunterKarneyMeridianCalculator {
         let third_flattening_n = ellipsoid.third_flattening_n_eta();
         let semi_major_axis_a = ellipsoid.semi_major_axis;
@@ -239,7 +256,7 @@ impl DeakinHunterKarneyMeridianCalculator {
         let c5 = (-693. / 1280.) * n5 + (2079. / 10240.) * n7;
         let c6 = (1001. / 2048.) * n6 - (1573. / 8192.) * n8;
         let c7 = -(6435. / 14336.) * n7;
-        let c8 = (109395. / 262144.) * n8;
+        let c8 = (109_395. / 262_144.) * n8;
 
         let coefficients = [c0, c1, c2, c3, c4, c5, c6, c7, c8];
 
@@ -270,6 +287,7 @@ pub struct BesselMeridianCalculator {
 }
 
 impl BesselMeridianCalculator {
+    #[must_use]
     pub fn new(ellipsoid: &Ellipsoid) -> BesselMeridianCalculator {
         let n = ellipsoid.third_flattening_n_eta();
         let n2 = n.powi(2);

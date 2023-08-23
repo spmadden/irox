@@ -44,27 +44,27 @@ impl CompositeApp {
 
 impl App for CompositeApp {
     fn update(&mut self, ctx: &Context, frame: &mut Frame) {
-        for app in self.apps.iter_mut() {
+        for app in &mut self.apps {
             app.update(ctx, frame)
         }
     }
 
     fn save(&mut self, storage: &mut dyn Storage) {
-        for app in self.apps.iter_mut() {
+        for app in &mut self.apps {
             app.save(storage)
         }
     }
 
     fn on_close_event(&mut self) -> bool {
         let mut ret = true;
-        for app in self.apps.iter_mut() {
+        for app in &mut self.apps {
             ret &= app.on_close_event();
         }
         ret
     }
 
     fn on_exit(&mut self, gl: Option<&eframe::glow::Context>) {
-        for app in self.apps.iter_mut() {
+        for app in &mut self.apps {
             app.on_exit(gl)
         }
     }
@@ -103,7 +103,7 @@ impl App for CompositeApp {
     }
 
     fn post_rendering(&mut self, window_size_px: [u32; 2], frame: &Frame) {
-        for app in self.apps.iter_mut() {
+        for app in &mut self.apps {
             app.post_rendering(window_size_px, frame)
         }
     }

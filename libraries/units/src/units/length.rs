@@ -75,6 +75,7 @@ impl Unit<LengthUnits> for Length {
 ///
 /// Represents a discrete quantity of 'Length' as defined in NIST 811.2008
 impl Length {
+    #[must_use]
     pub const fn new_meters(value: f64) -> Length {
         Self {
             value,
@@ -82,6 +83,7 @@ impl Length {
         }
     }
 
+    #[must_use]
     pub const fn new_feet(value: f64) -> Length {
         Self {
             value,
@@ -89,10 +91,12 @@ impl Length {
         }
     }
 
+    #[must_use]
     pub fn as_meters(&self) -> Length {
         self.as_unit(LengthUnits::Meters)
     }
 
+    #[must_use]
     pub fn as_feet(&self) -> Length {
         self.as_unit(LengthUnits::Feet)
     }

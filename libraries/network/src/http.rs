@@ -14,6 +14,7 @@ pub enum HttpProtocol {
 }
 
 impl HttpProtocol {
+    #[must_use]
     pub const fn port(&self) -> u16 {
         match self {
             HttpProtocol::HTTP => 80,
@@ -21,6 +22,7 @@ impl HttpProtocol {
         }
     }
 
+    #[must_use]
     pub const fn name(&self) -> &'static str {
         match self {
             HttpProtocol::HTTP => "http",

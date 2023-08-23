@@ -15,6 +15,7 @@
 /// assert_eq!(min, 0);
 /// assert_eq!(max, 30);
 /// ```
+#[must_use]
 pub fn min_max(iter: &[u8]) -> (u8, u8) {
     let mut min = u8::MAX;
     let mut max = u8::MIN;

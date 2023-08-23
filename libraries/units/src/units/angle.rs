@@ -84,29 +84,34 @@ impl Unit<AngleUnits> for Angle {
 }
 
 impl Angle {
+    #[must_use]
     pub const fn new_radians(value: f64) -> Angle {
         Self::new(value, AngleUnits::Radians)
     }
 
+    #[must_use]
     pub const fn new_degrees(value: f64) -> Angle {
         Self::new(value, AngleUnits::Degrees)
     }
 
+    #[must_use]
     pub fn new_dms(degrees: i32, minutes: u32, seconds: f64) -> Angle {
         let mult: f64 = match degrees {
             ..=0 => -1.0,
             _ => 1.0,
         };
-        let minutes: f64 = minutes as f64 * mult;
+        let minutes: f64 = f64::from(minutes) * mult;
         let seconds: f64 = seconds * mult;
-        let value = degrees as f64 + minutes / 60. + seconds / 3600.;
+        let value = f64::from(degrees) + minutes / 60. + seconds / 3600.;
         Self::new_degrees(value)
     }
 
+    #[must_use]
     pub fn as_degrees(&self) -> Angle {
         self.as_unit(AngleUnits::Degrees)
     }
 
+    #[must_use]
     pub fn as_radians(&self) -> Angle {
         self.as_unit(AngleUnits::Radians)
     }

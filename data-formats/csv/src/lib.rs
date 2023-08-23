@@ -30,20 +30,24 @@ pub struct WriterBuilder {
 }
 
 impl WriterBuilder {
+    #[must_use]
     pub fn new() -> WriterBuilder {
         Default::default()
     }
 
+    #[must_use]
     pub fn with_columns(mut self, columns: Vec<String>) -> Self {
         self.columns = Some(columns);
         self
     }
 
+    #[must_use]
     pub fn with_newlines(mut self, newlines: String) -> Self {
         self.newlines = Some(newlines);
         self
     }
 
+    #[must_use]
     pub fn with_column_separator(mut self, column_separator: String) -> Self {
         self.column_separator = Some(column_separator);
         self
@@ -117,20 +121,18 @@ impl<T: Read + Sized> Tokenizer<T> {
                         }
                     }
                 }
-                Err(e) => match e.kind() {
-                    ErrorKind::UnexpectedEof => {
-                        return Ok(None);
-                    }
-                    kind => {
-                        return CSVError::err(
+                Err(e) => {
+                    return match e.kind() {
+                        ErrorKind::UnexpectedEof => Ok(None),
+                        kind => CSVError::err(
                             error::CSVErrorType::IOError,
                             format!(
                                 "IO Error at line {} char {}: {:?}: {:?}",
                                 self.line_number, self.char_number, kind, e
                             ),
-                        )
+                        ),
                     }
-                },
+                }
             }
         }
     }
@@ -154,21 +156,18 @@ impl<T: Read + Sized> CSVReader<T> {
         let mut out: Vec<String> = Vec::new();
 
         loop {
-            match self.tokenizer.next_tokens()? {
-                Some(toks) => {
-                    for tok in toks {
-                        match tok {
-                            Token::Field(f) => out.push(f),
-                            Token::Newline => return Ok(Some(out)),
-                        }
+            if let Some(toks) = self.tokenizer.next_tokens()? {
+                for tok in toks {
+                    match tok {
+                        Token::Field(f) => out.push(f),
+                        Token::Newline => return Ok(Some(out)),
                     }
                 }
-                None => {
-                    if !out.is_empty() {
-                        return Ok(Some(out));
-                    }
-                    return Ok(None);
+            } else {
+                if !out.is_empty() {
+                    return Ok(Some(out));
                 }
+                return Ok(None);
             }
         }
     }
@@ -205,7 +204,7 @@ impl<T: Read + Sized> CSVMapReader<T> {
         if hdrlen != datalen {
             return CSVError::err(
                 error::CSVErrorType::HeaderDataMismatchError,
-                format!("Headers length ({}) != data length ({})", hdrlen, datalen),
+                format!("Headers length ({hdrlen}) != data length ({datalen})"),
             );
         }
 
@@ -235,17 +234,19 @@ impl Row {
             if let Some(_elem) = out.insert(k.clone(), v) {
                 return CSVError::err(
                     error::CSVErrorType::DuplicateKeyInHeaderError,
-                    format!("Duplicate key in header detected: {}", k),
+                    format!("Duplicate key in header detected: {k}"),
                 );
             }
         }
         Ok(out)
     }
 
+    #[must_use]
     pub fn as_map_lossy(self) -> BTreeMap<String, String> {
         BTreeMap::from_iter(self.as_items())
     }
 
+    #[must_use]
     pub fn as_items(self) -> Vec<(String, String)> {
         self.keys.into_iter().zip(self.data).collect()
     }

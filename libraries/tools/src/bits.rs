@@ -42,28 +42,28 @@ where
     fn read_be_u16(&mut self) -> Result<u16, Error> {
         let first = self.read_u8()?;
         let sec = self.read_u8()?;
-        let ret = (first as u16) << 8 | (sec as u16);
+        let ret = u16::from(first) << 8 | u16::from(sec);
         Ok(ret)
     }
 
     fn read_be_u32(&mut self) -> Result<u32, Error> {
         let first = self.read_be_u16()?;
         let sec = self.read_be_u16()?;
-        let ret = (first as u32) << 16 | (sec as u32);
+        let ret = u32::from(first) << 16 | u32::from(sec);
         Ok(ret)
     }
 
     fn read_be_u64(&mut self) -> Result<u64, Error> {
         let first = self.read_be_u32()?;
         let sec = self.read_be_u32()?;
-        let ret = (first as u64) << 32 | (sec as u64);
+        let ret = u64::from(first) << 32 | u64::from(sec);
         Ok(ret)
     }
 
     fn read_be_u128(&mut self) -> Result<u128, Error> {
         let first = self.read_be_u64()?;
         let sec = self.read_be_u64()?;
-        let ret = (first as u128) << 32 | (sec as u128);
+        let ret = u128::from(first) << 32 | u128::from(sec);
         Ok(ret)
     }
 

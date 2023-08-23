@@ -31,7 +31,7 @@ impl Packet for ClockStatus {
     type PacketType = PacketType;
     type Error = std::io::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
+    fn write_to<T: MutBits>(&self, _out: &mut T) -> Result<(), Self::Error> {
         todo!()
     }
 

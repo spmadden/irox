@@ -22,6 +22,7 @@ pub struct TransverseMercator {
 }
 
 impl TransverseMercator {
+    #[must_use]
     pub fn builder() -> TMBuilder {
         TMBuilder {
             ..Default::default()
@@ -36,14 +37,17 @@ pub struct TMBuilder {
     fn_set: bool,
 }
 impl TMBuilder {
+    #[must_use]
     pub fn with_scale_factor(mut self, scale_factor: f64) -> Self {
         self.tm.scale_factor = scale_factor;
         self
     }
+    #[must_use]
     pub fn with_shape(mut self, shape: Ellipsoid) -> Self {
         self.tm.shape = shape;
         self
     }
+    #[must_use]
     pub fn with_center(mut self, center: EllipticalCoordinate) -> Self {
         if !self.fn_set {
             let lat = center.get_latitude().0.value();
@@ -59,16 +63,19 @@ impl TMBuilder {
         self.tm.center = center;
         self
     }
+    #[must_use]
     pub fn with_false_northing(mut self, false_northing: Length) -> Self {
         self.tm.false_northing = false_northing.as_meters();
         self.fn_set = true;
         self
     }
+    #[must_use]
     pub fn with_false_easting(mut self, false_easting: Length) -> Self {
         self.tm.false_easting = false_easting.as_meters();
         self.fe_set = true;
         self
     }
+    #[must_use]
     pub fn build(self) -> TransverseMercator {
         self.tm
     }
@@ -335,45 +342,45 @@ mod test {
                 38,
                 73.,
                 45.,
-                500000.0,
-                8100702.9,
+                500_000.0,
+                8_100_702.9,
             ),
             TestPoint::new(
                 StandardShapes::Hayford_International,
                 47,
                 30.,
                 102.,
-                789422.07,
-                3322624.35,
+                789_422.07,
+                3_322_624.35,
             ),
             TestPoint::new(
                 StandardShapes::Hayford_International,
                 48,
                 30.,
                 102.,
-                210577.93,
-                3322624.35,
+                210_577.93,
+                3_322_624.35,
             ),
             TestPoint::new(
                 StandardShapes::Hayford_International,
                 12,
                 Angle::new_dms(72, 4, 32.110).value(),
                 Angle::new_dms(-113, 54, 43.321).value(),
-                400000.00,
-                8000000.01,
+                400_000.00,
+                8_000_000.01,
             ),
             TestPoint::new(
                 StandardShapes::Hayford_International,
                 11,
                 Angle::new_dms(72, 4, 32.110).value(),
                 Angle::new_dms(-113, 54, 43.321).value(),
-                606036.97,
-                8000301.04,
+                606_036.97,
+                8_000_301.04,
             ),
         ];
 
         for point in points {
-            let zone_lon = (point.zone - 1) as f64 * 6. - 177.;
+            let zone_lon = f64::from(point.zone - 1) * 6. - 177.;
             let latitude = Latitude(Angle::new_degrees(0.));
             let longitude = Longitude(Angle::new_degrees(zone_lon));
             let center = EllipticalCoordinate::new(latitude, longitude, point.shape.into());

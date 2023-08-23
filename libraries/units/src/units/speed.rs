@@ -57,10 +57,12 @@ impl Unit<SpeedUnits> for Speed {
 }
 
 impl Speed {
+    #[must_use]
     pub fn as_meters_per_second(&self) -> Speed {
         self.as_unit(SpeedUnits::MetersPerSecond)
     }
 
+    #[must_use]
     pub fn new_meters_per_second(value: f64) -> Speed {
         Speed::new(value, SpeedUnits::MetersPerSecond)
     }

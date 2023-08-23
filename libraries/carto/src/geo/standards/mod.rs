@@ -6,7 +6,10 @@ use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::standards::airy::AIRY_PARAMS;
 use crate::geo::standards::grs80::GRS80_PARAMS;
 use crate::geo::standards::hayford_international::INTERNATIONAL_PARAMS;
-use crate::geo::standards::wgs84::*;
+use crate::geo::standards::wgs84::{
+    WGS84_EQUAL_AREA_SPHERE_PARAMS, WGS84_EQUAL_VOLUME_SPHERE_PARAMS, WGS84_MEAN_RADIUS_PARAMS,
+    WGS84_PARAMS,
+};
 use crate::geo::EllipticalShape;
 
 pub mod airy;
@@ -67,10 +70,12 @@ impl From<StandardShapes> for EllipticalShape {
 }
 
 impl StandardShapes {
+    #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
         self.into()
     }
 
+    #[must_use]
     pub fn as_ellipsoid(&self) -> Ellipsoid {
         self.as_ellipse().into()
     }
