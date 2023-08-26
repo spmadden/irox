@@ -1,0 +1,12 @@
+[package]
+name = "irox-types"
+description = "Enums and structs to describe Rust's basic type system"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[dependencies]

@@ -15,9 +15,9 @@ ureq.workspace = true
 url.workspace = true
 clap.workspace = true
 log.workspace = true
-irox-networking = {version = "^0", path = "../network"}
-irox-tools = {version = "^0", path = "../tools"}
-irox-csv = {version = "^0", path = "../../data-formats/csv"}
+irox-networking.workspace = true
+irox-types.workspace = true
+irox-csv.workspace = true
 env_logger = {workspace = true, optional = true}
 
 [features]

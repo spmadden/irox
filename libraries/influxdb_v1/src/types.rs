@@ -3,7 +3,7 @@
 
 use std::collections::BTreeMap;
 
-use irox_tools::types::{NamedPrimitive, Primitives};
+use irox_types::{NamedPrimitive, Primitives};
 
 use crate::error::{self, Error, ErrorType};
 
