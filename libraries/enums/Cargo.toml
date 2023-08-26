@@ -1,0 +1,13 @@
+[package]
+name = "irox-enums"
+description = "Traits for better Enumerated Types"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[dependencies]
+irox-enums_derive.workspace = true

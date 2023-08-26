@@ -1,0 +1,17 @@
+[package]
+name = "irox-enums_derive"
+description = "Derivable impls of the traits in irox-enums"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn.workspace = true
+quote.workspace = true
