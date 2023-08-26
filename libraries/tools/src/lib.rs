@@ -10,6 +10,5 @@ pub mod f64;
 pub mod iterators;
 pub mod packetio;
 pub mod read;
-pub mod types;
 pub mod u64;
 pub mod u8;

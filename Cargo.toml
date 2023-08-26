@@ -19,6 +19,7 @@ members = [
     "libraries/stats",
     "libraries/units",
 	"libraries/tools",
+    "libraries/types",
     "tools/halflifes"
 ]
 
@@ -32,3 +33,16 @@ url = {version = "^2", features = []}
 clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
 log = {version = "^0", features = []}
 env_logger = {version = "^0", features = []}
+
+irox-csv = {version = "^0", path = "data-formats/csv"}
+irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
+irox-sirf = {version = "^0", path = "data-formats/sirf"}
+
+irox-carto = {version = "^0", path = "libraries/carto"}
+irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
+irox-influxdb_v1 = {version = "^0", path = "libraries/influxdb_v1"}
+irox-networking = {version = "^0", path = "libraries/network"}
+irox-stats = {version = "^0", path = "libraries/stats"}
+irox-tools = {version = "^0", path = "libraries/tools"}
+irox-types = {version = "^0", path = "libraries/types"}
+irox-units = {version = "^0", path = "libraries/units"}
