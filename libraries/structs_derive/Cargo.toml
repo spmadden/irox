@@ -1,0 +1,18 @@
+[package]
+name = "irox-structs_derive"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn.workspace = true
+quote.workspace = true
+proc-macro2 = "^1"
+irox-types = {features = ["syn"], path = "../types"}

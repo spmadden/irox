@@ -1,0 +1,15 @@
+[package]
+name = "irox-structs"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+irox-tools.workspace = true
+irox-structs_derive.workspace = true
