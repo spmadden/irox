@@ -272,9 +272,9 @@ impl MeridianCalculator for DeakinHunterKarneyMeridianCalculator {
         let lat = delta_lat.as_radians().value();
         let mut val = self.coefficients[0] * lat;
 
-        for idx in 1..=8 {
+        for (idx, coeff) in self.coefficients.iter().enumerate() {
             let base = (2. * lat * idx as f64).sin();
-            let adj = self.coefficients[idx] * base;
+            let adj = coeff * base;
             val += adj;
         }
         val * self.semi_major_axis_a / (1. + self.third_flattening_n)
