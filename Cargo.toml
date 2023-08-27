@@ -20,7 +20,9 @@ members = [
     "libraries/network",
     "libraries/stats",
     "libraries/units",
-	"libraries/tools",
+    "libraries/structs",
+    "libraries/structs_derive",
+    "libraries/tools",
     "libraries/types",
     "tools/halflifes"
 ]
@@ -49,6 +51,8 @@ irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
 irox-influxdb_v1 = {version = "^0", path = "libraries/influxdb_v1"}
 irox-networking = {version = "^0", path = "libraries/network"}
 irox-stats = {version = "^0", path = "libraries/stats"}
+irox-structs = {version = "^0", path = "libraries/structs"}
+irox-structs_derive = {version = "^0", path = "libraries/structs_derive"}
 irox-tools = {version = "^0", path = "libraries/tools"}
 irox-types = {version = "^0", path = "libraries/types"}
 irox-units = {version = "^0", path = "libraries/units"}
