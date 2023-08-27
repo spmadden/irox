@@ -96,7 +96,9 @@ impl Packet for PacketType {
     }
 
     fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
-        todo!()
+        let mut buf: Vec<u8> = Vec::new();
+        self.write_to(&mut buf)?;
+        Ok(buf)
     }
 
     fn get_type(&self) -> Self::PacketType {
