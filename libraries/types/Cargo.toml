@@ -9,4 +9,11 @@ license.workspace = true
 exclude.workspace = true
 readme.workspace = true
 
+[features]
+default = []
+syn = ["dep:syn"]
+
 [dependencies]
+irox-enums.workspace = true
+irox-enums_derive.workspace = true
+syn = {workspace = true, optional = true}

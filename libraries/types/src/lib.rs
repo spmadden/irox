@@ -5,10 +5,15 @@
 //! This module contains a rudimentary reflection/type system
 //!
 
+use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
+
+#[cfg(feature = "syn")]
+pub use crate::syn::*;
+
 ///
 /// A set of possible primitives
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumName, EnumIterItem, EnumTryFromStr)]
 pub enum Primitives {
     u8,
     i8,
@@ -29,36 +34,11 @@ pub enum Primitives {
     null,
 }
 
-impl Primitives {
-    /// Returns the enumeration literal of this primitive
-    #[must_use]
-    pub const fn name(&self) -> &'static str {
-        match self {
-            Primitives::u8 => "u8",
-            Primitives::i8 => "i8",
-            Primitives::u16 => "u16",
-            Primitives::i16 => "i16",
-            Primitives::u32 => "u32",
-            Primitives::i32 => "i32",
-            Primitives::f32 => "f32",
-            Primitives::u64 => "u64",
-            Primitives::i64 => "i64",
-            Primitives::f64 => "f64",
-            Primitives::u128 => "u128",
-            Primitives::i128 => "i128",
-            Primitives::bool => "bool",
-            Primitives::char => "char",
-            Primitives::str => "str",
-            Primitives::null => "null",
-        }
-    }
-}
-
 ///
 /// A shuttle struct to pass around a primitive type and an associated value of the same type
 ///
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, EnumName)]
 pub enum PrimitiveValue {
     u8(u8),
     i8(i8),
@@ -79,29 +59,6 @@ pub enum PrimitiveValue {
 }
 
 impl PrimitiveValue {
-    /// Returns the enumeration literal of this primitive
-    #[must_use]
-    pub const fn name(&self) -> &'static str {
-        match self {
-            PrimitiveValue::u8(_) => "u8",
-            PrimitiveValue::i8(_) => "i8",
-            PrimitiveValue::u16(_) => "u16",
-            PrimitiveValue::i16(_) => "i16",
-            PrimitiveValue::u32(_) => "u32",
-            PrimitiveValue::i32(_) => "i32",
-            PrimitiveValue::f32(_) => "f32",
-            PrimitiveValue::u64(_) => "u64",
-            PrimitiveValue::i64(_) => "i64",
-            PrimitiveValue::f64(_) => "f64",
-            PrimitiveValue::u128(_) => "u128",
-            PrimitiveValue::i128(_) => "i128",
-            PrimitiveValue::bool(_) => "bool",
-            PrimitiveValue::char(_) => "char",
-            PrimitiveValue::str(_) => "str",
-            PrimitiveValue::null => "null",
-        }
-    }
-
     /// Returns the type of this primitive
     #[must_use]
     pub const fn primitive(&self) -> Primitives {
@@ -181,3 +138,12 @@ impl NamedPrimitiveValue {
         &self.value
     }
 }
+
+#[derive(Debug, Copy, Clone, EnumName)]
+pub enum PrimitiveType {
+    Primitive(Primitives),
+    Array(Primitives, usize),
+}
+
+#[cfg(feature = "syn")]
+mod syn;
