@@ -15,7 +15,7 @@ fn main() {
         multisampling: 2,
         ..Default::default()
     };
-    eframe::run_native(
+    if let Err(e) = eframe::run_native(
         "irox-halflifes",
         native_options,
         Box::new(|cc| {
@@ -25,8 +25,9 @@ fn main() {
 
             Box::new(comp)
         }),
-    )
-    .expect("Error running");
+    ) {
+        eprintln!("{e:?}");
+    };
 }
 
 struct HalflifesApp {
