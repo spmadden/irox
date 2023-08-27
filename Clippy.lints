@@ -1,4 +1,3 @@
--Dclippy::todo
 -Dclippy::panic
 -Dclippy::panic_in_result_fn
 -Dclippy::exit
@@ -11,6 +10,8 @@
 -Dclippy::unreachable
 -Dclippy::unwrap_in_result
 -Dclippy::unwrap_used
--Dclippy::pedantic
 -Dwarnings
 -Dunsafe_code
+-Aclippy::missing_errors_doc
+-Aclippy::semicolon-if-nothing-returned
+-Aclippy::module-name-repetitions
