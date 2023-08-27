@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_structs::Struct;
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
 
@@ -12,7 +13,7 @@ pub const PAYLOAD_SIZE: usize = 41;
 pub const VELOCITY_SCALE: f32 = 8.0;
 pub const HDOP_SCALE: f32 = 5.0;
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Struct)]
 pub struct MeasuredNavigationData {
     pub x_position: i32,
     pub y_position: i32,
@@ -46,10 +47,10 @@ pub struct MeasuredNavigationData {
 
 impl Packet for MeasuredNavigationData {
     type PacketType = PacketType;
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        out.write_all(self.get_bytes()?.as_slice())
+        Ok(out.write_all(self.get_bytes()?.as_slice())?)
     }
 
     fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
@@ -96,7 +97,7 @@ pub struct MeasuredNavDataBuilder;
 pub static BUILDER: MeasuredNavDataBuilder = MeasuredNavDataBuilder;
 
 impl PacketBuilder<MeasuredNavigationData> for MeasuredNavDataBuilder {
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredNavigationData, Self::Error> {
         let x_position = input.read_be_i32()?;

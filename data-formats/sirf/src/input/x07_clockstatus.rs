@@ -1,30 +1,31 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_structs::Struct;
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::input::util::read_gpstow;
 use crate::packet::PacketType;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Struct)]
 pub struct ClockStatus {
-    extended_gps_week: u16,
+    pub extended_gps_week: u16,
 
     /// gps time of week, seconds
-    gps_tow: f64,
+    pub gps_tow: f64,
 
     /// sats
-    svs: u8,
+    pub svs: u8,
 
     /// clock drive in hz
-    clock_drift: u32,
+    pub clock_drift: u32,
 
     /// clock bias in ns
-    clock_bias: u32,
+    pub clock_bias: u32,
 
     /// est gps time in ms
-    est_gps_time: u32,
+    pub est_gps_time: u32,
 }
 
 impl Packet for ClockStatus {
