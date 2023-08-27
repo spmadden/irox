@@ -3,5 +3,6 @@
 
 #![forbid(unsafe_code)]
 
+pub mod error;
 pub mod input;
 pub mod packet;

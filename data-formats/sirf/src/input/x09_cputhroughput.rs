@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_structs::Struct;
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Struct)]
 pub struct CPUThroughput {
     seg_stat_max: u16,
     seg_stat_lat: u16,
@@ -14,14 +15,14 @@ pub struct CPUThroughput {
 
 impl Packet for CPUThroughput {
     type PacketType = ();
-    type Error = ();
+    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, _out: &mut T) -> Result<(), Self::Error> {
-        todo!()
+    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
+        Ok(Struct::write_to(self, out)?)
     }
 
     fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
-        todo!()
+        Ok(Struct::as_bytes(self)?)
     }
 
     fn get_type(&self) -> Self::PacketType {
@@ -32,14 +33,9 @@ impl Packet for CPUThroughput {
 pub struct CPUThroughputBuilder;
 pub static BUILDER: CPUThroughputBuilder = CPUThroughputBuilder;
 impl PacketBuilder<CPUThroughput> for CPUThroughputBuilder {
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<CPUThroughput, Self::Error> {
-        Ok(CPUThroughput {
-            seg_stat_max: input.read_be_u16()?,
-            seg_stat_lat: input.read_be_u16()?,
-            avg_trk_time: input.read_be_u16()?,
-            last_millisecond: input.read_be_u16()?,
-        })
+        Ok(CPUThroughput::parse_from(input)?)
     }
 }

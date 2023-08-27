@@ -11,14 +11,14 @@ pub struct AsciiData {
 
 impl Packet for AsciiData {
     type PacketType = ();
-    type Error = ();
+    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, _out: &mut T) -> Result<(), Self::Error> {
-        todo!()
+    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
+        Ok(out.write_all(self.get_bytes()?.as_slice())?)
     }
 
     fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
-        todo!()
+        Ok(self.message.clone().into_bytes())
     }
 
     fn get_type(&self) -> Self::PacketType {
@@ -29,7 +29,7 @@ impl Packet for AsciiData {
 pub struct AsciiDataBuilder;
 pub static BUILDER: AsciiDataBuilder = AsciiDataBuilder;
 impl PacketBuilder<AsciiData> for AsciiDataBuilder {
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<AsciiData, Self::Error> {
         let mut str = String::new();

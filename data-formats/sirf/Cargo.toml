@@ -11,4 +11,5 @@ homepage.workspace = true
 exclude.workspace = true
 
 [dependencies]
-irox-tools = {version = "0.1", path = "../../libraries/tools"}
+irox-structs.workspace = true
+irox-tools.workspace = true

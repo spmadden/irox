@@ -7,6 +7,7 @@ use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_tools::read::{read_exact, read_exact_vec, read_until};
 
+use crate::error::Error;
 use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
@@ -88,10 +89,10 @@ pub enum PacketType {
 
 impl Packet for PacketType {
     type PacketType = PacketType;
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn write_to<T: Write>(&self, out: &mut T) -> Result<(), Self::Error> {
-        out.write_all(self.get_bytes()?.as_slice())
+        Ok(out.write_all(self.get_bytes()?.as_slice())?)
     }
 
     fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
@@ -106,13 +107,13 @@ impl Packet for PacketType {
 pub struct PacketParser;
 
 impl PacketBuilder<PacketType> for PacketParser {
-    type Error = std::io::Error;
+    type Error = crate::error::Error;
 
     fn build_from<T: Read>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
         loop {
             if let Err(e) = read_start(input) {
                 if e.kind() != ErrorKind::InvalidData {
-                    return Err(e);
+                    return Err(e.into());
                 }
                 read_until(input, &END_SEQ)?;
                 continue;
@@ -126,20 +127,14 @@ impl PacketBuilder<PacketType> for PacketParser {
         let end = input.read_be_u16()?;
 
         if !check_checksum(payload.as_slice(), checksum) {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                "Invalid checksum",
-            ));
+            return Error::invalid_data("Invalid checksum");
         }
         if end != END_VAL {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                "Invalid packet, missing end bytes",
-            ));
+            return Error::invalid_data("Invalid packet, missing end bytes");
         }
 
         let Some((msg_type, mut payload)) = payload.split_first() else {
-            return Err(std::io::Error::new(ErrorKind::InvalidData, "Invalid packet"))
+            return Error::invalid_data("Invalid packet");
         };
         Ok(match msg_type {
             0x02 => PacketType::MeasuredNavigationData(
