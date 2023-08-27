@@ -10,6 +10,8 @@ use std::{
 
 use error::CSVError;
 
+use crate::error::CSVErrorType;
+
 pub mod error;
 
 pub struct Writer<T>
@@ -20,6 +22,59 @@ where
     pub(crate) columns: Option<Vec<String>>,
     pub(crate) column_separator: Option<String>,
     pub(crate) newlines: Option<String>,
+    pub(crate) wrote_header: bool,
+}
+
+impl<T: Write + Sized> Writer<T> {
+    pub fn write_header(&mut self) -> Result<(), CSVError> {
+        if self.wrote_header {
+            return Ok(());
+        }
+        self.wrote_header = true;
+        let Some(cols) = &self.columns else {
+            return Ok(());
+        };
+
+        let line = self.make_line(cols);
+        self.output.write_all(line.as_bytes())?;
+        Ok(())
+    }
+
+    pub(crate) fn make_line(&self, fields: &[String]) -> String {
+        let sep = match &self.column_separator {
+            Some(sep) => sep.as_str(),
+            None => ",",
+        };
+        let newlines = match &self.newlines {
+            Some(nl) => nl.as_str(),
+            None => "\n",
+        };
+        let line = fields.join(sep);
+        format!("{line}{newlines}")
+    }
+
+    pub fn write_line(&mut self, fields: &[String]) -> Result<(), CSVError> {
+        self.write_header()?;
+        let line = self.make_line(fields);
+        self.output.write_all(line.as_bytes())?;
+        Ok(())
+    }
+    pub fn write_fields(&mut self, fields: &BTreeMap<String, String>) -> Result<(), CSVError> {
+        self.write_header()?;
+        let Some(cols) = &self.columns else {
+            return CSVError::err(CSVErrorType::MissingHeaderError, "No header columns specified".to_string());
+        };
+        let mut out = Vec::new();
+        for col in cols {
+            let Some(val) = fields.get(col) else {
+                continue;
+            };
+            out.push(val.clone());
+        }
+        let line = self.make_line(&out);
+        self.output.write_all(line.as_bytes())?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -59,6 +114,7 @@ impl WriterBuilder {
             columns: self.columns,
             newlines: self.newlines,
             column_separator: self.column_separator,
+            wrote_header: false,
         }
     }
 }
