@@ -10,6 +10,7 @@ pub enum ErrorType {
     IOError,
     InvalidData,
     StructError,
+    UnimplementedMessage,
 }
 #[derive(Debug, Clone)]
 pub struct Error {
@@ -34,6 +35,10 @@ impl Error {
     }
     pub(crate) fn invalid_data<T>(msg: &'static str) -> Result<T, Error> {
         Err(Error::new(ErrorType::InvalidData, msg))
+    }
+
+    pub(crate) fn unsupported<T>(msg: &'static str) -> Result<T, Error> {
+        Err(Error::new(ErrorType::UnimplementedMessage, msg))
     }
 }
 
