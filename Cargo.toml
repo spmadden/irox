@@ -24,21 +24,26 @@ members = [
     "libraries/structs_derive",
     "libraries/tools",
     "libraries/types",
-    "tools/halflifes"
+    "tools/halflifes",
+    "tools/gpsd"
 ]
 
 [workspace.dependencies]
 egui = { version = "^0", features = ["persistence"] }
 eframe = { version = "^0", features = ["persistence"] }
 ron = { version = "^0", features = ["integer128"] }
-serde = { version = "<=1.0.171", features = ["derive"] }
+serde = { version = "^1,<1.0.172", features = ["derive"] }
+serde_json = {version = "^1", features = []}
+time = {version = "^0", features = ["formatting"]}
 ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2", features = []}
 clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
+clap-verbosity-flag = {version = "^2"}
 log = {version = "^0", features = []}
 env_logger = {version = "^0", features = []}
 syn = {version = "^2", features = ["extra-traits"]}
 quote = {version = "^1", features = []}
+tokio = {version = "^1", features = ["rt", "rt-multi-thread", "signal", "net", "sync"]}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}

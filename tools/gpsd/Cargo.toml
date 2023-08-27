@@ -1,0 +1,27 @@
+[package]
+name = "irox-gpsd"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[dependencies]
+serial = "^0.4"
+windows = {version = "*", features = [ "Devices_Geolocation", "Foundation" ]}
+
+simplelog = "^0.12"
+human-panic = "^1.1"
+clap.workspace = true
+time.workspace = true
+clap-verbosity-flag.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+log.workspace = true
+tokio.workspace = true
+irox-sirf.workspace = true
+irox-tools.workspace = true
+irox-carto.workspace = true
+irox-units.workspace = true
