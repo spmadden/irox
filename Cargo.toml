@@ -12,11 +12,11 @@ members = [
     "irox",
     "data-formats/csv",
     "data-formats/sirf",
+    "interfaces/influxdb_v1",
     "libraries/carto",
     "libraries/egui_extras",
     "libraries/enums",
     "libraries/enums_derive",
-    "libraries/influxdb_v1",
     "libraries/network",
     "libraries/stats",
     "libraries/units",
@@ -49,11 +49,12 @@ irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
+irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
+
 irox-carto = {version = "^0", path = "libraries/carto"}
 irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
 irox-enums = {version = "^0", path = "libraries/enums"}
 irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
-irox-influxdb_v1 = {version = "^0", path = "libraries/influxdb_v1"}
 irox-networking = {version = "^0", path = "libraries/network"}
 irox-stats = {version = "^0", path = "libraries/stats"}
 irox-structs = {version = "^0", path = "libraries/structs"}
