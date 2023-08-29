@@ -20,13 +20,13 @@ tools = ["irox-tools"]
 units = ["irox-units"]
 
 [dependencies]
-irox-csv = { version = "0.1", path = "../data-formats/csv", optional = true}
-irox-sirf = { version = "0.1", path = "../data-formats/sirf", optional = true}
+irox-csv = { workspace = true, optional = true}
+irox-sirf = { workspace = true, optional = true}
 
-irox-carto = { version = "0.1", path = "../libraries/carto", optional = true}
-irox-egui-extras = { version = "0.1", path = "../libraries/egui_extras", optional = true}
-irox-influxdb_v1 = { version = "0.1", path = "../libraries/influxdb_v1", optional = true}
-irox-networking = { version = "0.1", path = "../libraries/network", optional = true}
-irox-stats = { version = "0.1", path = "../libraries/stats", optional = true}
-irox-tools = { version = "0.1", path = "../libraries/tools", optional = true}
-irox-units = { version = "0.1", path = "../libraries/units", optional = true}
+irox-carto = { workspace = true, optional = true}
+irox-egui-extras = { workspace = true, optional = true}
+irox-influxdb_v1 = { workspace = true, optional = true}
+irox-networking = { workspace = true, optional = true}
+irox-stats = { workspace = true, optional = true}
+irox-tools = { workspace = true, optional = true}
+irox-units = { workspace = true, optional = true}
