@@ -38,10 +38,11 @@ pub struct Longitude(pub Angle);
 pub struct EllipticalCoordinate {
     latitude: Latitude,
     longitude: Longitude,
-    altitude: Option<Length>,
-    timestamp: Option<f64>,
     reference_frame: EllipticalShape,
     altitude: Option<Altitude>,
+    altitude_uncertainty: Option<Length>,
+    position_uncertainty: Option<PositionUncertainty>,
+    timestamp: Option<f64>,
 }
 
 impl EllipticalCoordinate {
@@ -58,6 +59,8 @@ impl EllipticalCoordinate {
             longitude,
             reference_frame,
             altitude: None,
+            altitude_uncertainty: None,
+            position_uncertainty: None,
             timestamp: None,
         }
     }
@@ -94,6 +97,11 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
+    pub fn get_altitude_uncertainty(&self) -> &Option<Length> {
+        &self.altitude_uncertainty
+    }
+
+    #[must_use]
     pub fn get_timestamp(&self) -> &Option<f64> {
         &self.timestamp
     }
@@ -112,6 +120,11 @@ impl EllipticalCoordinate {
             timestamp: Some(timestamp),
             ..self
         }
+    }
+
+    #[must_use]
+    pub fn position_uncertainty(&self) -> &Option<PositionUncertainty> {
+        &self.position_uncertainty
     }
 }
 
@@ -153,5 +166,101 @@ impl CartesianCoordinate {
     #[must_use]
     pub fn get_z(&self) -> &Length {
         &self.z
+    }
+}
+
+///
+/// An uncertainty type for a position.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum PositionUncertainty {
+    /// Represents a uncertainty represented as a perfect circle, either radius or diameter.
+    CircularUncertainty(CircularDimension),
+
+    /// Represents an uncertainty represented as an ellipse, optionally oriented
+    EllipticalUncertainty(Ellipse),
+}
+
+///
+/// A coordinate type that represents an Azimuth/Elevation look angle from a particular
+/// refernece point.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct HorizontalCoordinate {
+    reference: AbsoluteCoordinateType,
+    azimuth: Azimuth,
+    elevation: Elevation,
+}
+
+#[cfg(target_os = "windows")]
+pub mod windows_conv {
+    use windows::Devices::Geolocation::Geocoordinate;
+
+    use irox_units::shapes::CircularDimension;
+    use irox_units::units::angle::Angle;
+    use irox_units::units::length::Length;
+
+    use crate::altitude::{Altitude, AltitudeReferenceFrame};
+    use crate::coordinate::{EllipticalCoordinate, EllipticalCoordinateBuilder, Latitude, Longitude, PositionUncertainty};
+    use crate::error::ConvertError;
+    use crate::geo::EllipticalShape;
+    use crate::geo::standards::wgs84::{WGS84_EPSG_CODE, WGS84_SHAPE};
+
+    impl TryFrom<&Geocoordinate> for EllipticalCoordinate {
+        type Error = ConvertError;
+
+        fn try_from(value: &Geocoordinate) -> Result<Self, Self::Error> {
+            let mut bld = EllipticalCoordinateBuilder::new();
+
+            let Ok(point) = value.Point() else {
+                return Err(ConvertError::MissingValue("Missing point value".to_string()));
+            };
+            let Ok(pos) = point.Position() else {
+                return Err(ConvertError::MissingValue("Missing position value".to_string()))
+            };
+            bld.with_latitude(Latitude(Angle::new_degrees(pos.Latitude)));
+            bld.with_longitude(Longitude(Angle::new_degrees(pos.Longitude)));
+
+            let alt = Length::new_meters(pos.Altitude);
+            let alt_frame = match point.AltitudeReferenceSystem() {
+                Ok(frame) => match frame.0 {
+                    1 => AltitudeReferenceFrame::Terrain,
+                    2 => AltitudeReferenceFrame::Ellipsoid,
+                    3 => AltitudeReferenceFrame::Geoid,
+                    4 => AltitudeReferenceFrame::SurfaceFeatures,
+                    _ => AltitudeReferenceFrame::Unspecified,
+                },
+                Err(_) => AltitudeReferenceFrame::Unspecified,
+            };
+            bld.with_altitude(Altitude::new(alt, alt_frame));
+
+            bld.with_reference_frame(match point.SpatialReferenceId(){
+                Ok(epsg) => match epsg {
+                    WGS84_EPSG_CODE => WGS84_SHAPE,
+                    e => EllipticalShape::EpsgDatum(e)
+                },
+                Err(_) => {
+                    // assume wgs84.
+                    WGS84_SHAPE
+                }
+            });
+
+            if let Ok(acc) = value.Accuracy() {
+                let length = Length::new_meters(acc);
+                let rad = CircularDimension::new_radius(length);
+                bld.with_position_uncertainty(PositionUncertainty::CircularUncertainty(rad));
+            }
+            if let Ok(acc) = value.AltitudeAccuracy() {
+                if let Ok(acc) = acc.GetDouble() {
+                    bld.with_altitude_uncertainty(Length::new_meters(acc));
+                }
+            }
+
+            if let Ok(ts) = value.PositionSourceTimestamp() {
+                if let Ok(ts) = ts.GetDateTime() {
+                    bld.with_timestamp(ts.UniversalTime as f64);
+                }
+            }
+
+            bld.build()
+        }
     }
 }
