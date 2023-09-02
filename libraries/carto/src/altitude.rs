@@ -38,6 +38,22 @@ pub enum AltitudeReferenceFrame {
     DensityAltitude,
 }
 
+impl AltitudeReferenceFrame {
+    pub fn short_name(&self) -> &'static str {
+        match self {
+            AltitudeReferenceFrame::Unspecified => "UNK",
+            AltitudeReferenceFrame::Ellipsoid => "ELL",
+            AltitudeReferenceFrame::Geoid => "MSL",
+            AltitudeReferenceFrame::Terrain => "AGL",
+            AltitudeReferenceFrame::Geocentric => "GEO",
+            AltitudeReferenceFrame::SurfaceFeatures => "MSA",
+            AltitudeReferenceFrame::PressureAltitude => "PA",
+            AltitudeReferenceFrame::IndicatedAltitude => "IA",
+            AltitudeReferenceFrame::DensityAltitude => "DA"
+        }
+    }
+}
+
 /// A distance above a particular reference point
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Altitude {
