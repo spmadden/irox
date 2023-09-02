@@ -31,8 +31,10 @@ pub struct Latitude(pub Angle);
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Longitude(pub Angle);
 
-/// Represents a Latitude and Longitude on a Elliptical Shape
-#[derive(Debug, Clone, Default)]
+/// Forcing type for Elevation, the angle above the local horizontal
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct Elevation(pub Angle);
+
 /// Represents a Latitude, Longitude, and Altitude on a Elliptical Shape
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct EllipticalCoordinate {
