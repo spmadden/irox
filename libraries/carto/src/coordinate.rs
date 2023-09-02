@@ -24,15 +24,17 @@ pub enum CoordinateType {
 }
 
 /// Forcing type for Latitude
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Latitude(pub Angle);
 
 /// Forcing type for Longitude
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Longitude(pub Angle);
 
 /// Represents a Latitude and Longitude on a Elliptical Shape
 #[derive(Debug, Clone, Default)]
+/// Represents a Latitude, Longitude, and Altitude on a Elliptical Shape
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct EllipticalCoordinate {
     latitude: Latitude,
     longitude: Longitude,
@@ -114,6 +116,9 @@ impl EllipticalCoordinate {
 }
 
 #[derive(Debug, Clone, Copy)]
+///
+/// Represents a coordinate in 3D Cartesian Space (X, Y, Z)
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct CartesianCoordinate {
     x: Length,
     y: Length,
