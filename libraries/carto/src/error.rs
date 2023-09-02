@@ -14,15 +14,19 @@ pub enum ConvertError {
 impl ConvertError {
     fn error(&self) -> &String {
         match self {
-            ConvertError::MissingValue(e) => e
+            ConvertError::MissingValue(e) => e,
         }
     }
 }
 
 impl Display for ConvertError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("ConvertError({}): {}", self.name(), self.error()))
+        f.write_fmt(format_args!(
+            "ConvertError({}): {}",
+            self.name(),
+            self.error()
+        ))
     }
 }
 
-impl Error for ConvertError{}
+impl Error for ConvertError {}

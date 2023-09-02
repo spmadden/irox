@@ -5,11 +5,11 @@
 
 pub use irox_units::*;
 
+pub mod altitude;
 pub mod coordinate;
 pub mod epsg3857;
+pub mod error;
 pub mod geo;
 pub mod gps;
 pub mod proj;
 pub mod tm;
-pub mod error;
-pub mod altitude;

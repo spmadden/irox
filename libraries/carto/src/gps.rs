@@ -24,13 +24,13 @@ impl DOPs {
 
 impl Display for DOPs {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let print = |x:Option<DilutionOfPrecision>| {
-            match x {
-                Some(x) => format!("{:0.3}", x.0),
-                None => "?".to_string()
-            }
+        let print = |x: Option<DilutionOfPrecision>| match x {
+            Some(x) => format!("{:0.3}", x.0),
+            None => "?".to_string(),
         };
-        write!(f, "hdop: {} vdop: {} pdop: {} gdop: {} tdop: {}",
+        write!(
+            f,
+            "hdop: {} vdop: {} pdop: {} gdop: {} tdop: {}",
             print(self.horizontal),
             print(self.vertical),
             print(self.position),
@@ -45,7 +45,7 @@ pub mod windows {
     use windows::Devices::Geolocation::Geocoordinate;
     use windows::Foundation::IReference;
 
-    use crate::gps::{DilutionOfPrecision, DOPs};
+    use crate::gps::{DOPs, DilutionOfPrecision};
 
     impl DOPs {
         pub fn maybe_from(coord: &Geocoordinate) -> Option<DOPs> {
@@ -53,7 +53,7 @@ pub mod windows {
                 return None;
             };
 
-            let get_dop = |v:IReference<f64>| -> Option<DilutionOfPrecision> {
+            let get_dop = |v: IReference<f64>| -> Option<DilutionOfPrecision> {
                 v.GetDouble().ok().map(DilutionOfPrecision)
             };
             let geometric = sats.GeometricDilutionOfPrecision().ok().and_then(get_dop);

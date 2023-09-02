@@ -118,7 +118,11 @@ pub struct Compass<T> {
 
 impl<T> Display for Compass<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?} {:?}", self.angle, self.direction, self.reference)
+        write!(
+            f,
+            "{} {:?} {:?}",
+            self.angle, self.direction, self.reference
+        )
     }
 }
 

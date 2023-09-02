@@ -8,15 +8,15 @@ use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
 use irox_units::units::compass::Azimuth;
 
+use crate::altitude::Altitude;
+use crate::error::ConvertError;
 use crate::{
-    geo::{EllipticalShape, standards},
+    geo::{standards, EllipticalShape},
     units::{
         angle::{Angle, AngleUnits},
         length::Length,
     },
 };
-use crate::altitude::Altitude;
-use crate::error::ConvertError;
 
 /// A generic coordinate type that does not distinguish between a [RelativeCoordinateType] or an
 /// [AbsoluteCoordinateType].
@@ -81,15 +81,15 @@ impl Display for EllipticalCoordinate {
         };
         let alt_err = match self.altitude_uncertainty {
             Some(err) => format!("+/- {}m vert", err.as_meters().value()),
-            None => String::new()
+            None => String::new(),
         };
         let pos_err = match self.position_uncertainty {
             Some(err) => format!(" {} horiz", err),
-            None => String::new()
+            None => String::new(),
         };
         let asof = match self.timestamp {
             Some(ts) => format!(" as/of: {:?}", SystemTime::UNIX_EPOCH.checked_add(ts)),
-            None => String::new()
+            None => String::new(),
         };
         write!(
             f,
@@ -349,8 +349,8 @@ pub mod windows_conv {
         EllipticalCoordinate, EllipticalCoordinateBuilder, Latitude, Longitude, PositionUncertainty,
     };
     use crate::error::ConvertError;
-    use crate::geo::EllipticalShape;
     use crate::geo::standards::wgs84::{WGS84_EPSG_CODE, WGS84_SHAPE};
+    use crate::geo::EllipticalShape;
 
     impl TryFrom<&Geocoordinate> for EllipticalCoordinate {
         type Error = ConvertError;
@@ -406,7 +406,7 @@ pub mod windows_conv {
                 if let Ok(ts) = ts.GetDateTime() {
                     let dur = match ts.UniversalTime {
                         ..=0 => Duration::from_secs(0),
-                        v => Duration::from_secs(v as u64)
+                        v => Duration::from_secs(v as u64),
                     };
                     bld.with_timestamp(dur);
                 }

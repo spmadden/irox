@@ -49,7 +49,7 @@ impl AltitudeReferenceFrame {
             AltitudeReferenceFrame::SurfaceFeatures => "MSA",
             AltitudeReferenceFrame::PressureAltitude => "PA",
             AltitudeReferenceFrame::IndicatedAltitude => "IA",
-            AltitudeReferenceFrame::DensityAltitude => "DA"
+            AltitudeReferenceFrame::DensityAltitude => "DA",
         }
     }
 }
@@ -58,14 +58,15 @@ impl AltitudeReferenceFrame {
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Altitude {
     value: Length,
-    reference_frame: AltitudeReferenceFrame
+    reference_frame: AltitudeReferenceFrame,
 }
 
 impl Altitude {
     #[must_use]
     pub const fn new(value: Length, reference_frame: AltitudeReferenceFrame) -> Altitude {
         Altitude {
-            value, reference_frame
+            value,
+            reference_frame,
         }
     }
 

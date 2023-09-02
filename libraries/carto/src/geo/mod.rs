@@ -27,9 +27,7 @@ impl EllipticalShape {
             EllipticalShape::EpsgDatum(d) => {
                 format!("EPSG({d})")
             }
-            EllipticalShape::Ellipse(e) => {
-                String::from(e.name())
-            }
+            EllipticalShape::Ellipse(e) => String::from(e.name()),
         }
     }
 }
