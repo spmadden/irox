@@ -13,6 +13,7 @@ members = [
     "data-formats/csv",
     "data-formats/sirf",
     "interfaces/influxdb_v1",
+    "interfaces/win-location-api",
     "libraries/carto",
     "libraries/egui_extras",
     "libraries/enums",
@@ -34,7 +35,7 @@ eframe = { version = "^0", features = ["persistence"] }
 ron = { version = "^0", features = ["integer128"] }
 serde = { version = "^1,<1.0.172", features = ["derive"] }
 serde_json = {version = "^1", features = []}
-time = {version = "^0", features = ["formatting"]}
+time = {version = "^0", features = ["formatting", "macros"]}
 ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2", features = []}
 clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
@@ -44,12 +45,14 @@ env_logger = {version = "^0", features = []}
 syn = {version = "^2", features = ["extra-traits"]}
 quote = {version = "^1", features = []}
 tokio = {version = "^1", features = ["rt", "rt-multi-thread", "signal", "net", "sync"]}
+windows = {version = "^0.48.0", features = [ "Devices_Geolocation", "Foundation" ]}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
+irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}
 
 irox-carto = {version = "^0", path = "libraries/carto"}
 irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}

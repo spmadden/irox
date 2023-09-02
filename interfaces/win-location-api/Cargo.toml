@@ -1,0 +1,18 @@
+[package]
+name = "irox-winlocation-api"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+
+[dependencies]
+windows.workspace = true
+
+time.workspace = true
+log.workspace = true
+futures.workspace = true
+irox-carto.workspace = true
+irox-units.workspace = true
