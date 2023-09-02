@@ -1,15 +1,23 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_units::shapes::circular::CircularDimension;
+use irox_units::shapes::Ellipse;
+use irox_units::units::compass::Azimuth;
+
 use crate::{
-    geo::{standards, EllipticalShape},
+    geo::{EllipticalShape, standards},
     units::{
         angle::{Angle, AngleUnits},
         length::Length,
     },
 };
+use crate::altitude::Altitude;
+use crate::error::ConvertError;
 
-#[derive(Debug, Clone)]
+/// A generic coordinate type that does not distinguish between a [RelativeCoordinateType] or an
+/// [AbsoluteCoordinateType].
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum CoordinateType {
     Elliptical(EllipticalCoordinate),
     Cartesian(CartesianCoordinate),
@@ -31,6 +39,7 @@ pub struct EllipticalCoordinate {
     altitude: Option<Length>,
     timestamp: Option<f64>,
     reference_frame: EllipticalShape,
+    altitude: Option<Altitude>,
 }
 
 impl EllipticalCoordinate {
@@ -78,7 +87,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn get_altitude(&self) -> &Option<Length> {
+    pub fn get_altitude(&self) -> &Option<Altitude> {
         &self.altitude
     }
 
@@ -88,7 +97,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn with_altitude(self, altitude: Length) -> EllipticalCoordinate {
+    pub fn with_altitude(self, altitude: Altitude) -> EllipticalCoordinate {
         EllipticalCoordinate {
             altitude: Some(altitude),
             ..self
