@@ -2,6 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use std::cmp::Ordering;
+use std::fmt::{Display, Formatter};
 use std::ops::{Div, DivAssign, Mul, MulAssign};
 
 use crate::units::length::Length;
@@ -17,6 +18,12 @@ pub enum CircularAspect {
 pub struct CircularDimension {
     dimension_type: CircularAspect,
     dimension: Length,
+}
+
+impl Display for CircularDimension {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "+/- {}m", self.as_radius().dimension.as_meters().value())
+    }
 }
 
 impl Default for CircularDimension {

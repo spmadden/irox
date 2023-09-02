@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
 
 use crate::units::angle::Angle;
@@ -113,6 +114,12 @@ pub struct Compass<T> {
     direction: RotationDirection,
     reference: CompassReference,
     _ign: PhantomData<T>,
+}
+
+impl<T> Display for Compass<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?} {:?}", self.angle, self.direction, self.reference)
+    }
 }
 
 impl<T> Compass<T> {
@@ -281,4 +288,26 @@ pub enum CompassDirection {
     Bearing(Bearing),
     Course(Course),
     Azimuth(Azimuth),
+}
+
+impl Display for CompassDirection {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CompassDirection::Heading(h) => {
+                write!(f, "Heading({})", h)
+            }
+            CompassDirection::Track(t) => {
+                write!(f, "Track({})", t)
+            }
+            CompassDirection::Bearing(b) => {
+                write!(f, "Bearing({})", b)
+            }
+            CompassDirection::Course(c) => {
+                write!(f, "Course({})", c)
+            }
+            CompassDirection::Azimuth(a) => {
+                write!(f, "Azimuth({})", a)
+            }
+        }
+    }
 }

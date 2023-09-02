@@ -4,6 +4,8 @@
 //!
 //! This module contains the basic types and conversions for the SI coherent derived "Planar Angle"
 //! quantity
+use std::fmt::{Display, Formatter};
+
 use crate::units::{FromUnits, Unit};
 
 ///
@@ -114,6 +116,12 @@ impl Angle {
     #[must_use]
     pub fn as_radians(&self) -> Angle {
         self.as_unit(AngleUnits::Radians)
+    }
+}
+
+impl Display for Angle {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:03.3}\u{00B0}", self.as_degrees().value)
     }
 }
 

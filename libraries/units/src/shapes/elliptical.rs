@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::fmt::{Display, Formatter};
+
 use crate::shapes::CircularDimension;
 use crate::units::compass::CompassDirection;
 
@@ -9,6 +11,23 @@ pub struct Ellipse {
     first_axis: CircularDimension,
     second_axis: CircularDimension,
     orientation: Option<CompassDirection>,
+}
+
+impl Display for Ellipse {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} / {}{}",
+            self.first_axis,
+            self.second_axis,
+            match self.orientation {
+                Some(o) => {
+                    format!(" {o}")
+                }
+                None => String::new(),
+            }
+        )
+    }
 }
 
 impl Ellipse {
