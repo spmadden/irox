@@ -8,7 +8,7 @@ use crate::units::{FromUnits, Unit};
 
 ///
 /// Represents a specific Planar Angle unit - SI or otherwise
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum AngleUnits {
     /// SI Base Unit for Planar Angle - Radians, the unit radius of a circle.

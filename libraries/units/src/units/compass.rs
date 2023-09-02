@@ -8,7 +8,7 @@ use crate::units::FromUnits;
 
 ///
 /// The direction that a compass needle moves for "positive" increases
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub enum RotationDirection {
     /// Positive-Clockwise is the standard direction a compass needle moves, positive in a
     /// clockwise direction, towards the right, usually with the zero point at 'North'
@@ -39,7 +39,7 @@ impl FromUnits<Angle> for RotationDirection {
 
 ///
 /// The "zero" reference point for a compass needle
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub enum CompassReference {
     /// 0 is True North - the geometric north pole (axis of rotation)
     #[default]
@@ -75,39 +75,39 @@ impl FromUnits<Angle> for CompassReference {
 pub type Heading = Compass<HeadingType>;
 
 /// Type with no functions, used only as a compile-time type-check
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct HeadingType;
 
 /// Represents a track - the compass direction that the entity is travelling
 pub type Track = Compass<TrackType>;
 
 /// Type with no functions, used only as a compile-time type-check
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct TrackType;
 
 /// Represents a bearing - the compass direction of your desired destination
 pub type Bearing = Compass<BearingType>;
 
 /// Type with no functions, used only as a compile-time type-check
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct BearingType;
 
 /// Represents a course - the compass direction of your desired track
 pub type Course = Compass<CourseType>;
 
 /// Type with no functions, used only as a compile-time type-check
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct CourseType;
 
 /// Represents a azimuth - the compass direction of a generic pointing angle
 pub type Azimuth = Compass<AzimuthType>;
 
 /// Type with no functions, used only as a compile-time type-check
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct AzimuthType;
 
 /// Represents a compass needle and the direction that it's pointing
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Compass<T> {
     angle: Angle,
     direction: RotationDirection,
@@ -232,7 +232,7 @@ impl<T> Compass<T> {
 /// Represents a relative angle from a particular zero point that's not a standard reference like
 /// North or East.  Used for "relative bearings" and the like where the angle is referenced to the
 /// heading of an entity (like, 10 degrees to the right)
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CompassOffset<T, B> {
     compass: Compass<T>,
     offset: Angle,

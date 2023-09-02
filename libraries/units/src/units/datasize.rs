@@ -6,7 +6,7 @@ use crate::units::Unit;
 use super::FromUnits;
 
 #[allow(clippy::cast_possible_truncation)]
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 pub enum DataSizeUnits {
     #[default]
     Bytes,

@@ -5,7 +5,7 @@
 /// Matches (struct, units, default) to make a new basic struct
 macro_rules! basic_unit {
     ($struct_type:ident, $units_type: ident, $default_units: ident) => {
-        #[derive(Debug, Clone, Copy, Default)]
+        #[derive(Debug, Clone, Copy, Default, PartialEq)]
         pub struct $struct_type {
             value: f64,
             units: $units_type,
@@ -112,6 +112,12 @@ macro_rules! basic_unit {
             }
         }
 
+        impl std::ops::DivAssign<f64> for $struct_type {
+            fn div_assign(&mut self, rhs: f64) {
+                self.value /= rhs
+            }
+        }
+
         impl std::ops::Mul<f64> for $struct_type {
             type Output = $struct_type;
 
@@ -139,6 +145,19 @@ macro_rules! basic_unit {
 
             fn mul(self, rhs: $struct_type) -> Self::Output {
                 rhs * self
+            }
+        }
+
+        impl std::ops::MulAssign<f64> for $struct_type {
+            fn mul_assign(&mut self, rhs: f64) {
+                self.value *= rhs
+            }
+        }
+
+        impl std::cmp::PartialOrd<$struct_type> for $struct_type {
+            fn partial_cmp(&self, rhs: &$struct_type) -> Option<std::cmp::Ordering> {
+                let val = crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
+                self.value().partial_cmp(&val)
             }
         }
 

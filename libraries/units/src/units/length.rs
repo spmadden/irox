@@ -7,7 +7,7 @@ use crate::units::{FromUnits, Unit};
 
 ///
 /// Represents a specific length unit - SI or otherwise
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum LengthUnits {
     /// SI Base Unit for Length - Meters
@@ -113,8 +113,8 @@ pub const METERS_TO_NAUTICAL_MILE: f64 = 1. / NAUTICAL_MILES_TO_METERS;
 
 #[cfg(test)]
 mod tests {
-    use crate::units::length::LengthUnits;
     use crate::units::FromUnits;
+    use crate::units::length::LengthUnits;
 
     #[test]
     pub fn test_feet_meters() {

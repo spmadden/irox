@@ -7,7 +7,7 @@ use crate::units::{FromUnits, Unit};
 
 ///
 /// Represents a specific temperature unit - SI or otherwise
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum TemperatureUnits {
     #[default]
