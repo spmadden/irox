@@ -11,4 +11,5 @@ pub mod geo;
 pub mod gps;
 pub mod proj;
 pub mod tm;
+pub mod error;
 pub mod altitude;
