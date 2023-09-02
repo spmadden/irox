@@ -44,7 +44,8 @@ log = {version = "^0", features = []}
 env_logger = {version = "^0", features = []}
 syn = {version = "^2", features = ["extra-traits"]}
 quote = {version = "^1", features = []}
-tokio = {version = "^1", features = ["rt", "rt-multi-thread", "signal", "net", "sync"]}
+signal-hook = {version = "^0", features = []}
+futures = {version = "^0", features = []}
 windows = {version = "^0.48.0", features = [ "Devices_Geolocation", "Foundation" ]}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}

@@ -1,7 +1,6 @@
 use std::error::Error;
 use std::fmt::Display;
 
-
 pub struct GPSdError {
     pub(crate) msg: String,
 }
@@ -17,8 +16,10 @@ impl GPSdError {
         GPSdError { msg }
     }
 
-    pub fn err_str<T>(msg: String) -> Result<T, GPSdError> {
-        Err(GPSdError { msg })
+    pub fn err_str<T, S: AsRef<str>>(msg: S) -> Result<T, GPSdError> {
+        Err(GPSdError {
+            msg: msg.as_ref().to_string(),
+        })
     }
 
     pub fn err<T: Error, R>(err: T) -> Result<R, GPSdError> {
@@ -56,6 +57,13 @@ impl From<std::io::Error> for GPSdError {
 
 impl From<serde_json::Error> for GPSdError {
     fn from(value: serde_json::Error) -> Self {
+        GPSdError::new_str(format!("{value:?}"))
+    }
+}
+
+#[cfg(target_os = "windows")]
+impl From<irox_winlocation_api::Error> for GPSdError {
+    fn from(value: irox_winlocation_api::Error) -> Self {
         GPSdError::new_str(format!("{value:?}"))
     }
 }

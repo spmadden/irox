@@ -1,12 +1,12 @@
 use serde::ser::SerializeMap;
 use serde::Serializer;
-use time::{Duration, OffsetDateTime, UtcOffset};
 use time::format_description::well_known::Rfc3339;
+use time::{Duration, OffsetDateTime};
 
-use irox_carto::coordinate::EllipticalCoordinate;
-use irox_carto::geo::EllipticalShape;
+use irox_carto::altitude::AltitudeReferenceFrame;
+use irox_carto::coordinate::{CartesianCoordinate, EllipticalCoordinate, PositionUncertainty};
 use irox_units::units::angle::Angle;
-use irox_units::units::compass::{Compass, Heading, RelativeBearing, Track};
+use irox_units::units::compass::{CompassReference, Heading, RelativeBearing, Track};
 use irox_units::units::length::Length;
 use irox_units::units::speed::Speed;
 
@@ -44,18 +44,6 @@ pub struct TPV {
 
     /// GPS Fix status
     pub status: Option<FixStatus>,
-
-    /// Time/date stamp
-    pub time: Option<OffsetDateTime>,
-
-    /// Altitude, height above ellipsoid, in meters. Probably WGS84.
-    pub alt_hae: Option<Length>,
-
-    /// MSL Altitude in meters. The geoid used is rarely specified and is often inaccurate.
-    pub alt_msl: Option<Length>,
-
-    /// Deprecated.  Undefined.  Use altHAE or altMSL
-    pub alt: Option<Length>,
 
     /// Climb (positive) or sink (negative) rate, meters per second.
     pub climb: Option<Speed>,
@@ -108,26 +96,22 @@ pub struct TPV {
     /// Current leap seconds.
     pub leapseconds: Option<Duration>,
 
-    /// Course over ground, degrees from true north.
-    pub track: Option<Compass<Track>>,
+    /// Course over ground,
+    /// degrees from true north => 'track'
+    /// degrees from mag north => 'magtrack', positive is west var, negative is east var.
+    pub track: Option<Track>,
 
     /// Magnetic variation, degrees. Also known as the
     /// magnetic declination (the direction of the horizontal component of the
     /// magnetic field measured clockwise from north) in degrees, Positive is
     /// West variation. Negative is East variation.
-    pub mag_track: Option<Compass<Track>>,
+    pub magvar: Option<Track>,
 
     /// Speed over ground, meters per second.
     pub speed: Option<Speed>,
 
-    /// ECEF X position in meters.
-    pub ecefx: Option<Length>,
-
-    /// ECEF y position in meters.
-    pub ecefy: Option<Length>,
-
-    /// ECEF z position in meters.
-    pub ecefz: Option<Length>,
+    /// ECEF X, Y, and Z.
+    pub ecef: Option<CartesianCoordinate>,
 
     /// ECEF Position accuracy in meters
     pub ecefp_acc: Option<Length>,
@@ -143,11 +127,6 @@ pub struct TPV {
 
     /// ECEF velocity error in meters/second
     pub ecefv_acc: Option<Speed>,
-
-    /// Estimated Spherical (3D) Position Error in meters.
-    /// Guessed to be 95% confidence, but many GNSS receivers do not specify,
-    /// so certainty unknown.
-    pub sep: Option<Length>,
 
     /// Down component of relative position vector in meters.
     pub rel_d: Option<Length>,
@@ -192,38 +171,139 @@ impl TPV {
             map.serialize_entry("status", &(*status as i8))?;
         }
 
-        if let Some(time) = &self.time {
-            let time = time.to_offset(UtcOffset::UTC);
-            if let Ok(fmt) = time.format(&Rfc3339) {
-                map.serialize_entry("time", &fmt)?;
-            }
-        }
-        if let Some(alt_hae) = &self.alt_hae {
-            map.serialize_entry("altHAE", &alt_hae.as_meters().value())?;
-        }
-        if let Some(alt_msl) = &self.alt_msl {
-            map.serialize_entry("altMSL", &alt_msl.as_meters().value())?;
-        }
-        if let Some(alt) = &self.alt {
-            map.serialize_entry("alt", &alt.as_meters().value())?;
-        }
         if let Some(climb) = &self.climb {
             map.serialize_entry("climb", &climb.as_meters_per_second().value())?;
-        }
-        if let Some(datum) = &self.coordinate {
-            let val = match &datum.get_reference_frame() {
-                EllipticalShape::EPSG(e) => e,
-                EllipticalShape::Ellipse(e) => e.name(),
-            };
-
-            map.serialize_entry("datum", &val)?;
         }
         if let Some(depth) = &self.depth {
             map.serialize_entry("depth", &depth.as_meters().value())?;
         }
+        if let Some(age) = &self.dgps_age {
+            map.serialize_entry("dgpsAge", &age.as_seconds_f32())?;
+        }
+        if let Some(sta) = &self.dgps_sta {
+            map.serialize_entry("dgpsSta", &sta)?;
+        }
+        if let Some(epc) = &self.epc {
+            map.serialize_entry("epc", &epc.as_meters_per_second().value())?;
+        }
+        if let Some(epd) = &self.epd {
+            map.serialize_entry("epd", &epd.as_degrees().value())?;
+        }
+        if let Some(eph) = &self.eph {
+            map.serialize_entry("eph", &eph.as_meters().value())?;
+        }
+        if let Some(eps) = &self.eps {
+            map.serialize_entry("eps", &eps.as_meters_per_second().value())?;
+        }
+        if let Some(ept) = &self.ept {
+            map.serialize_entry("ept", &ept.as_seconds_f32())?;
+        }
+        if let Some(epx) = &self.epx {
+            map.serialize_entry("epx", &epx.as_meters().value())?;
+        }
+        if let Some(epy) = &self.epy {
+            map.serialize_entry("epy", &epy.as_meters().value())?;
+        }
+        if let Some(epv) = &self.epv {
+            map.serialize_entry("epv", &epv.as_meters().value())?;
+        }
+        if let Some(sep) = &self.geoid_sep {
+            map.serialize_entry("geoidSep", &sep.as_meters().value())?;
+        }
 
-        todo!();
+        if let Some(coord) = &self.coordinate {
+            map.serialize_entry("lat", &coord.get_latitude().0.as_degrees().value())?;
+            map.serialize_entry("lon", &coord.get_longitude().0.as_degrees().value())?;
+            map.serialize_entry("datum", &coord.get_reference_frame().name())?;
 
+            if let Some(alt) = coord.get_altitude() {
+                let val = alt.value().as_meters().value();
+                let key = match alt.reference_frame() {
+                    AltitudeReferenceFrame::Ellipsoid => "altHAE",
+                    AltitudeReferenceFrame::Geoid => "altMSL",
+                    _ => "alt",
+                };
+                map.serialize_entry(key, &val)?;
+            }
+            if let Some(pos_err) = coord.position_uncertainty() {
+                let val = match pos_err {
+                    PositionUncertainty::CircularUncertainty(c) => {
+                        c.as_radius().get_dimension().as_meters().value()
+                    }
+                    PositionUncertainty::EllipticalUncertainty(e) => e
+                        .semi_major_axis()
+                        .as_radius()
+                        .get_dimension()
+                        .as_meters()
+                        .value(),
+                };
+                map.serialize_entry("sep", &val)?;
+            }
+            if let Some(time) = coord.get_timestamp() {
+                if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(time::Duration::new(
+                    time.as_secs() as i64,
+                    time.subsec_nanos() as i32,
+                )) {
+                    if let Ok(fmt) = odt.format(&Rfc3339) {
+                        map.serialize_entry("time", &fmt)?;
+                    }
+                };
+            }
+        }
+
+        if let Some(sec) = &self.leapseconds {
+            map.serialize_entry("leapseconds", &sec.whole_seconds())?;
+        }
+        if let Some(track) = &self.track {
+            let val = track.angle().as_degrees().value();
+            match track.reference() {
+                CompassReference::TrueNorth => {
+                    map.serialize_entry("track", &val)?;
+                }
+                CompassReference::MagneticNorth => {
+                    map.serialize_entry("magtrack", &val)?;
+                }
+                _ => {}
+            }
+        }
+        if let Some(speed) = &self.speed {
+            map.serialize_entry("speed", &speed.as_meters_per_second().value())?;
+        }
+        if let Some(ecef) = &self.ecef {
+            map.serialize_entry("ecefx", &ecef.get_x().as_meters().value())?;
+            map.serialize_entry("ecefy", &ecef.get_y().as_meters().value())?;
+            map.serialize_entry("ecefz", &ecef.get_z().as_meters().value())?;
+        }
+
+        //TODO
         Ok(())
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub mod windows {
+    use irox_winlocation_api::WindowsCoordinate;
+
+    use crate::output::{NMEAMode, TPV};
+
+    impl From<&WindowsCoordinate> for TPV {
+        fn from(value: &WindowsCoordinate) -> Self {
+            let mode = match value.coordinate() {
+                Some(c) => match c.get_altitude().is_some() {
+                    true => NMEAMode::ThreeDim,
+                    false => NMEAMode::TwoDim,
+                },
+                None => NMEAMode::Unknown,
+            };
+
+            TPV {
+                mode,
+                coordinate: value.coordinate(),
+                track: value.heading(),
+                speed: value.speed(),
+
+                ..Default::default()
+            }
+        }
     }
 }

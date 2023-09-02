@@ -1,3 +1,18 @@
+use serde::ser::SerializeMap;
+use serde::Serializer;
+
+pub use att::*;
+pub use device::*;
+pub use error::*;
+pub use gst::*;
+pub use poll::*;
+pub use sky::*;
+pub use tpv::*;
+pub use version::*;
+pub use watch::*;
+
+use crate::error::GPSdError;
+
 pub mod att;
 pub mod device;
 pub mod error;
@@ -8,19 +23,6 @@ pub mod tpv;
 pub mod version;
 pub mod watch;
 
-use crate::error::GPSdError;
-pub use att::*;
-pub use device::*;
-pub use error::*;
-pub use gst::*;
-pub use poll::*;
-use serde::ser::SerializeMap;
-use serde::Serializer;
-pub use sky::*;
-pub use tpv::*;
-pub use version::*;
-pub use watch::*;
-
 pub struct Frame {
     /// Name of originating device
     pub device: Option<String>,
@@ -28,6 +30,7 @@ pub struct Frame {
 }
 
 pub enum FramePayload {
+    /// A TPV object represents a Time/Position value
     TPV(Box<TPV>),
 
     /// A SKY object reports a sky view of the GPS satellite positions.
@@ -65,9 +68,9 @@ impl serde::ser::Serialize for Frame {
 
         match &self.payload {
             FramePayload::TPV(t) => TPV::serialize::<S>(t, &mut map)?,
-            FramePayload::SKY(s) => {}
-            FramePayload::GST(g) => {}
-            FramePayload::ATT(a) => {}
+            FramePayload::SKY(_s) => {}
+            FramePayload::GST(_g) => {}
+            FramePayload::ATT(_a) => {}
         }
 
         map.end()
@@ -77,5 +80,28 @@ impl serde::ser::Serialize for Frame {
 impl Frame {
     pub fn to_json(&self) -> Result<String, GPSdError> {
         Ok(serde_json::to_string(self)?)
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub mod windows {
+    use irox_winlocation_api::WindowsCoordinate;
+
+    use crate::output::{Frame, FramePayload, TPV};
+
+    impl From<&WindowsCoordinate> for Frame {
+        fn from(value: &WindowsCoordinate) -> Self {
+            let tpv: TPV = value.into();
+            let device = Some(match value.source() {
+                Some(s) => {
+                    format!("WindowsAPI({s:?})")
+                }
+                None => String::from("WindowsAPI"),
+            });
+            Frame {
+                device,
+                payload: FramePayload::TPV(Box::new(tpv)),
+            }
+        }
     }
 }

@@ -1,12 +1,22 @@
-use clap::Parser;
-use crate::error::GPSdError;
+use std::time::Duration;
+
+use clap::{Parser, ValueEnum};
+use log::info;
 use serial::CharSize::{Bits5, Bits6, Bits7, Bits8};
 use serial::{
     BaudRate, CharSize, Error, FlowControl, Parity, PortSettings, SerialPort, StopBits, SystemPort,
 };
-use std::time::Duration;
 
-#[derive(Debug, Parser)]
+use crate::error::GPSdError;
+
+#[derive(Debug, Default, Copy, Clone, ValueEnum)]
+pub enum EncodingType {
+    #[default]
+    Nmea0183,
+    SirfBinary,
+}
+
+#[derive(Debug, Clone, Parser)]
 #[command(author, version, about)]
 pub struct SerialConfig {
     /// Serial port path, like ("COM0", or "/dev/ttyS0")
@@ -33,25 +43,15 @@ pub struct SerialConfig {
     /// Flow control, one of ("none", "software", "hardware")
     #[arg(short = 'f', long, default_value = "none")]
     pub flow_control: String,
-
-    /// TCP listen address
-    #[arg(short = 'a', long, default_value = "0.0.0.0")]
-    pub listen_address: String,
-
-    /// TCP listen port
-    #[arg(short='l', long, default_value_t=2947, value_parser=clap::value_parser!(u16).range(1..))]
-    pub listen_port: u16,
 }
 
+pub struct SerErr(pub GPSdError);
 
-pub struct SerErr(GPSdError);
-
-pub fn open() -> Result<SystemPort, SerErr> {
-    let config = SerialConfig::parse();
+pub fn open(config: SerialConfig) -> Result<SystemPort, SerErr> {
     let mut port = serial::open(config.serial_port.as_str())?;
-
+    info!("Successfully opened serial port: {}", config.serial_port);
     configure(&mut port, &config)?;
-
+    info!("Successfully configured serial port: {config:?}");
     Ok(port)
 }
 
