@@ -1,7 +1,8 @@
 //!
 //! Structs around the SKY message
-use irox_units::units::length::Length;
 use time::OffsetDateTime;
+
+use irox_units::units::length::Length;
 
 pub struct Satellite {}
 
@@ -16,20 +17,20 @@ pub enum QualityIndicator {
 
 /// A SKY object reports a sky view of the GPS satellite positions.
 pub struct SKY {
-    n_sat: Option<u32>,
-    gdop: Option<f32>,
-    hdop: Option<f32>,
-    pdop: Option<f32>,
+    pub n_sat: Option<u32>,
+    pub gdop: Option<f32>,
+    pub hdop: Option<f32>,
+    pub pdop: Option<f32>,
 
-    pr_res: Option<Length>,
-    qual: Option<QualityIndicator>,
-    satellites: Option<Vec<Satellite>>,
+    pub pr_res: Option<Length>,
+    pub qual: Option<QualityIndicator>,
+    pub satellites: Option<Vec<Satellite>>,
 
-    tdop: Option<f32>,
-    time: Option<OffsetDateTime>,
+    pub tdop: Option<f32>,
+    pub time: Option<OffsetDateTime>,
 
-    u_sat: Option<u32>,
-    vdop: Option<f32>,
-    xdop: Option<f32>,
-    ydop: Option<f32>,
+    pub u_sat: Option<u32>,
+    pub vdop: Option<f32>,
+    pub xdop: Option<f32>,
+    pub ydop: Option<f32>,
 }

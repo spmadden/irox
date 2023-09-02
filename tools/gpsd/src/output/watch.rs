@@ -13,12 +13,12 @@ pub enum RawMode {
 
 /// This command sets watcher mode.
 pub struct Watch {
-    enable: Option<bool>,
-    json: Option<bool>,
-    nmea: Option<bool>,
-    raw: Option<RawMode>,
-    scaled: Option<bool>,
-    split24: Option<bool>,
-    pps: Option<bool>,
-    remote: Option<String>,
+    pub enable: Option<bool>,
+    pub json: Option<bool>,
+    pub nmea: Option<bool>,
+    pub raw: Option<RawMode>,
+    pub scaled: Option<bool>,
+    pub split24: Option<bool>,
+    pub pps: Option<bool>,
+    pub remote: Option<String>,
 }

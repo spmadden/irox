@@ -28,28 +28,28 @@ pub enum DeviceFlags {
 }
 
 pub struct Device {
-    activated: Option<OffsetDateTime>,
-    bps: Option<u32>,
-    cycle: Option<f32>,
-    driver: Option<String>,
-    flags: Option<Vec<DeviceFlags>>,
-    hexdata: Option<String>,
-    mincycle: Option<f32>,
-    native: Option<NativeMode>,
-    parity: Option<Parity>,
-    path: Option<String>,
-    readonly: Option<bool>,
-    stopbits: Option<StopBits>,
-    subtype: Option<String>,
-    subtype1: Option<String>,
+    pub activated: Option<OffsetDateTime>,
+    pub bps: Option<u32>,
+    pub cycle: Option<f32>,
+    pub driver: Option<String>,
+    pub flags: Option<Vec<DeviceFlags>>,
+    pub hexdata: Option<String>,
+    pub mincycle: Option<f32>,
+    pub native: Option<NativeMode>,
+    pub parity: Option<Parity>,
+    pub path: Option<String>,
+    pub readonly: Option<bool>,
+    pub stopbits: Option<StopBits>,
+    pub subtype: Option<String>,
+    pub subtype1: Option<String>,
 }
 
 /// Returns a device list object with the following elements:
 pub struct Devices {
     /// List of device descriptions
-    devices: Vec<Device>,
+    pub devices: Vec<Device>,
 
     /// URL of the remote daemon reporting the device set. If empty, this is a DEVICES response
     /// from the local daemon.
-    remote: Option<String>,
+    pub remote: Option<String>,
 }

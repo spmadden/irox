@@ -1,14 +1,15 @@
 //!
 //! Structs around the Poll command
 
-use crate::output::{SKY, TPV};
 use time::OffsetDateTime;
+
+use crate::output::{SKY, TPV};
 
 /// The POLL command requests data from the last-seen fixes on all active GPS devices. Devices must
 /// previously have been activated by ?WATCH to be pollable.
 pub struct Poll {
-    time: OffsetDateTime,
-    active: u32,
-    tpv: Vec<TPV>,
-    sky: Vec<SKY>,
+    pub time: OffsetDateTime,
+    pub active: u32,
+    pub tpv: Vec<TPV>,
+    pub sky: Vec<SKY>,
 }
