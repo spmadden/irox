@@ -21,6 +21,23 @@ use crate::error::ConvertError;
 pub enum CoordinateType {
     Elliptical(EllipticalCoordinate),
     Cartesian(CartesianCoordinate),
+    Horizontal(HorizontalCoordinate),
+}
+
+/// A "Absolute Coordinate" is a coordinate that has no variable/dependent element.  It
+/// does not require a context to be meaningful.  Contrast with [RelativeCoordinateType]
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum AbsoluteCoordinateType {
+    Elliptical(EllipticalCoordinate),
+    Cartesian(CartesianCoordinate),
+}
+
+/// A "Relative Coordinate" is a coordinate that has a variable or dependent element.  It's
+/// absolute coordinate is dependent on another absolute coordinate as a reference point.
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum RelativeCoordinateType {
+    Cartesian(CartesianCoordinate),
+    Horizontal(HorizontalCoordinate),
 }
 
 /// Forcing type for Latitude
