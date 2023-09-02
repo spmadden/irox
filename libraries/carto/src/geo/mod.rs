@@ -9,9 +9,9 @@ pub mod ellipse;
 pub mod ellipsoid;
 pub mod standards;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum EllipticalShape {
-    EPSG(String),
+    EpsgDatum(u32),
     Ellipse(Ellipse),
 }
 

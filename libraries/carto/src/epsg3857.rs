@@ -6,8 +6,11 @@ use std::f64::consts::{PI, TAU};
 use irox_units::units::angle::{self, Angle};
 
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
+use crate::geo::EllipticalShape;
 use crate::geo::standards::wgs84::WGS84_SHAPE;
 use crate::proj::Projection;
+
+pub const SPHERICAL_MERCATOR_SHAPE: EllipticalShape = EllipticalShape::EpsgDatum(3857);
 
 pub struct SphericalMercatorProjection {
     zoom_level: u8,

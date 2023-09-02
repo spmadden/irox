@@ -5,7 +5,7 @@ use irox_units::units::length::{Length, LengthUnits};
 
 use crate::geo::ellipsoid::Ellipsoid;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
     semi_major_axis: Length,
     inverse_flattening: f64,

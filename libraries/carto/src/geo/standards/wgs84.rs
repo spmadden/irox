@@ -17,6 +17,8 @@ pub const WGS84_SECOND_ECCENTRICITY_SQUARED: f64 = 0.006_739_946_742_27;
 pub const WGS84_PARAMS: Ellipse =
     Ellipse::named("WGS84", WGS84_SEMI_MAJOR_LENGTH, WGS84_INVERSE_FLATTENING);
 pub const WGS84_SHAPE: EllipticalShape = EllipticalShape::Ellipse(WGS84_PARAMS);
+pub const WGS84_EPSG_CODE: u32 = 4326;
+pub const WGS84_EPSG_SHAPE: EllipticalShape = EllipticalShape::EpsgDatum(WGS84_EPSG_CODE);
 
 pub static WGS84_ELLIPSOID: Ellipsoid = Ellipsoid {
     semi_major_axis: WGS84_SEMI_MAJOR_LENGTH,
