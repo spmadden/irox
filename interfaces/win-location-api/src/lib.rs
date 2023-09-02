@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 #[cfg(target_os = "windows")]
-pub use ::windows::*;
+pub use crate::windows::*;
 
 #[cfg(target_os = "windows")]
 mod windows {
@@ -82,3 +82,4 @@ mod windows {
 mod data;
 #[cfg(target_os = "windows")]
 mod error;
+
