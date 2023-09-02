@@ -3,7 +3,7 @@
 
 use ellipse::Ellipse;
 
-use crate::geo::standards::wgs84::WGS84_SHAPE;
+use crate::geo::standards::wgs84::{WGS84_EPSG_SHAPE, WGS84_SHAPE};
 
 pub mod ellipse;
 pub mod ellipsoid;
@@ -22,6 +22,7 @@ impl Default for EllipticalShape {
 }
 
 impl EllipticalShape {
+    #[must_use]
     pub fn name(&self) -> String {
         match self {
             EllipticalShape::EpsgDatum(d) => {
@@ -29,5 +30,10 @@ impl EllipticalShape {
             }
             EllipticalShape::Ellipse(e) => String::from(e.name()),
         }
+    }
+
+    #[must_use]
+    pub fn is_wgs84(&self) -> bool {
+        *self == WGS84_SHAPE || *self == WGS84_EPSG_SHAPE
     }
 }
