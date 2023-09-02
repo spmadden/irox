@@ -147,7 +147,86 @@ impl EllipticalCoordinate {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+///
+/// Allows the incremental building of an elliptical coordinate
+#[derive(Debug, Default, Clone)]
+pub struct EllipticalCoordinateBuilder {
+    latitude: Option<Latitude>,
+    longitude: Option<Longitude>,
+    reference_frame: Option<EllipticalShape>,
+    altitude: Option<Altitude>,
+    altitude_uncertainty: Option<Length>,
+    position_uncertainty: Option<PositionUncertainty>,
+    timestamp: Option<f64>,
+}
+
+impl EllipticalCoordinateBuilder {
+    #[must_use]
+    pub fn new() -> EllipticalCoordinateBuilder {
+        Default::default()
+    }
+
+    pub fn with_latitude(&mut self, latitude: Latitude) -> &mut EllipticalCoordinateBuilder {
+        self.latitude = Some(latitude);
+        self
+    }
+    pub fn with_longitude(&mut self, longitude: Longitude) -> &mut EllipticalCoordinateBuilder {
+        self.longitude = Some(longitude);
+        self
+    }
+    pub fn with_reference_frame(
+        &mut self,
+        frame: EllipticalShape,
+    ) -> &mut EllipticalCoordinateBuilder {
+        self.reference_frame = Some(frame);
+        self
+    }
+    pub fn with_altitude(&mut self, alt: Altitude) -> &mut EllipticalCoordinateBuilder {
+        self.altitude = Some(alt);
+        self
+    }
+    pub fn with_altitude_uncertainty(
+        &mut self,
+        alt_unk: Length,
+    ) -> &mut EllipticalCoordinateBuilder {
+        self.altitude_uncertainty = Some(alt_unk);
+        self
+    }
+    pub fn with_position_uncertainty(
+        &mut self,
+        pos_unk: PositionUncertainty,
+    ) -> &mut EllipticalCoordinateBuilder {
+        self.position_uncertainty = Some(pos_unk);
+        self
+    }
+
+    pub fn with_timestamp(&mut self, timestamp: f64) -> &mut EllipticalCoordinateBuilder {
+        self.timestamp = Some(timestamp);
+        self
+    }
+
+    pub fn build(self) -> Result<EllipticalCoordinate, ConvertError> {
+        let Some(latitude) = self.latitude else {
+            return Err(ConvertError::MissingValue("Missing latitude".to_string()))
+        };
+        let Some(longitude) = self.longitude else {
+            return Err(ConvertError::MissingValue("Missing longitude".to_string()))
+        };
+        let Some(reference_frame) = self.reference_frame else {
+            return Err(ConvertError::MissingValue("Missing reference frame".to_string()))
+        };
+        Ok(EllipticalCoordinate {
+            latitude,
+            longitude,
+            reference_frame,
+            altitude: self.altitude,
+            altitude_uncertainty: self.altitude_uncertainty,
+            position_uncertainty: self.position_uncertainty,
+            timestamp: self.timestamp,
+        })
+    }
+}
+
 ///
 /// Represents a coordinate in 3D Cartesian Space (X, Y, Z)
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
