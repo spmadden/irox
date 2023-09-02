@@ -20,3 +20,16 @@ impl Default for EllipticalShape {
         WGS84_SHAPE
     }
 }
+
+impl EllipticalShape {
+    pub fn name(&self) -> String {
+        match self {
+            EllipticalShape::EpsgDatum(d) => {
+                format!("EPSG({d})")
+            }
+            EllipticalShape::Ellipse(e) => {
+                String::from(e.name())
+            }
+        }
+    }
+}
