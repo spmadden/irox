@@ -273,3 +273,12 @@ impl Compass<HeadingType> {
         }
     }
 }
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum CompassDirection {
+    Heading(Heading),
+    Track(Track),
+    Bearing(Bearing),
+    Course(Course),
+    Azimuth(Azimuth),
+}
