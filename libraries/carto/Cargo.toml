@@ -14,5 +14,8 @@ exclude.workspace = true
 irox-units = { version = "0.1", path = "../units" }
 irox-enums.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
+
 [dev-dependencies]
 irox-tools = {version = "0.1", path = "../tools"}
