@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::fmt::{Display, Formatter};
+
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Default)]
 pub struct DilutionOfPrecision(f64);
 
@@ -17,6 +19,24 @@ impl DOPs {
     #[must_use]
     pub fn new() -> DOPs {
         Default::default()
+    }
+}
+
+impl Display for DOPs {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let print = |x:Option<DilutionOfPrecision>| {
+            match x {
+                Some(x) => format!("{:0.3}", x.0),
+                None => "?".to_string()
+            }
+        };
+        write!(f, "hdop: {} vdop: {} pdop: {} gdop: {} tdop: {}",
+            print(self.horizontal),
+            print(self.vertical),
+            print(self.position),
+            print(self.geometric),
+            print(self.time)
+        )
     }
 }
 

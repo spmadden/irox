@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::fmt::{Display, Formatter};
+use std::time::{Duration, SystemTime};
+
 use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
 use irox_units::units::compass::Azimuth;
@@ -61,7 +64,41 @@ pub struct EllipticalCoordinate {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<f64>,
+    timestamp: Option<Duration>,
+}
+
+impl Display for EllipticalCoordinate {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let alt = match self.altitude {
+            Some(alt) => {
+                format!(
+                    " Alt: {}m {}",
+                    alt.value().as_meters().value(),
+                    alt.reference_frame().short_name()
+                )
+            }
+            None => String::new(),
+        };
+        let alt_err = match self.altitude_uncertainty {
+            Some(err) => format!("+/- {}m vert", err.as_meters().value()),
+            None => String::new()
+        };
+        let pos_err = match self.position_uncertainty {
+            Some(err) => format!(" {} horiz", err),
+            None => String::new()
+        };
+        let asof = match self.timestamp {
+            Some(ts) => format!(" as/of: {:?}", SystemTime::UNIX_EPOCH.checked_add(ts)),
+            None => String::new()
+        };
+        write!(
+            f,
+            "\n\tLat: {:0.5}\u{00B0} Lon: {:0.5}\u{00B0} {}{alt}{alt_err}{pos_err}{asof}",
+            self.latitude.0.as_degrees().value(),
+            self.longitude.0.as_degrees().value(),
+            self.reference_frame.name()
+        )
+    }
 }
 
 impl EllipticalCoordinate {
@@ -121,7 +158,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn get_timestamp(&self) -> &Option<f64> {
+    pub fn get_timestamp(&self) -> &Option<Duration> {
         &self.timestamp
     }
 
@@ -134,7 +171,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn with_timestamp(self, timestamp: f64) -> EllipticalCoordinate {
+    pub fn with_timestamp(self, timestamp: Duration) -> EllipticalCoordinate {
         EllipticalCoordinate {
             timestamp: Some(timestamp),
             ..self
@@ -157,7 +194,7 @@ pub struct EllipticalCoordinateBuilder {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<f64>,
+    timestamp: Option<Duration>,
 }
 
 impl EllipticalCoordinateBuilder {
@@ -200,7 +237,7 @@ impl EllipticalCoordinateBuilder {
         self
     }
 
-    pub fn with_timestamp(&mut self, timestamp: f64) -> &mut EllipticalCoordinateBuilder {
+    pub fn with_timestamp(&mut self, timestamp: Duration) -> &mut EllipticalCoordinateBuilder {
         self.timestamp = Some(timestamp);
         self
     }
@@ -278,6 +315,15 @@ pub enum PositionUncertainty {
     EllipticalUncertainty(Ellipse),
 }
 
+impl Display for PositionUncertainty {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PositionUncertainty::CircularUncertainty(circ) => write!(f, "{}", circ),
+            PositionUncertainty::EllipticalUncertainty(ell) => write!(f, "{}", ell),
+        }
+    }
+}
+
 ///
 /// A coordinate type that represents an Azimuth/Elevation look angle from a particular
 /// refernece point.
@@ -290,6 +336,8 @@ pub struct HorizontalCoordinate {
 
 #[cfg(target_os = "windows")]
 pub mod windows_conv {
+    use std::time::Duration;
+
     use windows::Devices::Geolocation::Geocoordinate;
 
     use irox_units::shapes::CircularDimension;
@@ -297,7 +345,9 @@ pub mod windows_conv {
     use irox_units::units::length::Length;
 
     use crate::altitude::{Altitude, AltitudeReferenceFrame};
-    use crate::coordinate::{EllipticalCoordinate, EllipticalCoordinateBuilder, Latitude, Longitude, PositionUncertainty};
+    use crate::coordinate::{
+        EllipticalCoordinate, EllipticalCoordinateBuilder, Latitude, Longitude, PositionUncertainty,
+    };
     use crate::error::ConvertError;
     use crate::geo::EllipticalShape;
     use crate::geo::standards::wgs84::{WGS84_EPSG_CODE, WGS84_SHAPE};
@@ -330,10 +380,10 @@ pub mod windows_conv {
             };
             bld.with_altitude(Altitude::new(alt, alt_frame));
 
-            bld.with_reference_frame(match point.SpatialReferenceId(){
+            bld.with_reference_frame(match point.SpatialReferenceId() {
                 Ok(epsg) => match epsg {
                     WGS84_EPSG_CODE => WGS84_SHAPE,
-                    e => EllipticalShape::EpsgDatum(e)
+                    e => EllipticalShape::EpsgDatum(e),
                 },
                 Err(_) => {
                     // assume wgs84.
@@ -354,7 +404,11 @@ pub mod windows_conv {
 
             if let Ok(ts) = value.PositionSourceTimestamp() {
                 if let Ok(ts) = ts.GetDateTime() {
-                    bld.with_timestamp(ts.UniversalTime as f64);
+                    let dur = match ts.UniversalTime {
+                        ..=0 => Duration::from_secs(0),
+                        v => Duration::from_secs(v as u64)
+                    };
+                    bld.with_timestamp(dur);
                 }
             }
 
