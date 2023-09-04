@@ -1,0 +1,20 @@
+[package]
+name = "irox-nmea0183"
+description = "NMEA-0183 format Encoders and Decoders for GPS Devices"
+keywords = ["nmea", "encoder", "decoder", "gps"]
+categories = ["aerospace", "parser-implementations", "science::geo", "encoding"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+exclude.workspace = true
+
+[dependencies]
+irox-structs.workspace = true
+irox-enums.workspace = true
+irox-tools.workspace = true
+irox-carto.workspace = true
+irox-units.workspace = true
+log.workspace = true
+time.workspace = true

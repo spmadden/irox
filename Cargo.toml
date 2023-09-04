@@ -11,6 +11,7 @@ readme = "README.md"
 members = [
     "irox",
     "data-formats/csv",
+    "data-formats/nmea0183",
     "data-formats/sirf",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
