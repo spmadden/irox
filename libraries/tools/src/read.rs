@@ -34,7 +34,7 @@ pub fn consume_until<T: Read>(input: &mut T, search: &[u8]) -> Result<(), Error>
 /// 1. The byte stream represented by 'search' has been found or
 /// 2. The input stream returns 0 bytes read (or errors out)
 /// It returns all bytes read in the interim
-pub fn read_until<T: Read>(mut input: &mut T, search: &[u8]) -> Result<Vec<u8>, Error> {
+pub fn read_until<T: Read>(input: &mut T, search: &[u8]) -> Result<Vec<u8>, Error> {
     let mut ringbuf: VecDeque<u8> = VecDeque::with_capacity(search.len());
 
     let mut out = Vec::new();
@@ -47,10 +47,11 @@ pub fn read_until<T: Read>(mut input: &mut T, search: &[u8]) -> Result<Vec<u8>, 
         if input.read(&mut onebuf)? == 0 {
             return Ok(out);
         }
-        out.push(onebuf[0]);
 
         if ringbuf.len() == search.len() {
-            ringbuf.pop_front();
+            if let Some(val) = ringbuf.pop_front() {
+                out.push(val);
+            }
         }
         ringbuf.push_back(onebuf[0]);
     }
