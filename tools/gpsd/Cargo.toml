@@ -22,6 +22,7 @@ log.workspace = true
 signal-hook.workspace = true
 futures.workspace = true
 irox-sirf.workspace = true
+irox-nmea0183.workspace = true
 irox-tools.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true

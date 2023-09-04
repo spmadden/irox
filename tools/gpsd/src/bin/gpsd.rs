@@ -4,13 +4,13 @@ use std::time::Duration;
 
 use clap::Parser;
 use human_panic::setup_panic;
-use log::error;
+use log::{error, info};
 
 use irox_gpsd::config::{GPSdConfig, Transport};
 use irox_gpsd::error::GPSdError;
+use irox_gpsd::output::FrameGenerator;
 use irox_gpsd::transport::serial::SerialConfig;
 use irox_gpsd::transport::{ListenSettings, TCPServer};
-use irox_tools::packetio::*;
 
 fn main() -> Result<(), GPSdError> {
     setup_panic!();
@@ -54,11 +54,12 @@ fn main() -> Result<(), GPSdError> {
 }
 
 pub fn start_serial(
-    _server: TCPServer,
+    mut server: TCPServer,
     shouldquit: Arc<AtomicBool>,
     config: SerialConfig,
 ) -> Result<(), GPSdError> {
-    let mut port = match irox_gpsd::transport::serial::open(config) {
+    let encoding = config.encoding;
+    let port = match irox_gpsd::transport::serial::open(config) {
         Ok(p) => p,
         Err(e) => {
             error!("Unable to open serial port: {:?}", e.0);
@@ -66,13 +67,24 @@ pub fn start_serial(
         }
     };
 
-    std::thread::spawn(move || {
-        let parser = irox_sirf::packet::PacketParser {};
-        while !shouldquit.load(Ordering::Relaxed) {
-            let res = parser.build_from(&mut port);
-            println!("{res:?}");
+    let mut framebuilder = FrameGenerator::new(encoding, port);
+    while !shouldquit.load(Ordering::Relaxed) {
+        let frame = framebuilder.build_from();
+        let frame = match frame {
+            Ok(f) => f,
+            Err(e) => {
+                error!("Error reading frame: {e:?}");
+                continue;
+            }
+        };
+        if let Ok(json) = frame.to_json() {
+            info!("Generated frame {json}");
         }
-    });
+        if let Err(e) = server.send(frame) {
+            error!("Error sending frame: {e:?}");
+        }
+    }
+
     Ok(())
 }
 

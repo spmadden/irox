@@ -1,6 +1,7 @@
 //!
 //! TCP Transport
 
+use std::io::{Read, Write};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
@@ -30,13 +31,10 @@ pub struct TCPServer {
 }
 
 impl TCPServer {
-    pub fn start(
-        settings: ListenSettings,
-        running: Arc<AtomicBool>,
-    ) -> Result<TCPServer, GPSdError> {
+    pub fn start(settings: ListenSettings, close: Arc<AtomicBool>) -> Result<TCPServer, GPSdError> {
         let sockaddr = SocketAddr::new(settings.listen_ip, settings.listen_port);
 
-        let conn_pool = match TCPConnectionManager::start(sockaddr, running) {
+        let conn_pool = match TCPConnectionManager::start(sockaddr, close) {
             Ok(c) => c,
             Err(e) => {
                 error!("Error starting TCPConnectionManager: {e:?}");
@@ -48,9 +46,29 @@ impl TCPServer {
         Ok(TCPServer { conn_pool })
     }
 
+    pub fn poll_commands(&mut self) {
+        self.conn_pool.for_each_connected(|s| {
+            let mut buf: [u8; 4096] = [0; 4096];
+            let read = match s.read(&mut buf) {
+                Ok(r) => r,
+                Err(e) => {
+                    error!("Error reading stream: {e:?}");
+                    return false;
+                }
+            };
+            let (read, _rem) = buf.split_at(read);
+            let str = String::from_utf8_lossy(read);
+            info!("{str}");
+            true
+        });
+    }
+
     pub fn send(&mut self, frame: Frame) -> Result<(), GPSdError> {
         let data = frame.to_json()?;
-        self.conn_pool.write_to_all_connected(data.as_bytes());
+        let mut buf: Vec<u8> = Vec::new();
+        buf.write_fmt(format_args!("{data}\r\n"))?;
+
+        self.conn_pool.write_to_all_connected(&buf);
         Ok(())
     }
 }

@@ -23,6 +23,9 @@ pub struct SerialConfig {
     #[arg()]
     pub serial_port: String,
 
+    #[arg(short = 'e', long)]
+    pub encoding: EncodingType,
+
     /// Baud rate, one of (110, 300, 600, 1200, 2400, 4800, 9600, 19200, 38400,
     /// 57600, 115200)
     #[arg(short = 'b', long, default_value_t = 9600)]

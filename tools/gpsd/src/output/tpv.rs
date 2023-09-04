@@ -5,23 +5,14 @@ use time::{Duration, OffsetDateTime};
 
 use irox_carto::altitude::AltitudeReferenceFrame;
 use irox_carto::coordinate::{CartesianCoordinate, EllipticalCoordinate, PositionUncertainty};
+use irox_carto::gps::GPSFixType;
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{CompassReference, Heading, RelativeBearing, Track};
 use irox_units::units::length::Length;
 use irox_units::units::speed::Speed;
 
-/// NMEA Mode Type
-#[derive(Copy, Clone, Debug, Default)]
-pub enum NMEAMode {
-    #[default]
-    Unknown = 0,
-    NoFix = 1,
-    TwoDim = 2,
-    ThreeDim = 3,
-}
-
 /// GPS Fix Status
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub enum FixStatus {
     #[default]
     Unknown = 0,
@@ -37,10 +28,10 @@ pub enum FixStatus {
 }
 
 /// Time, Position, Velocity
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct TPV {
     /// NMEA mode
-    pub mode: NMEAMode,
+    pub mode: GPSFixType,
 
     /// GPS Fix status
     pub status: Option<FixStatus>,
@@ -240,7 +231,7 @@ impl TPV {
                 map.serialize_entry("sep", &val)?;
             }
             if let Some(time) = coord.get_timestamp() {
-                if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(time::Duration::new(
+                if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(Duration::new(
                     time.as_secs() as i64,
                     time.subsec_nanos() as i32,
                 )) {
@@ -282,18 +273,19 @@ impl TPV {
 
 #[cfg(target_os = "windows")]
 pub mod windows {
+    use irox_carto::gps::GPSFixType;
     use irox_winlocation_api::WindowsCoordinate;
 
-    use crate::output::{NMEAMode, TPV};
+    use crate::output::TPV;
 
     impl From<&WindowsCoordinate> for TPV {
         fn from(value: &WindowsCoordinate) -> Self {
             let mode = match value.coordinate() {
                 Some(c) => match c.get_altitude().is_some() {
-                    true => NMEAMode::ThreeDim,
-                    false => NMEAMode::TwoDim,
+                    true => GPSFixType::ThreeDim,
+                    false => GPSFixType::TwoDim,
                 },
-                None => NMEAMode::Unknown,
+                None => GPSFixType::Unknown,
             };
 
             TPV {

@@ -61,6 +61,18 @@ impl From<serde_json::Error> for GPSdError {
     }
 }
 
+impl From<irox_nmea0183::Error> for GPSdError {
+    fn from(value: irox_nmea0183::Error) -> Self {
+        GPSdError::new_str(format!("{value:?}"))
+    }
+}
+
+impl From<irox_sirf::error::Error> for GPSdError {
+    fn from(value: irox_sirf::error::Error) -> Self {
+        GPSdError::new_str(format!("{value:?}"))
+    }
+}
+
 #[cfg(target_os = "windows")]
 impl From<irox_winlocation_api::Error> for GPSdError {
     fn from(value: irox_winlocation_api::Error) -> Self {
