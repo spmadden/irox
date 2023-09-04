@@ -331,12 +331,12 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
         impl irox_structs::Struct for #struct_name {
             type ImplType = #struct_name;
 
-            fn write_to<T: irox_tools::bits::MutBits>(&self, out: &mut T) -> Result<(), irox_structs::StructError> {
+            fn write_to<T: irox_tools::bits::MutBits>(&self, out: &mut T) -> Result<(), std::io::Error> {
                 #(#writers)*
                 Ok(())
             }
 
-            fn parse_from<T: irox_tools::bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_structs::StructError> {
+            fn parse_from<T: irox_tools::bits::Bits>(input: &mut T) -> Result<Self::ImplType, std::io::Error> {
                 Ok(#struct_name {
                     #(#readers)*
                 })
