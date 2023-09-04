@@ -5,7 +5,7 @@
 //! Traits for packetization of data and movement of packets of data
 
 use std::collections::VecDeque;
-use std::io::{ErrorKind, Read};
+use std::io::ErrorKind;
 
 use crate::bits::{Bits, MutBits};
 
@@ -14,16 +14,16 @@ pub type PacketData = Vec<u8>;
 
 pub trait Packet {
     type PacketType;
-    type Error;
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error>;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error>;
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error>;
+    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), std::io::Error> {
+        out.write_all(self.get_bytes()?.as_slice())
+    }
 
     fn get_type(&self) -> Self::PacketType;
 }
 
-pub trait PacketBuilder<P: Packet> {
+pub trait PacketBuilder<P> {
     type Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<P, Self::Error>;
@@ -32,11 +32,9 @@ pub trait PacketBuilder<P: Packet> {
 ///
 /// This trait represents a way to packetize a stream of data
 ///
-pub trait Packetization {
-    type Error;
-
+pub trait Packetization<T: Bits> {
     /// Reads the next packet from the source reader
-    fn read_next_packet<T: Bits>(&mut self, source: &mut T) -> Result<PacketData, Self::Error>;
+    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error>;
 }
 
 ///
@@ -57,21 +55,21 @@ pub trait PacketTransport {
 
 ///
 /// A packetizer binds a Read stream and a Packetization strategy
-pub struct Packetizer<'a, R: Read, P: Packetization> {
+pub struct Packetizer<'a, R: Bits, P: Packetization<R>> {
     reader: &'a mut R,
     chunker: &'a mut P,
 }
 
 impl<'a, R, P> PacketTransport for Packetizer<'a, R, P>
 where
-    R: Read,
-    P: Packetization<Error = std::io::Error>,
+    R: Bits,
+    P: Packetization<R>,
 {
     type Error = std::io::Error;
 
     /// Polls the next packet from the underlying transport
     fn poll_next_packet(&mut self) -> Result<PacketData, Self::Error> {
-        self.chunker.read_next_packet(&mut self.reader)
+        self.chunker.read_next_packet(self.reader)
     }
 
     /// Start the underlying transport up
@@ -104,10 +102,8 @@ pub struct DelimitedPacketizer {
     buffer: Vec<u8>,
 }
 
-impl Packetization for DelimitedPacketizer {
-    type Error = std::io::Error;
-
-    fn read_next_packet<T: Bits>(&mut self, source: &mut T) -> Result<PacketData, Self::Error> {
+impl<T: Bits> Packetization<T> for DelimitedPacketizer {
+    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error> {
         if self.delimiter.is_empty() {
             return Err(std::io::Error::new(
                 ErrorKind::InvalidData,
