@@ -97,7 +97,7 @@ impl Angle {
     }
 
     #[must_use]
-    pub fn new_dms(degrees: i32, minutes: u32, seconds: f64) -> Angle {
+    pub fn new_dms(degrees: i16, minutes: u8, seconds: f64) -> Angle {
         let mult: f64 = match degrees {
             ..=0 => -1.0,
             _ => 1.0,
@@ -116,6 +116,26 @@ impl Angle {
     #[must_use]
     pub fn as_radians(&self) -> Angle {
         self.as_unit(AngleUnits::Radians)
+    }
+
+    #[must_use]
+    pub fn as_dms(&self) -> (i16, u8, f64) {
+        let (deg, val) = self.as_deg_min();
+
+        let min = val as u8;
+        let sec = (val - min as f64) * 60.;
+        (deg, min, sec)
+    }
+
+    #[must_use]
+    pub fn as_deg_min(&self) -> (i16, f64) {
+        let val = self.as_degrees().value;
+        let sign = val.signum() as i16;
+        let val = val.abs();
+
+        let deg = val as i16;
+        let min = (val - deg as f64) * 60.;
+        (deg * sign, min)
     }
 }
 
