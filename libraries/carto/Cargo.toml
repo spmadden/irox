@@ -11,12 +11,10 @@ homepage.workspace = true
 exclude.workspace = true
 
 [dependencies]
-irox-units = { version = "0.1", path = "../units" }
+irox-units.workspace = true
+irox-tools.workspace = true
 irox-enums.workspace = true
 log.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
-
-[dev-dependencies]
-irox-tools = {version = "0.1", path = "../tools"}

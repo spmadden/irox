@@ -3,8 +3,7 @@
 
 use std::fmt::{Display, Formatter};
 
-use log::error;
-
+use irox_tools::options::MaybeFrom;
 use irox_units::units::compass::Azimuth;
 
 use crate::coordinate::Elevation;
@@ -63,18 +62,14 @@ impl From<f64> for DilutionOfPrecision {
         DilutionOfPrecision(value)
     }
 }
-impl DilutionOfPrecision {
-    pub fn maybe_from(val: &str) -> Option<DilutionOfPrecision> {
-        if val.len() == 0 {
-            return None;
-        }
-        match val.parse() {
-            Ok(v) => Some(DilutionOfPrecision(v)),
-            Err(e) => {
-                error!("Error converting DOP: {e:?}");
-                None
-            }
-        }
+impl From<DilutionOfPrecision> for f64 {
+    fn from(value: DilutionOfPrecision) -> Self {
+        value.0
+    }
+}
+impl MaybeFrom<Option<f64>> for DilutionOfPrecision {
+    fn maybe_from(value: Option<f64>) -> Option<Self> {
+        Some(value?.into())
     }
 }
 
