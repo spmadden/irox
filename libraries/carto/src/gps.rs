@@ -17,6 +17,15 @@ pub struct SatelliteSignal {
     pub snr: u8,
 }
 
+impl Display for SatelliteSignal {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "PRN: {} Az: {} El: {}, SNR: {}",
+            self.prn, self.azimuth, self.elevation, self.snr
+        ))
+    }
+}
+
 /// GPS Fix Type
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub enum GPSFixType {

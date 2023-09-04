@@ -416,3 +416,19 @@ pub mod windows_conv {
         }
     }
 }
+
+impl Display for Latitude {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("Lat[{}]", self.0))
+    }
+}
+impl Display for Longitude {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("Lon[{}]", self.0))
+    }
+}
+impl Display for Elevation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("Elv[{}]", self.0))
+    }
+}
