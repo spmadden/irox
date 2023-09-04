@@ -3,6 +3,8 @@
 
 //!
 //! This module contains the basic types and conversions for the SI "Length" quantity
+use std::fmt::{Display, Formatter};
+
 use crate::units::{FromUnits, Unit};
 
 ///
@@ -63,6 +65,18 @@ basic_unit!(Length, LengthUnits, Meters);
 from_units_length!(f32);
 from_units_length!(f64);
 
+impl LengthUnits {
+    pub const fn short_name(&self) -> &'static str {
+        match self {
+            LengthUnits::Meters => "m",
+            LengthUnits::Kilometers => "km",
+            LengthUnits::Feet => "ft",
+            LengthUnits::Mile => "mi",
+            LengthUnits::NauticalMile => "nmi",
+        }
+    }
+}
+
 impl Unit<LengthUnits> for Length {
     fn as_unit(&self, units: LengthUnits) -> Self {
         Length {
@@ -99,6 +113,16 @@ impl Length {
     #[must_use]
     pub fn as_feet(&self) -> Length {
         self.as_unit(LengthUnits::Feet)
+    }
+}
+
+impl Display for Length {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "{:02.3}{}",
+            self.value,
+            self.units.short_name()
+        ))
     }
 }
 
