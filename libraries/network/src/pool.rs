@@ -22,7 +22,7 @@ pub struct TCPConnectionManager {
 impl TCPConnectionManager {
     pub fn start<A: ToSocketAddrs + Debug>(
         addr: A,
-        running: Arc<AtomicBool>,
+        close: Arc<AtomicBool>,
     ) -> Result<TCPConnectionManager, std::io::Error> {
         let mut addr: Vec<SocketAddr> = match addr.to_socket_addrs() {
             Ok(a) => a.collect(),
@@ -48,7 +48,7 @@ impl TCPConnectionManager {
 
         let conns = active_connections.clone();
         let handle = thread::spawn(move || {
-            while running.load(Ordering::Relaxed) {
+            while !close.load(Ordering::Relaxed) {
                 let client = match sock.accept() {
                     Ok(c) => c,
                     Err(e) => {
@@ -56,6 +56,7 @@ impl TCPConnectionManager {
                         continue;
                     }
                 };
+                info!("New client connected: {}", client.1);
 
                 let Ok(ref mut conns) = conns.lock() else {
                     continue;
