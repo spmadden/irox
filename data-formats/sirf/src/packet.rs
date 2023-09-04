@@ -3,11 +3,11 @@
 
 use std::io::{ErrorKind, Read, Write};
 
-use irox_tools::bits::Bits;
-use irox_tools::packetio::{Packet, PacketBuilder};
-use irox_tools::read::{read_exact, read_exact_vec, read_until};
+use irox_tools::bits::{Bits, MutBits};
+use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
+use irox_tools::read::{consume_until, read_exact, read_exact_vec};
 
-use crate::error::Error;
+use crate::error::{Error, ErrorType};
 use crate::input::x02_mesnavdata::MeasuredNavigationData;
 use crate::input::x04_meastrackdata::MeasuredTrackData;
 use crate::input::x07_clockstatus::ClockStatus;
@@ -89,13 +89,8 @@ pub enum PacketType {
 
 impl Packet for PacketType {
     type PacketType = PacketType;
-    type Error = crate::error::Error;
 
-    fn write_to<T: Write>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Ok(out.write_all(self.get_bytes()?.as_slice())?)
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         let mut buf: Vec<u8> = Vec::new();
         self.write_to(&mut buf)?;
         Ok(buf)
@@ -106,18 +101,21 @@ impl Packet for PacketType {
     }
 }
 
-pub struct PacketParser;
-
-impl PacketBuilder<PacketType> for PacketParser {
-    type Error = crate::error::Error;
-
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
+#[derive(Default)]
+pub struct Packetizer;
+impl Packetizer {
+    pub fn new() -> Packetizer {
+        Packetizer {}
+    }
+}
+impl<T: Bits> Packetization<T> for Packetizer {
+    fn read_next_packet(&mut self, input: &mut T) -> Result<PacketData, std::io::Error> {
         loop {
             if let Err(e) = read_start(input) {
                 if e.kind() != ErrorKind::InvalidData {
-                    return Err(e.into());
+                    return Err(e);
                 }
-                read_until(input, &END_SEQ)?;
+                consume_until(input, &END_SEQ)?;
                 continue;
             }
             break;
@@ -129,14 +127,40 @@ impl PacketBuilder<PacketType> for PacketParser {
         let end = input.read_be_u16()?;
 
         if !check_checksum(payload.as_slice(), checksum) {
-            return Error::invalid_data("Invalid checksum");
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                Error::new(ErrorType::InvalidData, "Invalid checksum"),
+            ));
         }
         if end != END_VAL {
-            return Error::invalid_data("Invalid packet, missing end bytes");
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                Error::new(ErrorType::InvalidData, "Invalid packet, missing end bytes"),
+            ));
         }
+        let mut out: Vec<u8> = Vec::new();
+        out.write_be_u16(payload_len)?;
+        out.write_all(&payload)?;
+        out.write_be_u16(checksum)?;
+        out.write_be_u16(end)?;
+        Ok(out)
+    }
+}
 
+pub struct PacketParser;
+
+impl PacketBuilder<PacketType> for PacketParser {
+    type Error = std::io::Error;
+
+    fn build_from<T: Read>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
+        let payload = Packetizer::new().read_next_packet(input)?;
+
+        let (_pld_len, payload) = payload.split_at(2);
         let Some((msg_type, mut payload)) = payload.split_first() else {
-            return Error::invalid_data("Invalid packet");
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                "Payload length is insufficient"
+            ));
         };
         Ok(match msg_type {
             0x02 => PacketType::MeasuredNavigationData(

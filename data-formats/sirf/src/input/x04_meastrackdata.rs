@@ -33,13 +33,8 @@ pub struct MeasuredTrackData {
 
 impl Packet for MeasuredTrackData {
     type PacketType = ();
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Ok(out.write_all(self.get_bytes()?.as_ref())?)
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         let mut buf: Vec<u8> = Vec::new();
         buf.write_be_u16(self.gps_week)?;
         buf.write_be_u32(self.gps_tow)?;
@@ -58,7 +53,7 @@ impl Packet for MeasuredTrackData {
 pub struct MeasuredTrackDataBuilder;
 pub static BUILDER: MeasuredTrackDataBuilder = MeasuredTrackDataBuilder;
 impl PacketBuilder<MeasuredTrackData> for MeasuredTrackDataBuilder {
-    type Error = crate::error::Error;
+    type Error = std::io::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredTrackData, Self::Error> {
         let gps_week = input.read_be_u16()?;
@@ -89,6 +84,6 @@ impl PacketBuilder<MeasuredTrackData> for MeasuredTrackDataBuilder {
     }
 }
 
-fn read_channel<T: Bits>(input: &mut T) -> Result<MeasuredTrackChannel, crate::error::Error> {
-    Ok(MeasuredTrackChannel::parse_from(input)?)
+fn read_channel<T: Bits>(input: &mut T) -> Result<MeasuredTrackChannel, std::io::Error> {
+    MeasuredTrackChannel::parse_from(input)
 }

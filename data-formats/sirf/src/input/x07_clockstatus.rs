@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, MutBits};
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::packet::PacketType;
@@ -29,14 +29,9 @@ pub struct ClockStatus {
 
 impl Packet for ClockStatus {
     type PacketType = PacketType;
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Ok(Struct::write_to(self, out)?)
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
-        Ok(Struct::as_bytes(self)?)
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+        Struct::as_bytes(self)
     }
 
     fn get_type(&self) -> Self::PacketType {
@@ -47,9 +42,9 @@ impl Packet for ClockStatus {
 pub struct ClockStatusBuilder;
 pub static BUILDER: ClockStatusBuilder = ClockStatusBuilder;
 impl PacketBuilder<ClockStatus> for ClockStatusBuilder {
-    type Error = crate::error::Error;
+    type Error = std::io::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<ClockStatus, Self::Error> {
-        Ok(ClockStatus::parse_from(input)?)
+        ClockStatus::parse_from(input)
     }
 }

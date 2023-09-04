@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, MutBits};
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::error::Error;
@@ -34,40 +34,23 @@ pub enum ExtendedEphemerisData {
 
 impl Packet for ExtendedEphemerisData {
     type PacketType = ();
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        match self {
-            ExtendedEphemerisData::GPSDataEphemerisMask(g) => g.write_to(out)?,
-            ExtendedEphemerisData::ExtendedEphemeris2(e) => e.write_to(out)?,
-            ExtendedEphemerisData::ExtendedEphemeris3() => {
-                return Error::unsupported("Unsupported.")
-            }
-            ExtendedEphemerisData::ClockBiasAdjustment() => {
-                return Error::unsupported("Unsupported.")
-            }
-            ExtendedEphemerisData::EphemerisExtension() => {
-                return Error::unsupported("Unsupported.")
-            }
-            ExtendedEphemerisData::EphemerisAck() => return Error::unsupported("Unsupported."),
-        }
-        Ok(())
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         Ok(match self {
             ExtendedEphemerisData::GPSDataEphemerisMask(g) => g.as_bytes()?,
             ExtendedEphemerisData::ExtendedEphemeris2(e) => e.as_bytes()?,
             ExtendedEphemerisData::ExtendedEphemeris3() => {
-                return Error::unsupported("Unsupported.")
+                return Err(std::io::ErrorKind::Unsupported.into())
             }
             ExtendedEphemerisData::ClockBiasAdjustment() => {
-                return Error::unsupported("Unsupported.")
+                return Err(std::io::ErrorKind::Unsupported.into())
             }
             ExtendedEphemerisData::EphemerisExtension() => {
-                return Error::unsupported("Unsupported.")
+                return Err(std::io::ErrorKind::Unsupported.into())
             }
-            ExtendedEphemerisData::EphemerisAck() => return Error::unsupported("Unsupported."),
+            ExtendedEphemerisData::EphemerisAck() => {
+                return Err(std::io::ErrorKind::Unsupported.into())
+            }
         })
     }
 

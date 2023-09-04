@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, MutBits};
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Default, Debug, Copy, Clone, Struct)]
@@ -35,15 +35,9 @@ pub struct NavLibMeasurement {
 
 impl Packet for NavLibMeasurement {
     type PacketType = ();
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Struct::write_to(self, out)?;
-        Ok(())
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
-        Ok(Struct::as_bytes(self)?)
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+        Struct::as_bytes(self)
     }
 
     fn get_type(&self) -> Self::PacketType {
@@ -54,9 +48,9 @@ impl Packet for NavLibMeasurement {
 pub struct NavLibMeasureBuilder;
 pub static BUILDER: NavLibMeasureBuilder = NavLibMeasureBuilder;
 impl PacketBuilder<NavLibMeasurement> for NavLibMeasureBuilder {
-    type Error = crate::error::Error;
+    type Error = std::io::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<NavLibMeasurement, Self::Error> {
-        Ok(NavLibMeasurement::parse_from(input)?)
+        NavLibMeasurement::parse_from(input)
     }
 }

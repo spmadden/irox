@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use irox_tools::bits::{Bits, MutBits};
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Debug, Default, Clone)]
@@ -11,13 +11,8 @@ pub struct AsciiData {
 
 impl Packet for AsciiData {
     type PacketType = ();
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Ok(out.write_all(self.get_bytes()?.as_slice())?)
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         Ok(self.message.clone().into_bytes())
     }
 
@@ -29,11 +24,13 @@ impl Packet for AsciiData {
 pub struct AsciiDataBuilder;
 pub static BUILDER: AsciiDataBuilder = AsciiDataBuilder;
 impl PacketBuilder<AsciiData> for AsciiDataBuilder {
-    type Error = crate::error::Error;
+    type Error = std::io::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<AsciiData, Self::Error> {
-        let mut str = String::new();
-        input.read_to_string(&mut str)?;
+        let mut buf: Vec<u8> = Vec::new();
+        input.read_to_end(&mut buf)?;
+        let str = String::from_utf8_lossy(&buf).to_string();
+
         Ok(AsciiData { message: str })
     }
 }

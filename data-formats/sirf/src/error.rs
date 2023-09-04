@@ -3,8 +3,6 @@
 
 use std::fmt::{Display, Formatter};
 
-use irox_structs::StructError;
-
 #[derive(Debug, Copy, Clone)]
 pub enum ErrorType {
     IOError,
@@ -33,10 +31,6 @@ impl Error {
     pub(crate) fn new_str(error_type: ErrorType, error: String) -> Error {
         Error { error, error_type }
     }
-    pub(crate) fn invalid_data<T>(msg: &'static str) -> Result<T, Error> {
-        Err(Error::new(ErrorType::InvalidData, msg))
-    }
-
     pub(crate) fn unsupported<T>(msg: &'static str) -> Result<T, Error> {
         Err(Error::new(ErrorType::UnimplementedMessage, msg))
     }
@@ -45,11 +39,5 @@ impl Error {
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Error::new_str(ErrorType::IOError, format!("{value:?}"))
-    }
-}
-
-impl From<irox_structs::StructError> for Error {
-    fn from(value: StructError) -> Self {
-        Error::new_str(ErrorType::StructError, format!("{value:?}"))
     }
 }

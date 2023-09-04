@@ -13,3 +13,4 @@ exclude.workspace = true
 [dependencies]
 irox-structs.workspace = true
 irox-tools.workspace = true
+log.workspace = true

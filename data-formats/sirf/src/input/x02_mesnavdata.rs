@@ -47,13 +47,8 @@ pub struct MeasuredNavigationData {
 
 impl Packet for MeasuredNavigationData {
     type PacketType = PacketType;
-    type Error = crate::error::Error;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Self::Error> {
-        Ok(out.write_all(self.get_bytes()?.as_slice())?)
-    }
-
-    fn get_bytes(&self) -> Result<Vec<u8>, Self::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         let mut out: Vec<u8> = Vec::with_capacity(PAYLOAD_SIZE);
         out.write_be_i32(self.x_position)?;
         out.write_be_i32(self.y_position)?;
@@ -97,7 +92,7 @@ pub struct MeasuredNavDataBuilder;
 pub static BUILDER: MeasuredNavDataBuilder = MeasuredNavDataBuilder;
 
 impl PacketBuilder<MeasuredNavigationData> for MeasuredNavDataBuilder {
-    type Error = crate::error::Error;
+    type Error = std::io::Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredNavigationData, Self::Error> {
         let x_position = input.read_be_i32()?;
