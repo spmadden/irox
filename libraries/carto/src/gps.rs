@@ -3,16 +3,79 @@
 
 use std::fmt::{Display, Formatter};
 
+use log::error;
+
+use irox_units::units::compass::Azimuth;
+
+use crate::coordinate::Elevation;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct SatelliteSignal {
+    pub prn: u8,
+    pub azimuth: Azimuth,
+    pub elevation: Elevation,
+    pub snr: u8,
+}
+
+/// GPS Fix Type
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+pub enum GPSFixType {
+    #[default]
+    Unknown = 0,
+    NoFix = 1,
+    TwoDim = 2,
+    ThreeDim = 3,
+}
+impl From<i32> for GPSFixType {
+    fn from(value: i32) -> Self {
+        match value {
+            1 => GPSFixType::NoFix,
+            2 => GPSFixType::TwoDim,
+            3 => GPSFixType::ThreeDim,
+            _ => GPSFixType::Unknown,
+        }
+    }
+}
+impl From<Option<&str>> for GPSFixType {
+    fn from(value: Option<&str>) -> Self {
+        if let Some(value) = value {
+            if let Ok(value) = value.parse::<i32>() {
+                return value.into();
+            }
+        }
+        GPSFixType::Unknown
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Default)]
-pub struct DilutionOfPrecision(f64);
+pub struct DilutionOfPrecision(pub f64);
+impl From<f64> for DilutionOfPrecision {
+    fn from(value: f64) -> Self {
+        DilutionOfPrecision(value)
+    }
+}
+impl DilutionOfPrecision {
+    pub fn maybe_from(val: &str) -> Option<DilutionOfPrecision> {
+        if val.len() == 0 {
+            return None;
+        }
+        match val.parse() {
+            Ok(v) => Some(DilutionOfPrecision(v)),
+            Err(e) => {
+                error!("Error converting DOP: {e:?}");
+                None
+            }
+        }
+    }
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub struct DOPs {
-    geometric: Option<DilutionOfPrecision>,
-    horizontal: Option<DilutionOfPrecision>,
-    position: Option<DilutionOfPrecision>,
-    time: Option<DilutionOfPrecision>,
-    vertical: Option<DilutionOfPrecision>,
+    pub geometric: Option<DilutionOfPrecision>,
+    pub horizontal: Option<DilutionOfPrecision>,
+    pub position: Option<DilutionOfPrecision>,
+    pub time: Option<DilutionOfPrecision>,
+    pub vertical: Option<DilutionOfPrecision>,
 }
 
 impl DOPs {
