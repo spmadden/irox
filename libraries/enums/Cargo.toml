@@ -1,6 +1,8 @@
 [package]
 name = "irox-enums"
 description = "Traits for better Enumerated Types"
+keywords = ["reflection", "metaprogramming"]
+categories = ["development-tools", "rust-patterns"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

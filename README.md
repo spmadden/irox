@@ -25,6 +25,8 @@ Current Modules & Organization:
  * [`libraries`](./libraries) - Rust 'library' crates, usually without binaries
    * [`carto`](./libraries/carto) - Cartographic & Geospatial tools
    * [`egui_irox_extras`](./libraries/egui_extras) - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
+   * [`enums`](./libraries/enums) - Traits for better Enumerated Types
+   * [`enums_derive`](./libraries/enums_derive) - Derivable impls of the traits in irox-enums
    * [`influxdb_v1`](./libraries/influxdb_v1) - InfluxDBv1 API Client
    * [`network`](./libraries/network) - Networking tools
    * [`stats`](./libraries/stats) - Mathematics & Statistics tools
