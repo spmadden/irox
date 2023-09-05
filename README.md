@@ -21,6 +21,8 @@ Current Modules & Organization:
    * [`csv`](./data-formats/csv) - Comma Separated Values encoder/decoder
    * [`nmea0183`](./data-formats/nmea0183) - GPS NMEA-0183 encoder/decoder
    * [`sirf`](./data-formats/sirf) - GPS Binary SiRF encoder/decoder
+ * [`interfaces`](./interfaces) - Interfaces, Transports, and APIs for external tools
+   * [`influxdb_v1`](./interfaces/influxdb_v1) - InfluxDB v1 API Client
  * [`irox`](./irox) - Aggregator module
  * [`libraries`](./libraries) - Rust 'library' crates, usually without binaries
    * [`carto`](./libraries/carto) - Cartographic & Geospatial tools
