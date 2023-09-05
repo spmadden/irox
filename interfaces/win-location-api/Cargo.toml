@@ -1,5 +1,8 @@
 [package]
 name = "irox-winlocation-api"
+description = "Rust ergonomic adapter for the Windows Devices Location API"
+keywords = ["windows", "api-bindings", "gps", "location", "geospatial"]
+categories = ["api-bindings", "science::geo", "aerospace::protocols"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

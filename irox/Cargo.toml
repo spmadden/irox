@@ -10,10 +10,12 @@ license.workspace = true
 [features]
 default = []
 csv = ["irox-csv"]
+nmea0183 = ["irox-nmea0183"]
 sirf = ["irox-sirf"]
+influxdb_v1 = ["irox-influxdb_v1"]
+win-loc-api = ["irox-winlocation-api"]
 carto = ["irox-carto"]
 egui-extras = ["irox-egui-extras"]
-influxdb_v1 = ["irox-influxdb_v1"]
 networking = ["irox-networking"]
 stats = ["irox-stats"]
 tools = ["irox-tools"]
@@ -21,11 +23,14 @@ units = ["irox-units"]
 
 [dependencies]
 irox-csv = { workspace = true, optional = true}
+irox-nmea0183 = { workspace = true, optional = true}
 irox-sirf = { workspace = true, optional = true}
+
+irox-influxdb_v1 = { workspace = true, optional = true}
+irox-winlocation-api = {workspace = true, optional = true}
 
 irox-carto = { workspace = true, optional = true}
 irox-egui-extras = { workspace = true, optional = true}
-irox-influxdb_v1 = { workspace = true, optional = true}
 irox-networking = { workspace = true, optional = true}
 irox-stats = { workspace = true, optional = true}
 irox-tools = { workspace = true, optional = true}
