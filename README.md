@@ -32,6 +32,8 @@ Current Modules & Organization:
    * [`enums_derive`](./libraries/enums_derive) - Derivable impls of the traits in irox-enums
    * [`network`](./libraries/network) - Networking tools
    * [`stats`](./libraries/stats) - Mathematics & Statistics tools
+   * [`structs`](./libraries/structs) - Traits for Struct Types - linearly serialized big endian bytes
+   * [`structs_derive`](./libraries/structs_derive) - Derivable impls of the traits in irox-structs
    * [`tools`](./libraries/tools) - Dumping ground for stuff that should have been in `std`
    * [`types`](./libraries/types) - Enums and structs to describe Rust's basic type system
    * [`units`](./libraries/units) - Physical Units, Quantities, & Reference Frames

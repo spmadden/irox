@@ -16,9 +16,14 @@ influxdb_v1 = ["irox-influxdb_v1"]
 win-loc-api = ["irox-winlocation-api"]
 carto = ["irox-carto"]
 egui-extras = ["irox-egui-extras"]
+enums = ["irox-enums"]
+enums_derive = ["irox-enums_derive"]
 networking = ["irox-networking"]
 stats = ["irox-stats"]
+structs = ["irox-structs"]
+structs_derive = ["irox-structs_derive"]
 tools = ["irox-tools"]
+types = ["irox-types"]
 units = ["irox-units"]
 
 [dependencies]
@@ -31,7 +36,12 @@ irox-winlocation-api = {workspace = true, optional = true}
 
 irox-carto = { workspace = true, optional = true}
 irox-egui-extras = { workspace = true, optional = true}
+irox-enums = { workspace = true, optional = true}
+irox-enums_derive = { workspace = true, optional = true}
 irox-networking = { workspace = true, optional = true}
 irox-stats = { workspace = true, optional = true}
+irox-structs = { workspace = true, optional = true}
+irox-structs_derive = { workspace = true, optional = true}
 irox-tools = { workspace = true, optional = true}
+irox-types = { workspace = true, optional = true}
 irox-units = { workspace = true, optional = true}

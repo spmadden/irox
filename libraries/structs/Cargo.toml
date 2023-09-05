@@ -1,5 +1,8 @@
 [package]
 name = "irox-structs"
+description = "Traits for Struct Types - linearly serialized big endian bytes"
+keywords = ["reflection", "metaprogramming"]
+categories = ["development-tools", "rust-patterns"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
