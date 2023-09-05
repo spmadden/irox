@@ -1,6 +1,8 @@
 [package]
 name = "irox-networking"
 description = "irox Networking Tools"
+keywords = ["networking", "extras"]
+categories = ["network-programming"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
