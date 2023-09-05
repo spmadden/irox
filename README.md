@@ -29,5 +29,6 @@ Current Modules & Organization:
    * [`network`](./libraries/network) - Networking tools
    * [`stats`](./libraries/stats) - Mathematics & Statistics tools
    * [`tools`](./libraries/tools) - Dumping ground for stuff that should have been in `std`
+   * [`types`](./libraries/types) - Enums and structs to describe Rust's basic type system
    * [`units`](./libraries/units) - Physical Units, Quantities, & Reference Frames
  * [`tools`](./tools) - Rust 'binary' crates, mostly just binaries that depend on crates in `libraries`
