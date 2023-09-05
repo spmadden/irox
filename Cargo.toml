@@ -47,7 +47,7 @@ syn = {version = "^2", features = ["extra-traits"]}
 quote = {version = "^1", features = []}
 signal-hook = {version = "^0", features = []}
 futures = {version = "^0", features = []}
-windows = {version = "^0.48.0", features = [ "Devices_Geolocation", "Foundation" ]}
+windows = {version = "^0.51.1", features = [ "Devices_Geolocation", "Foundation" ]}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
