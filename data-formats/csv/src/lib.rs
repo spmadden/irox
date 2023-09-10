@@ -167,12 +167,6 @@ impl<T: Read + Sized> Tokenizer<T> {
         }
     }
 
-    fn consume_repeated_newline_chars(mut reader: &mut BufReader<T>) -> Result<(), std::io::Error> {
-        while let Some(b'\r') | Some(b'\n') = peek_one(&mut reader)? {
-            reader.consume(1);
-        }
-        Ok(())
-    }
     pub fn next_tokens(&mut self) -> Result<Option<Vec<Token>>, CSVError> {
         use std::io::ErrorKind;
 
@@ -188,11 +182,27 @@ impl<T: Read + Sized> Tokenizer<T> {
                             return Ok(Some(vec![Token::Field(out)]));
                         }
                         b'\r' | b'\n' => {
-                            Self::consume_repeated_newline_chars(&mut self.reader)?;
+                            while let Some(b'\r') | Some(b'\n') = peek_one(&mut self.reader)? {
+                                self.reader.consume(1);
+                            }
                             self.char_number = 0;
                             self.line_number += 1;
                             let out: String = String::from_utf8_lossy(&output).into();
                             return Ok(Some(vec![Token::Field(out), Token::EndRow]));
+                        }
+                        b'"' => {
+                            while let Some(v) = consume_one(&mut self.reader)? {
+                                if v == b'"' {
+                                    // handle special "" within a quoted block meaning: literal quote
+                                    if let Some(b'"') = peek_one(&mut self.reader)? {
+                                        output.push(b'"');
+                                        self.reader.consume(1);
+                                        continue;
+                                    }
+                                    break;
+                                }
+                                output.push(v);
+                            }
                         }
                         _ => output.push(elem),
                     }
