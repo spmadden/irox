@@ -8,6 +8,7 @@ exclude = ["doc"]
 readme = "README.md"
 
 [workspace]
+resolver = "2"
 members = [
     "irox",
     "data-formats/csv",
