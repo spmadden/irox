@@ -1,21 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env -S just --justfile
 
-set -eu
-trap "echo The script is terminated; exit" SIGINT
+default: build_checks
 
-if ! type "cargo-binstall" > /dev/null; then
-  cargo install cargo-binstall
-fi
-REQUIREDCMDS=("cargo-deny" "cargo-about")
-for CMD in "${REQUIREDCMDS[@]}"; do
-  if ! type "$CMD" > /dev/null ; then
-    cargo binstall $CMD
-  fi
-done
 
-cargo deny check
-cargo build
-cargo test
-cargo fmt --check
-xargs -aClippy.lints cargo clippy --
-cargo about generate about.hbs > about.html
+check_install prereq:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if ! type "{{prereq}}" > /dev/null; then
+      cargo install {{prereq}}
+    fi
+
+prereqs:
+    just check_install cargo-binstall
+
+deny: prereqs
+    just check_install cargo-deny
+    cargo deny check
+
+build: prereqs
+    cargo build
+
+test: prereqs
+    cargo test
+
+format: prereqs
+    cargo fmt --check
+
+lints: prereqs
+    xargs -aClippy.lints cargo clippy --
+
+about: prereqs
+    just check_install cargo-about
+    cargo about generate about.hbs > about.html
+
+build_checks: deny build test format lints about
