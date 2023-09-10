@@ -3,6 +3,7 @@
 
 #![forbid(unsafe_code)]
 
+use std::io::{BufRead, BufReader};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
@@ -62,7 +63,10 @@ impl<T: Write + Sized> Writer<T> {
     pub fn write_fields(&mut self, fields: &BTreeMap<String, String>) -> Result<(), CSVError> {
         self.write_header()?;
         let Some(cols) = &self.columns else {
-            return CSVError::err(CSVErrorType::MissingHeaderError, "No header columns specified".to_string());
+            return CSVError::err(
+                CSVErrorType::MissingHeaderError,
+                "No header columns specified".to_string(),
+            );
         };
         let mut out = Vec::new();
         for col in cols {
@@ -121,61 +125,84 @@ impl WriterBuilder {
 
 pub enum Token {
     Field(String),
-    Newline,
+    EndRow,
 }
 
 pub struct Tokenizer<T>
 where
     T: Read + Sized,
 {
-    reader: T,
+    reader: BufReader<T>,
     line_number: u64,
     char_number: u64,
-    skip_next_lf: bool,
+}
+
+fn consume_one<T: BufRead>(mut reader: &mut T) -> Result<Option<u8>, std::io::Error> {
+    let Some(val) = peek_one(&mut reader)? else {
+        return Ok(None);
+    };
+
+    reader.consume(1);
+    Ok(Some(val))
+}
+
+fn peek_one<T: BufRead>(reader: &mut T) -> Result<Option<u8>, std::io::Error> {
+    let val = {
+        let buf = reader.fill_buf()?;
+        let Some(val) = buf.first() else {
+            return Ok(None);
+        };
+        *val
+    };
+
+    Ok(Some(val))
 }
 
 impl<T: Read + Sized> Tokenizer<T> {
     pub fn new(reader: T) -> Tokenizer<T> {
         Tokenizer {
-            reader,
+            reader: BufReader::new(reader),
             line_number: 0,
             char_number: 0,
-            skip_next_lf: false,
         }
+    }
+
+    fn consume_repeated_newline_chars(mut reader: &mut BufReader<T>) -> Result<(), std::io::Error> {
+        while let Some(b'\r') | Some(b'\n') = peek_one(&mut reader)? {
+            reader.consume(1);
+        }
+        Ok(())
     }
     pub fn next_tokens(&mut self) -> Result<Option<Vec<Token>>, CSVError> {
         use std::io::ErrorKind;
 
         let mut output: Vec<u8> = Vec::new();
-        let mut buffer: [u8; 1] = [0; 1];
 
         loop {
-            match self.reader.read_exact(&mut buffer) {
-                Ok(_) => {
+            match consume_one(&mut self.reader) {
+                Ok(Some(elem)) => {
                     self.char_number += 1;
-                    let elem = buffer[0];
                     match elem {
                         b',' => {
                             let out: String = String::from_utf8_lossy(&output).into();
                             return Ok(Some(vec![Token::Field(out)]));
                         }
                         b'\r' | b'\n' => {
-                            if elem == b'\r' {
-                                self.skip_next_lf = true;
-                            } else if self.skip_next_lf {
-                                self.skip_next_lf = false;
-                                continue;
-                            }
+                            Self::consume_repeated_newline_chars(&mut self.reader)?;
                             self.char_number = 0;
                             self.line_number += 1;
                             let out: String = String::from_utf8_lossy(&output).into();
-                            return Ok(Some(vec![Token::Field(out), Token::Newline]));
+                            return Ok(Some(vec![Token::Field(out), Token::EndRow]));
                         }
-                        _ => {
-                            self.skip_next_lf = false;
-                            output.push(buffer[0])
-                        }
+                        _ => output.push(elem),
                     }
+                }
+                Ok(None) => {
+                    if !output.is_empty() {
+                        let out: String = String::from_utf8_lossy(&output).into();
+                        return Ok(Some(vec![Token::Field(out), Token::EndRow]));
+                    }
+                    return Ok(None);
                 }
                 Err(e) => {
                     return match e.kind() {
@@ -216,7 +243,7 @@ impl<T: Read + Sized> CSVReader<T> {
                 for tok in toks {
                     match tok {
                         Token::Field(f) => out.push(f),
-                        Token::Newline => return Ok(Some(out)),
+                        Token::EndRow => return Ok(Some(out)),
                     }
                 }
             } else {
@@ -244,7 +271,7 @@ impl<T: Read + Sized> CSVMapReader<T> {
         match keys {
             Some(keys) => Ok(CSVMapReader { reader, keys }),
             None => CSVError::err(
-                error::CSVErrorType::MissingHeaderError,
+                CSVErrorType::MissingHeaderError,
                 "Missing header or empty file".to_string(),
             ),
         }
@@ -259,7 +286,7 @@ impl<T: Read + Sized> CSVMapReader<T> {
         let datalen = data.len();
         if hdrlen != datalen {
             return CSVError::err(
-                error::CSVErrorType::HeaderDataMismatchError,
+                CSVErrorType::HeaderDataMismatchError,
                 format!("Headers length ({hdrlen}) != data length ({datalen})"),
             );
         }
