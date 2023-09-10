@@ -244,13 +244,15 @@ impl EllipticalCoordinateBuilder {
 
     pub fn build(self) -> Result<EllipticalCoordinate, ConvertError> {
         let Some(latitude) = self.latitude else {
-            return Err(ConvertError::MissingValue("Missing latitude".to_string()))
+            return Err(ConvertError::MissingValue("Missing latitude".to_string()));
         };
         let Some(longitude) = self.longitude else {
-            return Err(ConvertError::MissingValue("Missing longitude".to_string()))
+            return Err(ConvertError::MissingValue("Missing longitude".to_string()));
         };
         let Some(reference_frame) = self.reference_frame else {
-            return Err(ConvertError::MissingValue("Missing reference frame".to_string()))
+            return Err(ConvertError::MissingValue(
+                "Missing reference frame".to_string(),
+            ));
         };
         Ok(EllipticalCoordinate {
             latitude,
@@ -359,10 +361,14 @@ pub mod windows_conv {
             let mut bld = EllipticalCoordinateBuilder::new();
 
             let Ok(point) = value.Point() else {
-                return Err(ConvertError::MissingValue("Missing point value".to_string()));
+                return Err(ConvertError::MissingValue(
+                    "Missing point value".to_string(),
+                ));
             };
             let Ok(pos) = point.Position() else {
-                return Err(ConvertError::MissingValue("Missing position value".to_string()))
+                return Err(ConvertError::MissingValue(
+                    "Missing position value".to_string(),
+                ));
             };
             bld.with_latitude(Latitude(Angle::new_degrees(pos.Latitude)));
             bld.with_longitude(Longitude(Angle::new_degrees(pos.Longitude)));

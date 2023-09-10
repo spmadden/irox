@@ -272,7 +272,10 @@ impl InfluxDB {
     ) -> Result<(), Error> {
         let row_map = row.as_map_lossy();
         let Some(name) = row_map.get("name") else {
-            return Error::err(ErrorType::MissingKeyError("name".to_string()), "Missing key name");
+            return Error::err(
+                ErrorType::MissingKeyError("name".to_string()),
+                "Missing key name",
+            );
         };
         if !data.contains_key(name) {
             data.insert(

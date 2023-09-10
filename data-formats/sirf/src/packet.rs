@@ -159,7 +159,7 @@ impl PacketBuilder<PacketType> for PacketParser {
         let Some((msg_type, mut payload)) = payload.split_first() else {
             return Err(std::io::Error::new(
                 ErrorKind::InvalidData,
-                "Payload length is insufficient"
+                "Payload length is insufficient",
             ));
         };
         Ok(match msg_type {
