@@ -225,7 +225,7 @@ impl InfluxDB {
         let res = self.query_csv("SHOW DATABASES", None)?;
         let mut out: Vec<String> = Vec::new();
         irox_csv::CSVMapReader::new(res)?.for_each(|row| {
-            let row = row.as_map_lossy();
+            let row = row.into_map_lossy();
             if let Some(name) = row.get("name") {
                 out.push(name.clone());
             }
@@ -243,7 +243,7 @@ impl InfluxDB {
         }?;
         let mut out: Vec<RetentionPolicy> = Vec::new();
         irox_csv::CSVMapReader::new(res)?.for_each(|row| {
-            match TryInto::<RetentionPolicy>::try_into(row.as_map_lossy()) {
+            match TryInto::<RetentionPolicy>::try_into(row.into_map_lossy()) {
                 Ok(r) => out.push(r),
                 Err(e) => error!("Error converting map into Retention: {e:?}"),
             };
@@ -258,7 +258,7 @@ impl InfluxDB {
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
         irox_csv::CSVMapReader::new(res)?.for_each(|row| {
-            debug!("{:?}", row.as_map_lossy());
+            debug!("{:?}", row.into_map_lossy());
         })?;
         Ok(())
     }
@@ -270,7 +270,7 @@ impl InfluxDB {
         row: Row,
         func: T,
     ) -> Result<(), Error> {
-        let row_map = row.as_map_lossy();
+        let row_map = row.into_map_lossy();
         let Some(name) = row_map.get("name") else {
             return Error::err(
                 ErrorType::MissingKeyError("name".to_string()),
