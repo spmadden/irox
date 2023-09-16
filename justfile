@@ -1,7 +1,8 @@
 #!/usr/bin/env -S just --justfile
 
-default: build_checks
+default: build test format lints package
 
+ci: deny build test format_check lints about package
 
 check_install prereq:
     #!/usr/bin/env bash
@@ -23,14 +24,19 @@ build: prereqs
 test: prereqs
     cargo test
 
-format: prereqs
+format:
+    cargo fmt
+
+format_check: prereqs
     cargo fmt --check
 
-lints: prereqs
-    xargs -aClippy.lints cargo clippy --
+lints +FLAGS='': prereqs
+    xargs -aClippy.lints cargo clippy {{FLAGS}} --
+
+package:
+    cargo package --allow-dirty
 
 about: prereqs
     just check_install cargo-about
     cargo about generate about.hbs > about.html
 
-build_checks: deny build test format lints about
