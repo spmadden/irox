@@ -154,6 +154,7 @@ pub fn calculate_checksum<T: AsRef<[u8]>>(data: &T) -> u8 {
     out
 }
 
+#[allow(clippy::match_same_arms)]
 pub(crate) fn maybe_latitude(val: Option<&str>, ns: Option<&str>) -> Option<Latitude> {
     let val = val?;
     if val.len() < 3 {
@@ -170,6 +171,7 @@ pub(crate) fn maybe_latitude(val: Option<&str>, ns: Option<&str>) -> Option<Lati
 
     Some(Latitude(Angle::new_degrees(sig * (deg + min / 60.))))
 }
+#[allow(clippy::match_same_arms)]
 pub(crate) fn maybe_longitude(val: Option<&str>, ew: Option<&str>) -> Option<Longitude> {
     let val = val?;
     if val.len() < 4 {
@@ -187,6 +189,7 @@ pub(crate) fn maybe_longitude(val: Option<&str>, ew: Option<&str>) -> Option<Lon
     Some(Longitude(Angle::new_degrees(sig * (deg + min / 60.))))
 }
 
+#[allow(clippy::match_same_arms)]
 pub(crate) fn maybe_length(val: Option<&str>, unit: Option<&str>) -> Option<Length> {
     let val = val.maybe_into()?;
     let unit = unit.maybe_into().unwrap_or('M');

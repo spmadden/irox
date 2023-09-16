@@ -190,6 +190,7 @@ pub trait UnitStruct<T>: Unit<T> {
 ///
 /// Trait to provide access to unit conversions
 pub trait Unit<T> {
+    #[must_use]
     fn as_unit(&self, unit: T) -> Self
     where
         Self: Sized;

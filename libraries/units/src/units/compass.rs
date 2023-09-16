@@ -144,7 +144,7 @@ impl<T> Compass<T> {
     }
 
     ///
-    /// Creates a new track type - see ['Track'] for details.
+    /// Creates a new track type - see [`Track`] for details.
     #[must_use]
     pub const fn new_track(
         angle: Angle,
@@ -160,7 +160,7 @@ impl<T> Compass<T> {
     }
 
     ///
-    /// Creates a new bearing type - see ['Bearing'] for details.
+    /// Creates a new bearing type - see [`Bearing`] for details.
     #[must_use]
     pub const fn new_bearing(
         angle: Angle,
@@ -176,7 +176,7 @@ impl<T> Compass<T> {
     }
 
     ///
-    /// Creates a new course type - see ['Course'] for details.
+    /// Creates a new course type - see [`Course`] for details.
     #[must_use]
     pub const fn new_course(
         angle: Angle,
@@ -192,7 +192,7 @@ impl<T> Compass<T> {
     }
 
     ///
-    /// Creates a new azimuth type - see ['Azimuth'] for details.
+    /// Creates a new azimuth type - see [`Azimuth`] for details.
     #[must_use]
     pub const fn new_azimuth(
         angle: Angle,
@@ -298,19 +298,19 @@ impl Display for CompassDirection {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             CompassDirection::Heading(h) => {
-                write!(f, "Heading({})", h)
+                write!(f, "Heading({h})")
             }
             CompassDirection::Track(t) => {
-                write!(f, "Track({})", t)
+                write!(f, "Track({t})")
             }
             CompassDirection::Bearing(b) => {
-                write!(f, "Bearing({})", b)
+                write!(f, "Bearing({b})")
             }
             CompassDirection::Course(c) => {
-                write!(f, "Course({})", c)
+                write!(f, "Course({c})")
             }
             CompassDirection::Azimuth(a) => {
-                write!(f, "Azimuth({})", a)
+                write!(f, "Azimuth({a})")
             }
         }
     }

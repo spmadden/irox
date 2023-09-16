@@ -192,7 +192,7 @@ fn arr_writer_function(input: Primitives) -> Result<proc_macro2::TokenStream, Er
         }
         Primitives::i128 => {
             quote! {
-                out.write_be_i16(elem)?;
+                out.write_be_i128(elem)?;
             }
         }
         _ => {

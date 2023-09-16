@@ -16,6 +16,7 @@ use irox_units::units::angle::Angle;
 use crate::output::{Frame, FramePayload, TPV};
 
 impl MaybeFrom<PacketType> for Frame {
+    #[allow(clippy::match_same_arms)]
     fn maybe_from(value: PacketType) -> Option<Self> {
         match value {
             PacketType::GeodeticNavigationData(gnd) => Some(Frame {

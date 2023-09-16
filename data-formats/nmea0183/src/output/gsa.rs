@@ -97,7 +97,7 @@ impl Packet for GSA {
         ))?;
 
         let cksm = calculate_checksum(&buf);
-        buf.write_fmt(format_args!("{:02X}\r\n", cksm))?;
+        buf.write_fmt(format_args!("{cksm:02X}\r\n"))?;
         Ok(buf)
     }
 

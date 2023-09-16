@@ -4,6 +4,7 @@
 use irox_nmea0183::{Frame, FramePayload};
 use irox_tools::options::MaybeFrom;
 
+#[allow(clippy::match_same_arms)]
 impl MaybeFrom<Frame> for crate::output::Frame {
     fn maybe_from(value: Frame) -> Option<Self> {
         match value.payload {

@@ -25,7 +25,7 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
     for field in s.variants {
         // println!("{}: {:?}", field.ident, field);
         let field_ident = field.ident;
-        let field_name = format!("{}", field_ident);
+        let field_name = format!("{field_ident}");
 
         let inner_fields = match field.fields.len() {
             0 => quote! {},
@@ -109,7 +109,7 @@ pub fn tryfromstr_derive(input: TokenStream) -> TokenStream {
         }
 
         let field_ident = field.ident;
-        let field_name = format!("{}", field_ident);
+        let field_name = format!("{field_ident}");
 
         match_elements.push(quote_spanned! {field_ident.span() =>
             #field_name => Self::#field_ident,

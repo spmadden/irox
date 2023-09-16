@@ -84,7 +84,7 @@ impl Display for EllipticalCoordinate {
             None => String::new(),
         };
         let pos_err = match self.position_uncertainty {
-            Some(err) => format!(" {} horiz", err),
+            Some(err) => format!(" {err} horiz"),
             None => String::new(),
         };
         let asof = match self.timestamp {
@@ -320,8 +320,8 @@ pub enum PositionUncertainty {
 impl Display for PositionUncertainty {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            PositionUncertainty::CircularUncertainty(circ) => write!(f, "{}", circ),
-            PositionUncertainty::EllipticalUncertainty(ell) => write!(f, "{}", ell),
+            PositionUncertainty::CircularUncertainty(circ) => write!(f, "{circ}"),
+            PositionUncertainty::EllipticalUncertainty(ell) => write!(f, "{ell}"),
         }
     }
 }

@@ -50,10 +50,10 @@ pub struct SerialConfig {
 
 pub struct SerErr(pub GPSdError);
 
-pub fn open(config: SerialConfig) -> Result<SystemPort, SerErr> {
+pub fn open(config: &SerialConfig) -> Result<SystemPort, SerErr> {
     let mut port = serial::open(config.serial_port.as_str())?;
     info!("Successfully opened serial port: {}", config.serial_port);
-    configure(&mut port, &config)?;
+    configure(&mut port, config)?;
     info!("Successfully configured serial port: {config:?}");
     Ok(port)
 }
@@ -64,7 +64,7 @@ pub fn char_size(char_size: u8) -> Result<CharSize, GPSdError> {
         6 => Ok(Bits6),
         7 => Ok(Bits7),
         8 => Ok(Bits8),
-        e => GPSdError::err_str(format!("Invalid char_size: {}", e)),
+        e => GPSdError::err_str(format!("Invalid char_size: {e}")),
     }
 }
 
@@ -73,7 +73,7 @@ pub fn parity(parity: &str) -> Result<Parity, GPSdError> {
         "none" => Ok(Parity::ParityNone),
         "even" => Ok(Parity::ParityEven),
         "odd" => Ok(Parity::ParityOdd),
-        e => GPSdError::err_str(format!("Invalid parity: {}", e)),
+        e => GPSdError::err_str(format!("Invalid parity: {e}")),
     }
 }
 
@@ -81,7 +81,7 @@ pub fn stop_bits(stop_bits: u8) -> Result<StopBits, GPSdError> {
     match stop_bits {
         1 => Ok(StopBits::Stop1),
         2 => Ok(StopBits::Stop2),
-        e => GPSdError::err_str(format!("Invalid stop bits: {}", e)),
+        e => GPSdError::err_str(format!("Invalid stop bits: {e}")),
     }
 }
 
@@ -90,7 +90,7 @@ pub fn flow_control(flow_control: &str) -> Result<FlowControl, GPSdError> {
         "none" => Ok(FlowControl::FlowNone),
         "software" => Ok(FlowControl::FlowSoftware),
         "hardware" => Ok(FlowControl::FlowHardware),
-        e => GPSdError::err_str(format!("Invalid flow control: {}", e)),
+        e => GPSdError::err_str(format!("Invalid flow control: {e}")),
     }
 }
 

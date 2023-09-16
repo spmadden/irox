@@ -4,6 +4,7 @@
 use irox_structs::Struct;
 use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
+use log::warn;
 
 use crate::error::Error;
 
@@ -35,6 +36,7 @@ pub enum ExtendedEphemerisData {
 impl Packet for ExtendedEphemerisData {
     type PacketType = ();
 
+    #[allow(clippy::match_same_arms)]
     fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
         Ok(match self {
             ExtendedEphemerisData::GPSDataEphemerisMask(g) => g.as_bytes()?,
@@ -64,6 +66,7 @@ pub static BUILDER: ExtendedEphemerisDataBuilder = ExtendedEphemerisDataBuilder;
 impl PacketBuilder<ExtendedEphemerisData> for ExtendedEphemerisDataBuilder {
     type Error = crate::error::Error;
 
+    #[allow(clippy::match_same_arms)]
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<ExtendedEphemerisData, Self::Error> {
         let submsg = input.read_u8()?;
         match submsg {
@@ -77,10 +80,18 @@ impl PacketBuilder<ExtendedEphemerisData> for ExtendedEphemerisDataBuilder {
                     ExtendedEphemeris2::parse_from(input)?,
                 ))
             }
-            0x03 => {}
-            0x04 => {}
-            0x26 => {}
-            0xFF => {}
+            0x03 => {
+                warn!("Encountered unimplemented case: x38x03")
+            }
+            0x04 => {
+                warn!("Encountered unimplemented case: x38x04")
+            }
+            0x26 => {
+                warn!("Encountered unimplemented case: x38x26")
+            }
+            0xFF => {
+                warn!("Encountered unimplemented case: x38xFF")
+            }
             _e => {
                 return Error::unsupported("Unsupported operation");
             }

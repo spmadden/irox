@@ -37,10 +37,10 @@ fn main() -> Result<(), GPSdError> {
     };
 
     if let Err(e) = match config.source {
-        Transport::Serial(e) => start_serial(server, term.clone(), e),
+        Transport::Serial(e) => start_serial(server, &term, &e),
 
         #[cfg(target_os = "windows")]
-        Transport::WindowsLocation => windows::start_windows(server, term.clone()),
+        Transport::WindowsLocation => windows::start_windows(server, &term),
     } {
         error!("Error starting transport: {e:?}");
         return Err(e);
@@ -55,8 +55,8 @@ fn main() -> Result<(), GPSdError> {
 
 pub fn start_serial(
     mut server: TCPServer,
-    shouldquit: Arc<AtomicBool>,
-    config: SerialConfig,
+    shouldquit: &Arc<AtomicBool>,
+    config: &SerialConfig,
 ) -> Result<(), GPSdError> {
     let encoding = config.encoding;
     let port = match irox_gpsd::transport::serial::open(config) {
@@ -80,7 +80,7 @@ pub fn start_serial(
         if let Ok(json) = frame.to_json() {
             info!("Generated frame {json}");
         }
-        if let Err(e) = server.send(frame) {
+        if let Err(e) = server.send(&frame) {
             error!("Error sending frame: {e:?}");
         }
     }
@@ -101,7 +101,10 @@ mod windows {
     use irox_gpsd::transport::TCPServer;
     use irox_winlocation_api::WindowsLocationAPI;
 
-    pub fn start_windows(mut server: TCPServer, running: Arc<AtomicBool>) -> Result<(), GPSdError> {
+    pub fn start_windows(
+        mut server: TCPServer,
+        running: &Arc<AtomicBool>,
+    ) -> Result<(), GPSdError> {
         let locator = WindowsLocationAPI::connect()?;
         info!("Connected to windows location api");
 
@@ -114,14 +117,14 @@ mod windows {
         };
         info!("First position: {pos}");
         let tpv: Frame = (&pos).into();
-        if let Err(e) = server.send(tpv) {
+        if let Err(e) = server.send(&tpv) {
             error!("Error sending initial TPV: {e:?}");
         }
 
         locator.on_location_changed(move |pos| {
             info!("{pos:?}");
             let frame: Frame = (&pos).into();
-            if let Err(e) = server.send(frame) {
+            if let Err(e) = server.send(&frame) {
                 error!("Error sending frame: {e:?}");
             }
         })?;

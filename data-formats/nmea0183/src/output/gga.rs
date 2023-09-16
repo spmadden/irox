@@ -131,7 +131,7 @@ impl Packet for GGA {
             .map(|timestamp| {
                 let (hh, mm, ss, milli) = timestamp.as_hms_milli();
                 let ss = ss as f64 + (milli as f64) / 1000.;
-                format!("{:02}{:02}{:02.03}", hh, mm, ss)
+                format!("{hh:02}{mm:02}{ss:02.03}")
             })
             .unwrap_or_default();
 
@@ -144,7 +144,7 @@ impl Packet for GGA {
                     "S"
                 }
             };
-            format!("{:02}{:02.04},{}", lat_deg, lat_min, ns)
+            format!("{lat_deg:02}{lat_min:02.04},{ns}")
         });
 
         let longitude = self.longitude.map_or(String::from(","), |lon| {
@@ -156,7 +156,7 @@ impl Packet for GGA {
                     "W"
                 }
             };
-            format!("{:02}{:02.04},{}", lon_deg, lon_min, ew)
+            format!("{lon_deg:02}{lon_min:02.04},{ew}")
         });
         let fix = self
             .quality
@@ -188,17 +188,7 @@ impl Packet for GGA {
             .unwrap_or_default();
         let ref_id = self.stn_id.map(|f| format!("{f}")).unwrap_or_default();
         buf.write_fmt(format_args!(
-            "$GPGGA,{},{},{},{},{},{},{},{},{},{}*",
-            utctime,
-            latitude,
-            longitude,
-            fix,
-            sats_used,
-            hdop,
-            msl_alt,
-            geoid_sep,
-            dgps_age,
-            ref_id
+            "$GPGGA,{utctime},{latitude},{longitude},{fix},{sats_used},{hdop},{msl_alt},{geoid_sep},{dgps_age},{ref_id}*"
         ))?;
 
         let csh = calculate_checksum(&buf);

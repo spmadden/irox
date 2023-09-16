@@ -92,7 +92,7 @@ impl<T: Write + Sized> CSVWriter<T> {
         let mut out = Vec::new();
         for col in cols {
             let Some(val) = fields.get(col) else {
-                out.push("".to_string());
+                out.push(String::new());
                 continue;
             };
             out.push(val.to_string().clone());
@@ -428,7 +428,7 @@ impl Row {
     ///
     /// Convert into a [`BTreeMap<String, String>`].
     ///
-    /// Unlike ['into_map'], this function will overwrite any previous keys with those found later in
+    /// Unlike [`into_map`], this function will overwrite any previous keys with those found later in
     /// the row.
     #[must_use]
     pub fn into_map_lossy(self) -> BTreeMap<String, String> {

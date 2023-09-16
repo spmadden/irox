@@ -138,7 +138,7 @@ impl Packet for RateControlRF103 {
             msg, cmd, self.rate_seconds, cksum
         );
         let cksum = crate::calculate_checksum(&out);
-        Ok(Vec::from(format!("{}{:02X}\r\n", out, cksum)))
+        Ok(Vec::from(format!("{out}{cksum:02X}\r\n")))
     }
 
     fn get_type(&self) -> Self::PacketType {

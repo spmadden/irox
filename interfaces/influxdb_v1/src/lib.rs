@@ -80,6 +80,7 @@ pub struct InfluxConnectionBuilder {
 }
 
 impl InfluxConnectionBuilder {
+    #[must_use]
     pub fn with_host(mut self, host: impl Into<String>) -> Self {
         self.host = Some(host.into());
         self
@@ -90,6 +91,7 @@ impl InfluxConnectionBuilder {
         self
     }
 
+    #[must_use]
     pub fn with_port(mut self, port: impl Into<u16>) -> Self {
         self.port = Some(port.into());
         self
@@ -233,7 +235,7 @@ impl InfluxDB {
         Ok(out)
     }
 
-    pub fn show_retention_policites(
+    pub fn show_retention_policies(
         &self,
         db: Option<String>,
     ) -> Result<Vec<RetentionPolicy>, Error> {
@@ -289,7 +291,10 @@ impl InfluxDB {
         func(meas, &row_map)
     }
 
-    pub fn get_descriptors(&self, db: Option<String>) -> Result<Vec<MeasurementDescriptor>, Error> {
+    pub fn get_descriptors(
+        &self,
+        db: &Option<String>,
+    ) -> Result<Vec<MeasurementDescriptor>, Error> {
         let mut data: BTreeMap<String, MeasurementDescriptor> = BTreeMap::new();
 
         let res = match &db {

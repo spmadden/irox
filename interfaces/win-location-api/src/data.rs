@@ -69,6 +69,7 @@ impl WindowsCoordinate {
     }
 }
 
+#[allow(clippy::match_same_arms)]
 impl From<&Geocoordinate> for WindowsCoordinate {
     fn from(value: &Geocoordinate) -> Self {
         let coord = TryFrom::<&Geocoordinate>::try_from(value);

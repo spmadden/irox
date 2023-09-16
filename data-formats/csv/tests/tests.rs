@@ -41,7 +41,7 @@ pub fn test_reader_1() -> Result<(), CSVError> {
                 assert_eq!(vec!["quoted\"inner long\nnewlines", "second"], line);
             }
             e => {
-                panic!("More lines than expected: {}", e);
+                panic!("More lines than expected: {e}");
             }
         }
         idx += 1;
@@ -83,7 +83,7 @@ pub fn test2() -> Result<(), CSVError> {
                 assert_eq!(Some(&"elem9".to_string()), map.get("hdr3"));
             }
             e => {
-                panic!("More lines than expected: {}", e);
+                panic!("More lines than expected: {e}");
             }
         }
         idx += 1;

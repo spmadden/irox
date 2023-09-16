@@ -63,7 +63,7 @@ impl TCPServer {
         });
     }
 
-    pub fn send(&mut self, frame: Frame) -> Result<(), GPSdError> {
+    pub fn send(&mut self, frame: &Frame) -> Result<(), GPSdError> {
         let data = frame.to_json()?;
         let mut buf: Vec<u8> = Vec::new();
         buf.write_fmt(format_args!("{data}\r\n"))?;

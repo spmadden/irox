@@ -88,7 +88,7 @@ fn main() -> ExitCode {
         Operation::ShowTagKeys(db) => show_tag_keys(&conn, db),
         Operation::QueryCSV(query) => query_string(&conn, query, EncodingType::CSV),
         Operation::QueryJSON(query) => query_string(&conn, query, EncodingType::JSON),
-        Operation::ShowDescriptors(db) => show_descriptors(&conn, db),
+        Operation::ShowDescriptors(db) => show_descriptors(&conn, &db),
     }
 }
 
@@ -115,7 +115,7 @@ fn list_db(db: &InfluxDB) -> ExitCode {
 }
 
 fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
-    match db.show_retention_policites(param.db) {
+    match db.show_retention_policies(param.db) {
         Ok(val) => {
             println!("{val:?}");
             ExitCode::SUCCESS
@@ -153,8 +153,8 @@ fn query_string(db: &InfluxDB, query: QueryString, encoding: EncodingType) -> Ex
     }
 }
 
-fn show_descriptors(db: &InfluxDB, param: OptionalDB) -> ExitCode {
-    let res = match db.get_descriptors(param.db) {
+fn show_descriptors(db: &InfluxDB, param: &OptionalDB) -> ExitCode {
+    let res = match db.get_descriptors(&param.db) {
         Ok(r) => r,
         Err(e) => {
             error!("{e:?}");
