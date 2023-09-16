@@ -1,7 +1,7 @@
 [package]
 name = "irox-stats"
 description = "Various mathematical and statistics utilities"
-keywords = ["mathematics", "statistics", "library", "distributions"]
+keywords = ["irox", "mathematics", "statistics", "library", "distributions"]
 categories = ["mathematics"]
 version.workspace = true
 edition.workspace = true
@@ -9,5 +9,7 @@ authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [dependencies]

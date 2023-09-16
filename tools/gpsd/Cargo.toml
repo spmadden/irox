@@ -1,5 +1,8 @@
 [package]
 name = "irox-gpsd"
+description = "Implementation of GPSd in Rust"
+keywords = ["irox", "gps", "sirf", "nmea", "windows"]
+categories = ["command-line-utilities", "aerospace", "science::geo", "simulation"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -7,6 +10,7 @@ homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
 readme.workspace = true
+repository.workspace = true
 
 [dependencies]
 serial = "^0.4"

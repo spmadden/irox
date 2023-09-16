@@ -1,14 +1,16 @@
 [package]
 name = "irox-sirf"
 description = "SiRF Binary format Encoders and Decoders for GPS Devices"
-keywords = ["sirf", "encoder", "decoder", "gps"]
+keywords = ["irox", "sirf", "encoder", "decoder", "gps"]
 categories = ["aerospace", "parser-implementations", "science::geo", "encoding"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
-license.workspace = true
 homepage.workspace = true
+license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [dependencies]
 irox-structs.workspace = true

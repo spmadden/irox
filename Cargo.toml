@@ -6,6 +6,7 @@ homepage = "https://github.com/spmadden/irox"
 license = "MIT OR Apache-2.0"
 exclude = ["doc"]
 readme = "README.md"
+repository = "https://github.com/spmadden/irox"
 
 [workspace]
 resolver = "2"

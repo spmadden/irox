@@ -1,14 +1,16 @@
 [package]
 name = "halflifes"
 description = "GUI Tool to calculate the halflives of things"
-keywords = ["gui", "tool"]
+keywords = ["irox", "gui", "tool"]
 categories = ["science", "visualization"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
-license.workspace = true
 homepage.workspace = true
+license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [dependencies]
 eframe.workspace = true

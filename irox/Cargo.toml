@@ -1,11 +1,16 @@
 [package]
 name = "irox"
 description = "irox Rust Tools & Libraries"
+keywords = ["irox"]
+categories = ["aerospace", "science", "mathematics"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
 license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [features]
 default = []

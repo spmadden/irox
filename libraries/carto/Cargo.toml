@@ -1,14 +1,16 @@
 [package]
 name = "irox-carto"
 description = "Cartographic & Geospatial Library"
-keywords = ["coordinate", "transforms", "epsg", "projections"]
+keywords = ["irox", "coordinate", "transforms", "epsg", "projections"]
 categories = ["aerospace", "data-structures", "science::geo", "mathematics"]
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
-license.workspace = true
 homepage.workspace = true
+license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [dependencies]
 irox-units.workspace = true

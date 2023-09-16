@@ -1,7 +1,7 @@
 [package]
 name = "irox-csv"
 description = "CSV Reader/Writer"
-keywords = ["csv", "encoder", "decoder"]
+keywords = ["irox", "csv", "encoder", "decoder"]
 categories = ["encoding", "parser-implementations"]
 version.workspace = true
 edition.workspace = true
@@ -9,3 +9,5 @@ authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true

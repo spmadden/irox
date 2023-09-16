@@ -1,7 +1,7 @@
 [package]
 name = "irox-influxdb_v1"
 description = "InfluxDB v1 API Client"
-keywords = ["db", "api", "influxdb"]
+keywords = ["irox", "db", "api", "influxdb"]
 categories = ["api-bindings", "database"]
 version.workspace = true
 edition.workspace = true
@@ -9,6 +9,8 @@ authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [dependencies]
 ureq.workspace = true

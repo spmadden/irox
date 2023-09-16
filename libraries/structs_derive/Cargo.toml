@@ -1,7 +1,7 @@
 [package]
 name = "irox-structs_derive"
 description = "Derivable impls of the traits in irox-structs"
-keywords = ["reflection", "metaprogramming"]
+keywords = ["irox", "reflection", "metaprogramming"]
 categories = ["development-tools", "rust-patterns"]
 version.workspace = true
 edition.workspace = true
@@ -10,6 +10,7 @@ homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
 readme.workspace = true
+repository.workspace = true
 
 [lib]
 proc-macro = true
