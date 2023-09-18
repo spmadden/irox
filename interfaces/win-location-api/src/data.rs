@@ -3,6 +3,7 @@
 
 use std::fmt::{Display, Formatter, Write};
 use std::time::Duration;
+use time::ext::NumericalDuration;
 
 use time::OffsetDateTime;
 use windows::Devices::Geolocation::Geocoordinate;
@@ -127,14 +128,17 @@ impl From<&Geocoordinate> for WindowsCoordinate {
             // jfc.  UniversalTime is the # of 100ns intervals since 01-JAN-1601 00:00:00
             let micros_since_win_epoch = ts.UniversalTime / 10 - WINDOWS_2_NX_EPOCH_MICROS;
             if micros_since_win_epoch >= 0 {
-                timestamp = OffsetDateTime::UNIX_EPOCH
-                    .checked_add(time::Duration::microseconds(micros_since_win_epoch));
+                timestamp =
+                    OffsetDateTime::UNIX_EPOCH.checked_add(micros_since_win_epoch.microseconds());
             }
         }
         if let Some(coord) = coordinate {
             if coord.get_timestamp().is_none() {
                 if let Some(ts) = timestamp {
-                    let dur = Duration::from_micros((ts.unix_timestamp_nanos() / 1000) as u64);
+                    let nanos = ts.unix_timestamp_nanos();
+                    let secs = nanos / 1_000_000_000;
+                    let nanos = nanos - secs * 1_000_000_000;
+                    let dur = Duration::new(secs as u64, nanos as u32);
                     coordinate = Some(coord.with_timestamp(dur));
                 }
             }
