@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
@@ -88,7 +88,7 @@ impl Display for EllipticalCoordinate {
             None => String::new(),
         };
         let asof = match self.timestamp {
-            Some(ts) => format!(" as/of: {:?}", SystemTime::UNIX_EPOCH.checked_add(ts)),
+            Some(ts) => format!(" as/of: {ts:?}"),
             None => String::new(),
         };
         write!(
