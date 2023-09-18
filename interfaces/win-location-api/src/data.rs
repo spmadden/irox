@@ -2,6 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter, Write};
+use std::time::Duration;
 
 use time::ext::NumericalDuration;
 use time::macros::datetime;
@@ -107,6 +108,14 @@ impl From<&Geocoordinate> for WindowsCoordinate {
             let nanos = unix_epoch.whole_nanoseconds();
             if nanos >= 0 {
                 timestamp = OffsetDateTime::UNIX_EPOCH.checked_add(unix_epoch);
+            }
+        }
+        if let Some(coord) = coordinate {
+            if coord.get_timestamp().is_none() {
+                if let Some(ts) = timestamp {
+                    let dur = Duration::from_nanos(ts.unix_timestamp_nanos() as u64);
+                    coordinate = Some(coord.with_timestamp(dur));
+                }
             }
         }
 
