@@ -4,8 +4,6 @@
 use std::fmt::{Display, Formatter, Write};
 use std::time::Duration;
 
-use time::ext::NumericalDuration;
-use time::macros::datetime;
 use time::OffsetDateTime;
 use windows::Devices::Geolocation::Geocoordinate;
 
@@ -15,7 +13,7 @@ use irox_units::units::angle::Angle;
 use irox_units::units::compass::{CompassReference, RotationDirection, Track};
 use irox_units::units::speed::Speed;
 
-pub const WIN_EPOCH: OffsetDateTime = datetime!(1601-01-01 00:00:00 +0);
+pub const WINDOWS_2_NX_EPOCH_MICROS: i64 = 11_644_473_600_000_000;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PositionSource {
@@ -127,13 +125,10 @@ impl From<&Geocoordinate> for WindowsCoordinate {
         let mut timestamp = None;
         if let Ok(ts) = value.Timestamp() {
             // jfc.  UniversalTime is the # of 100ns intervals since 01-JAN-1601 00:00:00
-            let micros_since_win_epoch = ts.UniversalTime / 10;
-            let unix_epoch =
-                micros_since_win_epoch.microseconds() - (OffsetDateTime::UNIX_EPOCH - WIN_EPOCH);
-            let nanos = unix_epoch.whole_nanoseconds();
-            if nanos >= 0 {
+            let micros_since_win_epoch = ts.UniversalTime / 10 - WINDOWS_2_NX_EPOCH_MICROS;
+            if micros_since_win_epoch >= 0 {
                 timestamp = OffsetDateTime::UNIX_EPOCH
-                    .checked_add(time::Duration::nanoseconds(nanos as i64));
+                    .checked_add(time::Duration::microseconds(micros_since_win_epoch));
             }
         }
         if let Some(coord) = coordinate {
