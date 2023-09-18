@@ -28,6 +28,31 @@ pub enum PositionSource {
     Obfuscated,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum PositionStatus {
+    Ready,
+    Initializing,
+    NoData,
+    Disabled,
+    NotInitialized,
+    NotAvailable,
+    OtherUnknown(i32),
+}
+
+impl From<i32> for PositionStatus {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => PositionStatus::Ready,
+            1 => PositionStatus::Initializing,
+            2 => PositionStatus::NoData,
+            3 => PositionStatus::Disabled,
+            4 => PositionStatus::NotInitialized,
+            5 => PositionStatus::NotAvailable,
+            u => PositionStatus::OtherUnknown(u),
+        }
+    }
+}
+
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct WindowsCoordinate {
     coordinate: Option<EllipticalCoordinate>,
@@ -74,7 +99,7 @@ impl WindowsCoordinate {
 impl From<&Geocoordinate> for WindowsCoordinate {
     fn from(value: &Geocoordinate) -> Self {
         let coord = TryFrom::<&Geocoordinate>::try_from(value);
-        let coordinate: Option<EllipticalCoordinate> = coord.ok();
+        let mut coordinate: Option<EllipticalCoordinate> = coord.ok();
 
         let mut heading = None;
         if let Ok(hdg) = value.Heading() {

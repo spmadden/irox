@@ -57,3 +57,15 @@ Geoposition {
 }
 
 ```
+
+```
+PositionStatus {
+    Ready: 0,
+    Initializing: 1,
+    NoData: 2,
+    Disabled: 3,
+    NotInitialized: 4,
+    NotAvailable: 5,
+    Other/Unknown
+}
+```
