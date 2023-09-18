@@ -118,6 +118,10 @@ mod windows {
             error!("Error sending initial TPV: {e:?}");
         }
 
+        let _status_hndl = locator.on_status_changed(move |status| {
+            info!("Location status changed: {status:?}");
+        });
+
         let _handle = locator.on_location_changed(move |pos| {
             info!("Location Changed: {pos}");
             let frame: Frame = (&pos).into();
