@@ -230,6 +230,10 @@ impl TPV {
                 };
                 map.serialize_entry("eph", &val)?;
             }
+            if let Some(alt_err) = coord.get_altitude_uncertainty() {
+                let meters = alt_err.as_meters().value();
+                map.serialize_entry("epv", &meters)?;
+            }
             if let Some(time) = coord.get_timestamp() {
                 if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(Duration::new(
                     time.as_secs() as i64,
