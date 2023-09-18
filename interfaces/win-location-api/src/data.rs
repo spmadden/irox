@@ -132,7 +132,8 @@ impl From<&Geocoordinate> for WindowsCoordinate {
                 micros_since_win_epoch.microseconds() - (OffsetDateTime::UNIX_EPOCH - WIN_EPOCH);
             let nanos = unix_epoch.whole_nanoseconds();
             if nanos >= 0 {
-                timestamp = OffsetDateTime::UNIX_EPOCH.checked_add(unix_epoch);
+                timestamp = OffsetDateTime::UNIX_EPOCH
+                    .checked_add(time::Duration::nanoseconds(nanos as i64));
             }
         }
         if let Some(coord) = coordinate {
