@@ -6,7 +6,7 @@ pub use crate::windows::*;
 
 #[cfg(target_os = "windows")]
 mod windows {
-    use log::{error, trace, warn};
+    use log::{error, info, trace, warn};
     use windows::Devices::Geolocation::{Geolocator, PositionChangedEventArgs};
     use windows::Foundation::{EventRegistrationToken, TypedEventHandler};
 
@@ -59,6 +59,7 @@ mod windows {
                 },
             );
             let res = self.locator.PositionChanged(&handler)?;
+            trace!("Location handler registered.");
             Ok(LocationHandler {
                 locator: &self.locator,
                 token: res,
@@ -74,6 +75,7 @@ mod windows {
     impl<'a> Drop for LocationHandler<'a> {
         fn drop(&mut self) {
             let _res = self.locator.RemovePositionChanged(self.token);
+            trace!("Dropped location handler.");
         }
     }
 }
