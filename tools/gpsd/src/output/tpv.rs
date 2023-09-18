@@ -228,7 +228,7 @@ impl TPV {
                         .as_meters()
                         .value(),
                 };
-                map.serialize_entry("sep", &val)?;
+                map.serialize_entry("eph", &val)?;
             }
             if let Some(time) = coord.get_timestamp() {
                 if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(Duration::new(
