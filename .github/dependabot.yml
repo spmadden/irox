@@ -11,8 +11,6 @@ updates:
     commit-message:
       prefix: "feat"
       include: "scope"
-    ignore:
-      - dependency-name: "serde"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

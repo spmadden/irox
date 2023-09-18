@@ -219,7 +219,7 @@ deny = [
     # Wrapper crates can optionally be specified to allow the crate when it
     # is a direct dependency of the otherwise banned crate
     #{ name = "ansi_term", version = "=0.11.0", wrappers = [] },
-    { name = "serde", version = ">1.171.0" },
+    #{ name = "serde", version = ">1.171.0" },
 ]
 
 # List of features to allow/deny

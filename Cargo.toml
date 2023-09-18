@@ -36,7 +36,7 @@ members = [
 egui = { version = "^0", features = ["persistence"] }
 eframe = { version = "^0", features = ["persistence"] }
 ron = { version = "^0", features = ["integer128"] }
-serde = { version = "^1,<1.0.172", features = ["derive"] }
+serde = { version = "1.0.188", features = ["derive"] }
 serde_json = {version = "^1", features = []}
 time = {version = "^0", features = ["formatting", "macros"]}
 ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
