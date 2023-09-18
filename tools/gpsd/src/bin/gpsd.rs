@@ -119,7 +119,7 @@ mod windows {
         }
 
         let _handle = locator.on_location_changed(move |pos| {
-            info!("{pos:?}");
+            info!("Location Changed: {pos}");
             let frame: Frame = (&pos).into();
             if let Err(e) = server.send(&frame) {
                 error!("Error sending frame: {e:?}");
