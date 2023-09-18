@@ -354,6 +354,8 @@ pub mod windows_conv {
     use crate::geo::standards::wgs84::{WGS84_EPSG_CODE, WGS84_SHAPE};
     use crate::geo::EllipticalShape;
 
+    pub const WINDOWS_2_NX_EPOCH_MICROS: i64 = 11_644_473_600_000_000;
+
     impl TryFrom<&Geocoordinate> for EllipticalCoordinate {
         type Error = ConvertError;
 
@@ -410,10 +412,12 @@ pub mod windows_conv {
 
             if let Ok(ts) = value.PositionSourceTimestamp() {
                 if let Ok(ts) = ts.GetDateTime() {
-                    let dur = match ts.UniversalTime {
+                    let micros_since_win_epoch = ts.UniversalTime / 10 - WINDOWS_2_NX_EPOCH_MICROS;
+                    let dur = match micros_since_win_epoch {
                         ..=0 => Duration::from_secs(0),
-                        v => Duration::from_secs(v as u64),
+                        v => Duration::from_micros(v as u64),
                     };
+
                     bld.with_timestamp(dur);
                 }
             }
