@@ -101,10 +101,7 @@ mod windows {
     use irox_gpsd::transport::TCPServer;
     use irox_winlocation_api::WindowsLocationAPI;
 
-    pub fn start_windows(
-        mut server: TCPServer,
-        running: &Arc<AtomicBool>,
-    ) -> Result<(), GPSdError> {
+    pub fn start_windows(mut server: TCPServer, term: &Arc<AtomicBool>) -> Result<(), GPSdError> {
         let locator = WindowsLocationAPI::connect()?;
         info!("Connected to windows location api");
 
@@ -129,7 +126,7 @@ mod windows {
             }
         })?;
 
-        while running.load(Ordering::Relaxed) {
+        while !term.load(Ordering::Relaxed) {
             std::thread::sleep(Duration::from_millis(100));
         }
 
