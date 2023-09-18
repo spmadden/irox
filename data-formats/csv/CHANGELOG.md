@@ -1,6 +1,38 @@
 
 
+
+## v0.2.1 (2023-09-18)
+
+### Chore
+
+ - <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/> Fix up the readmes for publishing
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix up the readmes for publishing ([`f99614a`](https://github.com/spmadden/irox/commit/f99614a5ce3368072b4d44dacede0e6e847b0b2e))
+</details>
+
 ## v0.2.0 (2023-09-18)
+
+<csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
+<csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
+<csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
+<csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
+<csr-id-6d1d9a937390e9c89c4a1c66ae55f547d22e63df/>
+<csr-id-e720f74b2427c4e02a92f384eaa93a28b9de28c3/>
 
 ### Chore
 
@@ -35,7 +67,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release over the course of 27 calendar days.
+ - 16 commits contributed to the release over the course of 29 calendar days.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -46,6 +78,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.0, irox-enums v0.2.0, irox-tools v0.2.0, irox-units v0.2.0, irox-carto v0.2.0, irox-csv v0.2.0, irox-egui-extras v0.2.0, irox-networking v0.2.0, irox-types v0.2.0, irox-influxdb_v1 v0.2.0, irox-structs_derive v0.2.0, irox-structs v0.2.0, irox-nmea0183 v0.1.0, irox-sirf v0.2.0, irox-stats v0.2.0, irox-winlocation-api v0.1.0, irox v0.2.0, safety bump 10 crates ([`6a72204`](https://github.com/spmadden/irox/commit/6a722046661ceef02a66c2067e2c5c15ce102e04))
     - Clean up code with additional lints ([`f03d8a3`](https://github.com/spmadden/irox/commit/f03d8a3ec997d53470bfdeb5e76b71925aac3f10))
     - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
     - Feat!(csv): more robust testing, renames, documentation ([`b0f36ac`](https://github.com/spmadden/irox/commit/b0f36ac6b0ca5011f68274c0e90b5362e1b8f151))
