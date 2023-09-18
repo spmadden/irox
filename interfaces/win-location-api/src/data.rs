@@ -78,19 +78,23 @@ impl From<&Geocoordinate> for WindowsCoordinate {
         let mut heading = None;
         if let Ok(hdg) = value.Heading() {
             if let Ok(hdg) = hdg.GetDouble() {
-                let ang = Angle::new_degrees(hdg);
-                let hdg = Track::new_track(
-                    ang,
-                    RotationDirection::PositiveClockwise,
-                    CompassReference::TrueNorth,
-                );
-                heading = Some(hdg)
+                if !hdg.is_infinite() && !hdg.is_nan() {
+                    let ang = Angle::new_degrees(hdg);
+                    let hdg = Track::new_track(
+                        ang,
+                        RotationDirection::PositiveClockwise,
+                        CompassReference::TrueNorth,
+                    );
+                    heading = Some(hdg)
+                }
             }
         }
         let mut speed = None;
         if let Ok(spd) = value.Speed() {
             if let Ok(spd) = spd.GetDouble() {
-                speed = Some(Speed::new_meters_per_second(spd));
+                if spd.is_finite() && !spd.is_nan() {
+                    speed = Some(Speed::new_meters_per_second(spd));
+                }
             }
         }
 

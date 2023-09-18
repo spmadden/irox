@@ -6,7 +6,7 @@ pub use crate::windows::*;
 
 #[cfg(target_os = "windows")]
 mod windows {
-    use log::{error, info, trace, warn};
+    use log::{error, trace, warn};
     use windows::Devices::Geolocation::{Geolocator, PositionChangedEventArgs};
     use windows::Foundation::{EventRegistrationToken, TypedEventHandler};
 
