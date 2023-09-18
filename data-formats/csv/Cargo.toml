@@ -9,5 +9,5 @@ authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
-readme.workspace = true
+readme = "README.md"
 repository.workspace = true

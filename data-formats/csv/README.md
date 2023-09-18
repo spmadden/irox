@@ -50,9 +50,10 @@ fn map_example() -> Result<(), CSVError> {
         let maybe_row : Option<Row> = maps.next_row()?;
         match maybe_row {
             Some(row) => {
-                // Use the individual fields of the CSV line
-                row.
-                println!("{:?}", fields); // fields : Vec<String>
+                // Use the individual fields of the CSV line as a key-value map
+                // The keys are the column headers found in the first row, the values are the matching row entry
+                let map = row.into_map_lossy();
+                println!("{:?}", map); // map : BTree<column:String, rowVal:String>
             }
             None => {
                 // EOF
@@ -64,4 +65,32 @@ fn map_example() -> Result<(), CSVError> {
 }
 ```
 
-* Writing 
+* Writing a CSV File using Maps:
+```rust
+fn map_writer_example() -> Result<(), CSVError> {
+    let mut buf: Vec<u8> = Vec::new();
+    let mut writer = CSVWriterBuilder::new()
+        .with_columns(&["first", "second", "third"])
+        .build(&mut buf);
+
+    let mut map = BTreeMap::new();
+    map.insert("first".to_string(), "firstColFirstRowVal".to_string());
+    map.insert("second".to_string(), "secondColFirstRowVal".to_string());
+    map.insert("third".to_string(), "thirdColFirstRowVal".to_string());
+    writer.write_fields(&map)?;
+    
+    map.clear();
+    map.insert("first".to_string(), "firstColSecondRowVal".to_string());
+    map.insert("second".to_string(), "secondColSecondRowVal".to_string());
+    map.insert("third".to_string(), "thirdColSecondRowVal".to_string());
+    writer.write_fields(&map)?;
+    
+    Ok(())
+}
+```
+will result in a buffer:
+```csv
+first,second,third
+firstColFirstRowVal,secondColFirstRowVal,thirdColFirstRowVal
+firstColSecondRowVal,secondColSecondRowVal,thirdColSecondRowVal
+```
