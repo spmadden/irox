@@ -121,7 +121,7 @@ mod windows {
             error!("Error sending initial TPV: {e:?}");
         }
 
-        locator.on_location_changed(move |pos| {
+        let _handle = locator.on_location_changed(move |pos| {
             info!("{pos:?}");
             let frame: Frame = (&pos).into();
             if let Err(e) = server.send(&frame) {
