@@ -1,1 +1,70 @@
 
+
+## v0.2.0 (2023-09-18)
+
+### Chore
+
+ - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
+ - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
+ - <csr-id-b9a0ae0ccb51682bd9c36e9ab198f38634a62ade/> fix new formatting errors from rust 1.72 upgrade
+ - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
+
+### New Features
+
+ - <csr-id-eb7f5fa4f547ba8b59d3551b50dcebed53aa3a36/> More full impl of the SIRf spec
+ - <csr-id-fdaf61f7de9e266c1d3aa25ca1c69a92b655f0ad/> new x38 msg and clippy lints fixed
+ - <csr-id-95869b9bf0aa7619f97b3552d3de0658526ec32c/> derive 'struct' for parsing in SIRf
+ - <csr-id-c088de020214e47f28391d0af5a64abe56ad185b/> prohibit unsafe code
+ - <csr-id-091f484738eb46b1e9735440f4e11dc98abe6287/> Initial
+
+### Bug Fixes
+
+ - <csr-id-36ce7378e51dc93247379486952a7104329feceb/> fmt
+
+### Other
+
+ - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
+ - <csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/> exclude docs folder from publish
+ - <csr-id-7fa187c565b024c1311fb8dcc0ed5bb5387557a1/> add license headers
+ - <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/> update metadata, prepare for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 23 commits contributed to the release over the course of 42 calendar days.
+ - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Clean up code with additional lints ([`f03d8a3`](https://github.com/spmadden/irox/commit/f03d8a3ec997d53470bfdeb5e76b71925aac3f10))
+    - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
+    - Fix new formatting errors from rust 1.72 upgrade ([`b9a0ae0`](https://github.com/spmadden/irox/commit/b9a0ae0ccb51682bd9c36e9ab198f38634a62ade))
+    - Setting up blank changelogs for the modules ([`1a36533`](https://github.com/spmadden/irox/commit/1a365333397b02a5f911d0897c3bf0c80f6c2b80))
+    - More full impl of the SIRf spec ([`eb7f5fa`](https://github.com/spmadden/irox/commit/eb7f5fa4f547ba8b59d3551b50dcebed53aa3a36))
+    - New x38 msg and clippy lints fixed ([`fdaf61f`](https://github.com/spmadden/irox/commit/fdaf61f7de9e266c1d3aa25ca1c69a92b655f0ad))
+    - Derive 'struct' for parsing in SIRf ([`95869b9`](https://github.com/spmadden/irox/commit/95869b9bf0aa7619f97b3552d3de0658526ec32c))
+    - Cleaning up clippy warnings ([`5c17856`](https://github.com/spmadden/irox/commit/5c178560becc0b665d70be2d99a1cffad3ba4284))
+    - Add 0xFF asciidata ([`885b594`](https://github.com/spmadden/irox/commit/885b5942ed3ab019094581fd4f5f316ecc78c279))
+    - Add 0x09 CPU Throughput ([`7c27337`](https://github.com/spmadden/irox/commit/7c27337810927b8c331b2a1cb4e9c547343319f2))
+    - Add 0x33-6 Tracker Load Statu ([`bd904ca`](https://github.com/spmadden/irox/commit/bd904caff881504b4ffd9e19233a468dce0e3acc))
+    - Add 0x1C NavLibrary Measurement ([`ccc9637`](https://github.com/spmadden/irox/commit/ccc9637acad96be96c34abbd9d4ab475921fbfaa))
+    - Add 0x29 Geodetic Nav Data ([`e634e35`](https://github.com/spmadden/irox/commit/e634e3510cb91e8e60d7d14b21a3af1e2718a4f9))
+    - Add 0x32 SBAS Parameters ([`3aeb9b4`](https://github.com/spmadden/irox/commit/3aeb9b42090a1936358de8d19cb978711fb9dbad))
+    - Add 0x1E Nav SV State ([`3a718cd`](https://github.com/spmadden/irox/commit/3a718cdf6d445e5b815d8d7f8e31933fd10994e2))
+    - Add 0x08 50 BPS Data ([`8ece255`](https://github.com/spmadden/irox/commit/8ece2552a077652e662dbaacdbfb9bb0eb2a4e92))
+    - Add 0x04 Measured Track Data ([`59d017d`](https://github.com/spmadden/irox/commit/59d017d483b0aac337f76122871a127be4d8389b))
+    - Prohibit unsafe code ([`c088de0`](https://github.com/spmadden/irox/commit/c088de020214e47f28391d0af5a64abe56ad185b))
+    - Exclude docs folder from publish ([`8ef5bb6`](https://github.com/spmadden/irox/commit/8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9))
+    - Add license headers ([`7fa187c`](https://github.com/spmadden/irox/commit/7fa187c565b024c1311fb8dcc0ed5bb5387557a1))
+    - Update metadata, prepare for release ([`49d5566`](https://github.com/spmadden/irox/commit/49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9))
+    - Fmt ([`36ce737`](https://github.com/spmadden/irox/commit/36ce7378e51dc93247379486952a7104329feceb))
+    - Initial ([`091f484`](https://github.com/spmadden/irox/commit/091f484738eb46b1e9735440f4e11dc98abe6287))
+</details>
+
