@@ -134,7 +134,7 @@ impl From<&Geocoordinate> for WindowsCoordinate {
         if let Some(coord) = coordinate {
             if coord.get_timestamp().is_none() {
                 if let Some(ts) = timestamp {
-                    let dur = Duration::from_nanos(ts.unix_timestamp_nanos() as u64);
+                    let dur = Duration::from_micros((ts.unix_timestamp_nanos() / 1000) as u64);
                     coordinate = Some(coord.with_timestamp(dur));
                 }
             }
