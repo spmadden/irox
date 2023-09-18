@@ -6,8 +6,10 @@ pub use crate::windows::*;
 
 #[cfg(target_os = "windows")]
 mod windows {
-    use log::{error, trace, warn};
-    use windows::Devices::Geolocation::{Geolocator, PositionChangedEventArgs};
+    use log::{error, info, trace, warn};
+    use windows::Devices::Geolocation::{
+        GeolocationAccessStatus, Geolocator, PositionChangedEventArgs,
+    };
     use windows::Foundation::{EventRegistrationToken, TypedEventHandler};
 
     pub use crate::data::*;
@@ -24,6 +26,20 @@ mod windows {
 
             if let Err(e) = locator.AllowFallbackToConsentlessPositions() {
                 warn!("Error requesting fallback to consentless positions: {e:?}")
+            }
+
+            let access = Geolocator::RequestAccessAsync()?;
+            let access_results = access.get()?;
+            match access_results {
+                GeolocationAccessStatus::Allowed => {
+                    info!("User granted geolocation access.");
+                }
+                GeolocationAccessStatus::Denied => {
+                    warn!("User denied geolocation access.");
+                }
+                _ => {
+                    warn!("Unknown result from geolocation access request.");
+                }
             }
 
             Ok(WindowsLocationAPI { locator })
