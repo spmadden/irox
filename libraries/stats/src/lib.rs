@@ -6,6 +6,7 @@
 pub use gaussian as standard;
 
 pub mod decay;
+pub mod filter;
 pub mod gaussian;
 
 pub enum DistributionParams {
