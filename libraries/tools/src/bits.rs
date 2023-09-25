@@ -159,3 +159,7 @@ where
         self.write_all(&val.to_be_bytes())
     }
 }
+
+pub fn read_be_u64<T: Bits>(mut data: T) -> Result<u64, Error> {
+    data.read_be_u64()
+}
