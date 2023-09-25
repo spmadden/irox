@@ -10,6 +10,16 @@ pub struct GaussianDistribution {
     standard_deviation_sigma: f64,
     variance: f64,
 }
+
+impl GaussianDistribution {
+    pub fn new(mean: f64, standard_deviation: f64) -> GaussianDistribution {
+        GaussianDistribution {
+            mean_mu: mean,
+            standard_deviation_sigma: standard_deviation,
+            variance: standard_deviation.powi(2),
+        }
+    }
+}
 pub type StandardDistribution = GaussianDistribution;
 
 impl Default for GaussianDistribution {
