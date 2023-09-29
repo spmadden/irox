@@ -1,0 +1,23 @@
+[package]
+name = "irox-raymarine-sonar"
+description = "Raymarine/Navionics Sonar Logs Reader"
+keywords = ["irox", "raymarine", "sonar", "encoder", "decoder"]
+categories = ["encoding", "parser-implementations"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme = "README.md"
+repository.workspace = true
+
+[dependencies]
+rusqlite.workspace = true
+env_logger.workspace = true
+clap.workspace = true
+clap-verbosity-flag.workspace = true
+log.workspace = true
+irox-types.workspace = true
+irox-units.workspace = true
+irox-carto.workspace = true
