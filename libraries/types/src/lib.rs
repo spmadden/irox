@@ -14,6 +14,7 @@ pub use crate::syn::*;
 /// A set of possible primitives
 #[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumName, EnumIterItem, EnumTryFromStr)]
+#[non_exhaustive]
 pub enum Primitives {
     u8,
     i8,
@@ -31,6 +32,7 @@ pub enum Primitives {
     bool,
     char,
     str,
+    blob,
     null,
 }
 
@@ -39,6 +41,7 @@ pub enum Primitives {
 ///
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, EnumName)]
+#[non_exhaustive]
 pub enum PrimitiveValue {
     u8(u8),
     i8(i8),
@@ -55,6 +58,7 @@ pub enum PrimitiveValue {
     bool(bool),
     char(char),
     str(String),
+    blob(Box<[u8]>),
     null,
 }
 
@@ -78,6 +82,7 @@ impl PrimitiveValue {
             PrimitiveValue::bool(_) => Primitives::bool,
             PrimitiveValue::char(_) => Primitives::char,
             PrimitiveValue::str(_) => Primitives::str,
+            PrimitiveValue::blob(_) => Primitives::blob,
             PrimitiveValue::null => Primitives::null,
         }
     }
