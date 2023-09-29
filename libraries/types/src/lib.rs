@@ -88,6 +88,32 @@ impl PrimitiveValue {
     }
 }
 
+impl ToString for PrimitiveValue {
+    fn to_string(&self) -> String {
+        match self {
+            PrimitiveValue::u8(v) => v.to_string(),
+            PrimitiveValue::i8(v) => v.to_string(),
+            PrimitiveValue::u16(v) => v.to_string(),
+            PrimitiveValue::i16(v) => v.to_string(),
+            PrimitiveValue::u32(v) => v.to_string(),
+            PrimitiveValue::i32(v) => v.to_string(),
+            PrimitiveValue::f32(v) => v.to_string(),
+            PrimitiveValue::u64(v) => v.to_string(),
+            PrimitiveValue::i64(v) => v.to_string(),
+            PrimitiveValue::f64(v) => v.to_string(),
+            PrimitiveValue::u128(v) => v.to_string(),
+            PrimitiveValue::i128(v) => v.to_string(),
+            PrimitiveValue::bool(v) => v.to_string(),
+            PrimitiveValue::char(v) => v.to_string(),
+            PrimitiveValue::str(v) => v.to_string(),
+            PrimitiveValue::blob(v) => {
+                format!("{v:X?}")
+            }
+            PrimitiveValue::null => "null".to_string(),
+        }
+    }
+}
+
 ///
 /// A struct to "Name" a primitive - like a Field with an associated type
 ///
