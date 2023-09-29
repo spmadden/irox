@@ -41,6 +41,9 @@ pub enum StandardShapes {
 
     /// Airy Ellipsoid ca 1830
     Airy,
+
+    /// Navioncs uses the Hayford International ellipsoid
+    NavionicsMercator,
 }
 
 impl From<&StandardShapes> for Ellipse {
@@ -51,7 +54,9 @@ impl From<&StandardShapes> for Ellipse {
             StandardShapes::WGS84_EqualAreaSphere => WGS84_EQUAL_AREA_SPHERE_PARAMS,
             StandardShapes::WGS84_EqualVolumeSphere => WGS84_EQUAL_VOLUME_SPHERE_PARAMS,
 
-            StandardShapes::Hayford_International => INTERNATIONAL_PARAMS,
+            StandardShapes::Hayford_International | StandardShapes::NavionicsMercator => {
+                INTERNATIONAL_PARAMS
+            }
             StandardShapes::Airy => AIRY_PARAMS,
             StandardShapes::GRS80 => GRS80_PARAMS,
         }
