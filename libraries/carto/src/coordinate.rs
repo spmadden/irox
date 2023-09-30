@@ -93,7 +93,7 @@ impl Display for EllipticalCoordinate {
         };
         write!(
             f,
-            "\n\tLat: {:0.5}\u{00B0} Lon: {:0.5}\u{00B0} {}{alt}{alt_err}{pos_err}{asof}",
+            "Lat: {:0.5}\u{00B0} Lon: {:0.5}\u{00B0} {}{alt}{alt_err}{pos_err}{asof}",
             self.latitude.0.as_degrees().value(),
             self.longitude.0.as_degrees().value(),
             self.reference_frame.name()
@@ -273,12 +273,55 @@ pub struct CartesianCoordinate {
     x: Length,
     y: Length,
     z: Length,
+    altitude: Option<Altitude>,
+    altitude_uncertainty: Option<Length>,
+    position_uncertainty: Option<PositionUncertainty>,
+    timestamp: Option<Duration>,
+}
+
+impl Display for CartesianCoordinate {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let alt = match self.altitude {
+            Some(alt) => {
+                format!(
+                    " Alt: {}m {}",
+                    alt.value().as_meters().value(),
+                    alt.reference_frame().short_name()
+                )
+            }
+            None => String::new(),
+        };
+        let alt_err = match self.altitude_uncertainty {
+            Some(err) => format!("+/- {}m vert", err.as_meters().value()),
+            None => String::new(),
+        };
+        let pos_err = match self.position_uncertainty {
+            Some(err) => format!(" {err} horiz"),
+            None => String::new(),
+        };
+        let asof = match self.timestamp {
+            Some(ts) => format!(" as/of: {ts:?}"),
+            None => String::new(),
+        };
+        write!(
+            f,
+            "X: {:0.5}m Y: {:0.5}m Z: {:0.5}m: {alt}{alt_err}{pos_err}{asof}",
+            self.x.as_meters().value(),
+            self.y.as_meters().value(),
+            self.z.as_meters().value(),
+        )
+    }
 }
 
 impl CartesianCoordinate {
     #[must_use]
     pub fn new(x: Length, y: Length, z: Length) -> CartesianCoordinate {
-        CartesianCoordinate { x, y, z }
+        CartesianCoordinate {
+            x,
+            y,
+            z,
+            ..CartesianCoordinate::default()
+        }
     }
 
     #[must_use]
@@ -303,6 +346,119 @@ impl CartesianCoordinate {
     #[must_use]
     pub fn get_z(&self) -> &Length {
         &self.z
+    }
+
+    #[must_use]
+    pub fn get_altitude(&self) -> &Option<Altitude> {
+        &self.altitude
+    }
+
+    #[must_use]
+    pub fn get_altitude_uncertainty(&self) -> &Option<Length> {
+        &self.altitude_uncertainty
+    }
+
+    #[must_use]
+    pub fn get_timestamp(&self) -> &Option<Duration> {
+        &self.timestamp
+    }
+
+    #[must_use]
+    pub fn with_altitude(self, altitude: Altitude) -> CartesianCoordinate {
+        CartesianCoordinate {
+            altitude: Some(altitude),
+            ..self
+        }
+    }
+
+    #[must_use]
+    pub fn with_timestamp(self, timestamp: Duration) -> CartesianCoordinate {
+        CartesianCoordinate {
+            timestamp: Some(timestamp),
+            ..self
+        }
+    }
+
+    #[must_use]
+    pub fn position_uncertainty(&self) -> &Option<PositionUncertainty> {
+        &self.position_uncertainty
+    }
+}
+
+///
+/// Allows the incremental building of an elliptical coordinate
+#[derive(Debug, Default, Clone)]
+pub struct CartesianCoordinateBuilder {
+    x: Option<Length>,
+    y: Option<Length>,
+    z: Option<Length>,
+    altitude: Option<Altitude>,
+    altitude_uncertainty: Option<Length>,
+    position_uncertainty: Option<PositionUncertainty>,
+    timestamp: Option<Duration>,
+}
+
+impl CartesianCoordinateBuilder {
+    #[must_use]
+    pub fn new() -> CartesianCoordinateBuilder {
+        Default::default()
+    }
+
+    pub fn with_x(&mut self, x: Length) -> &mut CartesianCoordinateBuilder {
+        self.x = Some(x);
+        self
+    }
+    pub fn with_y(&mut self, y: Length) -> &mut CartesianCoordinateBuilder {
+        self.y = Some(y);
+        self
+    }
+    pub fn with_z(&mut self, z: Length) -> &mut CartesianCoordinateBuilder {
+        self.z = Some(z);
+        self
+    }
+    pub fn with_altitude(&mut self, alt: Altitude) -> &mut CartesianCoordinateBuilder {
+        self.altitude = Some(alt);
+        self
+    }
+    pub fn with_altitude_uncertainty(
+        &mut self,
+        alt_unk: Length,
+    ) -> &mut CartesianCoordinateBuilder {
+        self.altitude_uncertainty = Some(alt_unk);
+        self
+    }
+    pub fn with_position_uncertainty(
+        &mut self,
+        pos_unk: PositionUncertainty,
+    ) -> &mut CartesianCoordinateBuilder {
+        self.position_uncertainty = Some(pos_unk);
+        self
+    }
+
+    pub fn with_timestamp(&mut self, timestamp: Duration) -> &mut CartesianCoordinateBuilder {
+        self.timestamp = Some(timestamp);
+        self
+    }
+
+    pub fn build(self) -> Result<CartesianCoordinate, ConvertError> {
+        let Some(x) = self.x else {
+            return Err(ConvertError::MissingValue("Missing x".to_string()));
+        };
+        let Some(y) = self.y else {
+            return Err(ConvertError::MissingValue("Missing y".to_string()));
+        };
+        let Some(z) = self.z else {
+            return Err(ConvertError::MissingValue("Missing z".to_string()));
+        };
+        Ok(CartesianCoordinate {
+            x,
+            y,
+            z,
+            altitude: self.altitude,
+            altitude_uncertainty: self.altitude_uncertainty,
+            position_uncertainty: self.position_uncertainty,
+            timestamp: self.timestamp,
+        })
     }
 }
 
