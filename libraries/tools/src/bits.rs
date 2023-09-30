@@ -160,6 +160,15 @@ where
     }
 }
 
+pub fn read_be_u32<T: Bits>(mut data: T) -> Result<u32, Error> {
+    data.read_be_u32()
+}
 pub fn read_be_u64<T: Bits>(mut data: T) -> Result<u64, Error> {
     data.read_be_u64()
+}
+pub fn read_f32<T: Bits>(mut data: T) -> Result<f32, Error> {
+    data.read_f32()
+}
+pub fn read_f64<T: Bits>(mut data: T) -> Result<f64, Error> {
+    data.read_f64()
 }
