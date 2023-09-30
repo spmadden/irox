@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+
 use irox_types::{NamedPrimitive, Primitives};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -23,9 +24,7 @@ pub struct SchemaFieldMem {
 
 impl SchemaFieldMem {
     pub fn new(n_points: usize, field: SchemaField) -> SchemaFieldMem {
-        let points = (0..n_points)
-            .map(|i| SchemaEntryMem::default())
-            .collect();
+        let points = (0..n_points).map(|i| SchemaEntryMem::default()).collect();
         SchemaFieldMem { points, field }
     }
 }
@@ -36,9 +35,11 @@ pub struct SchemaWorkingMem {
 
 impl SchemaWorkingMem {
     pub fn new(n_points: usize, context: &SchemaContext) -> SchemaWorkingMem {
-        let fields = context.fields.iter().map(|f| {
-            SchemaFieldMem::new(n_points, f.clone())
-        }).collect();
+        let fields = context
+            .fields
+            .iter()
+            .map(|f| SchemaFieldMem::new(n_points, f.clone()))
+            .collect();
         SchemaWorkingMem { fields }
     }
 }
@@ -65,7 +66,7 @@ impl Default for SchemaContext {
                 SchemaField::new("sog_kn", Primitives::f32, 4),
                 SchemaField::new("water_speed_kn", Primitives::f32, 4),
             ],
-            struct_size: 24
+            struct_size: 24,
         }
     }
 }

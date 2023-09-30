@@ -1,15 +1,23 @@
-use crate::error::Error;
-use crate::schema::{SchemaContext, SchemaWorkingMem};
-use crate::{Accesses, Entry, SDFConnection};
-use irox_carto::coordinate::{CartesianCoordinate, CoordinateType, EllipticalCoordinate};
-use irox_tools::bits::Bits;
-use irox_tools::vec::{PrettyVec, PrettyVecDeque};
-use log::{debug, error, info, warn};
-use rusqlite::types::ValueRef;
-use rusqlite::{named_params, params};
 use std::collections::VecDeque;
 use std::ops::Deref;
 use std::time::Duration;
+
+use log::{debug, error, info, warn};
+use rusqlite::named_params;
+use rusqlite::types::ValueRef;
+
+use irox_carto::coordinate::{
+    CartesianCoordinateBuilder, CoordinateType, EllipticalCoordinate, Latitude, Longitude,
+};
+use irox_carto::geo::standards::StandardShapes;
+use irox_tools::bits::{read_be_u32, Bits};
+use irox_units::units::angle::Angle;
+use irox_units::units::length::Length;
+use irox_units::units::speed::{Speed, SpeedUnits};
+
+use crate::error::Error;
+use crate::schema::{SchemaContext, SchemaWorkingMem};
+use crate::{Accesses, Entry, SDFConnection};
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct TrackData {
@@ -119,40 +127,104 @@ impl Iter {
 
         let mut mem = SchemaWorkingMem::new(num_points, &self.context);
 
-        mem.fields.iter_mut().enumerate().for_each(|(field_idx, field)| {
-            for _data_idx in 0..field.field.size {
-                for point_idx in 0..num_points {
-                    let Some(point) = field.points.get_mut(point_idx) else {
-                        // can't really happen
-                        error!("mem.points mis sized.  expected {num_points} but was {}", field.points.len());
-                        break;
-                    };
-                    let Some(d) = data.pop_front() else {
-                        error!("Data underflow.");
-                        break;
-                    };
-                    point.mem.push_front(d);
+        mem.fields
+            .iter_mut()
+            .enumerate()
+            .for_each(|(field_idx, field)| {
+                for _data_idx in 0..field.field.size {
+                    for point_idx in 0..num_points {
+                        let Some(point) = field.points.get_mut(point_idx) else {
+                            // can't really happen
+                            error!(
+                                "mem.points mis sized.  expected {num_points} but was {}",
+                                field.points.len()
+                            );
+                            break;
+                        };
+                        let Some(d) = data.pop_front() else {
+                            error!("Data underflow.");
+                            break;
+                        };
+                        point.mem.push_front(d);
+                    }
                 }
-            }
-        });
-        for field_mem in mem.fields {
-            let mut x = 0.0_f64;
-            let mut y = 0.0_f64;
-            let mut z = 0.0_f64;
-            let mut t = 0.0_f64;
-            let mut sog = 0.0_f64;
-            for mut point in field_mem.points {
-                let val = match field_mem.field.field.name().as_str() {
-                    "x" => with_scale_factor(&mut point.mem, 256_f64)?,
-                    "y" => with_scale_factor(&mut point.mem, 256_f64)?,
-                    "z" => with_scale_factor(&mut point.mem, 1024_f64)?,
-                    "t" => with_scale_factor(&mut point.mem, 1_f64)?,
-                    _ => 0.0_f64
+            });
+
+        let mut builders: Vec<CartesianCoordinateBuilder> = (0..num_points)
+            .map(|v| CartesianCoordinateBuilder::new())
+            .collect();
+        for mut field_mem in mem.fields {
+            for idx in 0..num_points {
+                let Some(point) = field_mem.points.get_mut(idx) else {
+                    continue;
                 };
-                println!(
-                    "{}: {val}",
-                    field_mem.field.field.name(),
+                let Some(mut bldr) = builders.get_mut(idx) else {
+                    continue;
+                };
+                match field_mem.field.field.name().as_str() {
+                    "x" => {
+                        // let val = read_be_u32(&mut point.mem)?;
+                        // println!("X: {val:0X}");
+                        let val = with_scale_factor(&mut point.mem, 4)?;
+                        bldr.with_x(Length::new_meters(val));
+                    }
+                    "y" => {
+                        // let val = read_be_u32(&mut point.mem)?;
+                        // println!("Y: {val:0X}");
+                        let val = with_scale_factor(&mut point.mem, 4)?;
+                        bldr.with_y(Length::new_meters(val));
+                    }
+                    "z" => {
+                        // let val = read_be_u32(&mut point.mem)?;
+                        // println!("T: {val:0X}");
+                        let val = with_scale_factor(&mut point.mem, 10)?;
+                        bldr.with_z(Length::new_meters(val));
+                    }
+                    "t" => {
+                        let val = read_be_u32(&mut point.mem)?;
+                        bldr.with_timestamp(Duration::from_millis(val as u64));
+                    }
+                    "sog_kn" => {
+                        let val = read_be_u32(&mut point.mem)?.to_le();
+                        let val = f32::from_bits(val);
+                        if val == f32::MAX {
+                            continue;
+                        }
+                        // let val = read_f32(&mut point.mem)?;
+                        let spd = Speed::new(val as f64, SpeedUnits::Knots);
+                        println!("sog {spd:?}");
+                    }
+                    "water_speed_kn" => {
+                        // let val = read_f32(&mut point.mem)?;
+                        let val = read_be_u32(&mut point.mem)?.to_le();
+                        let val = f32::from_bits(val);
+                        if val == f32::MAX {
+                            continue;
+                        }
+                        let spd = Speed::new(val as f64, SpeedUnits::Knots);
+                        println!("water {spd:?}");
+                    }
+                    _ => {}
+                };
+            }
+        }
+        for bldr in builders {
+            if let Ok(pnt) = bldr.build() {
+                println!("{pnt}");
+                let lon = Longitude(Angle::new_radians(
+                    pnt.get_x().as_meters().value() / 6378388.0,
+                ));
+                let y = pnt.get_y().as_meters().value() / 6378388.0;
+                let lat = y.exp().atan() * 2.0 - std::f64::consts::FRAC_PI_2;
+                let lat = (lat.tan() * 1.00676425).atan();
+                // let lat = (pnt.get_y().as_meters().value() / 6378388.0).sinh().atan();
+                let lat = Latitude(Angle::new_radians(lat));
+                let coord = EllipticalCoordinate::new(
+                    lat,
+                    lon,
+                    StandardShapes::Hayford_International.into(),
                 );
+                println!("{coord}");
             }
         }
 
@@ -172,7 +244,18 @@ impl Iterator for Iter {
     }
 }
 
-fn with_scale_factor<T: Bits>(input: &mut T, scale: f64) -> Result<f64, std::io::Error> {
-    let factor = input.read_be_u32()?;
-    Ok(factor as f64 / scale)
+fn with_scale_factor<T: Bits>(input: &mut T, scale: usize) -> Result<f64, std::io::Error> {
+    let mut factor = input.read_be_u32()?;
+    let mut mult = 1_f64;
+    if factor > 0x7FFF_FFFF {
+        factor = !factor;
+        mult = -1_f64;
+    }
+    let whole = (factor >> scale) as f64;
+    let div = 1_u32 << scale;
+    let mask = div - 1;
+    let part = (factor & mask) as f64 / div as f64;
+
+    let val = mult * (whole + part);
+    Ok(val)
 }
