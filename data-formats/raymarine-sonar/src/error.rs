@@ -1,8 +1,11 @@
-use std::fmt::{Display, Formatter, Write};
+use std::fmt::{Display, Formatter};
+use miniz_oxide::inflate::DecompressError;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ErrorType {
     SQLError,
+    IOError,
+    DecodingError,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -30,6 +33,23 @@ impl From<rusqlite::Error> for Error {
         Error {
             error_type: ErrorType::SQLError,
             msg: str,
+        }
+    }
+}
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
+        Error {
+            error_type: ErrorType::IOError,
+            msg: value.to_string()
+        }
+    }
+}
+
+impl From<DecompressError> for Error {
+    fn from(value: DecompressError) -> Self {
+        Error {
+            error_type: ErrorType::DecodingError,
+            msg: value.to_string()
         }
     }
 }

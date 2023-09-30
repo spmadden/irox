@@ -27,8 +27,11 @@ pub fn main() -> Result<(), Error> {
             info!("Found global prop: {name} => {value:?}");
         }
     }
-    for track in conn.get_track_info()? {
-        info!("Found track info: {track:?}");
+    for track in conn.get_tracks()? {
+        for point in track.iter()? {
+            info!("Point: {point:?}");
+        }
+        break;
     }
     Ok(())
 }

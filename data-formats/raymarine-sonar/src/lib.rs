@@ -8,10 +8,11 @@ use rusqlite::types::ValueRef;
 use rusqlite::{Connection, OpenFlags};
 
 use crate::error::Error;
-use crate::tracks::TrackData;
+use crate::tracks::{Track, TrackData};
 
 pub mod error;
 pub mod tracks;
+pub mod schema;
 
 pub type Entry = BTreeMap<String, PrimitiveValue>;
 pub type Entries = Vec<Entry>;
@@ -21,10 +22,11 @@ trait Accesses {
     fn get_bool(&self, key: &'static str) -> Option<bool>;
     fn get_duration(&self, key: &'static str) -> Option<Duration>;
     fn get_i64(&self, key: &'static str) -> Option<i64>;
+    fn get_blob(&self, key: &'static str) -> Option<Box<[u8]>>;
 }
 impl Accesses for Entry {
     fn get_str(&self, key: &'static str) -> Option<String> {
-        self.get(key).map(|v| v.to_string())
+        self.get(key).map(ToString::to_string)
     }
 
     fn get_bool(&self, key: &'static str) -> Option<bool> {
@@ -45,10 +47,17 @@ impl Accesses for Entry {
             _ => 0,
         })
     }
+
+    fn get_blob(&self, key: &'static str) -> Option<Box<[u8]>> {
+        self.get(key).map(|v| match v {
+            PrimitiveValue::blob(b) => b.clone(),
+            _ => Box::new([0; 0]),
+        })
+    }
 }
 
 pub struct SDFConnection {
-    conn: Connection,
+    pub(crate) conn: Connection,
 }
 
 impl SDFConnection {
@@ -111,7 +120,18 @@ impl SDFConnection {
         Ok(self
             .run_sql("SELECT * FROM Tracks")?
             .iter()
-            .map(|e| e.into())
+            .enumerate()
+            .map(|(idx, f)| TrackData::new(f, idx as i64 + 1))
+            .collect())
+    }
+
+    pub fn get_tracks(&self) -> Result<Vec<Track>, Error> {
+        Ok(self
+            .run_sql("SELECT * FROM Tracks")?
+            .iter()
+            .enumerate()
+            .map(|(idx, e)| TrackData::new(e, idx as i64 + 1))
+            .map(|e|Track::new(&self, e))
             .collect())
     }
 }
