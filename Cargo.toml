@@ -34,25 +34,26 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0", features = ["persistence"] }
-eframe = { version = "^0", features = ["persistence"] }
-ron = { version = "^0", features = ["integer128"] }
+egui = { version = "0.22.0", features = ["persistence"] }
+eframe = { version = "0.22.0", features = ["persistence"] }
+ron = { version = "0.8.1", features = ["integer128"] }
 serde = { version = "1.0.188", features = ["derive"] }
-serde_json = {version = "^1", features = []}
-time = {version = "^0", features = ["formatting", "macros"]}
-ureq = {version = "^2", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
-url = {version = "^2", features = []}
-clap = {version = "^4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
-clap-verbosity-flag = {version = "^2"}
-log = {version = "^0", features = []}
-env_logger = {version = "^0", features = []}
-syn = {version = "^2", features = ["extra-traits"]}
-quote = {version = "^1", features = []}
-signal-hook = {version = "^0", features = []}
-futures = {version = "^0", features = []}
-windows = {version = "^0.51.1", features = [ "Devices_Geolocation", "Foundation" ]}
+serde_json = {version = "1.0.107", features = []}
+time = {version = "0.3.29", features = ["formatting", "macros"]}
+ureq = {version = "2.7.1", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
+url = {version = "2.4.1", features = []}
+clap = {version = "4.4.4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
+clap-verbosity-flag = {version = "2.0.1"}
+log = {version = "0.4.20", features = []}
+env_logger = {version = "0.10.0", features = []}
+syn = {version = "2.0.37", features = ["extra-traits"]}
+quote = {version = "1.0.33", features = []}
+signal-hook = {version = "0.3.17", features = []}
+futures = {version = "0.3.28", features = []}
+windows = {version = "0.51.1", features = [ "Devices_Geolocation", "Foundation" ]}
 rusqlite = {version = "0.29.0", features = ["bundled", "bundled-windows"]}
 miniz_oxide = {version = "0.7.1", features = []}
+xml = {version = "0.8.10", features = []}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
