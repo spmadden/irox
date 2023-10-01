@@ -57,6 +57,7 @@ xml = {version = "0.8.10", features = []}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
+irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}

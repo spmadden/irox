@@ -19,6 +19,8 @@ pub use irox_influxdb_v1;
 pub use irox_networking;
 #[cfg(feature = "nmea0183")]
 pub use irox_nmea0183;
+#[cfg(feature = "raymarine-sonar")]
+pub use irox_raymarine_sonar;
 #[cfg(feature = "sirf")]
 pub use irox_sirf;
 #[cfg(feature = "stats")]
