@@ -1,8 +1,10 @@
 use clap::{Parser, ValueHint};
 use clap_verbosity_flag::Verbosity;
+use log::info;
+
+use irox_carto::coordinate::CoordinateType;
 use irox_raymarine_sonar::error::Error;
 use irox_raymarine_sonar::SDFConnection;
-use log::info;
 
 #[derive(Debug, Clone, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -29,7 +31,15 @@ pub fn main() -> Result<(), Error> {
     }
     for track in conn.get_tracks()? {
         for point in track.iter()? {
-            info!("Point: {point:?}");
+            match point {
+                CoordinateType::Elliptical(e) => {
+                    println!("{e}")
+                }
+                CoordinateType::Cartesian(e) => {
+                    println!("{e}")
+                }
+                CoordinateType::Horizontal(_) => {}
+            }
         }
         break;
     }

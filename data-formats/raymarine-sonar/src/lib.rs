@@ -2,17 +2,18 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use std::time::Duration;
 
-use irox_types::PrimitiveValue;
 use log::{debug, error, trace};
 use rusqlite::types::ValueRef;
 use rusqlite::{Connection, OpenFlags};
+
+use irox_types::PrimitiveValue;
 
 use crate::error::Error;
 use crate::tracks::{Track, TrackData};
 
 pub mod error;
-pub mod tracks;
 pub mod schema;
+pub mod tracks;
 
 pub type Entry = BTreeMap<String, PrimitiveValue>;
 pub type Entries = Vec<Entry>;
@@ -131,7 +132,7 @@ impl SDFConnection {
             .iter()
             .enumerate()
             .map(|(idx, e)| TrackData::new(e, idx as i64 + 1))
-            .map(|e|Track::new(&self, e))
+            .map_while(|e| Track::new(self, e).ok())
             .collect())
     }
 }

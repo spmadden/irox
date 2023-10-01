@@ -158,10 +158,10 @@ pub fn read_bytes(data: &[u8]) {
     // defined in the subtrack row. 3 in our example above
     let number_of_points = 3;
 
-    let b0 = number_of_points * (field_offset + 0);
-    let b1 = number_of_points * (field_offset + 1);
-    let b2 = number_of_points * (field_offset + 2);
-    let b3 = number_of_points * (field_offset + 3);
+    let b0 = number_of_points * (field_offset + 0) + struct_index;
+    let b1 = number_of_points * (field_offset + 1) + struct_index;
+    let b2 = number_of_points * (field_offset + 2) + struct_index;
+    let b3 = number_of_points * (field_offset + 3) + struct_index;
 
     let var : [u8;4] = [data[b3],data[b2],data[b1],data[b0]];
 

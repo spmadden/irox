@@ -20,6 +20,7 @@ Current Modules & Organization:
  * [`data-formats`](https://github.com/spmadden/irox/blob/master/data-formats) - Specific data format encoders & decoders
    * [`csv`](https://github.com/spmadden/irox/blob/master/data-formats/csv) - Comma Separated Values encoder/decoder
    * [`nmea0183`](https://github.com/spmadden/irox/blob/master/data-formats/nmea0183) - GPS NMEA-0183 encoder/decoder
+   * [`raymarine_sonar`](https://github.com/spmadden/irox/blob/master/data-formats/raymarine_sonar) - Raymarine SDF Sonar Converter 
    * [`sirf`](https://github.com/spmadden/irox/blob/master/data-formats/sirf) - GPS Binary SiRF encoder/decoder
  * [`interfaces`](https://github.com/spmadden/irox/blob/master/interfaces) - Interfaces, Transports, and APIs for external tools
    * [`influxdb_v1`](https://github.com/spmadden/irox/blob/master/interfaces/influxdb_v1) - InfluxDB v1 API Client
