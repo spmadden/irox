@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use std::collections::VecDeque;
-use std::fmt::{Display, format, Formatter, UpperHex, Write};
+use std::fmt::{Display, Formatter, UpperHex, Write};
 
 ///
 /// This struct purely exists to implement 'Display' for a borrowed vec, whose elements implement [`std::fmt::Display`]
@@ -24,7 +24,10 @@ where
     }
 }
 
-impl<'a, T> UpperHex for PrettyVec<'a, T> where T: UpperHex {
+impl<'a, T> UpperHex for PrettyVec<'a, T>
+where
+    T: UpperHex,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let mut buf = String::new();
         for val in self.0 {
@@ -34,7 +37,10 @@ impl<'a, T> UpperHex for PrettyVec<'a, T> where T: UpperHex {
     }
 }
 
-impl<'a, T> UpperHex for PrettyVecDeque<'a, T> where T: UpperHex {
+impl<'a, T> UpperHex for PrettyVecDeque<'a, T>
+where
+    T: UpperHex,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let mut buf = String::new();
         for val in self.0 {
