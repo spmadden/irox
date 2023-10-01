@@ -106,9 +106,7 @@ impl ToString for PrimitiveValue {
             PrimitiveValue::bool(v) => v.to_string(),
             PrimitiveValue::char(v) => v.to_string(),
             PrimitiveValue::str(v) => v.to_string(),
-            PrimitiveValue::blob(v) => {
-                format!("{v:X?}")
-            }
+            PrimitiveValue::blob(v) => String::from_utf8_lossy(v).to_string(),
             PrimitiveValue::null => "null".to_string(),
         }
     }
