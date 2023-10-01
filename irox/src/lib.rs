@@ -3,23 +3,35 @@
 
 #![forbid(unsafe_code)]
 
-// libraries
 #[cfg(feature = "carto")]
 pub use irox_carto;
-// data-formats
 #[cfg(feature = "csv")]
 pub use irox_csv;
 #[cfg(feature = "egui-extras")]
 pub use irox_egui_extras;
+#[cfg(feature = "enums")]
+pub use irox_enums;
+#[cfg(feature = "irox-enums_derive")]
+pub use irox_enums_derive;
 #[cfg(feature = "influxdb_v1")]
 pub use irox_influxdb_v1;
 #[cfg(feature = "networking")]
 pub use irox_networking;
+#[cfg(feature = "nmea0183")]
+pub use irox_nmea0183;
 #[cfg(feature = "sirf")]
 pub use irox_sirf;
 #[cfg(feature = "stats")]
 pub use irox_stats;
+#[cfg(feature = "structs")]
+pub use irox_structs;
+#[cfg(feature = "structs_derive")]
+pub use irox_structs_derive;
 #[cfg(feature = "tools")]
 pub use irox_tools;
+#[cfg(feature = "types")]
+pub use irox_types;
 #[cfg(feature = "units")]
 pub use irox_units;
+#[cfg(feature = "win-loc-api")]
+pub use irox_winlocation_api;
