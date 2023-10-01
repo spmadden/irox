@@ -1,5 +1,5 @@
 [package]
-name = "halflifes"
+name = "irox-halflifes"
 description = "GUI Tool to calculate the halflives of things"
 keywords = ["irox", "gui", "tool"]
 categories = ["science", "visualization"]
@@ -17,5 +17,5 @@ eframe.workspace = true
 egui.workspace = true
 ron.workspace = true
 serde.workspace = true
-irox-egui-extras = {version = "^0", path = "../../libraries/egui_extras" }
-irox-stats = {version = "^0", path = "../../libraries/stats"}
+irox-egui-extras.workspace = true
+irox-stats.workspace = true
