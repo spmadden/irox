@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use clap::{Parser, ValueHint};
 use clap_verbosity_flag::Verbosity;
 use log::info;

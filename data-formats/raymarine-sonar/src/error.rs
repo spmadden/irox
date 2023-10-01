@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+
 use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
