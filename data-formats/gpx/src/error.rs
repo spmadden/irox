@@ -52,3 +52,12 @@ impl From<xml::writer::Error> for Error {
         }
     }
 }
+
+impl From<xml::reader::Error> for Error {
+    fn from(value: xml::reader::Error) -> Self {
+        Error {
+            error_type: ErrorType::XMLError,
+            msg: value.to_string(),
+        }
+    }
+}
