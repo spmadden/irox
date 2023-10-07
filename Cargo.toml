@@ -56,7 +56,7 @@ rusqlite = {version = "=0.29.0", features = ["bundled", "bundled-windows"]}
 miniz_oxide = {version = "=0.7.1", features = []}
 xml = {version = "=0.8.10", features = []}
 serial = {version = "=0.4.0", features = []}
-human-panic = {version = "=0.4.0", features = []}
+human-panic = {version = "=1.2.1", features = []}
 proc-macro2 = {version = "=1.0.68", features = []}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
