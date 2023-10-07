@@ -3,7 +3,7 @@ name = "irox-raymarine-sonar"
 description = "Raymarine/Navionics Sonar Logs Reader"
 keywords = ["irox", "raymarine", "sonar", "encoder", "decoder"]
 categories = ["encoding", "parser-implementations"]
-version= "0.1.0"
+version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -14,7 +14,7 @@ repository.workspace = true
 
 [features]
 default = []
-cli = ["dep:env_logger", "dep:clap", "dep:clap-verbosity-flag"]
+cli = ["dep:env_logger", "dep:clap", "dep:clap-verbosity-flag", "dep:irox-gpx"]
 
 [dependencies]
 rusqlite.workspace = true
@@ -26,9 +26,10 @@ irox-units.workspace = true
 irox-carto.workspace = true
 irox-tools.workspace = true
 
-env_logger = {workspace = true, optional = true}
-clap = {workspace = true, optional = true}
-clap-verbosity-flag = {workspace = true, optional = true}
+env_logger = { workspace = true, optional = true }
+clap = { workspace = true, optional = true }
+clap-verbosity-flag = { workspace = true, optional = true }
+irox-gpx = { workspace = true, optional = true }
 
 [[bin]]
 name = "sonar_sdf_convert"

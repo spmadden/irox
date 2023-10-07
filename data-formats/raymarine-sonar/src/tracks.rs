@@ -9,6 +9,7 @@ use log::{debug, error, info, warn};
 use rusqlite::named_params;
 use rusqlite::types::ValueRef;
 
+use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{
     CartesianCoordinateBuilder, CoordinateType, EllipticalCoordinateBuilder, Latitude, Longitude,
 };
@@ -112,6 +113,7 @@ impl<'a> Track<'a> {
             subtrack_data,
             point_cache: VecDeque::new(),
             context: self.context.clone(),
+            start_time_utc: self.data.start_time_utc,
         })
     }
 }
@@ -121,6 +123,7 @@ pub struct Iter {
     subtrack_data: VecDeque<Vec<u8>>,
     point_cache: VecDeque<CoordinateType>,
     context: SchemaContext,
+    start_time_utc: Option<Duration>,
 }
 
 impl Iter {
@@ -134,7 +137,7 @@ impl Iter {
         let data = miniz_oxide::inflate::decompress_to_vec_zlib(data.as_slice())?;
 
         let num_points = data.len() / self.context.struct_size;
-        info!("Converting {num_points} points");
+        debug!("Converting {num_points} points");
 
         for idx in 0..num_points {
             let mut bldr = CartesianCoordinateBuilder::new();
@@ -152,7 +155,11 @@ impl Iter {
                         bldr.with_z(Length::new_meters(val));
                     }
                     "t" => {
-                        bldr.with_timestamp(Duration::from_millis(val as u64));
+                        let mut dur = Duration::from_millis(val as u64);
+                        if let Some(start) = self.start_time_utc {
+                            dur += start;
+                        }
+                        bldr.with_timestamp(dur);
                     }
                     _ => {}
                 }
@@ -174,6 +181,7 @@ impl Iter {
                 if let Some(ts) = coord.get_timestamp() {
                     bldr.with_timestamp(*ts);
                 }
+                bldr.with_altitude(Altitude::new(*coord.get_z(), AltitudeReferenceFrame::Geoid));
                 let coord = bldr.build()?;
                 self.point_cache
                     .push_back(CoordinateType::Elliptical(coord));

@@ -44,7 +44,8 @@ impl Accesses for Entry {
     }
 
     fn get_duration(&self, key: &'static str) -> Option<Duration> {
-        self.get_i64(key).map(|v| Duration::from_secs(v as u64))
+        self.get_i64(key)
+            .map(|v| Duration::from_secs_f64(v as f64 / 1024_f64))
     }
 
     fn get_i64(&self, key: &'static str) -> Option<i64> {

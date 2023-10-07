@@ -173,3 +173,4 @@ pub fn read_bytes(data: &[u8]) {
 * `fixed32` - Signed One's compliment https://en.wikipedia.org/wiki/Q_(number_format)[Q.n encoded] value - `n` is the `param` field of the schema
 * `float` - standard single-precision 32-bit floating point number
 * `uint32` - standard unsigned 32-bit integer
+* `UTC Timestamps` are encoded as Q.10
