@@ -11,8 +11,10 @@ pub use irox_csv;
 pub use irox_egui_extras;
 #[cfg(feature = "enums")]
 pub use irox_enums;
-#[cfg(feature = "irox-enums_derive")]
+#[cfg(feature = "enums_derive")]
 pub use irox_enums_derive;
+#[cfg(feature = "gpx")]
+pub use irox_gpx;
 #[cfg(feature = "influxdb_v1")]
 pub use irox_influxdb_v1;
 #[cfg(feature = "networking")]

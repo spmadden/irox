@@ -15,6 +15,7 @@ repository.workspace = true
 [features]
 default = []
 csv = ["irox-csv"]
+gpx = ["irox-gpx"]
 nmea0183 = ["irox-nmea0183"]
 raymarine-sonar = ["irox-raymarine-sonar"]
 sirf = ["irox-sirf"]
@@ -34,6 +35,7 @@ units = ["irox-units"]
 
 [dependencies]
 irox-csv = { workspace = true, optional = true}
+irox-gpx = { workspace = true, optional = true}
 irox-nmea0183 = { workspace = true, optional = true}
 irox-raymarine-sonar = { workspace = true, optional = true}
 irox-sirf = { workspace = true, optional = true}
