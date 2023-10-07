@@ -13,9 +13,9 @@ readme.workspace = true
 repository.workspace = true
 
 [dependencies]
-serial = "^0.4"
+serial = { workspace = true }
 
-human-panic = "^1.1"
+human-panic = { workspace = true }
 env_logger.workspace = true
 clap.workspace = true
 time.workspace = true
