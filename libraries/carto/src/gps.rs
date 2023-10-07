@@ -72,6 +72,11 @@ impl MaybeFrom<Option<f64>> for DilutionOfPrecision {
         Some(value?.into())
     }
 }
+impl Display for DilutionOfPrecision {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.0))
+    }
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub struct DOPs {
