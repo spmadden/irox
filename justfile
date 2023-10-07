@@ -1,8 +1,8 @@
 #!/usr/bin/env -S just --justfile
 
-default: build test format lints package
+default: build test format lints upgrade package
 
-ci: deny build test format_check lints about package
+ci: deny build test format_check lints about upgrade package
 
 check_install prereq:
     #!/usr/bin/env bash
@@ -40,3 +40,6 @@ about: prereqs
     just check_install cargo-about
     cargo about generate about.hbs > about.html
 
+upgrade: prereqs
+    just check_install cargo-edit
+    cargo upgrade --dry-run --pinned -i
