@@ -17,6 +17,8 @@ pub use irox_enums_derive;
 pub use irox_gpx;
 #[cfg(feature = "influxdb_v1")]
 pub use irox_influxdb_v1;
+#[cfg(feature = "jaxb")]
+pub use irox_jaxb;
 #[cfg(feature = "networking")]
 pub use irox_networking;
 #[cfg(feature = "nmea0183")]

@@ -23,6 +23,7 @@ members = [
     "libraries/egui_extras",
     "libraries/enums",
     "libraries/enums_derive",
+    "libraries/jaxb",
     "libraries/network",
     "libraries/stats",
     "libraries/units",
@@ -69,6 +70,7 @@ irox-carto = {version = "^0", path = "libraries/carto"}
 irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
 irox-enums = {version = "^0", path = "libraries/enums"}
 irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
+irox-jaxb = {version = "^0", path = "libraries/jaxb"}
 irox-networking = {version = "^0", path = "libraries/network"}
 irox-stats = {version = "^0", path = "libraries/stats"}
 irox-structs = {version = "^0", path = "libraries/structs"}

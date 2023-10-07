@@ -32,6 +32,7 @@ Current Modules & Organization:
    * [`egui_irox_extras`](https://github.com/spmadden/irox/blob/master/libraries/egui_extras) - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
    * [`enums`](https://github.com/spmadden/irox/blob/master/libraries/enums) - Traits for better Enumerated Types
    * [`enums_derive`](https://github.com/spmadden/irox/blob/master/libraries/enums_derive) - Derivable impls of the traits in irox-enums
+   * [`jaxb`](https://github.com/spmadden/irox/blob/master/libraries/enums_derive) - XML Toolkit fashioned after, and inspired by Java's JAXB
    * [`network`](https://github.com/spmadden/irox/blob/master/libraries/network) - Networking tools
    * [`stats`](https://github.com/spmadden/irox/blob/master/libraries/stats) - Mathematics & Statistics tools
    * [`structs`](https://github.com/spmadden/irox/blob/master/libraries/structs) - Traits for Struct Types - linearly serialized big endian bytes

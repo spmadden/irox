@@ -1,0 +1,33 @@
+[package]
+name = "irox-jaxb"
+description = "XML Toolkit fashioned after, and inspired by Java's JAXB"
+keywords = ["irox", "reflection", "metaprogramming", "xml"]
+categories = ["development-tools", "rust-patterns", "parser-implementations", "encoding"]
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
+
+
+[features]
+default = []
+cli = ["dep:env_logger", "dep:clap", "dep:clap-verbosity-flag"]
+
+[dependencies]
+log = { workspace = true }
+xml = { workspace = true }
+env_logger = { workspace = true, optional = true }
+clap = { workspace = true, optional = true }
+clap-verbosity-flag = { workspace = true, optional = true }
+
+irox-enums = { workspace = true }
+irox-tools = { workspace = true }
+
+[[bin]]
+name = "irox-xjc"
+path = "src/bin/xjc.rs"
+required-features = ["cli"]

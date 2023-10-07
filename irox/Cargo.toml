@@ -3,7 +3,7 @@ name = "irox"
 description = "irox Rust Tools & Libraries"
 keywords = ["irox"]
 categories = ["aerospace", "science", "mathematics"]
-version= "0.2.0"
+version = "0.2.0"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -25,6 +25,7 @@ carto = ["irox-carto"]
 egui-extras = ["irox-egui-extras"]
 enums = ["irox-enums"]
 enums_derive = ["irox-enums_derive"]
+jaxb = ["irox-jaxb"]
 networking = ["irox-networking"]
 stats = ["irox-stats"]
 structs = ["irox-structs"]
@@ -34,23 +35,24 @@ types = ["irox-types"]
 units = ["irox-units"]
 
 [dependencies]
-irox-csv = { workspace = true, optional = true}
-irox-gpx = { workspace = true, optional = true}
-irox-nmea0183 = { workspace = true, optional = true}
-irox-raymarine-sonar = { workspace = true, optional = true}
-irox-sirf = { workspace = true, optional = true}
+irox-csv = { workspace = true, optional = true }
+irox-gpx = { workspace = true, optional = true }
+irox-nmea0183 = { workspace = true, optional = true }
+irox-raymarine-sonar = { workspace = true, optional = true }
+irox-sirf = { workspace = true, optional = true }
 
-irox-influxdb_v1 = { workspace = true, optional = true}
-irox-winlocation-api = {workspace = true, optional = true}
+irox-influxdb_v1 = { workspace = true, optional = true }
+irox-winlocation-api = { workspace = true, optional = true }
 
-irox-carto = { workspace = true, optional = true}
-irox-egui-extras = { workspace = true, optional = true}
-irox-enums = { workspace = true, optional = true}
-irox-enums_derive = { workspace = true, optional = true}
-irox-networking = { workspace = true, optional = true}
-irox-stats = { workspace = true, optional = true}
-irox-structs = { workspace = true, optional = true}
-irox-structs_derive = { workspace = true, optional = true}
-irox-tools = { workspace = true, optional = true}
-irox-types = { workspace = true, optional = true}
-irox-units = { workspace = true, optional = true}
+irox-carto = { workspace = true, optional = true }
+irox-egui-extras = { workspace = true, optional = true }
+irox-enums = { workspace = true, optional = true }
+irox-enums_derive = { workspace = true, optional = true }
+irox-jaxb = { workspace = true, optional = true }
+irox-networking = { workspace = true, optional = true }
+irox-stats = { workspace = true, optional = true }
+irox-structs = { workspace = true, optional = true }
+irox-structs_derive = { workspace = true, optional = true }
+irox-tools = { workspace = true, optional = true }
+irox-types = { workspace = true, optional = true }
+irox-units = { workspace = true, optional = true }
