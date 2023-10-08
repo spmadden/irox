@@ -1,6 +1,6 @@
 #!/usr/bin/env -S just --justfile
 
-default: build test format lints upgrade package
+default: build test format lints upgrade 
 
 ci: deny build test format_check lints about upgrade package
 
