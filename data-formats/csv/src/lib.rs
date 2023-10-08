@@ -3,17 +3,19 @@
 
 #![forbid(unsafe_code)]
 
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
 };
 
-use error::CSVError;
+pub use dialects::*;
+pub use error::*;
+pub use tokenizers::*;
 
-use crate::error::CSVErrorType;
-
-pub mod error;
+mod dialects;
+mod error;
+mod tokenizers;
 
 ///
 /// Flexible CSV writer, wherein one can specify
@@ -152,24 +154,6 @@ impl CSVWriterBuilder {
 }
 
 ///
-/// Output from the [`Tokenizer`] as it detects individual tokens from the input stream.
-pub enum Token {
-    Field(String),
-    EndRow,
-}
-
-///
-/// Scans the provided input stream and outputs [`Token`]s as it detects them.
-pub struct Tokenizer<T>
-where
-    T: Read + Sized,
-{
-    reader: BufReader<T>,
-    line_number: u64,
-    char_number: u64,
-}
-
-///
 /// Consume a single byte from the underlying reader.
 fn consume_one<T: BufRead>(mut reader: &mut T) -> Result<Option<u8>, std::io::Error> {
     let Some(val) = peek_one(&mut reader)? else {
@@ -195,91 +179,6 @@ fn peek_one<T: BufRead>(reader: &mut T) -> Result<Option<u8>, std::io::Error> {
     Ok(Some(val))
 }
 
-impl<T: Read + Sized> Tokenizer<T> {
-    ///
-    /// Creates a new Tokenizer, consuming the underlying reader.
-    pub fn new(reader: T) -> Tokenizer<T> {
-        Tokenizer {
-            reader: BufReader::new(reader),
-            line_number: 0,
-            char_number: 0,
-        }
-    }
-
-    ///
-    /// Attempts to scan the line and return the immediate next set of [`Token`]s it finds.
-    /// The real brunt of the processing work is done here.
-    pub fn next_tokens(&mut self) -> Result<Option<Vec<Token>>, CSVError> {
-        use std::io::ErrorKind;
-
-        let mut output: Vec<u8> = Vec::new();
-
-        loop {
-            match consume_one(&mut self.reader) {
-                Ok(Some(elem)) => {
-                    self.char_number += 1;
-                    match elem {
-                        // Comma means 'End of Field', return whatever has been found (which may be empty)
-                        b',' => {
-                            let out: String = String::from_utf8_lossy(&output).into();
-                            return Ok(Some(vec![Token::Field(out)]));
-                        }
-                        // CR/LF mean 'End of Row', but repeated CR/LF characters are ignored.
-                        b'\r' | b'\n' => {
-                            while let Some(b'\r') | Some(b'\n') = peek_one(&mut self.reader)? {
-                                // if it's another CR/LF, consume it.
-                                self.reader.consume(1);
-                            }
-                            self.char_number = 0;
-                            self.line_number += 1;
-                            let out: String = String::from_utf8_lossy(&output).into();
-                            return Ok(Some(vec![Token::Field(out), Token::EndRow]));
-                        }
-                        // Special case for quotes, consume all characters until we receive the next quote.
-                        b'"' => {
-                            while let Some(v) = consume_one(&mut self.reader)? {
-                                // special special case for a double quote within a quoted block,
-                                // it just becomes a single double quote
-                                if v == b'"' {
-                                    // handle special "" within a quoted block meaning: literal quote
-                                    if let Some(b'"') = peek_one(&mut self.reader)? {
-                                        output.push(b'"');
-                                        self.reader.consume(1);
-                                        continue;
-                                    }
-                                    break;
-                                }
-                                output.push(v);
-                            }
-                        }
-                        // standard loop, it's part of the value
-                        _ => output.push(elem),
-                    }
-                }
-                Ok(None) => {
-                    if !output.is_empty() {
-                        let out: String = String::from_utf8_lossy(&output).into();
-                        return Ok(Some(vec![Token::Field(out), Token::EndRow]));
-                    }
-                    return Ok(None);
-                }
-                Err(e) => {
-                    return match e.kind() {
-                        ErrorKind::UnexpectedEof => Ok(None),
-                        kind => CSVError::err(
-                            CSVErrorType::IOError,
-                            format!(
-                                "IO Error at line {} char {}: {:?}: {:?}",
-                                self.line_number, self.char_number, kind, e
-                            ),
-                        ),
-                    }
-                }
-            }
-        }
-    }
-}
-
 ///
 /// Incredibly basic CSV reader.
 ///
@@ -288,7 +187,7 @@ pub struct CSVReader<T>
 where
     T: Read + Sized,
 {
-    tokenizer: Tokenizer<T>,
+    tokenizer: BasicTokenReader<T>,
 }
 
 impl<T: Read + Sized> CSVReader<T> {
@@ -296,7 +195,7 @@ impl<T: Read + Sized> CSVReader<T> {
     /// Create a new CSV Reader from the input.  Accepts anything that implements [`Read`]
     pub fn new(reader: T) -> CSVReader<T> {
         CSVReader {
-            tokenizer: Tokenizer::new(reader),
+            tokenizer: BasicTokenReader::new(reader),
         }
     }
 
