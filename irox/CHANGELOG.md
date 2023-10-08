@@ -19,7 +19,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 6 calendar days.
+ - 5 commits contributed to the release over the course of 6 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +31,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.2.1 ([`08857ab`](https://github.com/spmadden/irox/commit/08857abce22d969539d22126d0f569ba0c39b4a1))
     - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - New GPX reader/writer module ([`b378b9d`](https://github.com/spmadden/irox/commit/b378b9da294474e73936e4e52bba9ae103fc1590))
     - Adding raymarine-sonar converter to irox ([`3300f2a`](https://github.com/spmadden/irox/commit/3300f2ad844907609b1fc6cdaa5b632ae28cde95))
