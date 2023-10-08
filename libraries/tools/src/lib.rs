@@ -12,6 +12,7 @@ pub mod murmur3;
 pub mod options;
 pub mod packetio;
 pub mod read;
+pub mod scanner;
 pub mod u64;
 pub mod u8;
 pub mod vec;
