@@ -81,8 +81,8 @@ impl From<std::io::Error> for Error {
     }
 }
 
-impl From<irox_csv::error::CSVError> for Error {
-    fn from(value: irox_csv::error::CSVError) -> Self {
+impl From<irox_csv::CSVError> for Error {
+    fn from(value: irox_csv::CSVError) -> Self {
         Error {
             error_type: ErrorType::CSVError,
             error: format!("{value:?}"),
