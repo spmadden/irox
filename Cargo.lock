@@ -1599,6 +1599,9 @@ dependencies = [
 [[package]]
 name = "irox-csv"
 version = "0.2.1"
+dependencies = [
+ "irox-tools",
+]
 
 [[package]]
 name = "irox-egui-extras"

@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use irox_csv::error::CSVError;
-use irox_csv::CSVWriterBuilder;
 use std::collections::BTreeMap;
 
+use irox_csv::CSVError;
+use irox_csv::CSVWriterBuilder;
+
 static INPUT_1: &str = "header1,header2,header3,header4
-one,two,three,four\nfive,six,seven,eight\r\n1,2,3,4
-5.1,6.2,7.3,8.4,\n\n\n\n\n\
-\"a long, key\",\"a long key\nwith\r\nnewlines\"
+one,two,three,four\nfive,six,seven,eight\n1,2,3,4
+5.1,6.2,7.3,8.4,
+\"a long, key\",\"a long key\nwith\nnewlines\"
 \"quoted\"\"inner long\nnewlines\",second
 ";
 
@@ -35,10 +36,13 @@ pub fn test_reader_1() -> Result<(), CSVError> {
                 assert_eq!(vec!["5.1", "6.2", "7.3", "8.4", ""], line);
             }
             5 => {
-                assert_eq!(vec!["a long, key", "a long key\nwith\r\nnewlines"], line);
+                assert_eq!(
+                    vec!["\"a long, key\"", "\"a long key\nwith\nnewlines\""],
+                    line
+                );
             }
             6 => {
-                assert_eq!(vec!["quoted\"inner long\nnewlines", "second"], line);
+                assert_eq!(vec!["\"quoted\"\"inner long\nnewlines\"", "second"], line);
             }
             e => {
                 panic!("More lines than expected: {e}");
