@@ -63,6 +63,16 @@ impl<T: Clone> Token<T> {
             escape_char: self.escape_char,
         }
     }
+
+    #[must_use]
+    pub fn get_search(&self) -> &[u8] {
+        self.search.as_ref()
+    }
+
+    #[must_use]
+    pub fn get_response(&self) -> &T {
+        &self.response
+    }
 }
 
 ///
@@ -73,6 +83,17 @@ impl<T: Clone> Token<T> {
 pub enum FoundToken<'a, T: Clone> {
     Found { offset: usize, token: &'a Token<T> },
     EndOfData { remaining_length: usize },
+    NotFound,
+}
+
+///
+/// Used as a return type to provide:
+/// `Found` if the token was found, which token, and the data preceding it
+/// `EndOfData` if the scanner hit EOF and found no token
+/// `NotFound` if there is no more data in the boffer
+pub enum ReadToken<'a, T: Clone> {
+    Found { data: Vec<u8>, token: &'a Token<T> },
+    EndOfData { data: Vec<u8> },
     NotFound,
 }
 
@@ -233,6 +254,41 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         Ok(FoundToken::EndOfData {
             remaining_length: num_read,
         })
+    }
+
+    pub fn read_next(&mut self) -> Result<ReadToken<R>, std::io::Error> {
+        let data = self.reader.fill_buf()?;
+        if data.is_empty() {
+            // EOF
+            return Ok(ReadToken::NotFound);
+        }
+
+        let mut workingmem: Vec<TokenWorkingMem<R>> =
+            self.tokens.iter().map(TokenWorkingMem::new).collect();
+        let mut num_read = 0;
+        for char in data.clone() {
+            num_read += 1;
+            for mem in &mut workingmem {
+                mem.push_back(*char);
+
+                if mem.matches() {
+                    if let Some(field) = data.get(0..mem.offset) {
+                        let vec = Vec::from(field);
+                        self.reader.consume(num_read);
+                        return Ok(ReadToken::Found {
+                            data: vec,
+                            token: mem.token,
+                        });
+                    }
+                }
+            }
+        }
+        if let Some(field) = data.get(0..num_read) {
+            let vec = Vec::from(field);
+            self.reader.consume(num_read);
+            return Ok(ReadToken::EndOfData { data: vec });
+        }
+        Ok(ReadToken::NotFound)
     }
 }
 
