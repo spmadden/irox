@@ -1563,7 +1563,7 @@ dependencies = [
 
 [[package]]
 name = "irox"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "irox-carto",
  "irox-csv",
@@ -1587,7 +1587,7 @@ dependencies = [
 
 [[package]]
 name = "irox-carto"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "irox-enums",
  "irox-tools",
@@ -1602,7 +1602,7 @@ version = "0.2.1"
 
 [[package]]
 name = "irox-egui-extras"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "eframe",
  "egui",
@@ -1736,7 +1736,7 @@ dependencies = [
 
 [[package]]
 name = "irox-stats"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "irox-structs"
@@ -1748,7 +1748,7 @@ dependencies = [
 
 [[package]]
 name = "irox-structs_derive"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "irox-types",
  "proc-macro2",
@@ -1758,11 +1758,11 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "irox-types"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "irox-enums",
  "irox-enums_derive",
@@ -1775,7 +1775,7 @@ version = "0.2.0"
 
 [[package]]
 name = "irox-winlocation-api"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "futures",
  "irox-carto",

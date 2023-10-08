@@ -1,6 +1,56 @@
 
 
+
+## v0.2.1 (2023-10-08)
+
+### New Features
+
+ - <csr-id-0ca32de4b606ac9b325a9557429526ff8835a8f2/> add mercator math doc
+ - <csr-id-003f7570bda275fcd4c694a4de43e078486ea695/> impl Display for DOP
+ - <csr-id-2029fee39b392285b8d469456c9a3fc3bb6ac972/> CartesianCoordinate has altitude, time, and uncertainty
+ - <csr-id-7102fbeec6a8bb4ac013f9821ba1eff22d4e1de0/> Adding navionics mercator projection info
+
+### Bug Fixes
+
+ - <csr-id-a66b682ec64eb780a80dd3e9675c24abe7e5e4b1/> fix win timestamp conversion in EllipticalCoordinate
+ - <csr-id-c5154cecff96fb98c77c9e9a7d1948f38bd5fe18/> don't get clever in EllipticCoordinate::Display for timestamp
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 19 calendar days.
+ - 19 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add mercator math doc ([`0ca32de`](https://github.com/spmadden/irox/commit/0ca32de4b606ac9b325a9557429526ff8835a8f2))
+    - Impl Display for DOP ([`003f757`](https://github.com/spmadden/irox/commit/003f7570bda275fcd4c694a4de43e078486ea695))
+    - CartesianCoordinate has altitude, time, and uncertainty ([`2029fee`](https://github.com/spmadden/irox/commit/2029fee39b392285b8d469456c9a3fc3bb6ac972))
+    - Adding navionics mercator projection info ([`7102fbe`](https://github.com/spmadden/irox/commit/7102fbeec6a8bb4ac013f9821ba1eff22d4e1de0))
+    - Fix win timestamp conversion in EllipticalCoordinate ([`a66b682`](https://github.com/spmadden/irox/commit/a66b682ec64eb780a80dd3e9675c24abe7e5e4b1))
+    - Don't get clever in EllipticCoordinate::Display for timestamp ([`c5154ce`](https://github.com/spmadden/irox/commit/c5154cecff96fb98c77c9e9a7d1948f38bd5fe18))
+</details>
+
 ## v0.2.0 (2023-09-18)
+
+<csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
+<csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
+<csr-id-b9a0ae0ccb51682bd9c36e9ab198f38634a62ade/>
+<csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
+<csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
+<csr-id-6fa2e180f0c44bb4cbf76738acdda5631ecea20e/>
+<csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/>
+<csr-id-5d31a592ac1abf6e3e616e65f7a5b8d699558fb2/>
+<csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
+<csr-id-553cfcabf7e0a3066eeb646952f8271ac0887208/>
 
 ### Chore
 
@@ -61,7 +111,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 42 commits contributed to the release over the course of 60 calendar days.
+ - 43 commits contributed to the release over the course of 62 calendar days.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -72,6 +122,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.0, irox-enums v0.2.0, irox-tools v0.2.0, irox-units v0.2.0, irox-carto v0.2.0, irox-csv v0.2.0, irox-egui-extras v0.2.0, irox-networking v0.2.0, irox-types v0.2.0, irox-influxdb_v1 v0.2.0, irox-structs_derive v0.2.0, irox-structs v0.2.0, irox-nmea0183 v0.1.0, irox-sirf v0.2.0, irox-stats v0.2.0, irox-winlocation-api v0.1.0, irox v0.2.0, safety bump 10 crates ([`6a72204`](https://github.com/spmadden/irox/commit/6a722046661ceef02a66c2067e2c5c15ce102e04))
     - Clean up code with additional lints ([`f03d8a3`](https://github.com/spmadden/irox/commit/f03d8a3ec997d53470bfdeb5e76b71925aac3f10))
     - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
     - Fix new formatting errors from rust 1.72 upgrade ([`b9a0ae0`](https://github.com/spmadden/irox/commit/b9a0ae0ccb51682bd9c36e9ab198f38634a62ade))

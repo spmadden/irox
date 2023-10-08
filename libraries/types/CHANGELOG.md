@@ -1,6 +1,42 @@
 
 
+
+## v0.2.1 (2023-10-08)
+
+### New Features
+
+ - <csr-id-6d31e4a52e0fc72a70de4970e414b6980e670316/> impl ToString for PrimitiveValue
+ - <csr-id-4e0bc913e685e2e7d02a6186b68282cb3aaaae2e/> add 'blob' type
+
+### Bug Fixes
+
+ - <csr-id-9f90435643db234a3c4403d56926f813ecbafce2/> fix blob to_string
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 8 calendar days.
+ - 19 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix blob to_string ([`9f90435`](https://github.com/spmadden/irox/commit/9f90435643db234a3c4403d56926f813ecbafce2))
+    - Impl ToString for PrimitiveValue ([`6d31e4a`](https://github.com/spmadden/irox/commit/6d31e4a52e0fc72a70de4970e414b6980e670316))
+    - Add 'blob' type ([`4e0bc91`](https://github.com/spmadden/irox/commit/4e0bc913e685e2e7d02a6186b68282cb3aaaae2e))
+</details>
+
 ## v0.2.0 (2023-09-18)
+
+<csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
+<csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
 
 ### Chore
 
@@ -17,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 19 calendar days.
+ - 6 commits contributed to the release over the course of 21 calendar days.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -28,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.0, irox-enums v0.2.0, irox-tools v0.2.0, irox-units v0.2.0, irox-carto v0.2.0, irox-csv v0.2.0, irox-egui-extras v0.2.0, irox-networking v0.2.0, irox-types v0.2.0, irox-influxdb_v1 v0.2.0, irox-structs_derive v0.2.0, irox-structs v0.2.0, irox-nmea0183 v0.1.0, irox-sirf v0.2.0, irox-stats v0.2.0, irox-winlocation-api v0.1.0, irox v0.2.0, safety bump 10 crates ([`6a72204`](https://github.com/spmadden/irox/commit/6a722046661ceef02a66c2067e2c5c15ce102e04))
     - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
     - Setting up blank changelogs for the modules ([`1a36533`](https://github.com/spmadden/irox/commit/1a365333397b02a5f911d0897c3bf0c80f6c2b80))
     - Add keywords & categories to Cargo.toml, update README.md ([`f8e9213`](https://github.com/spmadden/irox/commit/f8e9213f63cc0931a4d94cb3fc26ad1229d0d644))
