@@ -39,7 +39,8 @@ impl<T: Write + Sized> CSVWriter<T> {
     ///
     /// Sets the column names to use as the header
     #[must_use]
-    pub fn with_column_names(self, columns: Vec<String>) -> Self {
+    pub fn with_column_names(self, columns: &[&str]) -> Self {
+        let columns: Vec<String> = columns.iter().map(ToString::to_string).collect();
         CSVWriter {
             columns: Some(columns),
             ..self

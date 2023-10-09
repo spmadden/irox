@@ -3,8 +3,7 @@
 
 use std::collections::BTreeMap;
 
-use irox_csv::CSVError;
-use irox_csv::CSVWriterBuilder;
+use irox_csv::{CSVError, CSVWriter, PIPE_FIELD_DIALECT, UNIX_DIALECT};
 
 static INPUT_1: &str = "header1,header2,header3,header4
 one,two,three,four\nfive,six,seven,eight\n1,2,3,4
@@ -14,8 +13,8 @@ one,two,three,four\nfive,six,seven,eight\n1,2,3,4
 ";
 
 #[test]
-pub fn test_reader_1() -> Result<(), CSVError> {
-    let mut reader = irox_csv::CSVReader::new(INPUT_1.as_bytes());
+pub fn reader_1() -> Result<(), CSVError> {
+    let mut reader = irox_csv::CSVReader::dialect(INPUT_1.as_bytes(), UNIX_DIALECT);
 
     let mut idx = 0;
     while let Some(line) = reader.read_line()? {
@@ -61,8 +60,8 @@ elem7,elem8,elem9
 ";
 
 #[test]
-pub fn test2() -> Result<(), CSVError> {
-    let mut reader = irox_csv::CSVMapReader::new(TEST_2.as_bytes())?;
+pub fn reader_2() -> Result<(), CSVError> {
+    let mut reader = irox_csv::CSVMapReader::dialect(TEST_2.as_bytes(), UNIX_DIALECT)?;
 
     let mut idx = 0;
     while let Some(row) = reader.next_row()? {
@@ -100,12 +99,12 @@ pub fn test2() -> Result<(), CSVError> {
 pub fn writer_1() -> Result<(), CSVError> {
     let mut buf: Vec<u8> = Vec::new();
     {
-        let mut writer = CSVWriterBuilder::new().build(&mut buf);
+        let mut writer = CSVWriter::new(&mut buf);
 
         writer.write_line(&["first", "second", "third"])?;
         writer.write_line(&["4th", "5th", "6th"])?;
     }
-    assert_eq!("first,second,third\n4th,5th,6th\n".as_bytes(), buf);
+    assert_eq!("first,second,third\r\n4th,5th,6th\r\n".as_bytes(), buf);
 
     Ok(())
 }
@@ -114,9 +113,9 @@ pub fn writer_1() -> Result<(), CSVError> {
 pub fn writer_2() -> Result<(), CSVError> {
     let mut buf: Vec<u8> = Vec::new();
     {
-        let mut writer = CSVWriterBuilder::new()
-            .with_columns(&["first", "second", "third"])
-            .build(&mut buf);
+        let mut writer = CSVWriter::new(&mut buf)
+            .with_column_names(&["first", "second", "third"])
+            .with_dialect(UNIX_DIALECT);
 
         let mut map = BTreeMap::new();
         map.insert("first".to_string(), "4th".to_string());

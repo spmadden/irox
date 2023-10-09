@@ -9,7 +9,7 @@
 ///
 /// A dialect represents the variations in how this record/field format can
 /// be encoded.
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Dialect {
     line_separators: &'static str,
     field_separators: &'static str,
@@ -31,6 +31,7 @@ impl Dialect {
     ///
     /// Returns the line/record separator for this tokenizer type
     /// Defaults to "\n"
+    #[must_use]
     pub const fn get_line_separators(&self) -> &str {
         self.line_separators
     }
@@ -38,19 +39,24 @@ impl Dialect {
     ///
     /// Returns the field separator for this tokenizer type,
     /// Defaults to ","
+    #[must_use]
     pub const fn get_field_separators(&self) -> &str {
         self.field_separators
     }
 }
 
 ///
-/// RFC4180 Dialect, uses the industry defaults '\n' for record separator,
+/// RFC4180 Dialect, uses the industry defaults '\r\n' for record separator,
 /// and ',' for field separator.
-pub const RFC4180_DIALECT: Dialect = Dialect::new("\n", ",");
+pub const RFC4180_DIALECT: Dialect = Dialect::new("\r\n", ",");
 
 ///
-/// Microsoft Excel tokenizer, uses '\r\n' for the record separator.
-pub const EXCEL_DIALECT: Dialect = Dialect::new("\r\n", ",");
+/// Microsoft Excel tokenizer, effectively the same as RFC4180.
+pub const EXCEL_DIALECT: Dialect = RFC4180_DIALECT;
+
+///
+/// Standard unix dialect, uses '\n' instead of CRLF for line separators.
+pub const UNIX_DIALECT: Dialect = Dialect::new("\n", ",");
 
 ///
 /// Tab dialect, uses '\n' for newlines and '\t' for the field separator.
