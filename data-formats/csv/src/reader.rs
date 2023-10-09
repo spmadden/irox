@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::io::Read;
 
-use crate::{BasicTokenReader, CSVError, CSVErrorType, Token, TokenReader};
+use crate::{BasicTokenReader, CSVError, CSVErrorType, Dialect, Token, TokenReader};
 
 ///
 /// Incredibly basic CSV reader.
@@ -20,6 +20,15 @@ impl<T: Read + Sized> CSVReader<T> {
     pub fn new(reader: T) -> CSVReader<T> {
         CSVReader {
             tokenizer: BasicTokenReader::new(reader),
+        }
+    }
+
+    ///
+    /// Creates a new CSV reader based on the specified dialect.  Accepts any
+    /// [`Read`]er and consumes it.
+    pub fn dialect(reader: T, dialect: Dialect) -> CSVReader<T> {
+        CSVReader {
+            tokenizer: BasicTokenReader::dialect(reader, dialect),
         }
     }
 
