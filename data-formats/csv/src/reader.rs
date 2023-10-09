@@ -42,12 +42,30 @@ impl<T: Read + Sized> CSVReader<T> {
     pub fn read_line(&mut self) -> Result<Option<Vec<String>>, CSVError> {
         let mut out: Vec<String> = Vec::new();
 
+        let mut in_a_comment = false;
         loop {
             if let Some(toks) = self.tokenizer.next_tokens()? {
                 for tok in toks {
                     match tok {
-                        Token::Field(f) => out.push(f),
-                        Token::EndRow => return Ok(Some(out)),
+                        Token::Field(f) => {
+                            if !in_a_comment {
+                                out.push(f);
+                            }
+                        }
+                        Token::EndRow => {
+                            if in_a_comment {
+                                in_a_comment = false;
+                            } else {
+                                return Ok(Some(out));
+                            }
+                        }
+                        Token::Comment(f) => {
+                            // only a comment if it's the first token of a line
+                            in_a_comment = out.is_empty() && f.is_empty();
+                            if !in_a_comment {
+                                out.push(f);
+                            }
+                        }
                     }
                 }
             } else {
@@ -80,7 +98,16 @@ impl<T: Read + Sized> CSVMapReader<T> {
     /// Will return [`Result::Ok(CSVMapReader)`] if it can read the CSV's header.
     /// Will return [`Result::Err(CSVError)`] if any I/O Error, or no header.
     pub fn new(read: T) -> Result<CSVMapReader<T>, CSVError> {
-        let mut reader = CSVReader::new(read);
+        Self::dialect(read, Dialect::default())
+    }
+
+    ///
+    /// Creates a new [`CSVMapReader`] using the specified dialect
+    ///
+    /// Will return [`Result::Ok(CSVMapReader)`] if it can read the CSV's header.
+    /// Will return [`Result::Err(CSVError)`] if any I/O Error, or no header.
+    pub fn dialect(read: T, dialect: Dialect) -> Result<Self, CSVError> {
+        let mut reader = CSVReader::dialect(read, dialect);
         let keys = reader.read_line()?;
         match keys {
             Some(keys) => Ok(CSVMapReader { reader, keys }),

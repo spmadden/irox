@@ -127,3 +127,33 @@ pub fn writer_2() -> Result<(), CSVError> {
 
     Ok(())
 }
+
+static TEST_3: &str = "first|second|third
+#comment1|comment2|comment3
+# this is another long comment
+val1|val2|val3
+";
+
+#[test]
+pub fn reader_3() -> Result<(), CSVError> {
+    let mut reader = irox_csv::CSVMapReader::dialect(TEST_3.as_bytes(), PIPE_FIELD_DIALECT)?;
+
+    let mut idx = 0;
+    while let Some(row) = reader.next_row()? {
+        let map = row.into_map_lossy();
+        match idx {
+            0 => {
+                assert_eq!(3, map.len());
+                assert_eq!(Some(&"val1".to_string()), map.get("first"));
+                assert_eq!(Some(&"val2".to_string()), map.get("second"));
+                assert_eq!(Some(&"val3".to_string()), map.get("third"));
+            }
+            e => {
+                panic!("More lines than expected: {e}");
+            }
+        }
+        idx += 1;
+    }
+    assert_eq!(1, idx);
+    Ok(())
+}

@@ -13,6 +13,7 @@
 pub struct Dialect {
     line_separators: &'static str,
     field_separators: &'static str,
+    comment_chars: &'static str,
 }
 impl Default for Dialect {
     fn default() -> Self {
@@ -21,10 +22,15 @@ impl Default for Dialect {
 }
 
 impl Dialect {
-    pub const fn new(line_separators: &'static str, field_separators: &'static str) -> Dialect {
+    pub const fn new(
+        line_separators: &'static str,
+        field_separators: &'static str,
+        comment_chars: &'static str,
+    ) -> Dialect {
         Dialect {
             line_separators,
             field_separators,
+            comment_chars,
         }
     }
 
@@ -43,12 +49,20 @@ impl Dialect {
     pub const fn get_field_separators(&self) -> &str {
         self.field_separators
     }
+
+    ///
+    /// Returns the optional comment character for this tokenizer type,
+    /// Defaults to `None`
+    #[must_use]
+    pub const fn get_comment_chars(&self) -> &str {
+        self.comment_chars
+    }
 }
 
 ///
 /// RFC4180 Dialect, uses the industry defaults '\r\n' for record separator,
 /// and ',' for field separator.
-pub const RFC4180_DIALECT: Dialect = Dialect::new("\r\n", ",");
+pub const RFC4180_DIALECT: Dialect = Dialect::new("\r\n", ",", "#");
 
 ///
 /// Microsoft Excel tokenizer, effectively the same as RFC4180.
@@ -56,16 +70,16 @@ pub const EXCEL_DIALECT: Dialect = RFC4180_DIALECT;
 
 ///
 /// Standard unix dialect, uses '\n' instead of CRLF for line separators.
-pub const UNIX_DIALECT: Dialect = Dialect::new("\n", ",");
+pub const UNIX_DIALECT: Dialect = Dialect::new("\n", ",", "#");
 
 ///
 /// Tab dialect, uses '\n' for newlines and '\t' for the field separator.
-pub const UNIX_TAB_DIALECT: Dialect = Dialect::new("\n", "\t");
+pub const UNIX_TAB_DIALECT: Dialect = Dialect::new("\n", "\t", "#");
 
 ///
 /// Excel tab dialect, uses '\r\n' for newlines and '\t' for the field separator.
-pub const EXCEL_TAB_DIALECT: Dialect = Dialect::new("\r\n", "\t");
+pub const EXCEL_TAB_DIALECT: Dialect = Dialect::new("\r\n", "\t", "#");
 
 ///
 /// Piped Field Dialect, uses vertical pipes '|' for the field separators
-pub const PIPE_FIELD_DIALECT: Dialect = Dialect::new("\n", "|");
+pub const PIPE_FIELD_DIALECT: Dialect = Dialect::new("\n", "|", "#");

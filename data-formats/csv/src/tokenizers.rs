@@ -15,12 +15,14 @@ use crate::Dialect;
 pub enum Token {
     Field(String),
     EndRow,
+    Comment(String),
 }
 
 #[derive(Clone)]
 enum InnerToken {
     Field,
     Newline,
+    Comment,
 }
 
 ///
@@ -66,6 +68,7 @@ impl<T: Read + Sized> BasicTokenReader<T> {
                 .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
             sc::Token::new(dialect.get_line_separators(), InnerToken::Newline)
                 .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
+            sc::Token::new(dialect.get_comment_chars(), InnerToken::Comment),
         ];
         Self {
             scanner: Scanner::new(reader, delims),
@@ -84,6 +87,7 @@ impl<T: Read + Sized> TokenReader for BasicTokenReader<T> {
                 match token.get_response() {
                     InnerToken::Field => Ok(Some(vec![Token::Field(name)])),
                     InnerToken::Newline => Ok(Some(vec![Token::Field(name), Token::EndRow])),
+                    InnerToken::Comment => Ok(Some(vec![Token::Comment(name)])),
                 }
             }
             ReadToken::EndOfData { data } => Ok(Some(vec![
