@@ -48,7 +48,8 @@ clap = {version = "=4.4.6", features = ["derive", "wrap_help", "string", "cargo"
 clap-verbosity-flag = {version = "=2.0.1"}
 log = {version = "=0.4.20", features = []}
 env_logger = {version = "=0.10.0", features = []}
-syn = {version = "=2.0.37", features = ["extra-traits"]}
+syn = {version = "=2.0.38",
+features = ["extra-traits"]}
 quote = {version = "=1.0.33", features = []}
 signal-hook = {version = "=0.3.17", features = []}
 futures = {version = "=0.3.28", features = []}
