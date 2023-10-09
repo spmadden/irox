@@ -4,8 +4,8 @@
 use std::time::Duration;
 
 use eframe::{self, Frame, NativeOptions};
-use egui::plot::{Line, Plot, PlotPoints};
 use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, Window};
+use egui_plot::{Line, Plot, PlotPoints};
 
 use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::frame_history::FrameHistory;

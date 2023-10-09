@@ -7,7 +7,6 @@
 
 use std::time::Duration;
 
-use eframe::emath::Vec2;
 use eframe::{App, Frame, Storage};
 use egui::Context;
 
@@ -17,7 +16,6 @@ use egui::Context;
 pub struct CompositeApp {
     apps: Vec<Box<dyn App>>,
 
-    persist_native_window: bool,
     persist_egui_memory: bool,
     warm_up_enabled: bool,
 }
@@ -27,7 +25,6 @@ impl Default for CompositeApp {
         CompositeApp {
             apps: Vec::new(),
             persist_egui_memory: true,
-            persist_native_window: true,
             warm_up_enabled: false,
         }
     }
@@ -36,7 +33,6 @@ impl Default for CompositeApp {
 impl CompositeApp {
     pub fn add(&mut self, app: Box<dyn App>) {
         self.persist_egui_memory &= app.persist_egui_memory();
-        self.persist_native_window &= app.persist_native_window();
 
         self.apps.push(app);
     }
@@ -75,23 +71,6 @@ impl App for CompositeApp {
             return min;
         }
         Duration::from_secs(30)
-    }
-
-    fn max_size_points(&self) -> Vec2 {
-        let mut x: f32 = f32::INFINITY;
-        let mut y: f32 = f32::INFINITY;
-
-        for app in &self.apps {
-            let pts = app.max_size_points();
-            x = x.min(pts.x);
-            y = y.min(pts.y);
-        }
-
-        Vec2::new(x, y)
-    }
-
-    fn persist_native_window(&self) -> bool {
-        self.persist_native_window
     }
 
     fn persist_egui_memory(&self) -> bool {

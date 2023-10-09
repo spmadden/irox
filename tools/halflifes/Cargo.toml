@@ -15,6 +15,7 @@ repository.workspace = true
 [dependencies]
 eframe.workspace = true
 egui.workspace = true
+egui_plot.workspace = true
 ron.workspace = true
 serde.workspace = true
 irox-egui-extras.workspace = true
