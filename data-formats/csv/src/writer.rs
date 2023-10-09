@@ -1,22 +1,51 @@
 use std::collections::BTreeMap;
 use std::io::Write;
 
-use crate::{CSVError, CSVErrorType};
+use crate::{CSVError, CSVErrorType, Dialect};
 
 ///
-/// Flexible CSV writer, wherein one can specify
+/// Flexible CSV writer, wherein one can specify the dialect and optional column
+/// headers
 pub struct CSVWriter<T>
 where
     T: Write + Sized,
 {
     pub(crate) output: T,
     pub(crate) columns: Option<Vec<String>>,
-    pub(crate) column_separator: Option<String>,
-    pub(crate) newlines: Option<String>,
+    pub(crate) dialect: Dialect,
     pub(crate) wrote_header: bool,
 }
 
 impl<T: Write + Sized> CSVWriter<T> {
+    ///
+    /// Creates a new writer using the default dialect.
+    #[must_use]
+    pub fn new(output: T) -> Self {
+        CSVWriter {
+            output,
+            columns: None,
+            dialect: Dialect::default(),
+            wrote_header: false,
+        }
+    }
+
+    ///
+    /// Sets the dialect to use
+    #[must_use]
+    pub fn with_dialect(self, dialect: Dialect) -> Self {
+        CSVWriter { dialect, ..self }
+    }
+
+    ///
+    /// Sets the column names to use as the header
+    #[must_use]
+    pub fn with_column_names(self, columns: Vec<String>) -> Self {
+        CSVWriter {
+            columns: Some(columns),
+            ..self
+        }
+    }
+
     ///
     /// Ensures that the header (if specified and present) is written to the file.
     pub fn write_header(&mut self) -> Result<(), CSVError> {
@@ -37,17 +66,10 @@ impl<T: Write + Sized> CSVWriter<T> {
     ///
     /// Serializes the fields in iteration order using the optionally specified Column Separator and
     /// newline character(s)
+    #[must_use]
     pub(crate) fn make_line(&self, fields: &[String]) -> String {
-        let sep = match &self.column_separator {
-            Some(sep) => sep.as_str(),
-            None => ",",
-        };
-        let newlines = match &self.newlines {
-            Some(nl) => nl.as_str(),
-            None => "\n",
-        };
-        let line = fields.join(sep);
-        format!("{line}{newlines}")
+        let line = fields.join(self.dialect.get_field_separators());
+        format!("{line}{}", self.dialect.get_line_separators())
     }
 
     ///
@@ -88,53 +110,5 @@ impl<T: Write + Sized> CSVWriter<T> {
         let line = self.make_line(&out);
         self.output.write_all(line.as_bytes())?;
         Ok(())
-    }
-}
-
-///
-/// Helper builder to lazily create a [`CSVWriter`]
-#[derive(Debug, Clone, Default)]
-pub struct CSVWriterBuilder {
-    columns: Option<Vec<String>>,
-    newlines: Option<String>,
-    column_separator: Option<String>,
-}
-
-impl CSVWriterBuilder {
-    ///
-    /// Start here.
-    #[must_use]
-    pub fn new() -> CSVWriterBuilder {
-        Default::default()
-    }
-
-    ///
-    /// Specify a set of Headers to use.  Without calling
-    #[must_use]
-    pub fn with_columns<T: ToString>(mut self, columns: &[T]) -> Self {
-        self.columns = Some(columns.iter().map(ToString::to_string).collect());
-        self
-    }
-
-    #[must_use]
-    pub fn with_newlines(mut self, newlines: String) -> Self {
-        self.newlines = Some(newlines);
-        self
-    }
-
-    #[must_use]
-    pub fn with_column_separator(mut self, column_separator: String) -> Self {
-        self.column_separator = Some(column_separator);
-        self
-    }
-
-    pub fn build<T: Write + Sized>(self, output: T) -> CSVWriter<T> {
-        CSVWriter {
-            output,
-            columns: self.columns,
-            newlines: self.newlines,
-            column_separator: self.column_separator,
-            wrote_header: false,
-        }
     }
 }
