@@ -7,7 +7,7 @@ use irox_tools::scanner as sc;
 use irox_tools::scanner::{QuotedChars, ReadToken, Scanner};
 
 use crate::error::CSVError;
-use crate::{CSVDialect, RFC4180Dialect};
+use crate::Dialect;
 
 ///
 /// Output from the Tokenizers as they detects individual tokens from the input stream.
@@ -51,9 +51,16 @@ where
 
 impl<T: Read + Sized> BasicTokenReader<T> {
     ///
-    /// Creates a new Tokenizer, consuming the underlying reader.
-    pub fn new(reader: T) -> BasicTokenReader<T> {
-        let dialect = RFC4180Dialect::default();
+    /// Creates a new Tokenizer using the default RFC4180 Dialect, consuming the
+    /// underlying reader.
+    pub fn new(reader: T) -> Self {
+        let dialect = Dialect::default();
+        Self::dialect(reader, dialect)
+    }
+
+    ///
+    /// Token reader using the specified dialect
+    pub fn dialect(reader: T, dialect: Dialect) -> Self {
         let delims = &[
             sc::Token::new(dialect.get_field_separators(), InnerToken::Field)
                 .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
