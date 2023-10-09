@@ -58,7 +58,7 @@ miniz_oxide = {version = "=0.7.1", features = []}
 xml = {version = "=0.8.10", features = []}
 serial = {version = "=0.4.0", features = []}
 human-panic = {version = "=1.2.1", features = []}
-proc-macro2 = {version = "=1.0.68", features = []}
+proc-macro2 = {version = "=1.0.69", features = []}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}
