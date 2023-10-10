@@ -3,6 +3,8 @@
 
 ///
 /// Matches (struct, units, default) to make a new basic struct
+
+#[macro_export]
 macro_rules! basic_unit {
     ($struct_type:ident, $units_type: ident, $default_units: ident) => {
         #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -28,7 +30,7 @@ macro_rules! basic_unit {
             }
         }
 
-        impl crate::units::UnitStruct<$units_type> for $struct_type {
+        impl $crate::units::UnitStruct<$units_type> for $struct_type {
             fn new(value: f64, units: $units_type) -> Self {
                 Self { value, units }
             }
@@ -46,8 +48,8 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn add(self, rhs: Self) -> Self::Output {
-                let val = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
+                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
             }
         }
 
@@ -55,8 +57,8 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn add(self, rhs: Self) -> Self::Output {
-                let val = crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
-                crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
+                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
+                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
             }
         }
 
@@ -64,14 +66,14 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn add(self, rhs: &Self) -> Self::Output {
-                let val = crate::units::Unit::<$units_type>::as_unit(*rhs, self.units()).value();
-                crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
+                let val = $crate::units::Unit::<$units_type>::as_unit(*rhs, self.units()).value();
+                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
             }
         }
 
         impl std::ops::AddAssign for $struct_type {
             fn add_assign(&mut self, rhs: Self) {
-                let val = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
                 self.value += val;
             }
         }
@@ -80,8 +82,8 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn sub(self, rhs: Self) -> Self::Output {
-                let val = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
+                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                $crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
             }
         }
 
@@ -89,8 +91,8 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn sub(self, rhs: Self) -> Self::Output {
-                let val = crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
-                crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
+                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
+                $crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
             }
         }
 
@@ -98,7 +100,7 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn div(self, rhs: f64) -> Self::Output {
-                crate::units::UnitStruct::<$units_type>::new(self.value() / rhs, self.units())
+                $crate::units::UnitStruct::<$units_type>::new(self.value() / rhs, self.units())
             }
         }
 
@@ -107,7 +109,7 @@ macro_rules! basic_unit {
 
             fn div(self, rhs: Self) -> Self::Output {
                 let upper = self.value();
-                let lower = crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                let lower = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
                 upper / lower
             }
         }
@@ -122,7 +124,7 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn mul(self, rhs: f64) -> Self::Output {
-                crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
+                $crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
             }
         }
 
@@ -130,7 +132,7 @@ macro_rules! basic_unit {
             type Output = $struct_type;
 
             fn mul(self, rhs: f64) -> Self::Output {
-                crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
+                $crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
             }
         }
         impl std::ops::Mul<&$struct_type> for f64 {
@@ -156,7 +158,7 @@ macro_rules! basic_unit {
 
         impl std::cmp::PartialOrd<$struct_type> for $struct_type {
             fn partial_cmp(&self, rhs: &$struct_type) -> Option<std::cmp::Ordering> {
-                let val = crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
+                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
                 self.value().partial_cmp(&val)
             }
         }

@@ -7,8 +7,8 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::module_name_repetitions)]
 
-#[macro_use]
 pub mod bounds;
 pub mod shapes;
+#[macro_use]
 pub mod units;
 pub mod time;
