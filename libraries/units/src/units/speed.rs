@@ -26,7 +26,7 @@ pub enum SpeedUnits {
     Knots,
 }
 
-macro_rules! from_units_length {
+macro_rules! from_units_speed {
     ($type:ident) => {
         impl crate::units::FromUnits<$type> for SpeedUnits {
             fn from(&self, value: $type, units: Self) -> $type {
@@ -46,8 +46,8 @@ macro_rules! from_units_length {
     };
 }
 basic_unit!(Speed, SpeedUnits, MetersPerSecond);
-from_units_length!(f32);
-from_units_length!(f64);
+from_units_speed!(f32);
+from_units_speed!(f64);
 
 impl Unit<SpeedUnits> for Speed {
     fn as_unit(&self, units: SpeedUnits) -> Self {
