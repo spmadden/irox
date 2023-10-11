@@ -13,3 +13,4 @@ readme.workspace = true
 repository.workspace = true
 
 [dependencies]
+irox-enums.workspace = true
