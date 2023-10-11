@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::fmt::{Display, Formatter};
+
 use crate::units::{FromUnits, Unit};
 
 ///
@@ -35,6 +37,53 @@ pub enum DurationUnit {
 
     /// An hour, 24 in a day.
     Hour,
+}
+
+impl DurationUnit {
+    ///
+    /// Converts the specified value into Seconds
+    pub fn as_seconds(self, value: f64) -> f64 {
+        Duration::new(value, self)
+            .as_unit(DurationUnit::Second)
+            .value
+    }
+    ///
+    /// Converts the specified value into Milliseconds
+    pub fn as_millis(self, value: f64) -> f64 {
+        Duration::new(value, self)
+            .as_unit(DurationUnit::Millisecond)
+            .value
+    }
+
+    ///
+    /// Converts the specified value into Microseconds
+    pub fn as_micros(self, value: f64) -> f64 {
+        Duration::new(value, self)
+            .as_unit(DurationUnit::Microsecond)
+            .value
+    }
+
+    ///
+    /// Converts the specified value into Nanoseconds
+    pub fn as_nanos(self, value: f64) -> f64 {
+        Duration::new(value, self)
+            .as_unit(DurationUnit::Nanosecond)
+            .value
+    }
+
+    ///
+    /// Converts the specified value into Minutes
+    pub fn as_minutes(self, value: f64) -> f64 {
+        Duration::new(value, self)
+            .as_unit(DurationUnit::Minute)
+            .value
+    }
+
+    ///
+    /// Converts the specified value into Hours
+    pub fn as_hours(self, value: f64) -> f64 {
+        Duration::new(value, self).as_unit(DurationUnit::Hour).value
+    }
 }
 
 macro_rules! from_units_duration {
@@ -105,7 +154,9 @@ macro_rules! from_units_duration {
 
 basic_unit!(Duration, DurationUnit, Second);
 from_units_duration!(u32);
+from_units_duration!(i32);
 from_units_duration!(u64);
+from_units_duration!(i64);
 from_units_duration!(f32);
 from_units_duration!(f64);
 
@@ -121,6 +172,64 @@ impl Unit<DurationUnit> for Duration {
 impl From<std::time::Duration> for Duration {
     fn from(value: std::time::Duration) -> Self {
         Duration::new(value.as_secs_f64(), DurationUnit::Second)
+    }
+}
+
+impl From<Duration> for std::time::Duration {
+    fn from(value: Duration) -> Self {
+        let secs = value.as_seconds();
+        let frac_sec = value.as_seconds_f64() - secs as f64;
+        let nanos = DurationUnit::Second.as_nanos(frac_sec) as u32;
+        std::time::Duration::new(secs, nanos)
+    }
+}
+
+impl Duration {
+    /// Returns the value of this duration as whole seconds, with any fractional
+    /// element truncated off.
+    pub fn as_seconds(&self) -> u64 {
+        self.as_unit(DurationUnit::Second).value() as u64
+    }
+
+    /// Returns the value of this duration in fractional seconds
+    pub fn as_seconds_f64(&self) -> f64 {
+        self.as_unit(DurationUnit::Second).value()
+    }
+
+    /// Returns the value of this duration as whole milliseconds, with any
+    /// fractional element truncated off.
+    pub fn as_millis(&self) -> u64 {
+        self.as_unit(DurationUnit::Millisecond).value() as u64
+    }
+
+    /// Returns the value of this duration as whole microseconds, with any
+    /// fractional element truncated off.
+    pub fn as_micros(&self) -> u64 {
+        self.as_unit(DurationUnit::Microsecond).value() as u64
+    }
+
+    /// Returns the value of this duration as whole microseconds, with any
+    /// fractional element truncated off.
+    pub fn as_nanos(&self) -> u64 {
+        self.as_unit(DurationUnit::Nanosecond).value() as u64
+    }
+
+    /// Returns the value of this duration as whole minutes, with any fractional
+    /// element truncated off
+    pub fn as_minutes(&self) -> u64 {
+        self.as_unit(DurationUnit::Minute).value() as u64
+    }
+
+    /// Returns the value of this duration as whole hours, with any fractional
+    /// element truncated off
+    pub fn as_hours(&self) -> u64 {
+        self.as_unit(DurationUnit::Hour).value() as u64
+    }
+}
+
+impl Display for Duration {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{} {:?}", self.value, self.units))
     }
 }
 
