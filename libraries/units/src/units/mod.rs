@@ -7,7 +7,7 @@
 #[macro_export]
 macro_rules! basic_unit {
     ($struct_type:ident, $units_type: ident, $default_units: ident) => {
-        #[derive(Debug, Clone, Copy, Default, PartialEq)]
+        #[derive(Debug, Clone, Copy, Default)]
         pub struct $struct_type {
             value: f64,
             units: $units_type,
@@ -160,6 +160,15 @@ macro_rules! basic_unit {
             fn partial_cmp(&self, rhs: &$struct_type) -> Option<std::cmp::Ordering> {
                 let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
                 self.value().partial_cmp(&val)
+            }
+        }
+
+        impl std::cmp::PartialEq<$struct_type> for $struct_type {
+            fn eq(&self, rhs: &$struct_type) -> bool {
+                if let Some(val) = self.partial_cmp(rhs) {
+                    return val == std::cmp::Ordering::Equal;
+                }
+                false
             }
         }
 
