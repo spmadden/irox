@@ -185,6 +185,15 @@ impl From<Duration> for std::time::Duration {
 }
 
 impl Duration {
+    ///
+    /// Creates a new duration using the specified number of seconds
+    pub fn new_seconds(value: f64) -> Duration {
+        Duration {
+            value,
+            units: DurationUnit::Second,
+        }
+    }
+
     /// Returns the value of this duration as whole seconds, with any fractional
     /// element truncated off.
     pub fn as_seconds(&self) -> u64 {
