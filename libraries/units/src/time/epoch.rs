@@ -164,3 +164,13 @@ pub const COMMON_ERA_EPOCH: Epoch = Epoch(Date {
     year: 1,
     day_of_year: 1,
 });
+
+///
+/// The Prime Epoch, 01-JAN-1900
+pub const PRIME_EPOCH: Epoch = Epoch(Date {
+    year: 1900,
+    day_of_year: 1,
+});
+///
+/// The NTP epoch is the same as the [`PRIME_EPOCH`]
+pub const NTP_EPOCH: Epoch = PRIME_EPOCH;
