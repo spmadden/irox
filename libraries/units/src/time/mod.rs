@@ -7,6 +7,7 @@ pub use datetime::*;
 pub use duration::*;
 pub use epoch::*;
 pub use gregorian::*;
+pub use julian::*;
 
 use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 
@@ -14,6 +15,7 @@ mod datetime;
 mod duration;
 mod epoch;
 mod gregorian;
+mod julian;
 
 ///
 /// Represents a time of the day, an offset into the day from midnight.
