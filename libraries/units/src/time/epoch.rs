@@ -151,3 +151,10 @@ pub const WINDOWS_NT_EPOCH: Epoch = Epoch(Date {
 pub type WindowsNTTimestamp = Timestamp<WindowsEpoch>;
 pub struct WindowsEpoch;
 derive_timestamp_impl!(WINDOWS_NT_EPOCH, WindowsNTTimestamp);
+
+///
+/// The Common Era Epoch, 01-JAN-0001 AD
+pub const COMMON_ERA_EPOCH: Epoch = Epoch(Date {
+    year: 1,
+    day_of_year: 1,
+});
