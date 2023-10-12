@@ -70,7 +70,13 @@ macro_rules! derive_timestamp_impl {
             ///
             /// Creates a new timestamp given the specified number of seconds
             pub fn from_seconds(seconds: u32) -> $name {
-                $name::from_offset(Duration::new_seconds(seconds as f64))
+                $name::from_seconds_f64(seconds as f64)
+            }
+
+            ///
+            /// Creates a new timestamp given the specified number of fractional seconds
+            pub fn from_seconds_f64(seconds: f64) -> $name {
+                $name::from_offset(Duration::new_seconds(seconds))
             }
         }
         impl Default for $name {
