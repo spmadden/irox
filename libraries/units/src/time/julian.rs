@@ -3,7 +3,11 @@
 
 use std::marker::PhantomData;
 
-use crate::time::{Date, Epoch, UnixTimestamp, COMMON_ERA_EPOCH, GREGORIAN_EPOCH, SECONDS_IN_DAY};
+use crate::time::{
+    epoch::{Epoch, UnixTimestamp, COMMON_ERA_EPOCH, GREGORIAN_EPOCH},
+    gregorian::Date,
+    SECONDS_IN_DAY,
+};
 
 //
 /// The Julian Epoch, 01-JAN 4713 BC

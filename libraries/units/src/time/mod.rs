@@ -3,45 +3,58 @@
 
 use std::fmt::{Display, Formatter};
 
-pub use datetime::*;
-pub use duration::*;
-pub use epoch::*;
-pub use gregorian::*;
-pub use julian::*;
-
 use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
+use crate::time::duration::{Duration, DurationUnit, NANOS_TO_SEC};
+use crate::time::epoch::Epoch;
 
-mod datetime;
-mod duration;
-mod epoch;
-mod gregorian;
-mod julian;
+pub mod datetime;
+pub mod duration;
+pub mod epoch;
+pub mod format;
+pub mod gregorian;
+pub mod julian;
 
 ///
 /// Represents a time of the day, an offset into the day from midnight.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Time {
     second_of_day: u32,
+    nanoseconds: u32,
 }
 
 impl Time {
-    pub fn new(second_of_day: u32) -> Result<Time, GreaterThanEqualToValueError<u32>> {
+    pub fn new(
+        second_of_day: u32,
+        nanoseconds: u32,
+    ) -> Result<Time, GreaterThanEqualToValueError<u32>> {
         LessThanValue::new(86401).check_value_is_valid(&second_of_day)?;
-        Ok(Time { second_of_day })
+        LessThanValue::new(1_000_000_000).check_value_is_valid(&nanoseconds)?;
+        Ok(Time {
+            second_of_day,
+            nanoseconds,
+        })
     }
 
     ///
     /// Returns the number of seconds into the "current day"
     #[must_use]
-    pub fn as_seconds(&self) -> u32 {
+    pub fn get_seconds(&self) -> u32 {
         self.second_of_day
+    }
+
+    ///
+    /// Returns the number of fractional second nanoseconds
+    #[must_use]
+    pub fn get_nanoseconds(&self) -> u32 {
+        self.nanoseconds
     }
 
     ///
     /// Converts this time into a duration
     #[must_use]
     pub fn as_duration(&self) -> Duration {
-        Duration::new(self.second_of_day as f64, DurationUnit::Second)
+        let time = self.second_of_day as f64 + self.nanoseconds as f64 * NANOS_TO_SEC;
+        Duration::new(time, DurationUnit::Second)
     }
 
     ///
@@ -52,7 +65,7 @@ impl Time {
     }
 
     ///
-    /// Returns the number minutes
+    /// Returns the minute offset into the day represented by this time.
     #[must_use]
     pub fn as_minutes(&self) -> u32 {
         (self.second_of_day as f64 / SECONDS_IN_MINUTE as f64) as u32
@@ -64,7 +77,7 @@ impl Time {
     pub fn as_hms(&self) -> (u32, u32, u32) {
         let hours = self.as_hours();
         let minutes = self.as_minutes() - hours * MINUTES_IN_HOUR;
-        let seconds = self.as_seconds() - hours * SECONDS_IN_HOUR - minutes * SECONDS_IN_MINUTE;
+        let seconds = self.get_seconds() - hours * SECONDS_IN_HOUR - minutes * SECONDS_IN_MINUTE;
         (hours, minutes, seconds)
     }
 }
@@ -82,10 +95,19 @@ impl From<Time> for Duration {
     }
 }
 
+/// 24 Hours in a Day
 pub const HOURS_IN_DAY: u32 = 24;
+
+/// 60 Minutes in an Hour
 pub const MINUTES_IN_HOUR: u32 = 60;
+
+/// 60 Seconds in a Minute
 pub const SECONDS_IN_MINUTE: u32 = 60;
+
+/// 1440 Minutes in a Day
 pub const MINUTES_IN_DAY: u32 = 1440;
+
+/// 3600 Seconds in an Hour
 pub const SECONDS_IN_HOUR: u32 = 3600;
 
 ///

@@ -3,7 +3,7 @@
 
 use std::marker::PhantomData;
 
-use crate::time::{Date, Duration};
+use crate::time::{gregorian::Date, Duration};
 
 ///
 /// The "epoch" serves as a reference point from which time is measured.
@@ -59,23 +59,23 @@ macro_rules! derive_timestamp_impl {
         impl $name {
             ///
             /// Creates a new timestamp given the specified offset
-            pub fn from_offset(offset: Duration) -> $name {
+            pub const fn from_offset(offset: Duration) -> $name {
                 $name {
                     epoch: $epoch,
                     offset,
-                    ..$name::default()
+                    _phantom: PhantomData {},
                 }
             }
 
             ///
             /// Creates a new timestamp given the specified number of seconds
-            pub fn from_seconds(seconds: u32) -> $name {
+            pub const fn from_seconds(seconds: u32) -> $name {
                 $name::from_seconds_f64(seconds as f64)
             }
 
             ///
             /// Creates a new timestamp given the specified number of fractional seconds
-            pub fn from_seconds_f64(seconds: f64) -> $name {
+            pub const fn from_seconds_f64(seconds: f64) -> $name {
                 $name::from_offset(Duration::new_seconds(seconds))
             }
         }
@@ -100,6 +100,7 @@ macro_rules! derive_timestamp_impl {
 impl UnixTimestamp {
     ///
     /// Returns the local system clock equivalent of the unix timestamp
+    #[must_use]
     pub fn now() -> UnixTimestamp {
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(t) => UnixTimestamp::from_offset(t.into()),
@@ -107,6 +108,13 @@ impl UnixTimestamp {
                 UnixTimestamp::from_offset(Duration::new_seconds(-1.0 * t.duration().as_secs_f64()))
             }
         }
+    }
+
+    ///
+    /// Returns this timestamp as a Date
+    #[must_use]
+    pub fn as_date(&self) -> Date {
+        self.into()
     }
 }
 derive_timestamp_impl!(UNIX_EPOCH, UnixTimestamp);
