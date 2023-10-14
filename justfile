@@ -2,7 +2,7 @@
 
 default: build test format lints upgrade 
 
-ci: deny build test format_check lints about upgrade package
+ci: deny build test format_check lints about doc upgrade package
 
 check_install prereq:
     #!/usr/bin/env bash
@@ -40,3 +40,7 @@ about:
 upgrade:
     just check_install cargo-edit
     cargo upgrade --dry-run --pinned -i
+
+doc:
+    rustup toolchain install nightly 2>&1 > /dev/null
+    RUSTDOCFLAGS=$(xargs -aRustdoc.lints) cargo +nightly doc
