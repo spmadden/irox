@@ -187,7 +187,7 @@ impl From<Duration> for std::time::Duration {
 impl Duration {
     ///
     /// Creates a new duration using the specified number of seconds
-    pub fn new_seconds(value: f64) -> Duration {
+    pub const fn new_seconds(value: f64) -> Duration {
         Duration {
             value,
             units: DurationUnit::Second,
