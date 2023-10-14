@@ -1,20 +1,32 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`DataSize`] and [`DataSizeUnits`] - Physical Quantities of computer binary storage
+//!
+
 use crate::units::Unit;
 
 use super::FromUnits;
 
+///
+/// Physical unit of computer storage, a Byte is eight Bits.
 #[allow(clippy::cast_possible_truncation)]
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 pub enum DataSizeUnits {
+    /// Eight Bits
     #[default]
     Bytes,
-    KiloBytes,
-    MegaBytes,
-    GigaBytes,
-    TeraBytes,
-    PetaBytes,
+    /// 1000 Bytes
+    Kilobytes,
+    /// 1000 Kilobytes
+    Megabytes,
+    /// 1000 Megabytes
+    Gigabytes,
+    /// 1000 Gigabytes
+    Terabytes,
+    /// 1000 Terabytes
+    Petabytes,
 }
 
 macro_rules! from_units_datasize {
@@ -24,51 +36,51 @@ macro_rules! from_units_datasize {
                 match self {
                     DataSizeUnits::Bytes => match units {
                         DataSizeUnits::Bytes => value,
-                        DataSizeUnits::KiloBytes => value * KB as $type,
-                        DataSizeUnits::MegaBytes => value * MB as $type,
-                        DataSizeUnits::GigaBytes => value * GB as $type,
-                        DataSizeUnits::TeraBytes => value * TB as $type,
-                        DataSizeUnits::PetaBytes => value * PB as $type,
+                        DataSizeUnits::Kilobytes => value * KB_TO_BYTES as $type,
+                        DataSizeUnits::Megabytes => value * MB_TO_BYTES as $type,
+                        DataSizeUnits::Gigabytes => value * GB_TO_BYTES as $type,
+                        DataSizeUnits::Terabytes => value * TB_TO_BYTES as $type,
+                        DataSizeUnits::Petabytes => value * PB_TO_BYTES as $type,
                     },
-                    DataSizeUnits::KiloBytes => match units {
-                        DataSizeUnits::Bytes => value / KB as $type,
-                        DataSizeUnits::KiloBytes => value,
-                        DataSizeUnits::MegaBytes => value * KB as $type,
-                        DataSizeUnits::GigaBytes => value * MB as $type,
-                        DataSizeUnits::TeraBytes => value * GB as $type,
-                        DataSizeUnits::PetaBytes => value * TB as $type,
+                    DataSizeUnits::Kilobytes => match units {
+                        DataSizeUnits::Bytes => value / KB_TO_BYTES as $type,
+                        DataSizeUnits::Kilobytes => value,
+                        DataSizeUnits::Megabytes => value * KB_TO_BYTES as $type,
+                        DataSizeUnits::Gigabytes => value * MB_TO_BYTES as $type,
+                        DataSizeUnits::Terabytes => value * GB_TO_BYTES as $type,
+                        DataSizeUnits::Petabytes => value * TB_TO_BYTES as $type,
                     },
-                    DataSizeUnits::MegaBytes => match units {
-                        DataSizeUnits::Bytes => value / MB as $type,
-                        DataSizeUnits::KiloBytes => value / KB as $type,
-                        DataSizeUnits::MegaBytes => value,
-                        DataSizeUnits::GigaBytes => value * KB as $type,
-                        DataSizeUnits::TeraBytes => value * MB as $type,
-                        DataSizeUnits::PetaBytes => value * GB as $type,
+                    DataSizeUnits::Megabytes => match units {
+                        DataSizeUnits::Bytes => value / MB_TO_BYTES as $type,
+                        DataSizeUnits::Kilobytes => value / KB_TO_BYTES as $type,
+                        DataSizeUnits::Megabytes => value,
+                        DataSizeUnits::Gigabytes => value * KB_TO_BYTES as $type,
+                        DataSizeUnits::Terabytes => value * MB_TO_BYTES as $type,
+                        DataSizeUnits::Petabytes => value * GB_TO_BYTES as $type,
                     },
-                    DataSizeUnits::GigaBytes => match units {
-                        DataSizeUnits::Bytes => value / GB as $type,
-                        DataSizeUnits::KiloBytes => value / MB as $type,
-                        DataSizeUnits::MegaBytes => value / KB as $type,
-                        DataSizeUnits::GigaBytes => value,
-                        DataSizeUnits::TeraBytes => value * KB as $type,
-                        DataSizeUnits::PetaBytes => value * MB as $type,
+                    DataSizeUnits::Gigabytes => match units {
+                        DataSizeUnits::Bytes => value / GB_TO_BYTES as $type,
+                        DataSizeUnits::Kilobytes => value / MB_TO_BYTES as $type,
+                        DataSizeUnits::Megabytes => value / KB_TO_BYTES as $type,
+                        DataSizeUnits::Gigabytes => value,
+                        DataSizeUnits::Terabytes => value * KB_TO_BYTES as $type,
+                        DataSizeUnits::Petabytes => value * MB_TO_BYTES as $type,
                     },
-                    DataSizeUnits::TeraBytes => match units {
-                        DataSizeUnits::Bytes => value / TB as $type,
-                        DataSizeUnits::KiloBytes => value / GB as $type,
-                        DataSizeUnits::MegaBytes => value / MB as $type,
-                        DataSizeUnits::GigaBytes => value / KB as $type,
-                        DataSizeUnits::TeraBytes => value,
-                        DataSizeUnits::PetaBytes => value * KB as $type,
+                    DataSizeUnits::Terabytes => match units {
+                        DataSizeUnits::Bytes => value / TB_TO_BYTES as $type,
+                        DataSizeUnits::Kilobytes => value / GB_TO_BYTES as $type,
+                        DataSizeUnits::Megabytes => value / MB_TO_BYTES as $type,
+                        DataSizeUnits::Gigabytes => value / KB_TO_BYTES as $type,
+                        DataSizeUnits::Terabytes => value,
+                        DataSizeUnits::Petabytes => value * KB_TO_BYTES as $type,
                     },
-                    DataSizeUnits::PetaBytes => match units {
-                        DataSizeUnits::Bytes => value / PB as $type,
-                        DataSizeUnits::KiloBytes => value / TB as $type,
-                        DataSizeUnits::MegaBytes => value / GB as $type,
-                        DataSizeUnits::GigaBytes => value / MB as $type,
-                        DataSizeUnits::TeraBytes => value / KB as $type,
-                        DataSizeUnits::PetaBytes => value,
+                    DataSizeUnits::Petabytes => match units {
+                        DataSizeUnits::Bytes => value / PB_TO_BYTES as $type,
+                        DataSizeUnits::Kilobytes => value / TB_TO_BYTES as $type,
+                        DataSizeUnits::Megabytes => value / GB_TO_BYTES as $type,
+                        DataSizeUnits::Gigabytes => value / MB_TO_BYTES as $type,
+                        DataSizeUnits::Terabytes => value / KB_TO_BYTES as $type,
+                        DataSizeUnits::Petabytes => value,
                     },
                 }
             }
@@ -95,6 +107,7 @@ impl Unit<DataSizeUnits> for DataSize {
 }
 
 impl DataSize {
+    /// Creates a new DataSize quanitty
     #[must_use]
     pub fn new_bytes(&self, value: u64) -> DataSize {
         Self::new(value as f64, DataSizeUnits::Bytes)
@@ -104,11 +117,11 @@ impl DataSize {
     pub fn as_bytes(&self) -> u64 {
         match self.units {
             DataSizeUnits::Bytes => self.value as u64,
-            DataSizeUnits::KiloBytes => (self.value * KB as f64) as u64,
-            DataSizeUnits::MegaBytes => (self.value * MB as f64) as u64,
-            DataSizeUnits::GigaBytes => (self.value * GB as f64) as u64,
-            DataSizeUnits::TeraBytes => (self.value * TB as f64) as u64,
-            DataSizeUnits::PetaBytes => (self.value * PB as f64) as u64,
+            DataSizeUnits::Kilobytes => (self.value * KB_TO_BYTES as f64) as u64,
+            DataSizeUnits::Megabytes => (self.value * MB_TO_BYTES as f64) as u64,
+            DataSizeUnits::Gigabytes => (self.value * GB_TO_BYTES as f64) as u64,
+            DataSizeUnits::Terabytes => (self.value * TB_TO_BYTES as f64) as u64,
+            DataSizeUnits::Petabytes => (self.value * PB_TO_BYTES as f64) as u64,
         }
     }
 
@@ -125,50 +138,55 @@ impl DataSize {
 
 #[must_use]
 pub fn human_bytes(bytes: u64) -> String {
-    if bytes < KB {
+    if bytes < KB_TO_BYTES {
         format!("{bytes} bytes")
-    } else if bytes < MB {
-        let val = bytes as f64 / KB as f64;
+    } else if bytes < MB_TO_BYTES {
+        let val = bytes as f64 / KB_TO_BYTES as f64;
         return format!("{val:.3} KB");
-    } else if bytes < GB {
-        let val = bytes as f64 / MB as f64;
+    } else if bytes < GB_TO_BYTES {
+        let val = bytes as f64 / MB_TO_BYTES as f64;
         return format!("{val:.3} MB");
-    } else if bytes < TB {
-        let val = bytes as f64 / GB as f64;
+    } else if bytes < TB_TO_BYTES {
+        let val = bytes as f64 / GB_TO_BYTES as f64;
         return format!("{val:.3} GB");
-    } else if bytes < PB {
-        let val = bytes as f64 / TB as f64;
+    } else if bytes < PB_TO_BYTES {
+        let val = bytes as f64 / TB_TO_BYTES as f64;
         return format!("{val:.3} TB");
     } else {
-        let val = bytes as f64 / PB as f64;
+        let val = bytes as f64 / PB_TO_BYTES as f64;
         return format!("{val:.3} PB");
     }
 }
 
 #[must_use]
 pub fn human_bytes_frac(bytes: u64) -> String {
-    if bytes < KB {
+    if bytes < KB_TO_BYTES {
         format!("{bytes} bytes")
-    } else if bytes < MB {
-        let val = bytes as f64 / KB as f64;
+    } else if bytes < MB_TO_BYTES {
+        let val = bytes as f64 / KB_TO_BYTES as f64;
         return format!("{val:.3} KB");
-    } else if bytes < GB {
-        let val = bytes as f64 / MB as f64;
+    } else if bytes < GB_TO_BYTES {
+        let val = bytes as f64 / MB_TO_BYTES as f64;
         return format!("{val:.3} MB");
-    } else if bytes < TB {
-        let val = bytes as f64 / GB as f64;
+    } else if bytes < TB_TO_BYTES {
+        let val = bytes as f64 / GB_TO_BYTES as f64;
         return format!("{val:.3} GB");
-    } else if bytes < PB {
-        let val = bytes as f64 / TB as f64;
+    } else if bytes < PB_TO_BYTES {
+        let val = bytes as f64 / TB_TO_BYTES as f64;
         return format!("{val:.3} TB");
     } else {
-        let val = bytes as f64 / PB as f64;
+        let val = bytes as f64 / PB_TO_BYTES as f64;
         return format!("{val:.3} PB");
     }
 }
 
-pub const KB: u64 = 1024;
-pub const MB: u64 = KB * 1024;
-pub const GB: u64 = MB * 1024;
-pub const TB: u64 = GB * 1024;
-pub const PB: u64 = TB * 1024;
+/// Kilobyte to Byte factor
+pub const KB_TO_BYTES: u64 = 1000;
+/// Megabyte to Byte factor
+pub const MB_TO_BYTES: u64 = KB_TO_BYTES * 1000;
+/// Gigabyte to Byte factor
+pub const GB_TO_BYTES: u64 = MB_TO_BYTES * 1000;
+/// Terabyte to Byte factor
+pub const TB_TO_BYTES: u64 = GB_TO_BYTES * 1000;
+/// Petabyte to Byte factor
+pub const PB_TO_BYTES: u64 = TB_TO_BYTES * 1000;
