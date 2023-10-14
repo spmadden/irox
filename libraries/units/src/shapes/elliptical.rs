@@ -14,8 +14,8 @@ use crate::units::compass::CompassDirection;
 ///
 /// A discrete measurement of an Ellipse.  An Ellipse is a circle with two
 /// [`CircularDimension`]s offset by 90° to each other.
-/// The [`Ellipse::first_axis`] orientation is indicated by [`Ellipse::orientation`]
-/// and the [`Ellipse::second_axis`] is oriented orthogonally to the first.
+/// The `Ellipse::first_axis` orientation is indicated by `Ellipse::orientation`
+/// and the `Ellipse::second_axis` is oriented orthogonally to the first.
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub struct Ellipse {
     first_axis: CircularDimension,

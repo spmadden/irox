@@ -7,7 +7,7 @@
 //! A [`Time`] is a specific time offset into a Day.  Intended for use where Hour:Minute:Seconds are
 //! needed.
 //!
-//! The following are variants of [`time::epoch::Timestamp`], with specific methods and sizes to
+//! The following are variants of [`epoch::Timestamp`], with specific methods and sizes to
 //! to represent the Duration against an [`Epoch`].  These follow the same binary format as the NTP
 //! Timestamp format, if used with the `NTP Epoch`.
 //! * A [`Time32`] is a Q16.16 `Timestamp` where Seconds and Fractional Seconds are `u16`'s
@@ -150,7 +150,7 @@ pub const SECONDS_IN_DAY: u32 = 86400;
 ///
 /// 32 Bit Fixed Precision Time Format, storing 16 bits of Seconds, and 16 bits
 /// of Fractional Seconds.  This is the equivalent of Q16.16, and is semantically
-/// equivalent to the NTP Short Format if using the NTP Epoch.
+/// equivalent to the NTP Short Format if using the [`epoch::NTP_EPOCH`].
 ///
 /// The 16-bit seconds field can resolve a little over 18 hours, and the
 /// 16-bit fractional seconds field can resolve a little over 15 microseconds.
@@ -187,7 +187,7 @@ impl Time32 {
 ///
 /// 64 Bit Fixed Precision Time Format, storing 32 bits of Seconds, and 32 bits
 /// of Fractional Seconds.  This is the equivalent of Q32.32, and is semantically
-/// equivalent to the NTP Timestamp Format if using the NTP Epoch.
+/// equivalent to the NTP Timestamp Format if using the [`epoch::NTP_EPOCH`].
 ///
 /// The 32-bit seconds field can resolve 136 years, and the 32-bit fractional field
 /// can resolve down to 232 picoseconds.
@@ -236,7 +236,7 @@ impl Time64 {
 ///
 /// 128 Bit Fixed Precision Time Format, storing 64 bits of Seconds, and 64 bits
 /// of Fractional Seconds.  This is the equivalent of Q64.64, and is semantically
-/// equivalent to the NTP Datestamp Format if using the [`NTP_EPOCH`].
+/// equivalent to the NTP Datestamp Format if using the [`epoch::NTP_EPOCH`].
 ///
 /// The 64-bit seconds field can resolve 584 million years, and the 64-bit
 /// fractional field can resolve down to 54 zepto-seconds (5.4e-20).

@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//! Implementations of [`DateFormat`] and [`DateFormatParser`] based on the ISO8601 specification
+//! Implementations of [`Format`] and [`FormatParser`] based on the ISO8601 specification
 //!
 
 use crate::time::datetime::UTCDateTime;
