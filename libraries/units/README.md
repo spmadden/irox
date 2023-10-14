@@ -1,6 +1,6 @@
 IROX-Units
 ============
-*The Units library that could*
+*The little Units Library that could*
 
 Module Structure:
 ------------------

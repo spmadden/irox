@@ -1,16 +1,28 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Bounding Boxes and Range Checks
+//!
+
 use std::fmt::{Debug, Display, Formatter};
 
+///
+/// Defines a basic four-corner bounding box
 pub struct Bounds<T> {
+    /// The upper left coordinate
     upper_left: T,
+    /// The upper right coordinate
     upper_right: T,
+    /// The lower left coordinate
     lower_left: T,
+    /// The lower right coordinate
     lower_right: T,
 }
 
 impl<T> Bounds<T> {
+    ///
+    /// Creates a new bounding box using the specified four corners
     pub const fn new(upper_left: T, upper_right: T, lower_left: T, lower_right: T) -> Bounds<T> {
         Bounds {
             upper_left,
@@ -65,6 +77,7 @@ where
     pub(crate) value: T,
 }
 impl<T: Debug + Display + Clone + PartialOrd> LessThanValue<T> {
+    #[must_use]
     pub const fn new(value: T) -> Self {
         Self { value }
     }
@@ -166,6 +179,16 @@ impl<T: Debug + Display + Clone + PartialOrd> std::error::Error
 {
 }
 
+impl<T: Debug + Display + Clone + PartialOrd> GreaterThanEqualToValueError<T> {
+    pub fn new(value: T, valid_range: LessThanValue<T>) -> Self {
+        Self { value, valid_range }
+    }
+
+    pub fn err<O>(value: T, valid_range: LessThanValue<T>) -> Result<O, Self> {
+        Err(Self::new(value, valid_range))
+    }
+}
+
 ///
 /// A [`Range`] implementation to verify a value is between two reference values
 #[derive(Debug, Clone)]
@@ -213,6 +236,9 @@ where
     pub(crate) upper_bound: GreaterThanValue<T>,
 }
 
+///
+/// An error type to indicate that the checked value is outside the specified
+/// value range
 #[derive(Debug, Clone)]
 pub struct OutsideRangeError<T>
 where
@@ -242,6 +268,8 @@ impl<T: Debug + Display + Clone + PartialOrd> Display for OutsideRangeError<T> {
 }
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for OutsideRangeError<T> {}
 
+///
+/// An error type to indicate that the value is inside the prohibited value range
 #[derive(Debug, Clone)]
 pub struct InsideRangeError<T>
 where
