@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`Duration`] and [`DurationUnit`], a Physical Quantity of amount of Time passed.
+//!
+
 use std::fmt::{Display, Formatter};
 
 use crate::units::{FromUnits, Unit};

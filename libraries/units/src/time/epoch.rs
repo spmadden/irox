@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains the concept of an [`Epoch`] - a specific Proleptic Gregorian [`Date`] from which a
+//! [`Timestamp`] is measured against.
+//!
+//! A [`Timestamp`] is a [`Duration`], a physical amount of time measured against an [`Epoch`]
+//!
+
 use std::marker::PhantomData;
 
 use crate::time::{gregorian::Date, Duration};

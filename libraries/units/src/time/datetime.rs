@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`UTCDateTime`] and associated elements to represent a [`Date`] and [`Time`] in UTC
+//!
+
 use crate::time::epoch::UnixTimestamp;
 use crate::time::gregorian::Date;
 use crate::time::Time;

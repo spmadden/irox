@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`JulianDate`] and others - ways of measuring a discrete amount of days from a specific
+//! Julian [`Epoch`]
+//!
+
 use std::marker::PhantomData;
 
 use crate::time::{

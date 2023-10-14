@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`Date`] and associated elements to represent a Proleptic Gregorian Date.
+//!
+
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 
 use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};

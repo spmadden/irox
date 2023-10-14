@@ -1,6 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains the various representations of [`Time`]
+//!
+//! A [`Time`] is a specific time offset into a Day.  Intended for use where Hour:Minute:Seconds are
+//! needed.
+//!
+//! The following are variants of [`time::epoch::Timestamp`], with specific methods and sizes to
+//! to represent the Duration against an [`Epoch`].  These follow the same binary format as the NTP
+//! Timestamp format, if used with the `NTP Epoch`.
+//! * A [`Time32`] is a Q16.16 `Timestamp` where Seconds and Fractional Seconds are `u16`'s
+//! * A [`Time64`] is a Q32.32 `Timestamp` where Seconds and Fractional Seconds are `u32`'s
+//! * A [`Time128`] is a Q64.64 `Timestamp` where Seconds and Fractional Seconds are `u64`'s
+//!
+
 use std::fmt::{Display, Formatter};
 
 use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
