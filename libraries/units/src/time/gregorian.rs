@@ -355,6 +355,13 @@ impl Date {
             day_of_year: self.day_of_year,
         }
     }
+
+    ///
+    /// Returns the [`UnixTimestamp`] of this Date
+    #[must_use]
+    pub fn as_unix_timestamp(&self) -> UnixTimestamp {
+        self.into()
+    }
 }
 
 ///
@@ -394,8 +401,8 @@ pub const fn seconds_in_year(year: i32) -> u32 {
     days_in_year(year) as u32 * SECONDS_IN_DAY
 }
 
-impl From<Date> for UnixTimestamp {
-    fn from(value: Date) -> Self {
+impl From<&Date> for UnixTimestamp {
+    fn from(value: &Date) -> Self {
         let years_duration = value.year - UNIX_EPOCH.0.year;
         if years_duration < 0 {
             return UnixTimestamp::default();

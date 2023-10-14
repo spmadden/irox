@@ -4,7 +4,7 @@
 use std::fmt::{Display, Formatter};
 
 use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
-use crate::time::duration::{Duration, DurationUnit, NANOS_TO_SEC};
+use crate::time::duration::{Duration, DurationUnit, NANOS_TO_SEC, SEC_TO_NANOS};
 use crate::time::epoch::Epoch;
 
 pub mod datetime;
@@ -16,19 +16,38 @@ pub mod julian;
 
 ///
 /// Represents a time of the day, an offset into the day from midnight.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Time {
     second_of_day: u32,
     nanoseconds: u32,
 }
 
 impl Time {
+    ///
+    /// Creates a Time from the specified seconds and nanoseconds,
+    ///
+    /// The valid range of 'second_of_day' is `0..86400`,
+    /// The valid range of 'nanoseconds' is `0..1_000_000_000`
     pub fn new(
         second_of_day: u32,
         nanoseconds: u32,
     ) -> Result<Time, GreaterThanEqualToValueError<u32>> {
-        LessThanValue::new(86401).check_value_is_valid(&second_of_day)?;
+        LessThanValue::new(86400).check_value_is_valid(&second_of_day)?;
         LessThanValue::new(1_000_000_000).check_value_is_valid(&nanoseconds)?;
+        Ok(Time {
+            second_of_day,
+            nanoseconds,
+        })
+    }
+
+    ///
+    /// Creates a Time from the specified fractional seconds, valid range `0..86400`
+    pub fn from_seconds_f64(seconds: f64) -> Result<Time, GreaterThanEqualToValueError<f64>> {
+        LessThanValue::new(86400_f64).check_value_is_valid(&seconds)?;
+
+        let second_of_day = seconds as u32;
+        let frac_nanos = seconds - second_of_day as f64;
+        let nanoseconds = (frac_nanos * SEC_TO_NANOS) as u32;
         Ok(Time {
             second_of_day,
             nanoseconds,
