@@ -1,12 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! `CircularAspect` enum and `CircularDimension` struct, describes a circle by
+//! radius or diameter with appropriate length units.
+//!
+
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 use std::ops::{Div, DivAssign, Mul, MulAssign};
 
 use crate::units::length::Length;
 
+///
+/// A way to describe a measurement of a Circle [`CircularAspect::Radius`] or
+/// [`CircularAspect::Diameter`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub enum CircularAspect {
     #[default]
@@ -14,6 +22,8 @@ pub enum CircularAspect {
     Diameter,
 }
 
+///
+/// A discrete measurement of a Circle with a [`CircularAspect`] and a [`Length`]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct CircularDimension {
     dimension_type: CircularAspect,
