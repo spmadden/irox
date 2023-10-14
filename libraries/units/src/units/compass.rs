@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Contains [`Compass`] and [`CompassReference`], ways of measuring physical angles on a Sphere or
+//! Ellipse.
+//!
+
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
 
@@ -75,35 +80,35 @@ impl FromUnits<Angle> for CompassReference {
 /// Represents a heading - the compass direction that the entity is pointing
 pub type Heading = Compass<HeadingType>;
 
-/// Type with no functions, used only as a compile-time type-check
+/// `HeadingType` is used as a compile-time check for [`Heading`] = [`Compass<HeadingType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct HeadingType;
 
 /// Represents a track - the compass direction that the entity is travelling
 pub type Track = Compass<TrackType>;
 
-/// Type with no functions, used only as a compile-time type-check
+/// `TrackType` is used as a compile-time check for [`Track`] = [`Compass<TrackType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct TrackType;
 
 /// Represents a bearing - the compass direction of your desired destination
 pub type Bearing = Compass<BearingType>;
 
-/// Type with no functions, used only as a compile-time type-check
+/// `BearingType` is used as a compile-time check for [`Bearing`] = [`Compass<BearingType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct BearingType;
 
 /// Represents a course - the compass direction of your desired track
 pub type Course = Compass<CourseType>;
 
-/// Type with no functions, used only as a compile-time type-check
+/// `CourseType` is used as a compile-time check for [`Course`] = [`Compass<CourseType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct CourseType;
 
 /// Represents a azimuth - the compass direction of a generic pointing angle
 pub type Azimuth = Compass<AzimuthType>;
 
-/// Type with no functions, used only as a compile-time type-check
+/// `AzimuthType` is used as a compile-time check for [`Azimuth`] = [`Compass<AzimuthType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub struct AzimuthType;
 
@@ -285,6 +290,9 @@ impl Compass<HeadingType> {
     }
 }
 
+///
+/// Represents a generic compass direction, any one of [`Heading`], [`Track`], [`Bearing`],
+/// [`Course`] or [`Azimuth`]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum CompassDirection {
     Heading(Heading),

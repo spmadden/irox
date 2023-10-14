@@ -145,13 +145,22 @@ impl Display for Angle {
     }
 }
 
+/// Degree to Radians factor
 pub const DEG_2_RAD: f64 = 0.017_453_292_519_943_295;
+/// Radians to Degrees factor
 pub const RAD_2_DEG: f64 = 57.295_779_513_082_32;
+/// Revolutions to Degrees factor
 pub const REV_2_DEG: f64 = 360.;
+/// Revolutions to Radians factor
 pub const REV_2_RAD: f64 = std::f64::consts::TAU;
+/// Minutes to Seconds factor
 pub const MIN_2_SEC: f64 = 60.;
+/// Mils to Revolutions factor
 pub const MIL_2_REV: f64 = 6400.;
+/// Degrees to Minutes factor
 pub const DEG_2_MIN: f64 = 60.;
+/// Degrees to Seconds factor
 pub const DEG_2_SEC: f64 = DEG_2_MIN * MIN_2_SEC;
+/// Degrees to Mils factor
 pub const DEG_2_MIL: f64 = MIL_2_REV / REV_2_DEG;
 pub const RAD_2_MIL: f64 = MIL_2_REV / REV_2_RAD;
