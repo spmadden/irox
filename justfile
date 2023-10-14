@@ -11,35 +11,32 @@ check_install prereq:
       cargo install {{prereq}}
     fi
 
-prereqs:
-    just check_install cargo-binstall
-
-deny: prereqs
+deny:
     just check_install cargo-deny
     cargo deny check
 
-build: prereqs
+build:
     cargo build
 
-test: prereqs
+test:
     cargo test
 
 format:
     cargo fmt
 
-format_check: prereqs
+format_check:
     cargo fmt --check
 
-lints +FLAGS='': prereqs
+lints +FLAGS='':
     xargs -aClippy.lints cargo clippy {{FLAGS}} --
 
 package:
     cargo package --allow-dirty
 
-about: prereqs
+about:
     just check_install cargo-about
     cargo about generate about.hbs > about.html
 
-upgrade: prereqs
+upgrade:
     just check_install cargo-edit
     cargo upgrade --dry-run --pinned -i
