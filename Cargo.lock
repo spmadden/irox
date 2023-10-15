@@ -2445,6 +2445,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "ipset-generator"
+version = "0.1.0"
+dependencies = [
+ "irox-csv",
+]
+
+[[package]]
 name = "irox"
 version = "0.5.0"
 dependencies = [
@@ -2655,6 +2662,13 @@ dependencies = [
  "miniz_oxide",
  "rusqlite",
  "xml",
+]
+
+[[package]]
+name = "irox-rir-exchange"
+version = "0.1.0"
+dependencies = [
+ "irox-enums",
 ]
 
 [[package]]
