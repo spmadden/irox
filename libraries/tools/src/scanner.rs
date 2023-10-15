@@ -266,7 +266,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         let mut num_read = 0;
-        for char in data.clone() {
+        for char in data {
             num_read += 1;
             for mem in &mut workingmem {
                 mem.push_back(*char);
