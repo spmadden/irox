@@ -9,8 +9,7 @@ authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
-readme.workspace = true
 repository.workspace = true
+readme = "README.md"
 
 [dependencies]
-irox-enums.workspace = true

@@ -21,6 +21,9 @@
 
 use std::error::Error;
 use std::fmt::{Display, Formatter};
+use std::num::ParseIntError;
+
+use irox_units::bounds::GreaterThanEqualToValueError;
 
 pub mod iso8601;
 pub mod rfc3339;
@@ -50,6 +53,8 @@ pub trait FormatParser {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum FormatErrorType {
     IOError,
+    IntegerFormatError,
+    OutOfRangeError,
     Other,
 }
 
@@ -91,6 +96,31 @@ impl From<std::io::Error> for FormatError {
     fn from(value: std::io::Error) -> Self {
         FormatError {
             error_type: FormatErrorType::IOError,
+            msg: value.to_string(),
+        }
+    }
+}
+impl From<ParseIntError> for FormatError {
+    fn from(value: ParseIntError) -> Self {
+        FormatError {
+            error_type: FormatErrorType::IntegerFormatError,
+            msg: value.to_string(),
+        }
+    }
+}
+impl From<GreaterThanEqualToValueError<u8>> for FormatError {
+    fn from(value: GreaterThanEqualToValueError<u8>) -> Self {
+        FormatError {
+            error_type: FormatErrorType::OutOfRangeError,
+            msg: value.to_string(),
+        }
+    }
+}
+
+impl From<GreaterThanEqualToValueError<u32>> for FormatError {
+    fn from(value: GreaterThanEqualToValueError<u32>) -> Self {
+        FormatError {
+            error_type: FormatErrorType::OutOfRangeError,
             msg: value.to_string(),
         }
     }

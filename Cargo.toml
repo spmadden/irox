@@ -28,6 +28,7 @@ members = [
     "libraries/units",
     "libraries/structs",
     "libraries/structs_derive",
+    "libraries/time",
     "libraries/tools",
     "libraries/types",
     "tools/halflifes",
@@ -77,6 +78,7 @@ irox-networking = {version = "^0", path = "libraries/network"}
 irox-stats = {version = "^0", path = "libraries/stats"}
 irox-structs = {version = "^0", path = "libraries/structs"}
 irox-structs_derive = {version = "^0", path = "libraries/structs_derive"}
+irox-time = {version = "^0", path = "libraries/time"}
 irox-tools = {version = "^0", path = "libraries/tools"}
 irox-types = {version = "^0", path = "libraries/types"}
 irox-units = {version = "^0", path = "libraries/units"}

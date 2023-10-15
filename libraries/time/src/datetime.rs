@@ -5,15 +5,15 @@
 //! Contains [`UTCDateTime`] and associated elements to represent a [`Date`] and [`Time`] in UTC
 //!
 
-use crate::time::epoch::UnixTimestamp;
-use crate::time::gregorian::Date;
-use crate::time::Time;
+use crate::epoch::UnixTimestamp;
+use crate::gregorian::Date;
+use crate::Time;
 
 ///
 /// Represents a Gregorian Date and Time in UTC
 pub struct UTCDateTime {
-    date: Date,
-    time: Time,
+    pub(crate) date: Date,
+    pub(crate) time: Time,
 }
 
 impl UTCDateTime {

@@ -6,10 +6,11 @@
 //!
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
+use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 
-use crate::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
-use crate::time::epoch::{UnixTimestamp, UNIX_EPOCH};
-use crate::time::SECONDS_IN_DAY;
+use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
+use crate::format::{Format, FormatError, FormatParser};
+use crate::SECONDS_IN_DAY;
 
 /// Days per 4 Year Window
 ///
@@ -246,7 +247,7 @@ impl Date {
         day: u8,
     ) -> Result<Date, GreaterThanEqualToValueError<u8>> {
         month.valid_day_number(year).check_value_is_valid(&day)?;
-        let day_of_year = month.start_day_of_year(year) + day as u16 - 1;
+        let day_of_year = (month.start_day_of_year(year) + day as u16) - 1;
         Ok(Date { year, day_of_year })
     }
 
@@ -365,6 +366,22 @@ impl Date {
     #[must_use]
     pub fn as_unix_timestamp(&self) -> UnixTimestamp {
         self.into()
+    }
+
+    ///
+    /// Formats this date using the specified formatter
+    #[must_use]
+    pub fn format<F: Format<Item = Self>>(&self, format: &F) -> String {
+        format.format(self)
+    }
+
+    ///
+    /// Attempts to parse a date from the string using the specified formatter
+    pub fn parse_from<F: FormatParser<Item = Self>>(
+        format: &F,
+        string: &str,
+    ) -> Result<Self, FormatError> {
+        format.try_from(string)
     }
 }
 
@@ -490,9 +507,10 @@ impl From<&UnixTimestamp> for Date {
 
 #[cfg(test)]
 mod tests {
-    use crate::bounds::GreaterThanEqualToValueError;
-    use crate::time::epoch::UnixTimestamp;
-    use crate::time::gregorian::{is_leap_year, Date, Month};
+    use irox_units::bounds::GreaterThanEqualToValueError;
+
+    use crate::epoch::UnixTimestamp;
+    use crate::gregorian::{is_leap_year, Date, Month};
 
     #[test]
     pub fn leap_year_test() {

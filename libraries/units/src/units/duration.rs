@@ -7,6 +7,7 @@
 
 use std::fmt::{Display, Formatter};
 
+use crate::basic_unit;
 use crate::units::{FromUnits, Unit};
 
 ///

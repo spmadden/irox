@@ -210,6 +210,7 @@ pub trait Unit<T> {
 pub mod angle;
 pub mod compass;
 pub mod datasize;
+pub mod duration;
 pub mod length;
 pub mod speed;
 pub mod temperature;

@@ -8,7 +8,7 @@
 
 use std::marker::PhantomData;
 
-use crate::time::{
+use crate::{
     epoch::{Epoch, UnixTimestamp, COMMON_ERA_EPOCH, GREGORIAN_EPOCH},
     gregorian::Date,
     SECONDS_IN_DAY,

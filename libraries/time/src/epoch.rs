@@ -10,7 +10,9 @@
 
 use std::marker::PhantomData;
 
-use crate::time::{gregorian::Date, Duration};
+use irox_units::units::duration::Duration;
+
+use crate::gregorian::Date;
 
 ///
 /// An `Epoch` serves as a reference point from which time is measured.
@@ -53,7 +55,7 @@ impl<T> Timestamp<T> {
 /// The Unix Epoch, 1970-01-01, 00:00:00
 pub const UNIX_EPOCH: Epoch = Epoch(Date {
     year: 1970,
-    day_of_year: 1,
+    day_of_year: 0,
 });
 
 ///
@@ -131,7 +133,7 @@ derive_timestamp_impl!(UNIX_EPOCH, UnixTimestamp);
 /// The GPS Epoch, 1980-01-06, 00:00:00
 pub const GPS_EPOCH: Epoch = Epoch(Date {
     year: 1980,
-    day_of_year: 6,
+    day_of_year: 5,
 });
 
 ///
@@ -145,7 +147,7 @@ derive_timestamp_impl!(GPS_EPOCH, GPSTimestamp);
 /// The Gregorian Epoch, 15-OCT-1582
 pub const GREGORIAN_EPOCH: Epoch = Epoch(Date {
     year: 1582,
-    day_of_year: 288,
+    day_of_year: 287,
 });
 
 ///
@@ -164,7 +166,7 @@ derive_timestamp_impl!(GREGORIAN_EPOCH, GregorianTimestamp);
 /// nicely.
 pub const WINDOWS_NT_EPOCH: Epoch = Epoch(Date {
     year: 1601,
-    day_of_year: 1,
+    day_of_year: 0,
 });
 
 ///
@@ -181,14 +183,14 @@ derive_timestamp_impl!(WINDOWS_NT_EPOCH, WindowsNTTimestamp);
 /// The Common Era Epoch, 01-JAN-0001 AD
 pub const COMMON_ERA_EPOCH: Epoch = Epoch(Date {
     year: 1,
-    day_of_year: 1,
+    day_of_year: 0,
 });
 
 ///
 /// The Prime Epoch, 01-JAN-1900
 pub const PRIME_EPOCH: Epoch = Epoch(Date {
     year: 1900,
-    day_of_year: 1,
+    day_of_year: 0,
 });
 ///
 /// The NTP epoch is the same as the [`PRIME_EPOCH`]
