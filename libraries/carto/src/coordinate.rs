@@ -122,7 +122,7 @@ impl EllipticalCoordinate {
     }
 
     ///
-    /// Constructs a new `EllipticalCoordinate` object assuming [`AngleUnits::Degrees`] and [`standards::WGS84_SHAPE`]
+    /// Constructs a new `EllipticalCoordinate` object assuming [`AngleUnits::Degrees`] and [`standards::wgs84::WGS84_SHAPE`]
     #[must_use]
     pub const fn new_degrees_wgs84(latitude: f64, longitude: f64) -> EllipticalCoordinate {
         Self::new(

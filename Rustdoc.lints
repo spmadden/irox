@@ -2,8 +2,6 @@
 --check
 -Drustdoc::broken_intra_doc_links
 -Drustdoc::private_intra_doc_links
--Wrustdoc::missing_docs
--Wrustdoc::missing_doc_code_examples
 -Wrustdoc::missing_crate_level_docs
 -Drustdoc::invalid_codeblock_attributes
 -Drustdoc::invalid_html_tags

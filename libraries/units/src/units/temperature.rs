@@ -11,7 +11,7 @@ use crate::units::{FromUnits, Unit};
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum TemperatureUnits {
-    /// Referenced `0` is Absolute Zero and counts up at the same rate as [`Celsius`].  0 Kelvin is
+    /// Referenced `0` is Absolute Zero and counts up at the same rate as [`TemperatureUnits::Celsius`].  0 Kelvin is
     /// -273.15 Celsius, -459.67 Fahrenheit, and 0 Rankine
     #[default]
     Kelvin,

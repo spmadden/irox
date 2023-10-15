@@ -6,7 +6,7 @@ use crate::{BasicTokenReader, CSVError, CSVErrorType, Dialect, Token, TokenReade
 ///
 /// Incredibly basic CSV reader.
 ///
-/// Has some equivalent functionality as String.split(","), except it handles quoted entries.
+/// Has some equivalent functionality as `String.split(",")`, except it handles quoted entries.
 pub struct CSVReader<T>
 where
     T: Read + Sized,
@@ -187,7 +187,7 @@ impl Row {
     ///
     /// Convert into a [`BTreeMap<String, String>`].
     ///
-    /// Unlike [`into_map`], this function will overwrite any previous keys with those found later in
+    /// Unlike [`Self::into_map`], this function will overwrite any previous keys with those found later in
     /// the row.
     #[must_use]
     pub fn into_map_lossy(self) -> BTreeMap<String, String> {

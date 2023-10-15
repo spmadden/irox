@@ -46,7 +46,7 @@ pub trait Itertools: Iterator {
     }
 
     ///
-    /// Same behavior as [`collect_exact`], except rather than returning 'None' after the end, it
+    /// Same behavior as [`Itertools::collect_exact`], except rather than returning 'None' after the end, it
     /// returns the specified value
     #[must_use]
     fn collect_exact_or(mut self, count: usize, def: Self::Item) -> Vec<Self::Item>
@@ -62,7 +62,7 @@ pub trait Itertools: Iterator {
     }
 
     ///
-    /// Same behavior as [`collect_exact`], except rather than returning 'None' after the end, it
+    /// Same behavior as [`Itertools::collect_exact`], except rather than returning 'None' after the end, it
     /// returns the default value
     #[must_use]
     fn collect_exact_or_default(mut self, count: usize) -> Vec<Self::Item>

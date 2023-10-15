@@ -13,17 +13,6 @@
 //!         diameter with appropriate length units.
 //!     * [`shapes::elliptical`] - `Ellipse` struct, describes an ellipse using two `CircularDimension` axes and an optional
 //!         `CompassDirection` orientation of the first axis
-//! * [`time`] - Date and Time structs and enums
-//!     * [`time`] - Contains the base `Time` struct, describing a standard `Hours/minutes/seconds` framework.
-//!     * [`time::datetime`] - Contains `UTCDateTime` and `LocalDateTime` structs, describing a [`time::gregorian::Date`] with
-//!         a [`time::Time`], and an optional [`time::duration::Duration`] offset from UTC
-//!     * [`time::duration`]- Contains `Duration`, describing a fixed amount of seconds / minutes / hours / milliseconds / etc
-//!     * [`time::epoch`] - Contains `Epoch`, `UnixEpoch`, `GPSEpoch`, and others, providing the datum anchor for timestamps
-//!         `UnixTimestamp`, `GPSTimestamp`, etc.
-//!     * [`time::gregorian`] - Contains `Date` and `Month`, that describe a gregorian calendar date.
-//!     * [`time::julian`] - Contains `JulianDate` and it's associated epochs.
-//!     * [`time::format`] - Contains `DateFormat` and `DateFormatParser` to tranlate dates to and from strings.
-//!       * [`time::format::iso8601`] - ISO8601 Implementations of `DateFormat` and `DateFormatParser`
 //! * [`units`] - Physical Quantities
 //!   * [`units::angle`] -  Angle Types, `Angle`, `AngleUnits` for `Degrees` and `Radians`
 //!   * [`units::compass`] - Compass Types, `Compass`, and the absolute types: `Heading`, `Track`, `Bearing`, `Course`,

@@ -385,7 +385,7 @@ impl Display for Fix {
     }
 }
 
-/// Represents a differential GPS station.  Valid range [0,1023]
+/// Represents a differential GPS station.  Valid range `[0,1023]`
 pub struct DGPSStationType(u16);
 
 /// A Track Segment holds a list of Track Points which are logically connected
