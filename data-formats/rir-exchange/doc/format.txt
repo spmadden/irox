@@ -1,0 +1,353 @@
+RIR Statistics Exchange Format
+
+This specification defines the file production cycle, naming and
+content for the RIR statistics files.
+
+The RIR statistics files summarize the current state of allocations
+and assignments of Internet number resources. They are intended to
+provide a snapshot of the status of Internet number resources,
+without any transactional or historical details.
+
+This format replaces the previous statistics exchange format, and
+differs from it in significant ways.
+
+The details of this format are to be considered a published RIR
+standard, on which other parties are expected to rely. RIRs must
+comply with this standard in every respect.
+
+
+1. Production Process
+
+    Each RIR periodically produces a text file of records as
+    described below, representing all of the allocations and
+    assignments which have been made by that RIR to that date.
+
+    This file is to be produced daily. The last time of any record
+    for the file is 23:59:59 in the local time zone of the producing
+    RIR.  (i.e. the last possible time on the specified calendar
+    day in that time zone)
+
+    An MD5 checksum is to be computed on the file, and published
+    under a matching name, with file extension .md5 appended.
+
+    A PGP or other cryptographically strong signature can also be
+    computed, and published under a matching name with suitable
+    extension.
+
+
+2. File naming and exchange
+
+    2.1 File name:
+
+    Each file is called delegated-<registry>-yyyymmdd
+
+    The <registry> value follows the internal record format and is
+    one of the specified strings from the set:
+
+     {apnic,arin,iana,lacnic,ripencc};
+
+    This set may be altered to add, remove or modify registries.
+
+    The yyyymmdd is the date, local not UCT, on which the file was
+    produced.
+
+    The file is marked delegated-<registry> to discriminate it from
+    any other <registry> files produced in another context. These
+    would be expected to be named in a different file-tree, but if
+    accidentally placed in the same directory would cause no data loss.
+
+    Data compression is optional. If compressed, the normal file
+    suffix is used to denote the compression algorithm. (.gz, .bz2, .zip etc)
+
+    The most recent file (named as follows) must be available in
+    a non-compressed form.
+
+    The most recent file will also be available under a name of
+    the form delegated-<registry>-latest. This can be a symbolic
+    or hard link to the delegated-<registry>-yyyymmdd file but must
+    be pointed at the most recent file when it is updated.
+
+    This is to permit automatic fetching of the current data via
+    a persistent URL, in systems jobs, or in browser bookmarks or
+    other stored form.
+
+    2.2 File exchange:
+
+    Each RIR will make its files available in a standard ftp
+    directory, defined as /stats/<registry>/*. Data will be lodged 
+    within 3 business days (locally for each RIR) of the date of 
+    the file, in the source RIR location. 
+
+    The RIR may mirror each others data.  If an RIR does mirror 
+    files from others RIRs, the standard path directory remains 
+    the same, i.e., /stats/<registry>/* where <registry> is the 
+    RIR being mirrored.
+
+    2.3 File availability:
+
+    Data will be available by FTP, and additionally by any other
+    access method the RIR chooses. This may include alternative
+    URLs, but these will reflect the common naming model. Data will
+    be publicly visible and will not require access control (world-
+    readable).
+
+    Examples:
+
+        http://www.apnic.net/stats/<registry>/delegated-<registry>-latest
+        rsync www.apnic.net::/stats/<registry>/delegated-<registry>-latest
+        ftp://ftp.apnic.net/pub/stats/<registry>/delegated-<registry>-latest
+
+    (The use of a standard prefix in a URL such as /pub/ in FTP
+    servers is not considered obligatory, and does not define the
+    URL for use in HTTP or other access methods. The defined URL
+    base is /stats/<registry>/ across all application-specific
+    access methods.)
+
+
+3. File format
+
+    The file consists of comments, file header lines, and records,
+    one record per line. Header and record lines are structured as
+    'comma separated fields' (CSV), with leading and trailing blank text
+    in fields not meaningful.
+
+    The vertical line character '|' (ASCII code 0x7c) is used as the
+    CSV field separator.
+
+    After the header lines, records are not sorted.
+
+    3.1 Comments:
+
+    Comments are denoted by # at the beginning of a line. No
+    line-embedded comments are permitted. Comments may occur at
+    any place in the file.
+
+    Example:
+
+         #optional comments.
+         #   any number of lines.
+
+         #another optional comment.
+
+    Blank lines are permitted, and may occur at any place in the file.
+
+    3.2 File header:
+
+    The file header consists of the version line and the summary
+    lines for each type of record. There must be only one version
+    line, which must be the first line of the header. There must
+    be at exactly one summary line for each type of record which
+    appears in the file.
+
+    3.2.1 The Version line:
+
+    Format:
+
+
+         version|registry|serial|records|startdate|enddate|UTCoffset
+
+    version    = format version number of this file, currently 2;
+    registry   = as for records and filename (see below);
+    serial     = serial number of this file (within the creating RIR series);
+    records    = number of records in file, excluding blank lines,
+                     summary lines, the version line and comments;
+    startdate  = start date of time period, in yyyymmdd format;
+    enddate    = end date of period, in yyyymmdd format;
+    UTCoffset  = offset from UTC of local RIR producing file, 
+                     in +/- HHMM format.
+
+    3.2.2 The Summary line:
+
+    The summary lines count the number of record lines of each type in the file.
+
+    Format:
+
+         registry|*|type|*|count|summary
+
+    registry   = as for records (see below);
+    *          = an ASCII '*' (unused field, retained for spreadsheet purposes);
+    type       = as for records (defined below);
+    count      = the number of record lines of this type in the file;
+    summary    = the ASCII string 'summary' (to distinguish the record line).
+
+
+    Note that the count does not equate to the total amount of
+    resources for each class of record. This is to be computed from
+    the records themselves.
+
+    3.3 Record format:
+
+    After the defined file header, and excluding any space or
+    comments, each line in the file represents a single allocation
+    (or assignment) of a specific range of Internet number resources
+    (IPv4, IPv6 or ASN), made by the RIR identified in the record.
+
+    In the case of IPv4 the records may represent non-CIDR ranges
+    or CIDR blocks, and therefore the record format represents a
+    beginning of range, and a count. This can be converted to
+    prefix/length using simple algorithms.
+
+    In the case of IPv6 the record format represents the prefix
+    and the count of /128 instances under that prefix.
+
+    Format:
+
+         registry|cc|type|start|value|date|status[|extensions...]
+
+    registry  = One value from the set of defined strings:
+
+                        {apnic,arin,iana,lacnic,ripencc};
+
+    cc        = ISO 2-letter country code of the organization to which the
+                allocation or assignment was made, and the enumerated
+                variances of
+
+                        {AP,EU,UK}
+
+                These values are not defined in ISO 3166 but are widely used.
+
+    type      = Type of Internet number resource represented in this record,
+                One value from the set of defined strings:
+
+                        {asn,ipv4,ipv6}
+
+    start     = In the case of records of type 'ipv4' or 'ipv6'
+                this is the IPv4 or IPv6 'first address' of the range.
+
+		In the case of an 16 bit AS number  the format is
+		the integer value in the range 0 to 65535, in the
+		case of a 32 bit ASN the value is in the range 0
+		to 4294967296. No distinction is drawn between 16
+		and 32 bit ASN values in the range 0 to 65535.
+
+    value     = In the case of IPv4 address the count of hosts for
+                this range. This count does not have to represent a
+                CIDR range.
+
+                In the case of an IPv6 address the value will be
+                the CIDR prefix length from the 'first address'
+                value of <start>.
+                In the case of records of type 'asn' the number is
+                the count of AS from this start value.
+
+    date      = Date on this allocation/assignment was made by the
+                RIR in the format YYYYMMDD;
+
+                Where the allocation or assignment has been
+                transferred from another registry, this date
+                represents the date of first assignment or allocation
+                as received in from the original RIR.
+
+                It is noted that where records do not show a date of
+                first assignment, this can take the 00000000 value.
+
+    status    = Type of allocation from the set:
+
+                        {allocated, assigned}
+
+                This is the allocation or assignment made by the
+                registry producing the file and not any sub-assignment
+                by other agencies. 
+
+   extensions = Any extra data on a line is undefined, but should conform
+                to use of the field separator used above.
+
+
+4. Validation/assumptions
+
+    Validation is assisted by the file headers, using the "records"
+    field.  Also by checking the file name against its contents,
+    and by use of the detached MD5 and/or other checksum files.
+
+    Within any one file. there should be no overlap of assigned
+    records by their base address and count or prefix length. During
+    the transfer of management of a resource from one RIR to another,
+    it is possible that there will be overlapping records when
+    comparing each file.
+
+    It is assumed that any one file only contains records with
+    registry field set to the value of the file-producing RIR.
+
+    Early Registration Transfers (ERX) do not have any special
+    tagging in this format. As resource management responsibility
+    moves between the RIR then resource records will move between
+    stats files. ERX records are expected to move from the old to
+    the new registry at the end of any defined transfer window.
+    This minimizes the risk of data overlap and avoids unnecessary
+    changes to data.
+
+
+5.  Non-Registry allocated and assigned data
+
+    Historical assignments which are not under regional Internet 
+    registry management will not be included in the RIR produced files.
+
+    An instance of the known state of these 'IANA' assignments will be
+    incorporated in the mirroring system if maintained by IANA.
+
+
+6.  Extensions to the format
+
+    Extensions to this format may be made by mutual agreement among 
+    the participating registries.
+
+
+7.  MD5 Hash File format
+
+    As previously indicated, an MD5 checksum is to be computed on the file 
+    and published under a matching name with the file extension .md5 appended. 
+    The format of the hash file will be a single line formatted as follows:
+
+        MD5 (<filename>) = <hash>
+
+    where <filename> is the name of the file to which the hash applies 
+    and <hash> is the calculated MD5 checksum.
+
+    E.g.,  
+
+        MD5 (delegated-apnic-20031119) = 64175f7e728732743b3acc28c00c2179
+
+8.  Cryptographic signing
+
+    As previously stipulated, a PGP or other cryptographically strong 
+    signature may also be computed and published under a matching 
+    name with suitable extension.
+
+    8.1 Recommended method 
+
+    The recommended method at this time is to sign the file using GPG 
+    and to publish the signature under a matching file name with the file 
+    extension .asc appended.  An example of a file signed in this manner
+    follows:
+
+        -----BEGIN PGP SIGNATURE-----
+        Version: GnuPG v1.0.6 (GNU/Linux)
+        Comment: For info see http://www.gnupg.org
+
+        iEYEABECAAYFAj+6U64ACgkQyzQvAdFSThS5ZQCfcbE3+7UnaBe2SNysWrq+xpVB
+        rZEAmwRdPkylmvhCNnt5th5jxHBmIngF
+        =kxyA
+        -----END PGP SIGNATURE-----
+
+    8.2 Publishing of public key
+
+    If the RIR chooses to cryptographically sign the statistics file, 
+    it is recommended that the public key needed to verify the signature 
+    be published or a link to the public key be created in the same 
+    directory location of the latest statistics and accompanying files. 
+
+    The name of the public key file (or link thereto) should follow the 
+    form delegated-<rir>-key where <rir> conforms to the values identified 
+    in section 2.1. This will prevent confusion in the event that an RIR 
+    uses distinct keys for signing different sets of published files.
+
+    ARIN has retired its old key to delegated-arin-key_20080908 and 
+    has replaced it with a new key in the delegated-arin-key file. 
+
+9.  Data retention
+
+    There is no obligation on any registry to retain previous files, once
+    a new file is produced and lodged for public access.
+
+
+

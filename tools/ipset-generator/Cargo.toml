@@ -1,0 +1,16 @@
+[package]
+name = "ipset-generator"
+description = "Tool to download and generate IPSets from ARIN/IANA/AFRINIC/APNIC/LACNIC/RIPENCC data"
+keywords = ["irox", "firewalld", "ipset", "asn", "network"]
+categories = ["command-line-utilities", "network-programming", "web-programming"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
+
+[dependencies]
+irox-csv.workspace = true

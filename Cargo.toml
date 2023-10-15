@@ -16,6 +16,7 @@ members = [
     "data-formats/gpx",
     "data-formats/nmea0183",
     "data-formats/raymarine-sonar",
+    "data-formats/rir-exchange",
     "data-formats/sirf",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
@@ -34,6 +35,7 @@ members = [
     "libraries/tools",
     "libraries/types",
     "tools/halflifes",
+    "tools/ipset-generator",
     "tools/gpsd"
 ]
 
@@ -66,6 +68,7 @@ irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
 irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
+irox-rir-exchange = {version = "^0", path = "data-formats/rir-exchange"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}

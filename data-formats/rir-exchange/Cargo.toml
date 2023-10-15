@@ -1,0 +1,16 @@
+[package]
+name = "irox-rir-exchange"
+description = "Library to download and parse ARIN/IANA/AFRINIC/APNIC/LACNIC/RIPENCC RIR Statistics data"
+keywords = ["irox", "rir", "encoder", "decoder"]
+categories = ["encoding", "parser-implementations", "network-programming", "web-programming"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+readme.workspace = true
+repository.workspace = true
+
+[dependencies]
+irox-enums.workspace = true
