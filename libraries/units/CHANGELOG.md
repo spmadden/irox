@@ -1,6 +1,117 @@
 
 
+
+## v0.3.0 (2023-10-16)
+
+### Documentation
+
+ - <csr-id-13ae74c7a318037939a4604a28a1cf33d87741a0/> update docs for rustdoc-lints
+ - <csr-id-3236d70d95e05cb49ec3acbb4dacc80931f6e6e9/> Update docs again
+ - <csr-id-faf539489ede2bc8613fbb389f932a2135b8d1db/> Update docs for epoch
+ - <csr-id-30093ef600b7bbdf85cd1e2034a0ca15f91c727a/> Update module docs for Time
+ - <csr-id-a0ef9bb353c0dd827f2fbcf1e2c53c61a4932d2c/> Update README and bounds docs
+ - <csr-id-3850cefdd85f261e2199638d51b17c6e989b406f/> Update docs for shapes
+
+### New Features
+
+ - <csr-id-d6787aa42ab64d56f63112aa625ab2c53ae67070/> complete Temperature
+ - <csr-id-45845793bbd64795044ec8f6b3d01c8a15d53773/> new UTCDateTime and conversions
+ - <csr-id-c57c0cc4aefd03e957b82f7a7a2a2602892f3c7c/> Beginnings of Date & Time Formatting, ISO8601 and RFC3339
+ - <csr-id-bb52e74b53cabae68ea09ddca7024120332a058f/> Add 'nanoseconds' to Time, more consts
+ - <csr-id-fc046be558fb4c1f0825f15451d9e9cf5e572c5d/> Duration new is const
+ - <csr-id-04979ee7e59954e4f3b6ec9706354e6544205fb7/> overhaul Gregorian
+ - <csr-id-6b77fa774a88fbdc7779cde2b3d827ab5a56c4ce/> Add Time32, Time64, and Time128 structs
+ - <csr-id-c0c14f148075424a7bc9f58853c2f0f12fa72dde/> Add the Prime and NTP Epochs
+ - <csr-id-30a9225df81b84eafc9bf8a247ae4819b5ce9a90/> Add Julian Dates
+ - <csr-id-4384de7c6e751b07bc7c4d476c10a0360b380123/> Add 'as_seconds_f64' to Timestamp
+ - <csr-id-84f097469992adc3ab663f4a79b0cd6f56b61511/> Add Common Era Epoch
+ - <csr-id-59d2f268c6df2680f19c5d461ee961928a1b745d/> Add readme to units
+ - <csr-id-d3738fe4a2acc37c943acf2ea6a3718ea2b26bea/> Add 'new_seconds' to Duration
+ - <csr-id-ad582e4fb0e713c2fdd1ad5eb183fe32033e884e/> Refactor Epochs to be like CompassHeading
+ - <csr-id-eeb442365518a980e28995b761a536f69947bcfb/> add Gregorian Date setup
+ - <csr-id-24bb6738ebbbc01df33dd7306c263db6dcd775c9/> add Epoch
+ - <csr-id-b6d9b07319142b2e632c548c28e7874d12557c00/> impl more conversions and Display for Duration
+ - <csr-id-b55264cf41eb38d06ff10c197fcc54e4b8e7b899/> new range checks in bounds.rs
+ - <csr-id-9fd5a87095e3645e82561f11d436611db55a637a/> new Duration struct and unit
+
+### Bug Fixes
+
+ - <csr-id-6d58744849e01f5b3d3c31d65a6a0d681678aff2/> Impl extraction and display for Time
+ - <csr-id-80d89db44dd7d8cea3affae4c1efde00f5837c34/> Impl PartialEq better for "equivalent units"
+ - <csr-id-a7c461de86da33b33f5d79b3354e367cf0cbc4a4/> fix basic_unit macro export
+ - <csr-id-806d3086ba751e7d2e12ebae98840ea548eaa583/> fix name for speed macro
+
+### Other
+
+ - <csr-id-90e274aabca747c30b3a32823940fec6225f0a07/> Update docs for angle and compass
+
+### New Features (BREAKING)
+
+ - <csr-id-9245b11a33fe56f75028ef5d2faa09efa4f40626/> break out time into own module
+ - <csr-id-3fc1e4a1d85efbec426bfe8d1291551857090ced/> Update datasize docs and enum
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 32 commits contributed to the release over the course of 5 calendar days.
+ - 27 days passed between releases.
+ - 32 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
+    - Break out time into own module ([`9245b11`](https://github.com/spmadden/irox/commit/9245b11a33fe56f75028ef5d2faa09efa4f40626))
+    - Complete Temperature ([`d6787aa`](https://github.com/spmadden/irox/commit/d6787aa42ab64d56f63112aa625ab2c53ae67070))
+    - Update docs for angle and compass ([`90e274a`](https://github.com/spmadden/irox/commit/90e274aabca747c30b3a32823940fec6225f0a07))
+    - Update datasize docs and enum ([`3fc1e4a`](https://github.com/spmadden/irox/commit/3fc1e4a1d85efbec426bfe8d1291551857090ced))
+    - Update docs again ([`3236d70`](https://github.com/spmadden/irox/commit/3236d70d95e05cb49ec3acbb4dacc80931f6e6e9))
+    - Update docs for epoch ([`faf5394`](https://github.com/spmadden/irox/commit/faf539489ede2bc8613fbb389f932a2135b8d1db))
+    - Update module docs for Time ([`30093ef`](https://github.com/spmadden/irox/commit/30093ef600b7bbdf85cd1e2034a0ca15f91c727a))
+    - Update README and bounds docs ([`a0ef9bb`](https://github.com/spmadden/irox/commit/a0ef9bb353c0dd827f2fbcf1e2c53c61a4932d2c))
+    - New UTCDateTime and conversions ([`4584579`](https://github.com/spmadden/irox/commit/45845793bbd64795044ec8f6b3d01c8a15d53773))
+    - Update docs for shapes ([`3850cef`](https://github.com/spmadden/irox/commit/3850cefdd85f261e2199638d51b17c6e989b406f))
+    - Beginnings of Date & Time Formatting, ISO8601 and RFC3339 ([`c57c0cc`](https://github.com/spmadden/irox/commit/c57c0cc4aefd03e957b82f7a7a2a2602892f3c7c))
+    - Add 'nanoseconds' to Time, more consts ([`bb52e74`](https://github.com/spmadden/irox/commit/bb52e74b53cabae68ea09ddca7024120332a058f))
+    - Duration new is const ([`fc046be`](https://github.com/spmadden/irox/commit/fc046be558fb4c1f0825f15451d9e9cf5e572c5d))
+    - Overhaul Gregorian ([`04979ee`](https://github.com/spmadden/irox/commit/04979ee7e59954e4f3b6ec9706354e6544205fb7))
+    - Add Time32, Time64, and Time128 structs ([`6b77fa7`](https://github.com/spmadden/irox/commit/6b77fa774a88fbdc7779cde2b3d827ab5a56c4ce))
+    - Add the Prime and NTP Epochs ([`c0c14f1`](https://github.com/spmadden/irox/commit/c0c14f148075424a7bc9f58853c2f0f12fa72dde))
+    - Add Julian Dates ([`30a9225`](https://github.com/spmadden/irox/commit/30a9225df81b84eafc9bf8a247ae4819b5ce9a90))
+    - Add 'as_seconds_f64' to Timestamp ([`4384de7`](https://github.com/spmadden/irox/commit/4384de7c6e751b07bc7c4d476c10a0360b380123))
+    - Add Common Era Epoch ([`84f0974`](https://github.com/spmadden/irox/commit/84f097469992adc3ab663f4a79b0cd6f56b61511))
+    - Add readme to units ([`59d2f26`](https://github.com/spmadden/irox/commit/59d2f268c6df2680f19c5d461ee961928a1b745d))
+    - Impl extraction and display for Time ([`6d58744`](https://github.com/spmadden/irox/commit/6d58744849e01f5b3d3c31d65a6a0d681678aff2))
+    - Impl PartialEq better for "equivalent units" ([`80d89db`](https://github.com/spmadden/irox/commit/80d89db44dd7d8cea3affae4c1efde00f5837c34))
+    - Add 'new_seconds' to Duration ([`d3738fe`](https://github.com/spmadden/irox/commit/d3738fe4a2acc37c943acf2ea6a3718ea2b26bea))
+    - Refactor Epochs to be like CompassHeading ([`ad582e4`](https://github.com/spmadden/irox/commit/ad582e4fb0e713c2fdd1ad5eb183fe32033e884e))
+    - Add Gregorian Date setup ([`eeb4423`](https://github.com/spmadden/irox/commit/eeb442365518a980e28995b761a536f69947bcfb))
+    - Add Epoch ([`24bb673`](https://github.com/spmadden/irox/commit/24bb6738ebbbc01df33dd7306c263db6dcd775c9))
+    - Impl more conversions and Display for Duration ([`b6d9b07`](https://github.com/spmadden/irox/commit/b6d9b07319142b2e632c548c28e7874d12557c00))
+    - New range checks in bounds.rs ([`b55264c`](https://github.com/spmadden/irox/commit/b55264cf41eb38d06ff10c197fcc54e4b8e7b899))
+    - Fix basic_unit macro export ([`a7c461d`](https://github.com/spmadden/irox/commit/a7c461de86da33b33f5d79b3354e367cf0cbc4a4))
+    - Fix name for speed macro ([`806d308`](https://github.com/spmadden/irox/commit/806d3086ba751e7d2e12ebae98840ea548eaa583))
+    - New Duration struct and unit ([`9fd5a87`](https://github.com/spmadden/irox/commit/9fd5a87095e3645e82561f11d436611db55a637a))
+</details>
+
 ## v0.2.0 (2023-09-18)
+
+<csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
+<csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
+<csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
+<csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
+<csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/>
+<csr-id-6c088bdcb392c82ec09a9cf4288318b6933a4c35/>
+<csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
+<csr-id-553cfcabf7e0a3066eeb646952f8271ac0887208/>
+<csr-id-a1829550c5c0acdac004160b8050d69b4afdb3bd/>
+<csr-id-05a5b43bfb2f907d36b17cf844a52ddc92c2dfde/>
 
 ### Chore
 
@@ -61,7 +172,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 40 commits contributed to the release over the course of 60 calendar days.
+ - 41 commits contributed to the release over the course of 62 calendar days.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -72,6 +183,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.0, irox-enums v0.2.0, irox-tools v0.2.0, irox-units v0.2.0, irox-carto v0.2.0, irox-csv v0.2.0, irox-egui-extras v0.2.0, irox-networking v0.2.0, irox-types v0.2.0, irox-influxdb_v1 v0.2.0, irox-structs_derive v0.2.0, irox-structs v0.2.0, irox-nmea0183 v0.1.0, irox-sirf v0.2.0, irox-stats v0.2.0, irox-winlocation-api v0.1.0, irox v0.2.0, safety bump 10 crates ([`6a72204`](https://github.com/spmadden/irox/commit/6a722046661ceef02a66c2067e2c5c15ce102e04))
     - Clean up code with additional lints ([`f03d8a3`](https://github.com/spmadden/irox/commit/f03d8a3ec997d53470bfdeb5e76b71925aac3f10))
     - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
     - Setting up blank changelogs for the modules ([`1a36533`](https://github.com/spmadden/irox/commit/1a365333397b02a5f911d0897c3bf0c80f6c2b80))
