@@ -36,6 +36,7 @@ Current Modules & Organization:
    * [`stats`](https://github.com/spmadden/irox/blob/master/libraries/stats) - Mathematics & Statistics tools
    * [`structs`](https://github.com/spmadden/irox/blob/master/libraries/structs) - Traits for Struct Types - linearly serialized big endian bytes
    * [`structs_derive`](https://github.com/spmadden/irox/blob/master/libraries/structs_derive) - Derivable impls of the traits in irox-structs
+   * [`time`](https://github.com/spmadden/irox/blob/master/libraries/time) - A date & time library that aims for ease of use based on the Proleptic Gregorian Calendar.
    * [`tools`](https://github.com/spmadden/irox/blob/master/libraries/tools) - Dumping ground for stuff that should have been in `std`
    * [`types`](https://github.com/spmadden/irox/blob/master/libraries/types) - Enums and structs to describe Rust's basic type system
    * [`units`](https://github.com/spmadden/irox/blob/master/libraries/units) - Physical Units, Quantities, & Reference Frames

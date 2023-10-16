@@ -31,6 +31,8 @@ pub use irox_stats;
 pub use irox_structs;
 #[cfg(feature = "structs_derive")]
 pub use irox_structs_derive;
+#[cfg(feature = "time")]
+pub use irox_time;
 #[cfg(feature = "tools")]
 pub use irox_tools;
 #[cfg(feature = "types")]

@@ -29,28 +29,30 @@ networking = ["irox-networking"]
 stats = ["irox-stats"]
 structs = ["irox-structs"]
 structs_derive = ["irox-structs_derive"]
+time = ["irox-time"]
 tools = ["irox-tools"]
 types = ["irox-types"]
 units = ["irox-units"]
 
 [dependencies]
-irox-csv = { workspace = true, optional = true}
-irox-gpx = { workspace = true, optional = true}
-irox-nmea0183 = { workspace = true, optional = true}
-irox-raymarine-sonar = { workspace = true, optional = true}
-irox-sirf = { workspace = true, optional = true}
+irox-csv = { version = "0.2.1", optional = true, path = "../data-formats/csv"}
+irox-gpx = { version = "0.1.0", optional = true, path = "../data-formats/gpx"}
+irox-nmea0183 = { version = "0.1.0", optional = true, path = "../data-formats/nmea0183"}
+irox-raymarine-sonar = { version = "0.1.0", optional = true, path = "../data-formats/raymarine-sonar"}
+irox-sirf = { version = "0.2.0", optional = true, path = "../data-formats/sirf"}
 
-irox-influxdb_v1 = { workspace = true, optional = true}
-irox-winlocation-api = {workspace = true, optional = true}
+irox-influxdb_v1 = { version = "0.2.0", optional = true, path = "../interfaces/influxdb_v1"}
+irox-winlocation-api = {version = "0.1.1", optional = true, path = "../interfaces/win-location-api"}
 
-irox-carto = { workspace = true, optional = true}
-irox-egui-extras = { workspace = true, optional = true}
-irox-enums = { workspace = true, optional = true}
-irox-enums_derive = { workspace = true, optional = true}
-irox-networking = { workspace = true, optional = true}
-irox-stats = { workspace = true, optional = true}
-irox-structs = { workspace = true, optional = true}
-irox-structs_derive = { workspace = true, optional = true}
-irox-tools = { workspace = true, optional = true}
-irox-types = { workspace = true, optional = true}
-irox-units = { workspace = true, optional = true}
+irox-carto = { version = "0.2.1", optional = true, path = "../libraries/carto"}
+irox-egui-extras = { version = "0.2.1", optional = true, path = "../libraries/egui_extras"}
+irox-enums = { version = "0.2.0", optional = true, path = "../libraries/enums"}
+irox-enums_derive = { version = "0.2.0", optional = true, path = "../libraries/enums_derive"}
+irox-networking = { version = "0.2.1", optional = true, path = "../libraries/network"}
+irox-stats = { version = "0.2.1", optional = true, path = "../libraries/stats"}
+irox-structs = { version = "0.2.0", optional = true, path = "../libraries/structs"}
+irox-structs_derive = { version = "0.2.1", optional = true, path = "../libraries/structs_derive"}
+irox-time = { version = "0.1.0", optional = true, path = "../libraries/time"}
+irox-tools = { version = "0.2.1", optional = true, path = "../libraries/tools"}
+irox-types = { version = "0.2.1", optional = true, path = "../libraries/types"}
+irox-units = { version = "0.2.0", optional = true, path = "../libraries/units"}
