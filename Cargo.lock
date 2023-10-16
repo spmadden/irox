@@ -1567,7 +1567,7 @@ dependencies = [
 
 [[package]]
 name = "irox"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "irox-carto",
  "irox-csv",
@@ -1592,7 +1592,7 @@ dependencies = [
 
 [[package]]
 name = "irox-carto"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "irox-enums",
  "irox-tools",
@@ -1658,7 +1658,7 @@ dependencies = [
 
 [[package]]
 name = "irox-gpx"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "irox-carto",
  "irox-tools",
@@ -1705,7 +1705,7 @@ dependencies = [
 
 [[package]]
 name = "irox-nmea0183"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "irox-carto",
  "irox-enums",
@@ -1718,7 +1718,7 @@ dependencies = [
 
 [[package]]
 name = "irox-raymarine-sonar"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "clap-verbosity-flag",
@@ -1789,11 +1789,11 @@ dependencies = [
 
 [[package]]
 name = "irox-units"
-version = "0.2.0"
+version = "0.3.0"
 
 [[package]]
 name = "irox-winlocation-api"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "futures",
  "irox-carto",
