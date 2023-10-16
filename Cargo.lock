@@ -1776,7 +1776,7 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.2.1"
+version = "0.2.2"
 
 [[package]]
 name = "irox-types"
