@@ -1,6 +1,36 @@
 
 
 
+## v0.3.0 (2023-10-16)
+
+### Documentation
+
+ - <csr-id-13ae74c7a318037939a4604a28a1cf33d87741a0/> update docs for rustdoc-lints
+
+### New Features
+
+ - <csr-id-8dc3f98d6b32d735c009468feb0ba32dc367d49a/> bump versions for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 7 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
+    - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
+</details>
+
 ## v0.2.1 (2023-10-08)
 
 ### New Features
@@ -19,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 19 calendar days.
+ - 7 commits contributed to the release over the course of 19 calendar days.
  - 19 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - Add mercator math doc ([`0ca32de`](https://github.com/spmadden/irox/commit/0ca32de4b606ac9b325a9557429526ff8835a8f2))
     - Impl Display for DOP ([`003f757`](https://github.com/spmadden/irox/commit/003f7570bda275fcd4c694a4de43e078486ea695))
     - CartesianCoordinate has altitude, time, and uncertainty ([`2029fee`](https://github.com/spmadden/irox/commit/2029fee39b392285b8d469456c9a3fc3bb6ac972))

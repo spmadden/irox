@@ -3,6 +3,8 @@
 
 ## v0.3.0 (2023-10-16)
 
+<csr-id-90e274aabca747c30b3a32823940fec6225f0a07/>
+
 ### Documentation
 
  - <csr-id-13ae74c7a318037939a4604a28a1cf33d87741a0/> update docs for rustdoc-lints
@@ -33,6 +35,7 @@
  - <csr-id-b6d9b07319142b2e632c548c28e7874d12557c00/> impl more conversions and Display for Duration
  - <csr-id-b55264cf41eb38d06ff10c197fcc54e4b8e7b899/> new range checks in bounds.rs
  - <csr-id-9fd5a87095e3645e82561f11d436611db55a637a/> new Duration struct and unit
+ - <csr-id-8dc3f98d6b32d735c009468feb0ba32dc367d49a/> bump versions for release
 
 ### Bug Fixes
 
@@ -54,9 +57,9 @@
 
 <csr-read-only-do-not-edit/>
 
- - 32 commits contributed to the release over the course of 5 calendar days.
+ - 33 commits contributed to the release over the course of 5 calendar days.
  - 27 days passed between releases.
- - 32 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -66,6 +69,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
     - Break out time into own module ([`9245b11`](https://github.com/spmadden/irox/commit/9245b11a33fe56f75028ef5d2faa09efa4f40626))
     - Complete Temperature ([`d6787aa`](https://github.com/spmadden/irox/commit/d6787aa42ab64d56f63112aa625ab2c53ae67070))

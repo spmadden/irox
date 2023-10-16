@@ -1,6 +1,34 @@
 
 
 
+## v0.3.0 (2023-10-16)
+
+### New Features
+
+ - <csr-id-8dc3f98d6b32d735c009468feb0ba32dc367d49a/> bump versions for release
+ - <csr-id-6954cd342702f75b4485a03f30b494c478889108/> update top level modules for time
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 7 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
+    - Release irox-tools v0.2.2 ([`f49db4f`](https://github.com/spmadden/irox/commit/f49db4fc702003b0e464b0dbcc65cdcf0c629935))
+    - Update top level modules for time ([`6954cd3`](https://github.com/spmadden/irox/commit/6954cd342702f75b4485a03f30b494c478889108))
+</details>
+
 ## v0.2.1 (2023-10-08)
 
 <csr-id-3300f2ad844907609b1fc6cdaa5b632ae28cde95/>
@@ -19,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 6 calendar days.
+ - 6 commits contributed to the release over the course of 6 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.2.1, irox v0.2.1 ([`5303955`](https://github.com/spmadden/irox/commit/5303955be8ac39766f2ba2ff3bde32e7d031a7f4))
     - Release irox v0.2.1 ([`08857ab`](https://github.com/spmadden/irox/commit/08857abce22d969539d22126d0f569ba0c39b4a1))
     - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - New GPX reader/writer module ([`b378b9d`](https://github.com/spmadden/irox/commit/b378b9da294474e73936e4e52bba9ae103fc1590))

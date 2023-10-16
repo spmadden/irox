@@ -1,7 +1,61 @@
 
 
 
+## v0.3.0 (2023-10-16)
+
+### Documentation
+
+ - <csr-id-13ae74c7a318037939a4604a28a1cf33d87741a0/> update docs for rustdoc-lints
+
+### New Features
+
+ - <csr-id-7090af7410fa95c6a4f09d4f6e99826a7eef8ec4/> add dialect option to reader
+ - <csr-id-51050d666b2d523776eab99531e6b85d5a7e1596/> Moved reader and writer into separate modules
+ - <csr-id-7c509d006010ac421429b08b3cfb51afbfa1f0c4/> Created Dialects and Tokenizers
+
+### New Features (BREAKING)
+
+ - <csr-id-2e4a584642a34fe7dee9b477b4fc0a86fe62bfe4/> Add the ability to have comment lines
+ - <csr-id-6b24c66b7208048fa6ef8c951a0e1a3dbc23c98f/> rework writer to use dialects, remove builder
+ - <csr-id-8d8140c7164638c859e88229fe42a9b2ba0b5d41/> rework dialects
+ - <csr-id-a2bed65772914f4981d0c7dc060bfd3bb5e15b57/> Upgraded to use new, more powerful scanner.
+   This will open the way to new CSV dialects.
+
+### Bug Fixes (BREAKING)
+
+ - <csr-id-28e07a41df63f6d5551db7b0135aface45d91fa4/> actually compliant with RFC4180, CRLF instead of LF for line endings
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 10 commits contributed to the release over the course of 7 calendar days.
+ - 27 days passed between releases.
+ - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.2.2 ([`f49db4f`](https://github.com/spmadden/irox/commit/f49db4fc702003b0e464b0dbcc65cdcf0c629935))
+    - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
+    - Add the ability to have comment lines ([`2e4a584`](https://github.com/spmadden/irox/commit/2e4a584642a34fe7dee9b477b4fc0a86fe62bfe4))
+    - Actually compliant with RFC4180, CRLF instead of LF for line endings ([`28e07a4`](https://github.com/spmadden/irox/commit/28e07a41df63f6d5551db7b0135aface45d91fa4))
+    - Add dialect option to reader ([`7090af7`](https://github.com/spmadden/irox/commit/7090af7410fa95c6a4f09d4f6e99826a7eef8ec4))
+    - Rework writer to use dialects, remove builder ([`6b24c66`](https://github.com/spmadden/irox/commit/6b24c66b7208048fa6ef8c951a0e1a3dbc23c98f))
+    - Rework dialects ([`8d8140c`](https://github.com/spmadden/irox/commit/8d8140c7164638c859e88229fe42a9b2ba0b5d41))
+    - Upgraded to use new, more powerful scanner. ([`a2bed65`](https://github.com/spmadden/irox/commit/a2bed65772914f4981d0c7dc060bfd3bb5e15b57))
+    - Moved reader and writer into separate modules ([`51050d6`](https://github.com/spmadden/irox/commit/51050d666b2d523776eab99531e6b85d5a7e1596))
+    - Created Dialects and Tokenizers ([`7c509d0`](https://github.com/spmadden/irox/commit/7c509d006010ac421429b08b3cfb51afbfa1f0c4))
+</details>
+
 ## v0.2.1 (2023-09-18)
+
+<csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/>
 
 ### Chore
 
@@ -11,7 +65,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +76,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-csv v0.2.1 ([`c6d09fa`](https://github.com/spmadden/irox/commit/c6d09fa4965c8f6fa3d78bd7c1231e7982118b8c))
     - Fix up the readmes for publishing ([`f99614a`](https://github.com/spmadden/irox/commit/f99614a5ce3368072b4d44dacede0e6e847b0b2e))
 </details>
 

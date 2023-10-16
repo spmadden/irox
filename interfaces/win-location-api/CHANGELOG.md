@@ -1,6 +1,31 @@
 
 
 
+## v0.2.0 (2023-10-16)
+
+### New Features
+
+ - <csr-id-8dc3f98d6b32d735c009468feb0ba32dc367d49a/> bump versions for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 7 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
+</details>
+
 ## v0.1.1 (2023-10-08)
 
 ### New Features
@@ -22,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 19 calendar days.
+ - 10 commits contributed to the release over the course of 19 calendar days.
  - 19 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -34,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - Switching to manual convert of nanos in timestamp ([`c368a7f`](https://github.com/spmadden/irox/commit/c368a7f0d50cbf852b3068d6be18de02ae5cc2b8))
     - Using micros instead of nanos for wintime ([`db5ef9a`](https://github.com/spmadden/irox/commit/db5ef9abe171c2d02ad8d6066687097daf1a37a3))
     - And yet another fix for the timestamp ([`099c216`](https://github.com/spmadden/irox/commit/099c216acb827aae3d7f31483b14c2a707f7186a))
