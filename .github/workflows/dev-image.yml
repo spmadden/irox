@@ -6,6 +6,7 @@ on:
     paths:
       - 'dev/Dockerfile'
       - 'dev/prep-environment.sh'
+      - '.github/workflows/dev-image.yml'
   workflow_dispatch:
 
 env:
