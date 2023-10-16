@@ -61,24 +61,24 @@ serial = {version = "=0.4.0", features = []}
 human-panic = {version = "=1.2.1", features = []}
 proc-macro2 = {version = "=1.0.69", features = []}
 
-irox-csv = {path = "data-formats/csv"}
-irox-gpx = {path = "data-formats/gpx"}
-irox-nmea0183 = {path = "data-formats/nmea0183"}
-irox-raymarine-sonar = {path = "data-formats/raymarine-sonar"}
-irox-sirf = {path = "data-formats/sirf"}
+irox-csv = {version = "^0", path = "data-formats/csv"}
+irox-gpx = {version = "^0", path = "data-formats/gpx"}
+irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
+irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
+irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
-irox-influxdb_v1 = {path = "interfaces/influxdb_v1"}
-irox-winlocation-api = {path = "interfaces/win-location-api"}
+irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
+irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}
 
-irox-carto = {path = "libraries/carto"}
-irox-egui-extras = {path = "libraries/egui_extras"}
-irox-enums = {path = "libraries/enums"}
-irox-enums_derive = {path = "libraries/enums_derive"}
-irox-networking = {path = "libraries/network"}
-irox-stats = {path = "libraries/stats"}
-irox-structs = {path = "libraries/structs"}
-irox-structs_derive = {path = "libraries/structs_derive"}
-irox-time = {path = "libraries/time"}
-irox-tools = {path = "libraries/tools"}
-irox-types = {path = "libraries/types"}
-irox-units = {path = "libraries/units"}
+irox-carto = {version = "^0", path = "libraries/carto"}
+irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
+irox-enums = {version = "^0", path = "libraries/enums"}
+irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
+irox-networking = {version = "^0", path = "libraries/network"}
+irox-stats = {version = "^0", path = "libraries/stats"}
+irox-structs = {version = "^0", path = "libraries/structs"}
+irox-structs_derive = {version = "^0", path = "libraries/structs_derive"}
+irox-time = {version = "^0", path = "libraries/time"}
+irox-tools = {version = "^0", path = "libraries/tools"}
+irox-types = {version = "^0", path = "libraries/types"}
+irox-units = {version = "^0", path = "libraries/units"}
