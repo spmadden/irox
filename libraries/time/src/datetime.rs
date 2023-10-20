@@ -6,14 +6,24 @@
 //!
 
 use crate::epoch::UnixTimestamp;
+use crate::format::iso8601::BASIC_DATE_TIME_OF_DAY;
+use crate::format::Format;
 use crate::gregorian::Date;
 use crate::Time;
+use std::fmt::{Display, Formatter};
 
 ///
 /// Represents a Gregorian Date and Time in UTC
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct UTCDateTime {
     pub(crate) date: Date,
     pub(crate) time: Time,
+}
+
+impl Display for UTCDateTime {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.format(&BASIC_DATE_TIME_OF_DAY)))
+    }
 }
 
 impl UTCDateTime {
@@ -44,6 +54,11 @@ impl UTCDateTime {
     #[must_use]
     pub fn now() -> UTCDateTime {
         UnixTimestamp::now().into()
+    }
+
+    #[must_use]
+    pub fn format<T: Format<Item = UTCDateTime>>(&self, format: &T) -> String {
+        format.format(self)
     }
 }
 
