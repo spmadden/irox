@@ -188,6 +188,35 @@ impl<T: Debug + Display + Clone + PartialOrd> GreaterThanEqualToValueError<T> {
         Err(Self::new(value, valid_range))
     }
 }
+macro_rules! upconvert_error_type {
+    ($lower:tt,$upper:tt,$error:tt) => {
+        impl From<$error<$lower>> for $error<$upper> {
+            fn from(value: $error<$lower>) -> Self {
+                $error {
+                    value: value.value as $upper,
+                    valid_range: LessThanValue {
+                        value: value.valid_range.value as $upper,
+                    },
+                }
+            }
+        }
+    };
+}
+upconvert_error_type!(u8, u16, GreaterThanEqualToValueError);
+upconvert_error_type!(u8, u32, GreaterThanEqualToValueError);
+upconvert_error_type!(u8, u64, GreaterThanEqualToValueError);
+upconvert_error_type!(u8, u128, GreaterThanEqualToValueError);
+upconvert_error_type!(u8, f32, GreaterThanEqualToValueError);
+upconvert_error_type!(u8, f64, GreaterThanEqualToValueError);
+upconvert_error_type!(u16, u32, GreaterThanEqualToValueError);
+upconvert_error_type!(u16, u64, GreaterThanEqualToValueError);
+upconvert_error_type!(u16, u128, GreaterThanEqualToValueError);
+upconvert_error_type!(u16, f32, GreaterThanEqualToValueError);
+upconvert_error_type!(u16, f64, GreaterThanEqualToValueError);
+upconvert_error_type!(u32, u64, GreaterThanEqualToValueError);
+upconvert_error_type!(u32, u128, GreaterThanEqualToValueError);
+upconvert_error_type!(u32, f32, GreaterThanEqualToValueError);
+upconvert_error_type!(u32, f64, GreaterThanEqualToValueError);
 
 ///
 /// A [`Range`] implementation to verify a value is between two reference values
