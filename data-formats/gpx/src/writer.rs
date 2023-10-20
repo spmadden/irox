@@ -4,14 +4,12 @@
 use std::borrow::Cow;
 use std::clone::Clone;
 use std::io::Write;
-use std::time::SystemTime;
 
-use time::OffsetDateTime;
 use xml::common::XmlVersion;
 use xml::writer::XmlEvent;
 use xml::{EmitterConfig, EventWriter};
 
-use irox_tools::options::MaybeMap;
+use irox_time::format::iso8601::BASIC_DATE_TIME_OF_DAY;
 
 use crate::error::Error;
 use crate::{Track, Waypoint, GPX};
@@ -105,13 +103,9 @@ impl GPXWriter {
         maybe_write_val!(
             writer,
             "time",
-            &wpt.time.as_ref().maybe_map(|v| {
-                SystemTime::UNIX_EPOCH.checked_add(*v).maybe_map(|v| {
-                    let odt: OffsetDateTime = v.into();
-                    odt.format(&time::format_description::well_known::Rfc3339)
-                        .ok()
-                })
-            })
+            &wpt.time
+                .as_ref()
+                .map(|v| { v.format(&BASIC_DATE_TIME_OF_DAY) })
         );
 
         maybe_write_val!(
@@ -137,7 +131,7 @@ impl GPXWriter {
             "ageofdgpsdata",
             &wpt.ageofdgpsdata
                 .as_ref()
-                .map(std::time::Duration::as_secs_f64)
+                .map(irox_units::units::duration::Duration::as_seconds_f64)
         );
         maybe_write_val!(writer, "dgpsid", &wpt.dgpsid.as_ref().map(|v| v.0));
         // TODO: extensions

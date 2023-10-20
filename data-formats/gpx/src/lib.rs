@@ -4,12 +4,14 @@
 #![forbid(unsafe_code)]
 
 use std::fmt::{Display, Formatter};
-use std::time::Duration;
 
 use irox_carto::altitude::Altitude;
 use irox_carto::coordinate::{EllipticalCoordinate, Latitude, Longitude};
 use irox_carto::gps::DilutionOfPrecision;
+use irox_time::datetime::UTCDateTime;
+use irox_time::epoch::UnixTimestamp;
 use irox_units::units::angle::Angle;
+use irox_units::units::duration::Duration;
 pub use writer::*;
 
 pub mod error;
@@ -89,7 +91,7 @@ pub struct Metadata {
     pub link: Vec<Link>,
 
     /// The creation date of the file.
-    pub time: Option<Duration>,
+    pub time: Option<UnixTimestamp>,
 
     /// Keywords associated with the file.  Search engines or databases can use
     /// this information to classify the data.
@@ -114,7 +116,7 @@ pub struct Waypoint {
     /// Univeral Coordinated Time (UTC), not local time! Conforms to ISO 8601
     /// specification for date/time representation. Fractional seconds are
     /// allowed for millisecond timing in tracklogs.
-    pub time: Option<Duration>,
+    pub time: Option<UTCDateTime>,
 
     /// Magnetic variation (in degrees) at the point
     pub magvar: Option<Angle>,
