@@ -1595,6 +1595,7 @@ name = "irox-carto"
 version = "0.3.0"
 dependencies = [
  "irox-enums",
+ "irox-time",
  "irox-tools",
  "irox-units",
  "log",
@@ -1645,6 +1646,7 @@ dependencies = [
  "irox-networking",
  "irox-nmea0183",
  "irox-sirf",
+ "irox-time",
  "irox-tools",
  "irox-units",
  "irox-winlocation-api",
@@ -1653,7 +1655,6 @@ dependencies = [
  "serde_json",
  "serial",
  "signal-hook",
- "time",
 ]
 
 [[package]]
@@ -1661,10 +1662,10 @@ name = "irox-gpx"
 version = "0.2.0"
 dependencies = [
  "irox-carto",
+ "irox-time",
  "irox-tools",
  "irox-units",
  "log",
- "time",
  "xml",
 ]
 
@@ -1710,10 +1711,10 @@ dependencies = [
  "irox-carto",
  "irox-enums",
  "irox-structs",
+ "irox-time",
  "irox-tools",
  "irox-units",
  "log",
- "time",
 ]
 
 [[package]]
@@ -1725,6 +1726,7 @@ dependencies = [
  "env_logger",
  "irox-carto",
  "irox-gpx",
+ "irox-time",
  "irox-tools",
  "irox-types",
  "irox-units",
@@ -1797,9 +1799,9 @@ version = "0.2.0"
 dependencies = [
  "futures",
  "irox-carto",
+ "irox-time",
  "irox-units",
  "log",
- "time",
  "windows 0.51.1",
 ]
 

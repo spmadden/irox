@@ -42,7 +42,6 @@ egui_plot = { version = "=0.23.0", features = [] }
 ron = { version = "=0.8.1", features = ["integer128"] }
 serde = { version = "=1.0.188", features = ["derive"] }
 serde_json = {version = "=1.0.107", features = []}
-time = {version = "=0.3.29", features = ["formatting", "macros"]}
 ureq = {version = "=2.8.0", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "=2.4.1", features = []}
 clap = {version = "=4.4.6", features = ["derive", "wrap_help", "string", "cargo", "env"]}
