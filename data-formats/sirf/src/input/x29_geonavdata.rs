@@ -46,7 +46,7 @@ pub struct GeodeticNavigationData {
     pub utc_day: u8,
     pub utc_hour: u8,
     pub utc_minute: u8,
-    pub utc_second: u16,
+    pub utc_millisecond: u16,
 
     pub satellite_id_list: u32,
 
