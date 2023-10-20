@@ -5,11 +5,16 @@
 //! Contains [`Date`] and associated elements to represent a Proleptic Gregorian Date.
 //!
 
+use std::fmt::{Display, Formatter};
+use std::ops::{Add, Sub};
+
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
+use irox_units::units::duration::{Duration, DurationUnit};
 
 use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
 use crate::format::{Format, FormatError, FormatParser};
+use crate::julian::{JulianDate, JulianDayNumber, JULIAN_EPOCH};
 use crate::SECONDS_IN_DAY;
 
 /// Days per 4 Year Window
@@ -47,7 +52,11 @@ pub enum Month {
     November = 11,
     December = 12,
 }
-
+impl Display for Month {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.name()))
+    }
+}
 impl Month {
     ///
     /// Returns the total number of days in the month for the indicated gregorian
@@ -199,7 +208,7 @@ impl TryFrom<u8> for Month {
 
 ///
 /// Gregorian Date - a specific date on a calendar.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Date {
     ///
     /// Year is the Proleptic Gregorian Year
@@ -297,13 +306,13 @@ impl Date {
 
     /// Adds the specified number of days to this date.
     #[must_use]
-    pub fn add_days(&self, days: u16) -> Date {
+    pub fn add_days(&self, days: u32) -> Date {
         let mut days_remaining = days;
         let mut years = self.year;
-        let mut days = self.day_of_year;
+        let mut days = self.day_of_year as u32;
 
         loop {
-            let days_in_year = days_in_year(years);
+            let days_in_year = days_in_year(years) as u32;
             if days + days_remaining >= days_in_year {
                 years += 1;
                 days_remaining -= days_in_year - days;
@@ -315,7 +324,7 @@ impl Date {
         }
         Date {
             year: years,
-            day_of_year: days,
+            day_of_year: days as u16,
         }
     }
 
@@ -365,6 +374,13 @@ impl Date {
     /// Returns the [`UnixTimestamp`] of this Date
     #[must_use]
     pub fn as_unix_timestamp(&self) -> UnixTimestamp {
+        self.into()
+    }
+
+    ///
+    /// Returns the [`JulianDate`] of this date
+    #[must_use]
+    pub fn as_julian_day(&self) -> JulianDate {
         self.into()
     }
 
@@ -505,11 +521,78 @@ impl From<&UnixTimestamp> for Date {
     }
 }
 
+const JULIAN_DAY_1_JAN_YR0: f64 = 1721059.5;
+impl From<&Date> for JulianDate {
+    fn from(value: &Date) -> Self {
+        let mut years = value.year - 1;
+        let qc_years = years / 400;
+        years -= qc_years * 400;
+        let c_years = years / 100;
+        years -= c_years * 100;
+        let q_years = years / 4 + 1;
+        let leap_days = qc_years * 97 + c_years * 24 + q_years;
+
+        let duration_days = value.year * 365 + leap_days + value.day_of_year as i32;
+
+        let duration_days = duration_days as f64 + JULIAN_DAY_1_JAN_YR0;
+        JulianDayNumber::new(JULIAN_EPOCH, duration_days)
+    }
+}
+
+impl From<&JulianDate> for Date {
+    fn from(value: &JulianDate) -> Self {
+        value.get_epoch().0 + Duration::new(value.get_day_number(), DurationUnit::Day)
+    }
+}
+
+impl Sub<&Date> for Date {
+    type Output = Duration;
+
+    fn sub(self, rhs: &Date) -> Self::Output {
+        let duration = self.as_julian_day().get_day_number() - rhs.as_julian_day().get_day_number();
+        Duration::new(duration, DurationUnit::Day)
+    }
+}
+impl Sub<Date> for Date {
+    type Output = Duration;
+
+    fn sub(self, rhs: Date) -> Self::Output {
+        let duration = self.as_julian_day().get_day_number() - rhs.as_julian_day().get_day_number();
+        Duration::new(duration, DurationUnit::Day)
+    }
+}
+
+impl Add<&mut Duration> for Date {
+    type Output = Date;
+
+    fn add(self, rhs: &mut Duration) -> Self::Output {
+        let days = rhs.as_days();
+        self.add_days(days as u32)
+    }
+}
+impl Add<&Duration> for Date {
+    type Output = Date;
+
+    fn add(self, rhs: &Duration) -> Self::Output {
+        let days = rhs.as_days();
+        self.add_days(days as u32)
+    }
+}
+impl Add<Duration> for Date {
+    type Output = Date;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        let days = rhs.as_days();
+        self.add_days(days as u32)
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use irox_enums::EnumIterItem;
     use irox_units::bounds::GreaterThanEqualToValueError;
 
-    use crate::epoch::UnixTimestamp;
+    use crate::epoch::{UnixTimestamp, GPS_EPOCH, PRIME_EPOCH, UNIX_EPOCH};
     use crate::gregorian::{is_leap_year, Date, Month};
 
     #[test]
@@ -551,6 +634,153 @@ mod tests {
             UnixTimestamp::from_seconds(1095379200).as_date(),
             Date::try_from(2004, Month::September, 17).unwrap()
         );
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_date_subtract() {
+        assert_eq!(
+            3657.0,
+            (GPS_EPOCH.get_gregorian_date() - UNIX_EPOCH.get_gregorian_date()).value()
+        );
+        assert_eq!(
+            0.0,
+            (GPS_EPOCH.get_gregorian_date() - GPS_EPOCH.get_gregorian_date()).value()
+        );
+        assert_eq!(
+            -3657.0,
+            (UNIX_EPOCH.get_gregorian_date() - GPS_EPOCH.get_gregorian_date()).value()
+        );
+        assert_eq!(
+            25567.0,
+            (UNIX_EPOCH.get_gregorian_date() - PRIME_EPOCH.get_gregorian_date()).value()
+        );
+        assert_eq!(
+            -25567.0,
+            (PRIME_EPOCH.get_gregorian_date() - UNIX_EPOCH.get_gregorian_date()).value()
+        );
+    }
+
+    #[test]
+    pub fn test_date_add() {
+        assert_eq!(
+            GPS_EPOCH.get_gregorian_date(),
+            UNIX_EPOCH.get_gregorian_date().add_days(3657)
+        );
+    }
+
+    #[test]
+    #[ignore]
+    pub fn test_print_year() -> Result<(), GreaterThanEqualToValueError<u8>> {
+        let year = 2019;
+        for month in Month::iter_items() {
+            for day in 1..=month.days_in_month(year) {
+                let date = Date::try_from(year, month, day)?;
+                println!(
+                    "{month} {day} {year}-{} {}",
+                    date.day_of_year,
+                    date.as_julian_day().get_day_number()
+                );
+            }
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    #[ignore]
+    pub fn test_print_leap_days() {
+        let mut year = 0;
+        let mut leaps = 0;
+        loop {
+            println!("{year} : {leaps}");
+            if year > 2100 {
+                break;
+            }
+            if is_leap_year(year) {
+                leaps += 1;
+            }
+            let mut sum_leaps = 0;
+            for y in 0..year {
+                if is_leap_year(y) {
+                    sum_leaps += 1;
+                }
+            }
+            println!("sum: {year} {sum_leaps}");
+            year += 4;
+        }
+    }
+
+    #[test]
+    pub fn test_julian_day() -> Result<(), GreaterThanEqualToValueError<u8>> {
+        assert_eq!(
+            Date::try_from_values(1970, 1, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2440587.5
+        );
+        assert_eq!(
+            Date::try_from_values(1980, 1, 6)?
+                .as_julian_day()
+                .get_day_number(),
+            2444244.5
+        );
+        assert_eq!(
+            Date::try_from_values(1858, 11, 17)?
+                .as_julian_day()
+                .get_day_number(),
+            2400000.5
+        );
+        assert_eq!(
+            Date::try_from_values(1950, 1, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2433282.5
+        );
+        assert_eq!(
+            Date::try_from_values(2000, 3, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2451604.5
+        );
+        assert_eq!(
+            Date::try_from_values(2020, 1, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2458849.5
+        );
+        assert_eq!(
+            Date::try_from_values(2020, 10, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2459123.5
+        );
+
+        assert_eq!(
+            Date::try_from_values(2021, 12, 31)?
+                .as_julian_day()
+                .get_day_number(),
+            2459579.5
+        );
+        assert_eq!(
+            Date::try_from_values(2022, 1, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2459580.5
+        );
+        assert_eq!(
+            Date::try_from_values(2022, 10, 1)?
+                .as_julian_day()
+                .get_day_number(),
+            2459853.5
+        );
+        assert_eq!(
+            Date::try_from_values(2023, 10, 18)?
+                .as_julian_day()
+                .get_day_number(),
+            2460235.5
+        );
+
         Ok(())
     }
 }
