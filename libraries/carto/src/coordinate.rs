@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_time::datetime::UTCDateTime;
+use irox_time::epoch::UnixTimestamp;
 use std::fmt::{Display, Formatter};
-use std::time::Duration;
 
 use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
@@ -64,7 +65,7 @@ pub struct EllipticalCoordinate {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<Duration>,
+    timestamp: Option<UTCDateTime>,
 }
 
 impl Display for EllipticalCoordinate {
@@ -158,7 +159,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn get_timestamp(&self) -> &Option<Duration> {
+    pub fn get_timestamp(&self) -> &Option<UTCDateTime> {
         &self.timestamp
     }
 
@@ -171,7 +172,7 @@ impl EllipticalCoordinate {
     }
 
     #[must_use]
-    pub fn with_timestamp(self, timestamp: Duration) -> EllipticalCoordinate {
+    pub fn with_timestamp(self, timestamp: UTCDateTime) -> EllipticalCoordinate {
         EllipticalCoordinate {
             timestamp: Some(timestamp),
             ..self
@@ -194,7 +195,7 @@ pub struct EllipticalCoordinateBuilder {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<Duration>,
+    timestamp: Option<UTCDateTime>,
 }
 
 impl EllipticalCoordinateBuilder {
@@ -237,7 +238,7 @@ impl EllipticalCoordinateBuilder {
         self
     }
 
-    pub fn with_timestamp(&mut self, timestamp: Duration) -> &mut EllipticalCoordinateBuilder {
+    pub fn with_timestamp(&mut self, timestamp: UTCDateTime) -> &mut EllipticalCoordinateBuilder {
         self.timestamp = Some(timestamp);
         self
     }
@@ -276,7 +277,7 @@ pub struct CartesianCoordinate {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<Duration>,
+    timestamp: Option<UnixTimestamp>,
 }
 
 impl Display for CartesianCoordinate {
@@ -359,7 +360,7 @@ impl CartesianCoordinate {
     }
 
     #[must_use]
-    pub fn get_timestamp(&self) -> &Option<Duration> {
+    pub fn get_timestamp(&self) -> &Option<UnixTimestamp> {
         &self.timestamp
     }
 
@@ -372,7 +373,7 @@ impl CartesianCoordinate {
     }
 
     #[must_use]
-    pub fn with_timestamp(self, timestamp: Duration) -> CartesianCoordinate {
+    pub fn with_timestamp(self, timestamp: UnixTimestamp) -> CartesianCoordinate {
         CartesianCoordinate {
             timestamp: Some(timestamp),
             ..self
@@ -395,7 +396,7 @@ pub struct CartesianCoordinateBuilder {
     altitude: Option<Altitude>,
     altitude_uncertainty: Option<Length>,
     position_uncertainty: Option<PositionUncertainty>,
-    timestamp: Option<Duration>,
+    timestamp: Option<UnixTimestamp>,
 }
 
 impl CartesianCoordinateBuilder {
@@ -435,7 +436,7 @@ impl CartesianCoordinateBuilder {
         self
     }
 
-    pub fn with_timestamp(&mut self, timestamp: Duration) -> &mut CartesianCoordinateBuilder {
+    pub fn with_timestamp(&mut self, timestamp: UnixTimestamp) -> &mut CartesianCoordinateBuilder {
         self.timestamp = Some(timestamp);
         self
     }
@@ -494,12 +495,12 @@ pub struct HorizontalCoordinate {
 
 #[cfg(target_os = "windows")]
 pub mod windows_conv {
-    use std::time::Duration;
-
+    use irox_time::epoch::{FromTimestamp, UnixTimestamp, WindowsNTTimestamp};
     use windows::Devices::Geolocation::Geocoordinate;
 
     use irox_units::shapes::CircularDimension;
     use irox_units::units::angle::Angle;
+    use irox_units::units::duration::{Duration, DurationUnit};
     use irox_units::units::length::Length;
 
     use crate::altitude::{Altitude, AltitudeReferenceFrame};
@@ -568,13 +569,12 @@ pub mod windows_conv {
 
             if let Ok(ts) = value.PositionSourceTimestamp() {
                 if let Ok(ts) = ts.GetDateTime() {
-                    let micros_since_win_epoch = ts.UniversalTime / 10 - WINDOWS_2_NX_EPOCH_MICROS;
-                    let dur = match micros_since_win_epoch {
-                        ..=0 => Duration::from_secs(0),
-                        v => Duration::from_micros(v as u64),
-                    };
-
-                    bld.with_timestamp(dur);
+                    let timestamp = WindowsNTTimestamp::from_offset(Duration::new(
+                        ts.UniversalTime as f64 * 100.0_f64,
+                        DurationUnit::Nanosecond,
+                    ));
+                    let timestamp: UnixTimestamp = UnixTimestamp::from_timestamp(&timestamp);
+                    bld.with_timestamp(timestamp.into());
                 }
             }
 
@@ -588,11 +588,13 @@ impl Display for Latitude {
         f.write_fmt(format_args!("Lat[{}]", self.0))
     }
 }
+
 impl Display for Longitude {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("Lon[{}]", self.0))
     }
 }
+
 impl Display for Elevation {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("Elv[{}]", self.0))
