@@ -1,7 +1,7 @@
 //!
 //! Structs around the devices/device messages
 
-use time::OffsetDateTime;
+use irox_time::datetime::UTCDateTime;
 
 pub enum NativeMode {
     NMEAMode = 0,
@@ -28,7 +28,7 @@ pub enum DeviceFlags {
 }
 
 pub struct Device {
-    pub activated: Option<OffsetDateTime>,
+    pub activated: Option<UTCDateTime>,
     pub bps: Option<u32>,
     pub cycle: Option<f32>,
     pub driver: Option<String>,

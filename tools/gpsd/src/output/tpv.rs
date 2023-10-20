@@ -1,13 +1,13 @@
 use serde::ser::SerializeMap;
 use serde::Serializer;
-use time::format_description::well_known::Rfc3339;
-use time::{Duration, OffsetDateTime};
 
 use irox_carto::altitude::AltitudeReferenceFrame;
 use irox_carto::coordinate::{CartesianCoordinate, EllipticalCoordinate, PositionUncertainty};
 use irox_carto::gps::GPSFixType;
+use irox_time::format::iso8601::BASIC_DATE_TIME_OF_DAY;
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{CompassReference, Heading, RelativeBearing, Track};
+use irox_units::units::duration::Duration;
 use irox_units::units::length::Length;
 use irox_units::units::speed::Speed;
 
@@ -235,19 +235,12 @@ impl TPV {
                 map.serialize_entry("epv", &meters)?;
             }
             if let Some(time) = coord.get_timestamp() {
-                if let Some(odt) = OffsetDateTime::UNIX_EPOCH.checked_add(Duration::new(
-                    time.as_secs() as i64,
-                    time.subsec_nanos() as i32,
-                )) {
-                    if let Ok(fmt) = odt.format(&Rfc3339) {
-                        map.serialize_entry("time", &fmt)?;
-                    }
-                };
+                map.serialize_entry("time", &time.format(&BASIC_DATE_TIME_OF_DAY))?;
             }
         }
 
         if let Some(sec) = &self.leapseconds {
-            map.serialize_entry("leapseconds", &sec.whole_seconds())?;
+            map.serialize_entry("leapseconds", &sec.as_seconds())?;
         }
         if let Some(track) = &self.track {
             let val = track.angle().as_degrees().value();

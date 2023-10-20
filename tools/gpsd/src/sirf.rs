@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use time::macros::date;
-use time::{Date, Duration, Month};
-
 use irox_carto::coordinate::{EllipticalCoordinateBuilder, Latitude, Longitude};
 use irox_carto::geo::standards::wgs84::WGS84_SHAPE;
 use irox_carto::geo::EllipticalShape;
 use irox_carto::gps::GPSFixType;
 use irox_sirf::input::x29_geonavdata::{GeodeticNavigationData, PositionFixType};
 use irox_sirf::packet::PacketType;
+use irox_time::datetime::UTCDateTime;
+use irox_time::gregorian::Date;
+use irox_time::Time;
 use irox_tools::options::MaybeFrom;
 use irox_units::units::angle::Angle;
+use irox_units::units::duration::MILLIS_TO_SEC;
 
 use crate::output::{Frame, FramePayload, TPV};
 
@@ -44,20 +45,16 @@ impl From<GeodeticNavigationData> for TPV {
         coordbuilder.with_longitude(lon);
         coordbuilder.with_reference_frame(datum);
 
-        let month = Month::try_from(value.utc_month).unwrap_or(Month::January);
-        let date = Date::from_calendar_date(value.utc_year as i32, month, value.utc_day);
+        let frac_sec = value.utc_millisecond as f64 * MILLIS_TO_SEC;
+
+        let time = Time::from_hms_f64(value.utc_hour, value.utc_minute, frac_sec);
+        let date = Date::try_from_values(value.utc_year as i32, value.utc_month, value.utc_day);
+
+        let time = time.unwrap_or_default();
         if let Ok(date) = date {
-            let utcdate = date - date!(1970 - 01 - 01);
-            let secs = Duration::seconds_f64(
-                value.utc_hour as f64 * 3600.
-                    + value.utc_minute as f64 * 60.
-                    + value.utc_second as f64 / 1000.,
-            );
-            let utcdate = utcdate + secs;
-            coordbuilder.with_timestamp(core::time::Duration::from_secs_f64(
-                utcdate.as_seconds_f64(),
-            ));
+            coordbuilder.with_timestamp(UTCDateTime::new(date, time));
         }
+
         let coordinate = coordbuilder.build().ok();
 
         let mode = match value.fix_type() {

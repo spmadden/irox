@@ -1,7 +1,7 @@
 //!
 //! Structs around the SKY message
-use time::OffsetDateTime;
 
+use irox_time::datetime::UTCDateTime;
 use irox_units::units::length::Length;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -41,7 +41,7 @@ pub struct SKY {
     pub satellites: Option<Vec<Satellite>>,
 
     pub tdop: Option<f32>,
-    pub time: Option<OffsetDateTime>,
+    pub time: Option<UTCDateTime>,
 
     pub u_sat: Option<u32>,
     pub vdop: Option<f32>,

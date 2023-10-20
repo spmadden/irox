@@ -18,7 +18,6 @@ serial = { workspace = true }
 human-panic = { workspace = true }
 env_logger.workspace = true
 clap.workspace = true
-time.workspace = true
 clap-verbosity-flag.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -28,6 +27,7 @@ futures.workspace = true
 irox-sirf.workspace = true
 irox-nmea0183.workspace = true
 irox-tools.workspace = true
+irox-time.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true
 irox-networking.workspace = true
