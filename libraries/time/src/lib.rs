@@ -83,6 +83,52 @@ impl Time {
         })
     }
 
+    pub fn from_hms(
+        hours: u8,
+        minutes: u8,
+        seconds: u8,
+    ) -> Result<Time, GreaterThanEqualToValueError<u8>> {
+        LessThanValue::new(24u8).check_value_is_valid(&hours)?;
+        LessThanValue::new(60u8).check_value_is_valid(&minutes)?;
+        LessThanValue::new(60u8).check_value_is_valid(&seconds)?;
+
+        let second_of_day = hours as u32 * 3600 + minutes as u32 * 60 + seconds as u32;
+        Ok(Time {
+            second_of_day,
+            nanoseconds: 0,
+        })
+    }
+
+    pub fn from_hms_f64(
+        hours: u8,
+        minutes: u8,
+        seconds: f64,
+    ) -> Result<Time, GreaterThanEqualToValueError<f64>> {
+        LessThanValue::new(24u8).check_value_is_valid(&hours)?;
+        LessThanValue::new(60u8).check_value_is_valid(&minutes)?;
+        LessThanValue::new(60f64).check_value_is_valid(&seconds)?;
+        let nanoseconds = (seconds.fract() * NANOS_TO_SEC) as u32;
+        let second_of_day = hours as u32 * 3600 + minutes as u32 * 60 + seconds as u32;
+        Ok(Time {
+            second_of_day,
+            nanoseconds,
+        })
+    }
+
+    pub fn from_hms_millis(
+        hours: u8,
+        minutes: u8,
+        seconds: u8,
+        millis: u32,
+    ) -> Result<Time, GreaterThanEqualToValueError<u32>> {
+        LessThanValue::new(1_000_000).check_value_is_valid(&millis)?;
+        let time = Self::from_hms(hours, minutes, seconds)?;
+        Ok(Time {
+            second_of_day: time.second_of_day,
+            nanoseconds: millis * 1000,
+        })
+    }
+
     ///
     /// Returns the number of seconds into the "current day"
     #[must_use]
@@ -127,6 +173,13 @@ impl Time {
         let minutes = self.as_minutes() - hours * MINUTES_IN_HOUR;
         let seconds = self.get_seconds() - hours * SECONDS_IN_HOUR - minutes * SECONDS_IN_MINUTE;
         (hours, minutes, seconds)
+    }
+
+    ///
+    /// Returns ONLY the fractional seconds component of the timestamp
+    #[must_use]
+    pub fn get_secondsfrac(&self) -> f64 {
+        self.nanoseconds as f64 / NANOS_TO_SEC
     }
 
     ///
