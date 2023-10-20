@@ -15,10 +15,10 @@ use crate::{
 };
 
 //
-/// The Julian Epoch, 01-JAN 4713 BC
+/// The Julian Epoch, 01-JAN 4713 BC (Gregorian)
 pub const JULIAN_EPOCH: Epoch = Epoch(Date {
-    year: -4713,
-    day_of_year: 1,
+    year: -4712,
+    day_of_year: 0,
 });
 
 ///
@@ -49,6 +49,7 @@ pub struct JulianDayNumber<T> {
 
     _phantom: PhantomData<T>,
 }
+
 impl<T> JulianDayNumber<T> {
     pub fn new(epoch: Epoch, day_number: f64) -> Self {
         JulianDayNumber {
@@ -66,16 +67,27 @@ impl<T> JulianDayNumber<T> {
 }
 
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct JulianEpoch;
+
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct ReducedJulianEpoch;
+
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct ModifiedJulianEpoch;
+
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct TruncatedJulianEpoch;
+
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct LilianEpoch;
+
 /// No functionality, used as a static compile-time type check
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct RataDieEpoch;
 
 ///
@@ -83,6 +95,7 @@ pub struct RataDieEpoch;
 ///
 /// Noon 12:00 on 01-JAN, 4713 BC
 pub type JulianDate = JulianDayNumber<JulianEpoch>;
+
 pub const JULIAN_JD_OFFSET: f64 = 0.0_f64;
 
 ///
@@ -91,6 +104,7 @@ pub const JULIAN_JD_OFFSET: f64 = 0.0_f64;
 ///
 /// Noon 12:00 on 16-NOV-1858
 pub type ReducedJulianDate = JulianDayNumber<ReducedJulianEpoch>;
+
 /// The offset from the [`JULIAN_EPOCH`] for the [`ReducedJulianDate`]
 pub const REDUCED_JD_OFFSET: f64 = 2400000_f64;
 
@@ -100,6 +114,7 @@ pub const REDUCED_JD_OFFSET: f64 = 2400000_f64;
 ///
 /// Midnight on 17-NOV-1858
 pub type ModifiedJulianDate = JulianDayNumber<ModifiedJulianEpoch>;
+
 /// The offset from the [`JULIAN_EPOCH`] for the [`ModifiedJulianDate`]
 pub const MODIFIED_JD_OFFSET: f64 = 2400000.5_f64;
 
@@ -109,6 +124,7 @@ pub const MODIFIED_JD_OFFSET: f64 = 2400000.5_f64;
 ///
 /// Midnight on 24-MAY-1968
 pub type TruncatedJulianDate = JulianDayNumber<TruncatedJulianEpoch>;
+
 /// The offset from the [`JULIAN_EPOCH`] for the [`TruncatedJulianDate`]
 pub const TRUNCATED_JD_OFFSET: f64 = 2440000.5_f64;
 
@@ -118,6 +134,7 @@ pub const TRUNCATED_JD_OFFSET: f64 = 2440000.5_f64;
 ///
 /// Midnight on 15-OCT-1582
 pub type LilianDate = JulianDayNumber<LilianEpoch>;
+
 /// The offset from the [`JULIAN_EPOCH`] for the [`LilianDate`]
 pub const LILIAN_JD_OFFSET: f64 = 2299159.5_f64;
 
@@ -125,6 +142,7 @@ pub const LILIAN_JD_OFFSET: f64 = 2299159.5_f64;
 /// The Rata Die (Latin: "Fixed Date") is the fixed number of days in the Common
 /// Era, since Midnight 01-01-0001 AD, 1721424.5 after [`JULIAN_EPOCH`]
 pub type RataDieDate = JulianDayNumber<RataDieEpoch>;
+
 /// The offset from the [`JULIAN_EPOCH`] for the [`RataDieDate`]
 pub const RATA_DIE_JD_OFFSET: f64 = 1721424.5_f64;
 
@@ -162,6 +180,7 @@ impl From<UnixTimestamp> for JulianDate {
         JulianDate::new(JULIAN_EPOCH, jd)
     }
 }
+
 impl From<JulianDate> for UnixTimestamp {
     fn from(value: JulianDate) -> Self {
         let ts = (value.day_number - UNIX_TS_JD_OFFSET) * SECONDS_IN_DAY as f64;
