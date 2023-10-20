@@ -18,5 +18,5 @@ irox-enums.workspace = true
 irox-tools.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true
+irox-time.workspace = true
 log.workspace = true
-time.workspace = true

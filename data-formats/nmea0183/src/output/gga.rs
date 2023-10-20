@@ -4,11 +4,10 @@
 use std::fmt::{Display, Formatter};
 use std::time::Duration;
 
-use time::Time;
-
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_enums::EnumName;
+use irox_time::Time;
 use irox_tools::bits::Bits;
 use irox_tools::options::{MaybeInto, MaybeMap};
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -68,7 +67,7 @@ impl From<u8> for GPSQualityIndicator {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct GGA {
-    timestamp: Option<time::Time>,
+    timestamp: Option<Time>,
     latitude: Option<Latitude>,
     longitude: Option<Longitude>,
     quality: Option<GPSQualityIndicator>,
@@ -129,9 +128,9 @@ impl Packet for GGA {
         let utctime = self
             .timestamp
             .map(|timestamp| {
-                let (hh, mm, ss, milli) = timestamp.as_hms_milli();
-                let ss = ss as f64 + (milli as f64) / 1000.;
-                format!("{hh:02}{mm:02}{ss:02.03}")
+                let (hh, mm, ss) = timestamp.as_hms();
+                let ss = ss as f64 + timestamp.get_secondsfrac();
+                format!("{hh:02}{mm:02}{ss:02.3}")
             })
             .unwrap_or_default();
 
@@ -211,10 +210,7 @@ fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
     let mm = time.get(2..4)?.parse::<u8>().ok()?;
     let ss = time.get(4..)?.parse::<f64>().ok()?;
 
-    let sint = ss as u8;
-    let millis = ((ss - sint as f64) * 1000.) as u16;
-
-    Time::from_hms_milli(hh, mm, sint, millis).ok()
+    Time::from_hms_f64(hh, mm, ss).ok()
 }
 
 pub struct GGABuilder;

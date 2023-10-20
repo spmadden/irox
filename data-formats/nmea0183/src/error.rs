@@ -3,8 +3,6 @@
 
 use std::num::{ParseFloatError, ParseIntError};
 
-use time::error::ComponentRange;
-
 #[derive(Debug, Copy, Clone)]
 pub enum ErrorType {
     IOError,
@@ -47,12 +45,6 @@ impl From<ParseIntError> for Error {
 
 impl From<ParseFloatError> for Error {
     fn from(value: ParseFloatError) -> Self {
-        Error::new(ErrorType::ParseInt, format!("{value:?}"))
-    }
-}
-
-impl From<ComponentRange> for Error {
-    fn from(value: ComponentRange) -> Self {
         Error::new(ErrorType::ParseInt, format!("{value:?}"))
     }
 }
