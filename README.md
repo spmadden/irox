@@ -1,4 +1,4 @@
-**Iron Oxide (IROX) Libraries
+Iron Oxide (IROX) Libraries
 =============================
 A collection of (hopefully) useful crates written in Rust.
 
