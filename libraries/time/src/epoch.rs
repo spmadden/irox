@@ -62,7 +62,12 @@ pub const UNIX_EPOCH: Epoch = Epoch(Date {
 /// Represents a duration offset from the [`UNIX_EPOCH`].
 pub type UnixTimestamp = Timestamp<UnixEpoch>;
 /// `UnixEpoch` is a compile-time check for [`UnixTimestamp`] = [`Timestamp<UnixEpoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct UnixEpoch;
+
+pub trait FromTimestamp<T> {
+    fn from_timestamp(other: &Timestamp<T>) -> Self;
+}
 
 macro_rules! derive_timestamp_impl {
     ($epoch:ident,$name:ident) => {
@@ -104,6 +109,14 @@ macro_rules! derive_timestamp_impl {
                 $name::from_offset(value)
             }
         }
+
+        impl<T> FromTimestamp<T> for $name {
+            fn from_timestamp(other: &Timestamp<T>) -> Self {
+                let epoch_offset = $epoch.0 - other.epoch.0;
+                let new_duration = other.offset - epoch_offset;
+                $name::from_offset(new_duration)
+            }
+        }
     };
 }
 
@@ -140,6 +153,7 @@ pub const GPS_EPOCH: Epoch = Epoch(Date {
 /// Represents a duration offset from the [`GPS_EPOCH`]
 pub type GPSTimestamp = Timestamp<GPSEpoch>;
 /// `GPSEpoch` is a compile-time check for [`GPSTimestamp`] = [`Timestamp<GPSEpoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct GPSEpoch;
 derive_timestamp_impl!(GPS_EPOCH, GPSTimestamp);
 
@@ -154,6 +168,7 @@ pub const GREGORIAN_EPOCH: Epoch = Epoch(Date {
 /// Represents a duration offset from the [`GREGORIAN_EPOCH`]
 pub type GregorianTimestamp = Timestamp<GregorianEpoch>;
 /// `GregorianEpoch` is a compile-time check for [`GregorianTimestamp`] = [`Timestamp<GregorianEpoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct GregorianEpoch;
 derive_timestamp_impl!(GREGORIAN_EPOCH, GregorianTimestamp);
 
@@ -176,6 +191,7 @@ pub const WINDOWS_NT_EPOCH: Epoch = Epoch(Date {
 /// routines, it comes back in 100-nanosecond increments from this epoch.
 pub type WindowsNTTimestamp = Timestamp<WindowsEpoch>;
 /// `WindowsEpoch` is a compile-time check for [`WindowsNTTimestamp`] = [`Timestamp<WindowsEpoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct WindowsEpoch;
 derive_timestamp_impl!(WINDOWS_NT_EPOCH, WindowsNTTimestamp);
 
