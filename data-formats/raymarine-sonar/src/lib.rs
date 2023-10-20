@@ -3,9 +3,9 @@
 
 #![forbid(unsafe_code)]
 
+use irox_units::units::duration::Duration;
 use std::collections::BTreeMap;
 use std::path::Path;
-use std::time::Duration;
 
 use log::{debug, error, trace};
 use rusqlite::types::ValueRef;
@@ -45,7 +45,7 @@ impl Accesses for Entry {
 
     fn get_duration(&self, key: &'static str) -> Option<Duration> {
         self.get_i64(key)
-            .map(|v| Duration::from_secs_f64(v as f64 / 1024_f64))
+            .map(|v| Duration::new_seconds(v as f64 / 1024_f64))
     }
 
     fn get_i64(&self, key: &'static str) -> Option<i64> {

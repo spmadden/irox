@@ -25,6 +25,7 @@ irox-types.workspace = true
 irox-units.workspace = true
 irox-carto.workspace = true
 irox-tools.workspace = true
+irox-time.workspace = true
 
 env_logger = { workspace = true, optional = true }
 clap = { workspace = true, optional = true }

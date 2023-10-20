@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_units::units::duration::Duration;
 use std::collections::VecDeque;
 use std::ops::Deref;
-use std::time::Duration;
 
 use log::{debug, error, info, warn};
 use rusqlite::named_params;
@@ -14,6 +14,7 @@ use irox_carto::coordinate::{
     CartesianCoordinateBuilder, CoordinateType, EllipticalCoordinateBuilder, Latitude, Longitude,
 };
 use irox_carto::geo::standards::StandardShapes;
+use irox_time::epoch::UnixTimestamp;
 use irox_tools::bits::Bits;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::Length;
@@ -159,7 +160,7 @@ impl Iter {
                         if let Some(start) = self.start_time_utc {
                             dur += start;
                         }
-                        bldr.with_timestamp(dur);
+                        bldr.with_timestamp(UnixTimestamp::from(dur));
                     }
                     _ => {}
                 }
@@ -179,7 +180,7 @@ impl Iter {
                     .with_longitude(lon)
                     .with_reference_frame(StandardShapes::Hayford_International.into());
                 if let Some(ts) = coord.get_timestamp() {
-                    bldr.with_timestamp(*ts);
+                    bldr.with_timestamp(ts.into());
                 }
                 bldr.with_altitude(Altitude::new(*coord.get_z(), AltitudeReferenceFrame::Geoid));
                 let coord = bldr.build()?;
