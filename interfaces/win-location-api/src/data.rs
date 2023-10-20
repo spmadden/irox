@@ -2,16 +2,16 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter, Write};
-use std::time::Duration;
-use time::ext::NumericalDuration;
 
-use time::OffsetDateTime;
 use windows::Devices::Geolocation::Geocoordinate;
 
 use irox_carto::coordinate::EllipticalCoordinate;
 use irox_carto::gps::DOPs;
+use irox_time::datetime::UTCDateTime;
+use irox_time::epoch::{FromTimestamp, UnixTimestamp, WindowsNTTimestamp};
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{CompassReference, RotationDirection, Track};
+use irox_units::units::duration::Duration;
 use irox_units::units::speed::Speed;
 
 pub const WINDOWS_2_NX_EPOCH_MICROS: i64 = 11_644_473_600_000_000;
@@ -57,7 +57,7 @@ pub struct WindowsCoordinate {
     coordinate: Option<EllipticalCoordinate>,
     heading: Option<Track>,
     speed: Option<Speed>,
-    timestamp: Option<OffsetDateTime>,
+    timestamp: Option<UTCDateTime>,
     dops: Option<DOPs>,
     source: Option<PositionSource>,
 }
@@ -79,7 +79,7 @@ impl WindowsCoordinate {
     }
 
     #[must_use]
-    pub fn timestamp(&self) -> Option<OffsetDateTime> {
+    pub fn timestamp(&self) -> Option<UTCDateTime> {
         self.timestamp
     }
 
@@ -123,23 +123,20 @@ impl From<&Geocoordinate> for WindowsCoordinate {
             }
         }
 
-        let mut timestamp = None;
+        let mut timestamp: Option<UTCDateTime> = None;
         if let Ok(ts) = value.Timestamp() {
             // jfc.  UniversalTime is the # of 100ns intervals since 01-JAN-1601 00:00:00
-            let micros_since_win_epoch = ts.UniversalTime / 10 - WINDOWS_2_NX_EPOCH_MICROS;
-            if micros_since_win_epoch >= 0 {
-                timestamp =
-                    OffsetDateTime::UNIX_EPOCH.checked_add(micros_since_win_epoch.microseconds());
-            }
+            timestamp = Some(
+                UnixTimestamp::from_timestamp(&WindowsNTTimestamp::from(Duration::from_micros(
+                    (ts.UniversalTime / 10) as u64,
+                )))
+                .into(),
+            );
         }
         if let Some(coord) = coordinate {
             if coord.get_timestamp().is_none() {
                 if let Some(ts) = timestamp {
-                    let nanos = ts.unix_timestamp_nanos();
-                    let secs = nanos / 1_000_000_000;
-                    let nanos = nanos - secs * 1_000_000_000;
-                    let dur = Duration::new(secs as u64, nanos as u32);
-                    coordinate = Some(coord.with_timestamp(dur));
+                    coordinate = Some(coord.with_timestamp(ts));
                 }
             }
         }

@@ -15,8 +15,8 @@ repository.workspace = true
 [dependencies]
 windows.workspace = true
 
-time.workspace = true
 log.workspace = true
 futures.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true
+irox-time.workspace = true
