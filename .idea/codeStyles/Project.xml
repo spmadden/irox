@@ -1,0 +1,10 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <codeStyleSettings language="Markdown">
+      <option name="SOFT_MARGINS" value="120" />
+    </codeStyleSettings>
+    <codeStyleSettings language="Rust">
+      <option name="SOFT_MARGINS" value="80,127" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>
