@@ -65,9 +65,9 @@ impl<T: Read + Sized> BasicTokenReader<T> {
     pub fn dialect(reader: T, dialect: Dialect) -> Self {
         let delims = &[
             sc::Token::new(dialect.get_field_separators(), InnerToken::Field)
-                .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
+                .with_quote_char(QuotedChars::DoubleQuotes),
             sc::Token::new(dialect.get_line_separators(), InnerToken::Newline)
-                .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
+                .with_quote_char(QuotedChars::DoubleQuotes),
             sc::Token::new(dialect.get_comment_chars(), InnerToken::Comment),
         ];
         Self {
