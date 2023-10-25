@@ -6,11 +6,11 @@
 use std::collections::BTreeMap;
 use std::io::Read;
 
-use log::{debug, error};
+use log::{debug, error, trace};
 use url::Url;
 
 use error::{Error, ErrorType};
-use irox_csv::Row;
+use irox_csv::{Row, UNIX_DIALECT};
 use irox_networking::http::HttpProtocol;
 use types::RetentionPolicy;
 
@@ -226,8 +226,10 @@ impl InfluxDB {
     pub fn list_databases(&self) -> Result<Vec<String>, Error> {
         let res = self.query_csv("SHOW DATABASES", None)?;
         let mut out: Vec<String> = Vec::new();
-        irox_csv::CSVMapReader::new(res)?.for_each(|row| {
+        irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
+	    trace!("{row:?}");
             let row = row.into_map_lossy();
+            trace!("{row:?}");
             if let Some(name) = row.get("name") {
                 out.push(name.clone());
             }
@@ -244,7 +246,7 @@ impl InfluxDB {
             None => self.query_csv("SHOW RETENTION POLICIES", None),
         }?;
         let mut out: Vec<RetentionPolicy> = Vec::new();
-        irox_csv::CSVMapReader::new(res)?.for_each(|row| {
+        irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
             match TryInto::<RetentionPolicy>::try_into(row.into_map_lossy()) {
                 Ok(r) => out.push(r),
                 Err(e) => error!("Error converting map into Retention: {e:?}"),
@@ -259,7 +261,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {db}"), None),
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
-        irox_csv::CSVMapReader::new(res)?.for_each(|row| {
+        irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
             debug!("{:?}", row.into_map_lossy());
         })?;
         Ok(())
@@ -301,7 +303,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {db}"), None),
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
-        let mut reader = irox_csv::CSVMapReader::new(res)?;
+        let mut reader = irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {
                 meas.merge_tag_key_map(row_map)
@@ -312,7 +314,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW FIELD KEYS ON {db}"), None),
             None => self.query_csv("SHOW FIELD KEYS", None),
         }?;
-        let mut reader = irox_csv::CSVMapReader::new(res)?;
+        let mut reader = irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {
                 meas.merge_field_key_map(row_map)
