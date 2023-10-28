@@ -108,7 +108,7 @@ impl Packetizer {
         Packetizer {}
     }
 }
-impl<T: Bits> Packetization<T> for Packetizer {
+impl<T: Read + Bits> Packetization<T> for Packetizer {
     fn read_next_packet(&mut self, input: &mut T) -> Result<PacketData, std::io::Error> {
         loop {
             if let Err(e) = read_start(input) {

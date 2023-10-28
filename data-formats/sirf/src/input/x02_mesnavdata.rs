@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::io::Read;
+
 use irox_structs::Struct;
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -94,7 +96,7 @@ pub static BUILDER: MeasuredNavDataBuilder = MeasuredNavDataBuilder;
 impl PacketBuilder<MeasuredNavigationData> for MeasuredNavDataBuilder {
     type Error = std::io::Error;
 
-    fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredNavigationData, Self::Error> {
+    fn build_from<T: Read>(&self, input: &mut T) -> Result<MeasuredNavigationData, Self::Error> {
         let x_position = input.read_be_i32()?;
         let y_position = input.read_be_i32()?;
         let z_position = input.read_be_i32()?;
