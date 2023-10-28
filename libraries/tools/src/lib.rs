@@ -11,6 +11,7 @@ pub mod iterators;
 pub mod murmur3;
 pub mod options;
 pub mod packetio;
+pub mod random;
 pub mod read;
 pub mod scanner;
 pub mod u64;
