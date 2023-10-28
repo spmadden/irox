@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::fmt::{Display, Formatter};
+use std::io::Read;
 
 use log::trace;
 
@@ -91,7 +92,7 @@ pub struct NMEAParser;
 impl PacketBuilder<Frame> for NMEAParser {
     type Error = Error;
 
-    fn build_from<T: Bits>(&self, input: &mut T) -> Result<Frame, Self::Error> {
+    fn build_from<T: Read>(&self, input: &mut T) -> Result<Frame, Self::Error> {
         let packet = NMEAPacketizer::new().read_next_packet(input)?;
         let raw = String::from_utf8_lossy(&packet).to_string();
         trace!("PKT: {}", raw);
@@ -122,7 +123,7 @@ impl NMEAPacketizer {
         NMEAPacketizer {}
     }
 }
-impl<T: Bits> Packetization<T> for NMEAPacketizer {
+impl<T: Read> Packetization<T> for NMEAPacketizer {
     fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error> {
         loop {
             let val = source.read_u8()?;
