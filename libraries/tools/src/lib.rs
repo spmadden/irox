@@ -15,4 +15,5 @@ pub mod read;
 pub mod scanner;
 pub mod u64;
 pub mod u8;
+pub mod uuid;
 pub mod vec;
