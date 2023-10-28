@@ -1,4 +1,4 @@
-use std::io::ErrorKind;
+use std::io::{ErrorKind, Read, Write};
 
 use log::{debug, warn};
 use serde::ser::SerializeMap;
@@ -106,7 +106,7 @@ pub struct FrameGenerator<T: Bits + MutBits> {
     source: T,
 }
 
-impl<T: Bits + MutBits> FrameGenerator<T> {
+impl<T: Read + Write> FrameGenerator<T> {
     pub fn new(encoding: EncodingType, mut source: T) -> FrameGenerator<T> {
         if let EncodingType::Nmea0183 = encoding {
             let _ = PollSWVersion.write_to(&mut source);
