@@ -7,8 +7,6 @@
 use std::collections::VecDeque;
 use std::io::{ErrorKind, Read, Write};
 
-use crate::bits::Bits;
-
 /// A packet is a series of bytes
 pub type PacketData = Vec<u8>;
 
@@ -26,7 +24,7 @@ pub trait Packet {
 pub trait PacketBuilder<P> {
     type Error;
 
-    fn build_from<T: Write>(&self, input: &mut T) -> Result<P, Self::Error>;
+    fn build_from<T: Read>(&self, input: &mut T) -> Result<P, Self::Error>;
 }
 
 ///
