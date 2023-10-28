@@ -9,7 +9,7 @@ use std::io::{Error, ErrorKind, Read, Write};
 ///
 /// Read methods for the primitive types
 ///
-pub trait Bits: Read {
+pub trait Bits {
     fn read_u8(&mut self) -> Result<u8, Error>;
     fn read_be_u16(&mut self) -> Result<u16, Error>;
     fn read_be_u32(&mut self) -> Result<u32, Error>;
@@ -95,7 +95,7 @@ where
     }
 }
 
-pub trait MutBits: Write {
+pub trait MutBits {
     fn write_u8(&mut self, val: u8) -> Result<(), Error>;
     fn write_be_u16(&mut self, val: u16) -> Result<(), Error>;
     fn write_be_u32(&mut self, val: u32) -> Result<(), Error>;

@@ -5,9 +5,9 @@
 //! Traits for packetization of data and movement of packets of data
 
 use std::collections::VecDeque;
-use std::io::ErrorKind;
+use std::io::{ErrorKind, Read, Write};
 
-use crate::bits::{Bits, MutBits};
+use crate::bits::Bits;
 
 /// A packet is a series of bytes
 pub type PacketData = Vec<u8>;
@@ -16,7 +16,7 @@ pub trait Packet {
     type PacketType;
     fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error>;
 
-    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), std::io::Error> {
+    fn write_to<T: Write>(&self, out: &mut T) -> Result<(), std::io::Error> {
         out.write_all(self.get_bytes()?.as_slice())
     }
 
@@ -26,13 +26,13 @@ pub trait Packet {
 pub trait PacketBuilder<P> {
     type Error;
 
-    fn build_from<T: Bits>(&self, input: &mut T) -> Result<P, Self::Error>;
+    fn build_from<T: Write>(&self, input: &mut T) -> Result<P, Self::Error>;
 }
 
 ///
 /// This trait represents a way to packetize a stream of data
 ///
-pub trait Packetization<T: Bits> {
+pub trait Packetization<T: Read> {
     /// Reads the next packet from the source reader
     fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error>;
 }
@@ -55,14 +55,14 @@ pub trait PacketTransport {
 
 ///
 /// A packetizer binds a Read stream and a Packetization strategy
-pub struct Packetizer<'a, R: Bits, P: Packetization<R>> {
+pub struct Packetizer<'a, R: Read, P: Packetization<R>> {
     reader: &'a mut R,
     chunker: &'a mut P,
 }
 
 impl<'a, R, P> PacketTransport for Packetizer<'a, R, P>
 where
-    R: Bits,
+    R: Read,
     P: Packetization<R>,
 {
     type Error = std::io::Error;
@@ -102,7 +102,7 @@ pub struct DelimitedPacketizer {
     buffer: Vec<u8>,
 }
 
-impl<T: Bits> Packetization<T> for DelimitedPacketizer {
+impl<T: Read> Packetization<T> for DelimitedPacketizer {
     fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error> {
         if self.delimiter.is_empty() {
             return Err(std::io::Error::new(
