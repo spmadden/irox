@@ -1721,6 +1721,7 @@ dependencies = [
 name = "irox-networking"
 version = "0.2.1"
 dependencies = [
+ "irox-tools",
  "log",
  "serde",
 ]

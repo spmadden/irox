@@ -2,7 +2,8 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use std::net::Ipv6Addr;
+use irox_tools::arrays::max_index;
+use irox_tools::u16::{FromU16Array, ToU16Array};
 
 ///
 /// A Layer-2 Ethernet Media-Access-Control Address (MAC)
@@ -33,18 +34,11 @@ pub enum NetworkError {
     NotANetworkAddress(IPAddress),
 }
 
-pub trait Network<T: Sized> {
-    fn get_broadcast_address(&self) -> T;
-    fn is_network_address(&self, address: &T) -> bool;
-    fn is_broadcast_address(&self, address: &T) -> bool;
-    fn host_in_network(&self, host: &T) -> bool;
-}
-
 /// A generic Internet Protocol Address, could be a [`IPv4Address`] or a [`IPv6Address`]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum IPAddress {
     IPv4(IPv4Address),
-    IPv6(Ipv6Addr),
+    IPv6(IPv6Address),
 }
 
 /// A 32-bit Internet Protocol Version 4 address as specified in RFC791
@@ -411,4 +405,78 @@ impl Display for IPv4Network {
 pub struct IPv6Network {
     pub(crate) network_id: u128,
     pub(crate) network_mask: u128,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+pub struct IPv6Address {
+    pub(crate) address: u128
+}
+impl IPv6Address {
+    ///
+    /// # Example
+    /// ```
+    /// # use irox_networking::address::IPv6Address;
+    /// let addr = IPv6Address::new(&[0x2001,0x0DB8,0x85A3,0x0000,0x0000,0x8A2E,0x0370,0x7334]);
+    ///
+    /// assert_eq!("2001:db8:85a3::8a2e:370:7334", format!("{addr}"));
+    /// assert_eq!("2001:0db8:85a3:0000:0000:8a2e:0370:7334", format!("{addr:#}"));
+    ///
+    /// assert_eq!("::", format!("{}", IPv6Address::new(&[0,0,0,0,0,0,0,0])));
+    /// assert_eq!("::1", format!("{}", IPv6Address::new(&[0,0,0,0,0,0,0,1])));
+    ///
+    /// ```
+    pub fn new(val: &[u16;8]) -> IPv6Address{
+        let address = u128::from_u16_array(val);
+        IPv6Address {
+            address
+        }
+    }
+}
+impl Display for IPv6Address {
+
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
+        let bytes = self.address.to_u16_array();
+        if fmt.alternate() {
+            // full form, no collapse.
+            let [a,b,c,d,e,f,g,h] = bytes;
+            return fmt.write_fmt(format_args!("{a:04x}:{b:04x}:{c:04x}:{d:04x}:{e:04x}:{f:04x}:{g:04x}:{h:04x}"));
+        }
+        // collapsed form.
+        let mut zeroes : [u8;8] = [0;8];
+        for i in 0..8 {
+            for j in i..8 {
+                let val = bytes[j];
+                if val == 0 {
+                    zeroes[i] += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        let longest_zeroes_point = max_index(&zeroes);
+        if let Some(longest_zeroes_point) = longest_zeroes_point {
+            if let Some(num_zeroes) = zeroes.get(longest_zeroes_point) {
+                if longest_zeroes_point == 0 && *num_zeroes == 8 {
+                    return fmt.write_str("::");
+                }
+                if *num_zeroes > 1 {
+                    let bytes : Vec<String> = bytes.iter().enumerate().filter_map(|(idx,val)| {
+                        if idx == longest_zeroes_point || (idx == 1 && longest_zeroes_point == 0){
+                            return Some(String::new());
+                        } else if idx > longest_zeroes_point && idx < (longest_zeroes_point + *num_zeroes as usize) {
+                            return None;
+                        }
+                        Some(format!("{val:x}"))
+                    }).collect();
+                    if bytes.is_empty() {
+                        return fmt.write_str("::");
+                    }
+                    fmt.write_fmt(format_args!("{}", bytes.join(":")))?;
+                    return Ok(());
+                }
+            }
+        }
+        let [a,b,c,d,e,f,g,h] = bytes;
+        fmt.write_fmt(format_args!("{a:x}:{b:x}:{c:x}:{d:x}:{e:x}:{f:x}:{g:x}:{h:x}"))
+    }
 }

@@ -16,3 +16,4 @@ repository.workspace = true
 [dependencies]
 serde.workspace = true
 log.workspace = true
+irox-tools.workspace = true
