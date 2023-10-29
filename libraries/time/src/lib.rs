@@ -29,8 +29,9 @@
 
 use std::fmt::{Display, Formatter};
 
-use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
-use irox_units::units::duration::{Duration, DurationUnit, NANOS_TO_SEC, SEC_TO_NANOS};
+pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
+pub use irox_units::units::duration::{Duration, DurationUnit};
+use irox_units::units::duration::{NANOS_TO_SEC, SEC_TO_NANOS};
 
 use crate::epoch::Epoch;
 use crate::format::{Format, FormatError, FormatParser};
@@ -250,6 +251,7 @@ pub struct Time32 {
     /// number by 2^16 to get the actual fractional component.
     fractional_seconds: u16,
 }
+
 impl Time32 {
     #[must_use]
     pub fn new(epoch: Epoch, seconds: u16, fractional_seconds: u16) -> Self {
