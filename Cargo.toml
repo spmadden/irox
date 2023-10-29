@@ -40,18 +40,18 @@ egui = { version = "=0.23.0", features = ["persistence"] }
 eframe = { version = "=0.23.0", features = ["persistence"] }
 egui_plot = { version = "=0.23.0", features = [] }
 ron = { version = "=0.8.1", features = ["integer128"] }
-serde = { version = "=1.0.188", features = ["derive"] }
+serde = { version = "=1.0.190", features = ["derive"] }
 serde_json = {version = "=1.0.107", features = []}
 ureq = {version = "=2.8.0", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "=2.4.1", features = []}
-clap = {version = "=4.4.6", features = ["derive", "wrap_help", "string", "cargo", "env"]}
-clap-verbosity-flag = {version = "=2.0.1"}
+clap = {version = "=4.4.7", features = ["derive", "wrap_help", "string", "cargo", "env"]}
+clap-verbosity-flag = {version = "=2.1.0"}
 log = {version = "=0.4.20", features = []}
 env_logger = {version = "=0.10.0", features = []}
 syn = {version = "=2.0.38", features = ["extra-traits"]}
 quote = {version = "=1.0.33", features = []}
 signal-hook = {version = "=0.3.17", features = []}
-futures = {version = "=0.3.28", features = []}
+futures = {version = "=0.3.29", features = []}
 windows = {version = "=0.51.1", features = [ "Devices_Geolocation", "Foundation" ]}
 rusqlite = {version = "=0.29.0", features = ["bundled", "bundled-windows"]}
 miniz_oxide = {version = "=0.7.1", features = []}
