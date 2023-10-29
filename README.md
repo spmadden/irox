@@ -46,6 +46,8 @@ Current Modules & Organization:
       serialized big endian bytes
     * [`structs_derive`](https://github.com/spmadden/irox/blob/master/libraries/structs_derive) - Derivable impls of the
       traits in irox-structs
+    * [`threading`](https://github.com/spmadden/irox/blob/master/libraries/threading) - Blocking and Asynchronous
+      Threading Tools
     * [`time`](https://github.com/spmadden/irox/blob/master/libraries/time) - A date & time library that aims for ease
       of use based on the Proleptic Gregorian Calendar.
     * [`tools`](https://github.com/spmadden/irox/blob/master/libraries/tools) - Dumping ground for stuff that should
@@ -77,6 +79,7 @@ Version Status
 | `irox-stats`           | [![Crates.io](https://img.shields.io/crates/v/irox-stats.svg)](https://crates.io/crates/irox-stats) [![Documentation](https://docs.rs/irox-stats/badge.svg)](https://docs.rs/irox-stats)                                         |
 | `irox-structs`         | [![Crates.io](https://img.shields.io/crates/v/irox-structs.svg)](https://crates.io/crates/irox-structs) [![Documentation](https://docs.rs/irox-structs/badge.svg)](https://docs.rs/irox-structs)                                 |
 | `irox-structs_derive`  | [![Crates.io](https://img.shields.io/crates/v/irox-structs_derive.svg)](https://crates.io/crates/irox-structs_derive) [![Documentation](https://docs.rs/irox-structs_derive/badge.svg)](https://docs.rs/irox-structs_derive)     |
+| `irox-threading`       | [![Crates.io](https://img.shields.io/crates/v/irox-threading.svg)](https://crates.io/crates/irox-threading) [![Documentation](https://docs.rs/irox-threading/badge.svg)](https://docs.rs/irox-threading)                         |
 | `irox-time`            | [![Crates.io](https://img.shields.io/crates/v/irox-time.svg)](https://crates.io/crates/irox-time) [![Documentation](https://docs.rs/irox-time/badge.svg)](https://docs.rs/irox-time)                                             |
 | `irox-tools`           | [![Crates.io](https://img.shields.io/crates/v/irox-tools.svg)](https://crates.io/crates/irox-tools) [![Documentation](https://docs.rs/irox-tools/badge.svg)](https://docs.rs/irox-tools)                                         |
 | `irox-units`           | [![Crates.io](https://img.shields.io/crates/v/irox-units.svg)](https://crates.io/crates/irox-units) [![Documentation](https://docs.rs/irox-units/badge.svg)](https://docs.rs/irox-units)                                         |

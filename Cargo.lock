@@ -1603,6 +1603,7 @@ dependencies = [
  "irox-stats",
  "irox-structs",
  "irox-structs_derive",
+ "irox-threading",
  "irox-time",
  "irox-tools",
  "irox-types",
@@ -1699,6 +1700,7 @@ dependencies = [
  "egui_plot",
  "irox-egui-extras",
  "irox-stats",
+ "log",
  "ron",
  "serde",
 ]
@@ -1787,6 +1789,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.38",
+]
+
+[[package]]
+name = "irox-threading"
+version = "0.1.0"
+dependencies = [
+ "log",
 ]
 
 [[package]]
