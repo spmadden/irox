@@ -12,6 +12,7 @@ use super::FromUnits;
 ///
 /// Physical unit of computer storage, a Byte is eight Bits.
 #[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::integer_division)]
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
 pub enum DataSizeUnits {
     /// Eight Bits
@@ -31,6 +32,7 @@ pub enum DataSizeUnits {
 
 macro_rules! from_units_datasize {
     ($type:ident) => {
+        #[allow(clippy::integer_division)]
         impl crate::units::FromUnits<$type> for DataSizeUnits {
             fn from(&self, value: $type, units: Self) -> $type {
                 match self {
