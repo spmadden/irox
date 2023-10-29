@@ -8,6 +8,7 @@
 use std::str::FromStr;
 
 use irox_tools::iterators::Itertools;
+use irox_units::units::duration::Duration;
 
 use crate::datetime::UTCDateTime;
 use crate::format::{Format, FormatError, FormatParser};
@@ -184,6 +185,27 @@ impl FormatParser for BasicTimeOfDay {
 impl BasicTimeOfDay {
     pub fn format(time: &Time) -> String {
         BasicTimeOfDay.format(time)
+    }
+}
+
+pub struct ISO8601Duration;
+pub const DURATION: ISO8601Duration = ISO8601Duration;
+
+impl Format for ISO8601Duration {
+    type Item = Duration;
+
+    fn format(&self, date: &Self::Item) -> String {
+        let (days, hours, minutes, seconds) = date.as_dhms();
+        if days > 0 {
+            return format!("P{days}DT{hours:02}H{minutes:02}M{seconds:02}S");
+        }
+        if hours > 0 {
+            return format!("PT{hours}H{minutes:02}M{seconds:02}S");
+        }
+        if minutes > 0 {
+            return format!("PT{minutes}M{seconds:02}S");
+        }
+        format!("PT{seconds}S")
     }
 }
 
