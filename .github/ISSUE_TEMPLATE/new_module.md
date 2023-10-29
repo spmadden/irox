@@ -15,6 +15,7 @@ assignees: ''
    - [ ] Ensure new module in main module list
    - [ ] Ensure new module dependency hotlink exists
 - [ ] In the new module:
+  - [ ] Used the templates in `/dev/mod_template` 
   - [ ] Ensure `README.md` exists
   - [ ] Ensure `CHANGELOG.md` exists
   - [ ] Ensure `Cargo.toml` set up correctly
