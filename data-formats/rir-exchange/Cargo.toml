@@ -12,5 +12,13 @@ exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
 
+[features]
+default = ["download"]
+download = ["ureq"]
+
 [dependencies]
 irox-enums.workspace = true
+irox-time.workspace = true
+irox-carto.workspace = true
+rusqlite.workspace = true
+ureq = {workspace = true, optional = true}
