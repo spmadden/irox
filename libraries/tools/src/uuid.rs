@@ -76,7 +76,7 @@ impl TryFrom<&[u8]> for UUID {
         let mut inner = 0u128;
         let mut shift = 128;
         for b in value {
-            shift -=8 ;
+            shift -= 8;
             let b = (*b as u128).wrapping_shl(shift);
             inner |= b;
         }
@@ -112,7 +112,7 @@ impl TryFrom<&str> for UUID {
                 'D' | 'd' => 13,
                 'E' | 'e' => 14,
                 'F' | 'f' => 15,
-                _ => return Err(UUIDParseError::InvalidCharacter)
+                _ => return Err(UUIDParseError::InvalidCharacter),
             };
             shift -= 4;
             inner |= (val as u128).wrapping_shl(shift);
@@ -130,7 +130,10 @@ pub trait UUIDReader {
     fn read_uuid(&mut self) -> Result<UUID, Error>;
 }
 
-impl<T> UUIDReader for T where T: Bits {
+impl<T> UUIDReader for T
+where
+    T: Bits,
+{
     fn read_uuid(&mut self) -> Result<UUID, Error> {
         Ok(self.read_be_u128()?.into())
     }
@@ -144,7 +147,10 @@ pub trait UUIDWriter {
     fn write_uuid(&mut self, uuid: &UUID) -> Result<(), Error>;
 }
 
-impl<T> UUIDWriter for T where T: MutBits {
+impl<T> UUIDWriter for T
+where
+    T: MutBits,
+{
     fn write_uuid(&mut self, uuid: &UUID) -> Result<(), Error> {
         self.write_be_u128(uuid.inner)
     }
@@ -175,7 +181,7 @@ impl UUID {
 
 #[cfg(test)]
 mod tests {
-    use crate::uuid::{UUID, UUIDParseError};
+    use crate::uuid::{UUIDParseError, UUID};
 
     #[test]
     pub fn display_test() {
@@ -187,15 +193,15 @@ mod tests {
     }
 
     #[test]
-    pub fn parse_test() -> Result<(), UUIDParseError>{
+    pub fn parse_test() -> Result<(), UUIDParseError> {
         let uuid = UUID::new_random();
         let disp = format!("{uuid}");
 
-        let parsed : UUID = disp.as_str().try_into()?;
+        let parsed: UUID = disp.as_str().try_into()?;
         assert_eq!(parsed, uuid);
 
-        let parsed : u128 = parsed.into();
-        let parsed : UUID = (parsed.to_be_bytes().as_slice()).try_into()?;
+        let parsed: u128 = parsed.into();
+        let parsed: UUID = (parsed.to_be_bytes().as_slice()).try_into()?;
         assert_eq!(parsed, uuid);
 
         Ok(())
