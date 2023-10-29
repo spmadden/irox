@@ -5,12 +5,15 @@
 //! Contains [`UTCDateTime`] and associated elements to represent a [`Date`] and [`Time`] in UTC
 //!
 
-use crate::epoch::UnixTimestamp;
+use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
 use crate::format::iso8601::BASIC_DATE_TIME_OF_DAY;
 use crate::format::Format;
 use crate::gregorian::Date;
+use crate::julian::JulianDate;
 use crate::Time;
+use irox_units::units::duration::Duration;
 use std::fmt::{Display, Formatter};
+use std::ops::Sub;
 
 ///
 /// Represents a Gregorian Date and Time in UTC
@@ -82,5 +85,59 @@ impl From<UnixTimestamp> for UTCDateTime {
         let time = Time::from_seconds_f64(remaining_seconds).unwrap_or_default();
 
         UTCDateTime { date, time }
+    }
+}
+
+impl From<UTCDateTime> for UnixTimestamp {
+    fn from(value: UTCDateTime) -> Self {
+        let mut date_dur = value.date - UNIX_EPOCH.get_gregorian_date();
+        date_dur += value.time.into();
+        Self::from_offset(date_dur)
+    }
+}
+impl From<&UTCDateTime> for UnixTimestamp {
+    fn from(value: &UTCDateTime) -> Self {
+        let mut date_dur = value.date - UNIX_EPOCH.get_gregorian_date();
+        date_dur += value.time.into();
+        Self::from_offset(date_dur)
+    }
+}
+
+impl From<UTCDateTime> for JulianDate {
+    fn from(value: UTCDateTime) -> Self {
+        let mut date: JulianDate = value.date.into();
+        let time: Duration = value.time.into();
+        date += time;
+        date
+    }
+}
+
+impl From<&UTCDateTime> for JulianDate {
+    fn from(value: &UTCDateTime) -> Self {
+        let mut date: JulianDate = value.date.into();
+        let time: Duration = value.time.into();
+        date += time;
+        date
+    }
+}
+
+impl Sub<Self> for UTCDateTime {
+    type Output = Duration;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let ts1: JulianDate = self.into();
+        let ts2: JulianDate = rhs.into();
+
+        ts2 - ts1
+    }
+}
+impl Sub<&Self> for UTCDateTime {
+    type Output = Duration;
+
+    fn sub(self, rhs: &Self) -> Self::Output {
+        let ts1: JulianDate = self.into();
+        let ts2: JulianDate = rhs.into();
+
+        ts2 - ts1
     }
 }
