@@ -7,6 +7,7 @@
 pub mod assert;
 pub mod bits;
 pub mod f64;
+pub mod identifier;
 pub mod iterators;
 pub mod murmur3;
 pub mod options;
