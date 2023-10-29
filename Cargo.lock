@@ -2668,7 +2668,11 @@ dependencies = [
 name = "irox-rir-exchange"
 version = "0.1.0"
 dependencies = [
+ "irox-carto",
  "irox-enums",
+ "irox-time",
+ "rusqlite",
+ "ureq",
 ]
 
 [[package]]
