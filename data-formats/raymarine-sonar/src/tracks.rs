@@ -92,7 +92,7 @@ impl<'a> Track<'a> {
         Ok(())
     }
 
-    pub fn iter(&self) -> Result<Iter, Error> {
+    pub fn try_iter(&self) -> Result<Iter, Error> {
         debug!("Iter {}", self.data.track_id);
         let mut stmt = self
             .conn
