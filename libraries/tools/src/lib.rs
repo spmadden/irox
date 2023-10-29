@@ -3,6 +3,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod arrays;
 #[macro_use]
 pub mod assert;
 pub mod bits;
