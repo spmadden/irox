@@ -72,7 +72,7 @@ pub trait Itertools: Iterator {
     {
         let mut out: Vec<Self::Item> = Vec::with_capacity(count);
         for _i in 0..count {
-            out.push(self.next().unwrap_or(Default::default()))
+            out.push(self.next().unwrap_or_default());
         }
         out
     }
