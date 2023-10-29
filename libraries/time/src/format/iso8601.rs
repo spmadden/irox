@@ -18,7 +18,7 @@ use crate::Time;
 /// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2
 ///
 /// Equivalent to `YYYYMMddTHHmmssZ`
-pub struct BasicDateTimeOfDay {}
+pub struct BasicDateTimeOfDay;
 ///
 /// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2
 ///
@@ -50,7 +50,7 @@ impl FormatParser for BasicDateTimeOfDay {
 ///
 /// Equivalent to `YYYYMMdd`
 #[derive(Default, Debug, Copy, Clone)]
-pub struct BasicCalendarDate {}
+pub struct BasicCalendarDate;
 ///
 /// IS0 8601-1:2019 Basic Calendar Date Format, of section 5.2.2
 ///
@@ -58,7 +58,7 @@ pub struct BasicCalendarDate {}
 pub const BASIC_CALENDAR_DATE: BasicCalendarDate = BasicCalendarDate {};
 impl BasicCalendarDate {
     pub fn format(date: &Date) -> String {
-        BasicCalendarDate::default().format(date)
+        BasicCalendarDate.format(date)
     }
 }
 impl Format for BasicCalendarDate {
@@ -117,7 +117,7 @@ impl FormatParser for BasicCalendarDate {
 ///
 /// Equivalent to `THHmmssZ`
 #[derive(Default, Debug, Copy, Clone)]
-pub struct BasicTimeOfDay {}
+pub struct BasicTimeOfDay;
 ///
 /// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3
 ///
@@ -183,7 +183,7 @@ impl FormatParser for BasicTimeOfDay {
 }
 impl BasicTimeOfDay {
     pub fn format(time: &Time) -> String {
-        BasicTimeOfDay::default().format(time)
+        BasicTimeOfDay.format(time)
     }
 }
 

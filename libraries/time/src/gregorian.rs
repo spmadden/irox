@@ -455,6 +455,7 @@ impl From<&Date> for UnixTimestamp {
 /// 01-MAR-2000, a mod400 year after the leap day.
 const LEAPOCH: UnixTimestamp = UnixTimestamp::from_seconds(951868800);
 impl From<&UnixTimestamp> for Date {
+    #[allow(clippy::integer_division)]
     fn from(value: &UnixTimestamp) -> Self {
         // Algorithm impl based on libmusl __secs_to_tm.c
         let sec_in_day = SECONDS_IN_DAY as i64;
@@ -523,6 +524,7 @@ impl From<&UnixTimestamp> for Date {
 
 const JULIAN_DAY_1_JAN_YR0: f64 = 1721059.5;
 impl From<&Date> for JulianDate {
+    #[allow(clippy::integer_division)]
     fn from(value: &Date) -> Self {
         let mut years = value.year - 1;
         let qc_years = years / 400;
