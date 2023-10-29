@@ -64,7 +64,7 @@ impl TryFrom<&TypePath> for Primitives {
         };
         let ident = format!("{}", elem.ident);
         Primitives::try_from(ident.as_str())
-            .map_err(|_| Error::new_str(ErrorType::BadType, format!("Bad type: {ident}")))
+            .map_err(|()| Error::new_str(ErrorType::BadType, format!("Bad type: {ident}")))
     }
 }
 
