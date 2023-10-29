@@ -96,6 +96,13 @@ macro_rules! basic_unit {
             }
         }
 
+        impl std::ops::SubAssign for $struct_type {
+            fn sub_assign(&mut self, rhs: Self) {
+                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
+                self.value -= val;
+            }
+        }
+
         impl std::ops::Div<f64> for $struct_type {
             type Output = $struct_type;
 
