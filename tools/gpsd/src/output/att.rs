@@ -3,4 +3,4 @@
 
 /// An ATT object is a vehicle-attitude report
 #[derive(Debug, Clone, PartialEq)]
-pub struct ATT {}
+pub struct ATT;
