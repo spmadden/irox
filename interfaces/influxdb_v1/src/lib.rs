@@ -227,7 +227,7 @@ impl InfluxDB {
         let res = self.query_csv("SHOW DATABASES", None)?;
         let mut out: Vec<String> = Vec::new();
         irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
-	    trace!("{row:?}");
+            trace!("{row:?}");
             let row = row.into_map_lossy();
             trace!("{row:?}");
             if let Some(name) = row.get("name") {
