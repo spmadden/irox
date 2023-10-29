@@ -1807,6 +1807,7 @@ dependencies = [
  "irox-carto",
  "irox-enums",
  "irox-time",
+ "log",
  "rusqlite",
  "ureq",
 ]
