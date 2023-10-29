@@ -11,6 +11,7 @@ use rusqlite::Connection;
 pub use error::*;
 use irox_enums::EnumName;
 use irox_time::format::iso8601::BASIC_CALENDAR_DATE;
+use log::{error, info};
 pub use registry::*;
 pub use types::*;
 
@@ -114,7 +115,7 @@ impl RIRExchangeDatabase {
             self.insert_row(&record)?;
             incr += 1;
         }
-        println!("Imported {incr} records");
+        info!("Imported {incr} records");
         Ok(())
     }
 
@@ -154,7 +155,7 @@ impl<'a> Drop for Transaction<'a> {
     fn drop(&mut self) {
         let res = self.connection.execute_batch("COMMIT TRANSACTION;");
         if let Err(e) = res {
-            println!("Error committing transaction: {e:?}")
+            error!("Error committing transaction: {e:?}")
         }
     }
 }
