@@ -25,7 +25,6 @@ impl StylePersistingApp {
         if let Some(storage) = cc.storage {
             if let Some(style_str) = storage.get_string("style") {
                 if let Ok(parsed) = ron::from_str::<Style>(style_str.as_str()) {
-                    println!("{:?}", &parsed.visuals);
                     cc.egui_ctx.set_style(parsed);
                     style = cc.egui_ctx.style();
                 }
