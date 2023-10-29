@@ -11,6 +11,7 @@ use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::frame_history::FrameHistory;
 use irox_egui_extras::styles::StylePersistingApp;
 use irox_stats::Distribution;
+use log::error;
 
 use crate::run::Run;
 
@@ -32,7 +33,7 @@ fn main() {
             Box::new(comp)
         }),
     ) {
-        eprintln!("{e:?}");
+        error!("{e:?}");
     };
 }
 
@@ -62,7 +63,7 @@ impl HalflifesApp {
                 if let Some(val) = x.get(idx) {
                     *v += *val;
                 } else {
-                    eprintln!("BAD IDX: {idx}");
+                    error!("BAD IDX: {idx}");
                 }
             }
         });
