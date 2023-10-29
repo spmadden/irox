@@ -15,22 +15,18 @@
 /// assert_eq!(max_idx, Some(8));
 /// ```
 pub fn max_index<T: PartialOrd>(arr: &[T]) -> Option<usize> {
-    let mut max_idx : Option<usize> = None;
-    let mut max_val : Option<&T> = None;
-    let mut idx : usize = 0;
-    for val in arr {
+    let mut max_idx: Option<usize> = None;
+    let mut max_val: Option<&T> = None;
+    for (idx, val) in arr.iter().enumerate() {
         if max_idx.is_none() {
             max_idx = Some(idx);
             max_val = Some(val);
-        } else {
-            if let Some(mv) = max_val {
-                if val.gt(mv) {
-                    max_val = Some(val);
-                    max_idx = Some(idx);
-                }
+        } else if let Some(mv) = max_val {
+            if val.gt(mv) {
+                max_val = Some(val);
+                max_idx = Some(idx);
             }
         }
-        idx += 1;
     }
     max_idx
 }
@@ -41,30 +37,33 @@ pub fn max_index<T: PartialOrd>(arr: &[T]) -> Option<usize> {
 /// # Example
 /// ```
 /// # use irox_tools::arrays::longest_consecutive_values;
-/// let (position,length) = longest_consecutive_values(&[1,0,0,0,0,0,1,2,3,4,5,6], 0).unwrap();
+/// let (position,length) = longest_consecutive_values(&[1,0,0,0,0,0,1,2,3,4,5,6], &0).unwrap();
 ///
 /// assert_eq!(position, 1);
 /// assert_eq!(length, 5);
 /// ```
-pub fn longest_consecutive_values(arr: &[u8], val: u8) -> Option<(usize,usize)> {
+pub fn longest_consecutive_values<T: PartialOrd>(arr: &[T], val: &T) -> Option<(usize, usize)> {
     let len = arr.len();
-    let mut best_count : usize = 0;
+    let mut best_count: usize = 0;
     let mut best_position: usize = 0;
     let mut start_pos = 0;
     while start_pos < len {
-        println!("{start_pos}");
-        let mut count : usize = 0;
-        for j in start_pos..len {
-            if arr[j] != val {
-                start_pos = j;
+        let mut count: usize = 0;
+        let Some(arr) = arr.get(start_pos..) else {
+            return None;
+        };
+        for (idx, v) in arr.iter().enumerate() {
+            if v.ne(val) {
+                start_pos += idx;
                 break;
             }
             count += 1;
-            println!("Found {j}/{count}");
         }
         if count > best_count {
             best_count = count;
-            best_position = start_pos - count;
+            if start_pos != 0 {
+                best_position = start_pos - count;
+            }
         }
         start_pos += 1;
     }
@@ -80,7 +79,8 @@ mod tests {
 
     #[test]
     pub fn test1() {
-        let (position,length) = longest_consecutive_values(&[1,0,0,0,0,0,1,2,3,4,5,6], 0).unwrap();
+        let (position, length) =
+            longest_consecutive_values(&[1, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6], &0).unwrap();
 
         assert_eq!(position, 1);
         assert_eq!(length, 5);
@@ -88,7 +88,8 @@ mod tests {
 
     #[test]
     pub fn test2() {
-        let (position,length) = longest_consecutive_values(&[1,0,0,0,1,2,0,0,0,0,0,4,5,6], 0).unwrap();
+        let (position, length) =
+            longest_consecutive_values(&[1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 4, 5, 6], &0).unwrap();
 
         assert_eq!(position, 6);
         assert_eq!(length, 5);

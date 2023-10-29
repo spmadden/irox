@@ -29,7 +29,6 @@ impl ToU16Array<4> for u64 {
 }
 
 impl ToU16Array<8> for u128 {
-
     fn to_u16_array(&self) -> [u16; 8] {
         let a = (self >> 112) as u16;
         let b = (self >> 96) as u16;
