@@ -233,6 +233,38 @@ impl Duration {
         }
     }
 
+    ///
+    /// Returns this duration as (Years, Days, Hours, Minutes, Seconds)
+    pub fn as_ydhms(&self) -> (u64, u16, u8, u8, u8) {
+        let mut rem = *self;
+        let years = rem.as_years();
+        rem -= Duration::from_years(years);
+        let (d, h, m, s) = rem.as_dhms();
+        (years, d as u16, h, m, s)
+    }
+
+    ///
+    /// Returns this duration as (Days, Hours, Minutes, Seconds)
+    pub fn as_dhms(&self) -> (u64, u8, u8, u8) {
+        let mut rem = *self;
+        let days = rem.as_days();
+        rem -= Duration::from_days(days);
+        let (h, m, s) = rem.as_hms();
+        (days, h as u8, m, s)
+    }
+
+    ///
+    /// Returns this duration as (Hours, Minutes, Seconds)
+    pub fn as_hms(&self) -> (u64, u8, u8) {
+        let mut rem = *self;
+        let hours = rem.as_hours();
+        rem -= Duration::from_hours(hours);
+        let minutes = rem.as_minutes();
+        rem -= Duration::from_minutes(minutes);
+        let seconds = rem.as_seconds();
+        (hours, minutes as u8, seconds as u8)
+    }
+
     /// Returns the value of this duration as whole seconds, with any fractional
     /// element truncated off.
     pub fn as_seconds(&self) -> u64 {
