@@ -4,6 +4,10 @@
 use std::collections::VecDeque;
 use std::io::{Error, Read, Write};
 
+pub use counting::*;
+
+mod counting;
+
 ///
 /// Consumes data from the input stream until:
 /// 1. The byte stream represented by 'search' has been found or
