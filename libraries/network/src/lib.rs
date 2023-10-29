@@ -3,5 +3,6 @@
 
 #![forbid(unsafe_code)]
 
+pub mod address;
 pub mod http;
 pub mod pool;
