@@ -52,11 +52,13 @@ pub enum Month {
     November = 11,
     December = 12,
 }
+
 impl Display for Month {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{}", self.name()))
     }
 }
+
 impl Month {
     ///
     /// Returns the total number of days in the month for the indicated gregorian
@@ -452,8 +454,10 @@ impl From<&Date> for UnixTimestamp {
         UnixTimestamp::from_seconds_f64(secs_duration as f64)
     }
 }
+
 /// 01-MAR-2000, a mod400 year after the leap day.
 const LEAPOCH: UnixTimestamp = UnixTimestamp::from_seconds(951868800);
+
 impl From<&UnixTimestamp> for Date {
     #[allow(clippy::integer_division)]
     fn from(value: &UnixTimestamp) -> Self {
@@ -523,6 +527,7 @@ impl From<&UnixTimestamp> for Date {
 }
 
 const JULIAN_DAY_1_JAN_YR0: f64 = 1721059.5;
+
 impl From<&Date> for JulianDate {
     #[allow(clippy::integer_division)]
     fn from(value: &Date) -> Self {
@@ -541,9 +546,21 @@ impl From<&Date> for JulianDate {
     }
 }
 
+impl From<Date> for JulianDate {
+    fn from(value: Date) -> Self {
+        From::<&Date>::from(&value)
+    }
+}
+
 impl From<&JulianDate> for Date {
     fn from(value: &JulianDate) -> Self {
         value.get_epoch().0 + Duration::new(value.get_day_number(), DurationUnit::Day)
+    }
+}
+
+impl From<JulianDate> for Date {
+    fn from(value: JulianDate) -> Self {
+        From::<&JulianDate>::from(&value)
     }
 }
 
@@ -551,14 +568,21 @@ impl Sub<&Date> for Date {
     type Output = Duration;
 
     fn sub(self, rhs: &Date) -> Self::Output {
+        if self == *rhs {
+            return Duration::new_seconds(0.0);
+        }
         let duration = self.as_julian_day().get_day_number() - rhs.as_julian_day().get_day_number();
         Duration::new(duration, DurationUnit::Day)
     }
 }
+
 impl Sub<Date> for Date {
     type Output = Duration;
 
     fn sub(self, rhs: Date) -> Self::Output {
+        if self == rhs {
+            return Duration::new_seconds(0.0);
+        }
         let duration = self.as_julian_day().get_day_number() - rhs.as_julian_day().get_day_number();
         Duration::new(duration, DurationUnit::Day)
     }
@@ -572,6 +596,7 @@ impl Add<&mut Duration> for Date {
         self.add_days(days as u32)
     }
 }
+
 impl Add<&Duration> for Date {
     type Output = Date;
 
@@ -580,6 +605,7 @@ impl Add<&Duration> for Date {
         self.add_days(days as u32)
     }
 }
+
 impl Add<Duration> for Date {
     type Output = Date;
 
