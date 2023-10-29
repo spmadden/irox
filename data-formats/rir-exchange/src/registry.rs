@@ -3,6 +3,8 @@
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 
+use crate::Error;
+
 #[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumName, EnumTryFromStr, EnumIterItem)]
 pub enum RegionalRegistry {
@@ -32,5 +34,20 @@ impl RegionalRegistry {
                 "https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest"
             }
         }
+    }
+}
+
+impl TryFrom<&String> for RegionalRegistry {
+    type Error = Error;
+
+    fn try_from(value: &String) -> Result<Self, Self::Error> {
+        Ok(match value.as_str() {
+            "afrinic" => RegionalRegistry::afrinic,
+            "apnic" => RegionalRegistry::apnic,
+            "arin" => RegionalRegistry::arin,
+            "lacnic" => RegionalRegistry::lacnic,
+            "ripencc" => RegionalRegistry::ripencc,
+            e => return Error::invalid(format!("Invalid value for RegionalRegistry: {e}")),
+        })
     }
 }
