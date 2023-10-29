@@ -9,6 +9,7 @@
 //!
 
 use std::marker::PhantomData;
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use irox_units::units::duration::Duration;
 
@@ -18,6 +19,7 @@ use crate::gregorian::Date;
 /// An `Epoch` serves as a reference point from which time is measured.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Epoch(pub Date);
+
 impl Epoch {
     ///
     /// The Gregorian Date of this particular Epoch.
@@ -35,7 +37,16 @@ pub struct Timestamp<T> {
 
     _phantom: PhantomData<T>,
 }
+
 impl<T> Timestamp<T> {
+    pub(crate) fn new(epoch: Epoch, duration: Duration) -> Self {
+        Self {
+            epoch,
+            offset: duration,
+            _phantom: PhantomData,
+        }
+    }
+
     ///
     /// Returns the base epoch for this timestamp
     #[must_use]
@@ -61,6 +72,7 @@ pub const UNIX_EPOCH: Epoch = Epoch(Date {
 ///
 /// Represents a duration offset from the [`UNIX_EPOCH`].
 pub type UnixTimestamp = Timestamp<UnixEpoch>;
+
 /// `UnixEpoch` is a compile-time check for [`UnixTimestamp`] = [`Timestamp<UnixEpoch>`]
 #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct UnixEpoch;
@@ -120,6 +132,82 @@ macro_rules! derive_timestamp_impl {
     };
 }
 
+impl<T> Add<Duration> for Timestamp<T> {
+    type Output = Timestamp<T>;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        let offset = self.offset + rhs;
+        Self::new(self.epoch, offset)
+    }
+}
+
+impl<T> AddAssign<Duration> for Timestamp<T> {
+    fn add_assign(&mut self, rhs: Duration) {
+        self.offset += rhs;
+    }
+}
+
+impl<T> Sub<Duration> for Timestamp<T> {
+    type Output = Timestamp<T>;
+
+    fn sub(self, rhs: Duration) -> Self::Output {
+        let offset = self.offset - rhs;
+        Self::new(self.epoch, offset)
+    }
+}
+
+impl<T> SubAssign<Duration> for Timestamp<T> {
+    fn sub_assign(&mut self, rhs: Duration) {
+        self.offset -= rhs;
+    }
+}
+
+impl<T> Add<&Duration> for Timestamp<T> {
+    type Output = Timestamp<T>;
+
+    fn add(self, rhs: &Duration) -> Self::Output {
+        let offset = self.offset + *rhs;
+        Self::new(self.epoch, offset)
+    }
+}
+
+impl<T> AddAssign<&Duration> for Timestamp<T> {
+    fn add_assign(&mut self, rhs: &Duration) {
+        self.offset += *rhs;
+    }
+}
+
+impl<T> Sub<&Duration> for Timestamp<T> {
+    type Output = Timestamp<T>;
+
+    fn sub(self, rhs: &Duration) -> Self::Output {
+        let offset = self.offset - *rhs;
+        Self::new(self.epoch, offset)
+    }
+}
+
+impl<T> SubAssign<&Duration> for Timestamp<T> {
+    fn sub_assign(&mut self, rhs: &Duration) {
+        self.offset -= *rhs;
+    }
+}
+
+impl<T> Sub<Timestamp<T>> for Timestamp<T> {
+    type Output = Duration;
+
+    fn sub(self, rhs: Timestamp<T>) -> Self::Output {
+        self.offset - rhs.offset
+    }
+}
+
+impl<T> Sub<&Timestamp<T>> for Timestamp<T> {
+    type Output = Duration;
+
+    fn sub(self, rhs: &Timestamp<T>) -> Self::Output {
+        self.offset - rhs.offset
+    }
+}
+
 impl UnixTimestamp {
     ///
     /// Returns the local system clock equivalent of the unix timestamp
@@ -131,6 +219,14 @@ impl UnixTimestamp {
                 UnixTimestamp::from_offset(Duration::new_seconds(-1.0 * t.duration().as_secs_f64()))
             }
         }
+    }
+
+    ///
+    /// Returns the local system clock duration since the timestamp.  MAY BE NEGATIVE if the clock
+    /// has changed since the last call.
+    #[must_use]
+    pub fn elapsed(&self) -> Duration {
+        Self::now().offset - self.offset
     }
 
     ///
@@ -152,6 +248,7 @@ pub const GPS_EPOCH: Epoch = Epoch(Date {
 ///
 /// Represents a duration offset from the [`GPS_EPOCH`]
 pub type GPSTimestamp = Timestamp<GPSEpoch>;
+
 /// `GPSEpoch` is a compile-time check for [`GPSTimestamp`] = [`Timestamp<GPSEpoch>`]
 #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct GPSEpoch;
@@ -167,6 +264,7 @@ pub const GREGORIAN_EPOCH: Epoch = Epoch(Date {
 ///
 /// Represents a duration offset from the [`GREGORIAN_EPOCH`]
 pub type GregorianTimestamp = Timestamp<GregorianEpoch>;
+
 /// `GregorianEpoch` is a compile-time check for [`GregorianTimestamp`] = [`Timestamp<GregorianEpoch>`]
 #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct GregorianEpoch;
@@ -190,6 +288,7 @@ pub const WINDOWS_NT_EPOCH: Epoch = Epoch(Date {
 /// Note: when a duration is actually retrieved from the windows FILETIME
 /// routines, it comes back in 100-nanosecond increments from this epoch.
 pub type WindowsNTTimestamp = Timestamp<WindowsEpoch>;
+
 /// `WindowsEpoch` is a compile-time check for [`WindowsNTTimestamp`] = [`Timestamp<WindowsEpoch>`]
 #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct WindowsEpoch;
