@@ -2,7 +2,8 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use irox_tools::arrays::max_index;
+
+use irox_tools::arrays::longest_consecutive_values;
 use irox_tools::u16::{FromU16Array, ToU16Array};
 
 ///
@@ -191,11 +192,6 @@ impl IPv4Network {
         network_id: IPv4Address,
         network_mask: u32,
     ) -> Result<IPv4Network, NetworkError> {
-        println!(
-            "{}/{}",
-            network_mask.leading_ones(),
-            network_mask.trailing_zeros()
-        );
         if network_mask.leading_ones() + network_mask.trailing_zeros() != 32 {
             return Err(NetworkError::InvalidMask(network_mask));
         }
@@ -409,8 +405,9 @@ pub struct IPv6Network {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct IPv6Address {
-    pub(crate) address: u128
+    pub(crate) address: u128,
 }
+
 impl IPv6Address {
     ///
     /// # Example
@@ -425,58 +422,52 @@ impl IPv6Address {
     /// assert_eq!("::1", format!("{}", IPv6Address::new(&[0,0,0,0,0,0,0,1])));
     ///
     /// ```
-    pub fn new(val: &[u16;8]) -> IPv6Address{
+    pub fn new(val: &[u16; 8]) -> IPv6Address {
         let address = u128::from_u16_array(val);
-        IPv6Address {
-            address
-        }
+        IPv6Address { address }
     }
 }
-impl Display for IPv6Address {
 
+impl Display for IPv6Address {
     fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
         let bytes = self.address.to_u16_array();
         if fmt.alternate() {
             // full form, no collapse.
-            let [a,b,c,d,e,f,g,h] = bytes;
-            return fmt.write_fmt(format_args!("{a:04x}:{b:04x}:{c:04x}:{d:04x}:{e:04x}:{f:04x}:{g:04x}:{h:04x}"));
+            let [a, b, c, d, e, f, g, h] = bytes;
+            return fmt.write_fmt(format_args!(
+                "{a:04x}:{b:04x}:{c:04x}:{d:04x}:{e:04x}:{f:04x}:{g:04x}:{h:04x}"
+            ));
         }
         // collapsed form.
-        let mut zeroes : [u8;8] = [0;8];
-        for i in 0..8 {
-            for j in i..8 {
-                let val = bytes[j];
-                if val == 0 {
-                    zeroes[i] += 1;
-                } else {
-                    break;
-                }
+        if let Some((longest_zeroes_point, num_zeroes)) = longest_consecutive_values(&bytes, &0) {
+            if longest_zeroes_point == 0 && num_zeroes == 8 {
+                return fmt.write_str("::");
             }
-        }
-        let longest_zeroes_point = max_index(&zeroes);
-        if let Some(longest_zeroes_point) = longest_zeroes_point {
-            if let Some(num_zeroes) = zeroes.get(longest_zeroes_point) {
-                if longest_zeroes_point == 0 && *num_zeroes == 8 {
-                    return fmt.write_str("::");
-                }
-                if *num_zeroes > 1 {
-                    let bytes : Vec<String> = bytes.iter().enumerate().filter_map(|(idx,val)| {
-                        if idx == longest_zeroes_point || (idx == 1 && longest_zeroes_point == 0){
+            if num_zeroes > 1 {
+                let bytes: Vec<String> = bytes
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(idx, val)| {
+                        if idx == longest_zeroes_point || (idx == 1 && longest_zeroes_point == 0) {
                             return Some(String::new());
-                        } else if idx > longest_zeroes_point && idx < (longest_zeroes_point + *num_zeroes as usize) {
+                        } else if idx > longest_zeroes_point
+                            && idx < (longest_zeroes_point + num_zeroes)
+                        {
                             return None;
                         }
                         Some(format!("{val:x}"))
-                    }).collect();
-                    if bytes.is_empty() {
-                        return fmt.write_str("::");
-                    }
-                    fmt.write_fmt(format_args!("{}", bytes.join(":")))?;
-                    return Ok(());
+                    })
+                    .collect();
+                if bytes.is_empty() {
+                    return fmt.write_str("::");
                 }
+                fmt.write_fmt(format_args!("{}", bytes.join(":")))?;
+                return Ok(());
             }
         }
-        let [a,b,c,d,e,f,g,h] = bytes;
-        fmt.write_fmt(format_args!("{a:x}:{b:x}:{c:x}:{d:x}:{e:x}:{f:x}:{g:x}:{h:x}"))
+        let [a, b, c, d, e, f, g, h] = bytes;
+        fmt.write_fmt(format_args!(
+            "{a:x}:{b:x}:{c:x}:{d:x}:{e:x}:{f:x}:{g:x}:{h:x}"
+        ))
     }
 }
