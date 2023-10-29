@@ -1614,6 +1614,7 @@ dependencies = [
 name = "irox-carto"
 version = "0.3.0"
 dependencies = [
+ "irox-csv",
  "irox-enums",
  "irox-time",
  "irox-tools",

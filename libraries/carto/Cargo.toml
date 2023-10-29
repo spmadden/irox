@@ -21,3 +21,6 @@ log.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
+
+[build-dependencies]
+irox-csv.workspace = true
