@@ -1,8 +1,12 @@
 #!/usr/bin/env -S just --justfile
 
-default +FLAGS='': (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
+default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='': deny build test format_check lints about doc upgrade package
+ci +FLAGS='': updates deny build test format_check lints about doc upgrade package
+
+updates:
+    rustup update
+    cargo update
 
 check_install prereq:
     #!/usr/bin/env bash
