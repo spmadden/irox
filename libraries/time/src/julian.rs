@@ -6,7 +6,9 @@
 //! Julian [`Epoch`]
 //!
 
+use irox_units::units::duration::{Duration, DurationUnit};
 use std::marker::PhantomData;
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use crate::{
     epoch::{Epoch, UnixTimestamp, COMMON_ERA_EPOCH, GREGORIAN_EPOCH},
@@ -51,7 +53,7 @@ pub struct JulianDayNumber<T> {
 }
 
 impl<T> JulianDayNumber<T> {
-    pub fn new(epoch: Epoch, day_number: f64) -> Self {
+    pub(crate) fn new(epoch: Epoch, day_number: f64) -> Self {
         JulianDayNumber {
             epoch,
             day_number,
@@ -172,6 +174,83 @@ macro_rules! impl_julian {
             }
         }
     };
+}
+
+impl<T> Add<Duration> for JulianDayNumber<T> {
+    type Output = JulianDayNumber<T>;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        let day_number = self.day_number + rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+        Self::new(self.epoch, day_number)
+    }
+}
+
+impl<T> Add<&Duration> for JulianDayNumber<T> {
+    type Output = JulianDayNumber<T>;
+
+    fn add(self, rhs: &Duration) -> Self::Output {
+        let day_number = self.day_number + rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+        Self::new(self.epoch, day_number)
+    }
+}
+
+impl<T> Sub<Duration> for JulianDayNumber<T> {
+    type Output = JulianDayNumber<T>;
+
+    fn sub(self, rhs: Duration) -> Self::Output {
+        let day_number = self.day_number - rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+        Self::new(self.epoch, day_number)
+    }
+}
+
+impl<T> Sub<&Duration> for JulianDayNumber<T> {
+    type Output = JulianDayNumber<T>;
+
+    fn sub(self, rhs: &Duration) -> Self::Output {
+        let day_number = self.day_number - rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+        Self::new(self.epoch, day_number)
+    }
+}
+
+impl<T> AddAssign<Duration> for JulianDayNumber<T> {
+    fn add_assign(&mut self, rhs: Duration) {
+        self.day_number += rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+    }
+}
+
+impl<T> AddAssign<&Duration> for JulianDayNumber<T> {
+    fn add_assign(&mut self, rhs: &Duration) {
+        self.day_number += rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+    }
+}
+
+impl<T> SubAssign<Duration> for JulianDayNumber<T> {
+    fn sub_assign(&mut self, rhs: Duration) {
+        self.day_number -= rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+    }
+}
+
+impl<T> SubAssign<&Duration> for JulianDayNumber<T> {
+    fn sub_assign(&mut self, rhs: &Duration) {
+        self.day_number -= rhs.as_seconds_f64() / SECONDS_IN_DAY as f64;
+    }
+}
+
+impl<T> Sub<JulianDayNumber<T>> for JulianDayNumber<T> {
+    type Output = Duration;
+
+    fn sub(self, rhs: JulianDayNumber<T>) -> Self::Output {
+        let dx = self.day_number - rhs.day_number;
+        Duration::new(dx, DurationUnit::Day)
+    }
+}
+impl<T> Sub<&JulianDayNumber<T>> for JulianDayNumber<T> {
+    type Output = Duration;
+
+    fn sub(self, rhs: &JulianDayNumber<T>) -> Self::Output {
+        let dx = self.day_number - rhs.day_number;
+        Duration::new(dx, DurationUnit::Day)
+    }
 }
 
 impl From<UnixTimestamp> for JulianDate {
