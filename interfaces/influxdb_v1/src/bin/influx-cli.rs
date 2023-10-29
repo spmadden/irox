@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+#![allow(clippy::print_stdout)]
+
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
