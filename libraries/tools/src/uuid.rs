@@ -25,14 +25,31 @@ impl From<u128> for UUID {
     }
 }
 
+impl From<&u128> for UUID {
+    fn from(value: &u128) -> Self {
+        UUID { inner: *value }
+    }
+}
+
 impl From<UUID> for u128 {
     fn from(value: UUID) -> Self {
         value.inner
     }
 }
 
+impl From<&UUID> for u128 {
+    fn from(value: &UUID) -> Self {
+        value.inner
+    }
+}
 impl From<UUID> for [u8; 16] {
     fn from(value: UUID) -> Self {
+        value.inner.to_be_bytes()
+    }
+}
+
+impl From<&UUID> for [u8; 16] {
+    fn from(value: &UUID) -> Self {
         value.inner.to_be_bytes()
     }
 }
