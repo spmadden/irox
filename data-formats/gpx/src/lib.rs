@@ -298,7 +298,7 @@ impl Track {
     }
 }
 
-pub struct Extensions {}
+pub struct Extensions;
 
 /// A person or organization.
 pub struct Person {
