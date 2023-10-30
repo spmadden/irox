@@ -65,6 +65,12 @@ impl EguiProgressWindow {
     }
 }
 
+impl Default for EguiProgressWindow {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProgressPrinter for EguiProgressWindow {
     fn track_task_progress(&self, task: &Task) {
         if let Ok(mut tasks) = self.tasks.clone().write() {
