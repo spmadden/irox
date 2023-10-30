@@ -1,6 +1,42 @@
 
 
 
+## v0.3.1 (2023-10-30)
+
+### Chore
+
+ - <csr-id-f374b5ef4a7f69938753223712d28c52353bbb92/> ALL THE LINTS.
+
+### New Features
+
+ - <csr-id-7918120dc78e7b8a143d8b7e3175748fddbd21b8/> new Day/Hours/Minutes/Seconds extraction for Duration
+ - <csr-id-8488f471efbd9083936eee4618eb3a37a28213f5/> Impl SubAssign in the units macro
+ - <csr-id-8388e21e352e297da2470f048b38f254207c3032/> add Days and Years to duration
+ - <csr-id-ebf4d595e6758d5451a951734354cda51ff1ef16/> allow bounds errors to upconvert primitives
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release over the course of 9 calendar days.
+ - 14 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New Day/Hours/Minutes/Seconds extraction for Duration ([`7918120`](https://github.com/spmadden/irox/commit/7918120dc78e7b8a143d8b7e3175748fddbd21b8))
+    - Impl SubAssign in the units macro ([`8488f47`](https://github.com/spmadden/irox/commit/8488f471efbd9083936eee4618eb3a37a28213f5))
+    - ALL THE LINTS. ([`f374b5e`](https://github.com/spmadden/irox/commit/f374b5ef4a7f69938753223712d28c52353bbb92))
+    - Add Days and Years to duration ([`8388e21`](https://github.com/spmadden/irox/commit/8388e21e352e297da2470f048b38f254207c3032))
+    - Allow bounds errors to upconvert primitives ([`ebf4d59`](https://github.com/spmadden/irox/commit/ebf4d595e6758d5451a951734354cda51ff1ef16))
+</details>
+
 ## v0.3.0 (2023-10-16)
 
 <csr-id-90e274aabca747c30b3a32823940fec6225f0a07/>
@@ -57,7 +93,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 33 commits contributed to the release over the course of 5 calendar days.
+ - 34 commits contributed to the release over the course of 5 calendar days.
  - 27 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -69,6 +105,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.0, irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0, safety bump 2 crates ([`a6c0a5f`](https://github.com/spmadden/irox/commit/a6c0a5fcfc4070b8cbc1442192b7eaef275e80f2))
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
     - Break out time into own module ([`9245b11`](https://github.com/spmadden/irox/commit/9245b11a33fe56f75028ef5d2faa09efa4f40626))
