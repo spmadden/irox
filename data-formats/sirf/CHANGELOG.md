@@ -1,6 +1,44 @@
 
 
+
+## v0.3.0 (2023-10-30)
+
+### Bug Fixes (BREAKING)
+
+ - <csr-id-bba2c45c261c24124b9f4cd260d7177364e0794e/> Bits and MutBits no longer require Read & Write
+ - <csr-id-e981099e141ffbc884031fd40d4adcebc46faaec/> rename 'utc_seconds' to 'utc_milliseconds' in GeoNavData to reflect the actual contents of the field
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 9 calendar days.
+ - 42 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
+    - Bits and MutBits no longer require Read & Write ([`bba2c45`](https://github.com/spmadden/irox/commit/bba2c45c261c24124b9f4cd260d7177364e0794e))
+    - Rename 'utc_seconds' to 'utc_milliseconds' in GeoNavData to reflect the actual contents of the field ([`e981099`](https://github.com/spmadden/irox/commit/e981099e141ffbc884031fd40d4adcebc46faaec))
+</details>
+
 ## v0.2.0 (2023-09-18)
+
+<csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
+<csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
+<csr-id-b9a0ae0ccb51682bd9c36e9ab198f38634a62ade/>
+<csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
+<csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
+<csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/>
+<csr-id-7fa187c565b024c1311fb8dcc0ed5bb5387557a1/>
+<csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
 
 ### Chore
 
@@ -32,7 +70,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 23 commits contributed to the release over the course of 42 calendar days.
+ - 24 commits contributed to the release over the course of 44 calendar days.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -43,6 +81,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.0, irox-enums v0.2.0, irox-tools v0.2.0, irox-units v0.2.0, irox-carto v0.2.0, irox-csv v0.2.0, irox-egui-extras v0.2.0, irox-networking v0.2.0, irox-types v0.2.0, irox-influxdb_v1 v0.2.0, irox-structs_derive v0.2.0, irox-structs v0.2.0, irox-nmea0183 v0.1.0, irox-sirf v0.2.0, irox-stats v0.2.0, irox-winlocation-api v0.1.0, irox v0.2.0, safety bump 10 crates ([`6a72204`](https://github.com/spmadden/irox/commit/6a722046661ceef02a66c2067e2c5c15ce102e04))
     - Clean up code with additional lints ([`f03d8a3`](https://github.com/spmadden/irox/commit/f03d8a3ec997d53470bfdeb5e76b71925aac3f10))
     - Update cargo.tomls to add repository ([`80d2b88`](https://github.com/spmadden/irox/commit/80d2b88bdcb553faaeafc09673c31d7ebedafd19))
     - Fix new formatting errors from rust 1.72 upgrade ([`b9a0ae0`](https://github.com/spmadden/irox/commit/b9a0ae0ccb51682bd9c36e9ab198f38634a62ade))
