@@ -2,7 +2,7 @@
 
 default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='': updates deny build test format_check lints about doc upgrade package
+ci +FLAGS='--all-features': updates deny (build FLAGS) (test FLAGS) format_check (lints FLAGS) about doc upgrade package
 
 updates:
     rustup update
