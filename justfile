@@ -2,7 +2,7 @@
 
 default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='--all-features': updates deny (build FLAGS) (test FLAGS) format_check (lints FLAGS) about doc upgrade package
+ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints FLAGS) about doc upgrade package
 
 updates:
     rustup update
@@ -20,19 +20,19 @@ deny +FLAGS='':
     cargo deny check {{FLAGS}}
 
 build +FLAGS='':
-    cargo build {{FLAGS}}
+    cargo build --all-targets --all-features {{FLAGS}}
 
 test +FLAGS='':
-    cargo test {{FLAGS}}
+    cargo test --all-targets --all-features {{FLAGS}}
 
 format +FLAGS='':
-    cargo fmt {{FLAGS}}
+    cargo fmt --all {{FLAGS}}
 
 format_check +FLAGS='':
-    cargo fmt --check {{FLAGS}}
+    cargo fmt --check --all {{FLAGS}}
 
 lints +FLAGS='':
-    xargs -aClippy.lints cargo clippy {{FLAGS}} --
+    xargs -aClippy.lints cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
 
 package:
     cargo package --allow-dirty
