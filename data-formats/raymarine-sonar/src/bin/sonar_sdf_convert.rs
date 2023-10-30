@@ -50,13 +50,13 @@ pub fn main() -> Result<(), Error> {
         for track in conn.get_tracks()? {
             info!("Adding track segment for {path}");
             let mut seg = TrackSegment::new();
-            for point in track.iter()? {
+            for point in track.try_iter()? {
                 match point {
                     CoordinateType::Elliptical(e) => {
                         seg.track_point.push(e.into());
                         // println!("{e}")
                     }
-                    CoordinateType::Cartesian(e) => {
+                    CoordinateType::Cartesian(_e) => {
                         // println!("{e}")
                     }
                     CoordinateType::Horizontal(_) => {}
