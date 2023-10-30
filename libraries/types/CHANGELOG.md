@@ -1,6 +1,31 @@
 
 
 
+## v0.2.2 (2023-10-30)
+
+### Chore
+
+ - <csr-id-645afe2dca3b6f200aa6a8ed73c157316d30943c/> ALL THE LINTS.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 22 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - ALL THE LINTS. ([`645afe2`](https://github.com/spmadden/irox/commit/645afe2dca3b6f200aa6a8ed73c157316d30943c))
+</details>
+
 ## v0.2.1 (2023-10-08)
 
 ### New Features
@@ -16,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 8 calendar days.
+ - 4 commits contributed to the release over the course of 8 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - Fix blob to_string ([`9f90435`](https://github.com/spmadden/irox/commit/9f90435643db234a3c4403d56926f813ecbafce2))
     - Impl ToString for PrimitiveValue ([`6d31e4a`](https://github.com/spmadden/irox/commit/6d31e4a52e0fc72a70de4970e414b6980e670316))
     - Add 'blob' type ([`4e0bc91`](https://github.com/spmadden/irox/commit/4e0bc913e685e2e7d02a6186b68282cb3aaaae2e))
