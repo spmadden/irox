@@ -1,5 +1,41 @@
 
 
+## v0.3.0 (2023-10-30)
+
+### Chore
+
+ - <csr-id-3840427bd226f4fea576053351b0244bf817e55b/> ALL THE LINTS.
+
+### Bug Fixes
+
+ - <csr-id-5d8962f7ff00e6bd0891fbe41c2acaf87f9cf279/> fix bin compilation
+
+### New Features (BREAKING)
+
+ - <csr-id-ebe68cb801f6af77b4782cdba0827bdda802db1d/> pivot to using irox_time
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 9 calendar days.
+ - 14 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
+    - Fix bin compilation ([`5d8962f`](https://github.com/spmadden/irox/commit/5d8962f7ff00e6bd0891fbe41c2acaf87f9cf279))
+    - ALL THE LINTS. ([`3840427`](https://github.com/spmadden/irox/commit/3840427bd226f4fea576053351b0244bf817e55b))
+    - Pivot to using irox_time ([`ebe68cb`](https://github.com/spmadden/irox/commit/ebe68cb801f6af77b4782cdba0827bdda802db1d))
+</details>
+
 ## v0.2.0 (2023-10-16)
 
 ### New Features
@@ -10,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 7 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0 ([`dfa6258`](https://github.com/spmadden/irox/commit/dfa6258b8f93f6d27b85d2f3f4e209599a8168ad))
     - Release irox-units v0.3.0, irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0, safety bump 2 crates ([`a6c0a5f`](https://github.com/spmadden/irox/commit/a6c0a5fcfc4070b8cbc1442192b7eaef275e80f2))
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
 </details>
