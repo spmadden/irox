@@ -1,6 +1,32 @@
 
 
 
+## v0.4.0 (2023-10-30)
+
+### Bug Fixes
+
+ - <csr-id-47dec1ce858b6792544264c7e109e5494b05682c/> fix issue with CSV interspersing double/single quotes by default
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 1 calendar day.
+ - 14 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
+    - Fix issue with CSV interspersing double/single quotes by default ([`47dec1c`](https://github.com/spmadden/irox/commit/47dec1ce858b6792544264c7e109e5494b05682c))
+</details>
+
 ## v0.3.0 (2023-10-16)
 
 ### Documentation
@@ -29,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release over the course of 7 calendar days.
+ - 12 commits contributed to the release over the course of 7 calendar days.
  - 27 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -41,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0 ([`dfa6258`](https://github.com/spmadden/irox/commit/dfa6258b8f93f6d27b85d2f3f4e209599a8168ad))
     - Release irox-units v0.3.0, irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0, safety bump 2 crates ([`a6c0a5f`](https://github.com/spmadden/irox/commit/a6c0a5fcfc4070b8cbc1442192b7eaef275e80f2))
     - Release irox-tools v0.2.2 ([`f49db4f`](https://github.com/spmadden/irox/commit/f49db4fc702003b0e464b0dbcc65cdcf0c629935))
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
