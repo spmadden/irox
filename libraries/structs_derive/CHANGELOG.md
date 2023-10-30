@@ -1,7 +1,34 @@
 
 
 
+## v0.2.2 (2023-10-30)
+
+### Bug Fixes
+
+ - <csr-id-c608a4c0995d087749df00ff3b3053b25edffcec/> bump version to 0.2.2
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 22 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.2.2 ([`c608a4c`](https://github.com/spmadden/irox/commit/c608a4c0995d087749df00ff3b3053b25edffcec))
+</details>
+
 ## v0.2.1 (2023-10-08)
+
+<csr-id-9725e632a2d780013e1ac3b58449c4be9ffd951d/>
 
 ### Chore
 
@@ -12,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 19 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - Locking deps to current versions ([`9725e63`](https://github.com/spmadden/irox/commit/9725e632a2d780013e1ac3b58449c4be9ffd951d))
 </details>
 
