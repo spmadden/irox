@@ -1,6 +1,40 @@
 
 
 
+## v0.4.0 (2023-10-30)
+
+### New Features
+
+ - <csr-id-9154e78f047c5c93578b5e316021af18825b6a8c/> New progress library for Console and Egui
+ - <csr-id-d495715a0cfd5c30b1fe659382f16210e8dad538/> new async/threading module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 14 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-structs_derive v0.2.2 ([`34beb37`](https://github.com/spmadden/irox/commit/34beb379d42063a43f36ccc44919fdc8c0b7ce83))
+    - Release irox-threading v0.1.0 ([`08f47a9`](https://github.com/spmadden/irox/commit/08f47a91b2ddfb3f1b229fe7c7202e3d443bd71d))
+    - Release irox-progress v0.1.0 ([`d79aacd`](https://github.com/spmadden/irox/commit/d79aacd7314e63b29f1f709d74da5e50e92c26b5))
+    - Release irox-egui-extras v0.3.1 ([`8e46d34`](https://github.com/spmadden/irox/commit/8e46d34b6abc9fa1eb8379460dcbddcc8a2d4326))
+    - Release irox-types v0.2.2 ([`9776f77`](https://github.com/spmadden/irox/commit/9776f7787fb3cbdfe84d96d5e0c2360d59f64e57))
+    - Release irox-units v0.3.1 ([`e0690ec`](https://github.com/spmadden/irox/commit/e0690ec6af8cc52fd98a9d67073e6b7b1b3089eb))
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
+    - New progress library for Console and Egui ([`9154e78`](https://github.com/spmadden/irox/commit/9154e78f047c5c93578b5e316021af18825b6a8c))
+    - New async/threading module ([`d495715`](https://github.com/spmadden/irox/commit/d495715a0cfd5c30b1fe659382f16210e8dad538))
+</details>
+
 ## v0.3.0 (2023-10-16)
 
 ### New Features
@@ -12,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 7 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0 ([`dfa6258`](https://github.com/spmadden/irox/commit/dfa6258b8f93f6d27b85d2f3f4e209599a8168ad))
     - Release irox-units v0.3.0, irox-carto v0.3.0, irox-csv v0.3.0, irox-egui-extras v0.3.0, irox-gpx v0.2.0, irox-influxdb_v1 v0.3.0, irox-nmea0183 v0.2.0, irox-raymarine-sonar v0.2.0, irox-time v0.1.0, irox-winlocation-api v0.2.0, irox v0.3.0, safety bump 2 crates ([`a6c0a5f`](https://github.com/spmadden/irox/commit/a6c0a5fcfc4070b8cbc1442192b7eaef275e80f2))
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
     - Release irox-tools v0.2.2 ([`f49db4f`](https://github.com/spmadden/irox/commit/f49db4fc702003b0e464b0dbcc65cdcf0c629935))
