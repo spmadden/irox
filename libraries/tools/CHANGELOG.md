@@ -1,6 +1,66 @@
 
 
 
+## v0.3.0 (2023-10-30)
+
+### Chore
+
+ - <csr-id-3793f0549be87bcce984d72c6153851be869cb43/> fix fmt
+ - <csr-id-f8ab392c14af57bb2f6198c45c82c602225ac356/> ALL THE LINTS.
+ - <csr-id-7680bf804c1d6b4dd1352dc68b371eaf06bd29c5/> fix rustfmt
+
+### New Features
+
+ - <csr-id-991cff0de29564748ccd2311eb080de249db40e9/> New 'ReadCounting' struct to count bytes read from a Read
+ - <csr-id-c8e6ba69b07af9b3f4fb5ef44c7ff5b78062d4b1/> new array scanning utils, max_index and longest_consecutive_values
+ - <csr-id-9fc9e98f31a35193859ffb53f5d5238a907afa76/> new U16 utilities, FromU16Array and ToU16Array
+ - <csr-id-edd4b815d7f3e2ec599c7a467f17af398179fcbb/> New Identifier type to allow multi-IDs of types
+ - <csr-id-d3e2baa73ad6e99f0b1fd816a11237f2e9dfda29/> Add borrowed From's for UUID
+ - <csr-id-ccf4aae08cdaef94b0a2a542b32350e541b5bb37/> new PRNG based on PCG-XSH-RR
+ - <csr-id-159ec4e01afcb3d3bc6c4005bc23351dddbc9906/> new UUID struct
+
+### Bug Fixes
+
+ - <csr-id-8ea01eae74dcc904503cc80f8d54c6f9575f5015/> new lint for unwrap_or_default()
+ - <csr-id-fd6aa90ec9c2fba058a973282538681e49e12ea0/> MurmurHash3-128 now passes reasonable tests
+
+### Bug Fixes (BREAKING)
+
+ - <csr-id-cbaa8f43fb163b4022548b2733a187933e7fb2b5/> Bits and MutBits no longer require Read & Write
+ - <csr-id-b791aca7dd8c0df67ed2912863d170b70684ae28/> Bits and MutBits no longer require Read & Write
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 14 commits contributed to the release over the course of 1 calendar day.
+ - 14 days passed between releases.
+ - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New 'ReadCounting' struct to count bytes read from a Read ([`991cff0`](https://github.com/spmadden/irox/commit/991cff0de29564748ccd2311eb080de249db40e9))
+    - Fix fmt ([`3793f05`](https://github.com/spmadden/irox/commit/3793f0549be87bcce984d72c6153851be869cb43))
+    - ALL THE LINTS. ([`f8ab392`](https://github.com/spmadden/irox/commit/f8ab392c14af57bb2f6198c45c82c602225ac356))
+    - New array scanning utils, max_index and longest_consecutive_values ([`c8e6ba6`](https://github.com/spmadden/irox/commit/c8e6ba69b07af9b3f4fb5ef44c7ff5b78062d4b1))
+    - New U16 utilities, FromU16Array and ToU16Array ([`9fc9e98`](https://github.com/spmadden/irox/commit/9fc9e98f31a35193859ffb53f5d5238a907afa76))
+    - New lint for unwrap_or_default() ([`8ea01ea`](https://github.com/spmadden/irox/commit/8ea01eae74dcc904503cc80f8d54c6f9575f5015))
+    - Fix rustfmt ([`7680bf8`](https://github.com/spmadden/irox/commit/7680bf804c1d6b4dd1352dc68b371eaf06bd29c5))
+    - New Identifier type to allow multi-IDs of types ([`edd4b81`](https://github.com/spmadden/irox/commit/edd4b815d7f3e2ec599c7a467f17af398179fcbb))
+    - Add borrowed From's for UUID ([`d3e2baa`](https://github.com/spmadden/irox/commit/d3e2baa73ad6e99f0b1fd816a11237f2e9dfda29))
+    - MurmurHash3-128 now passes reasonable tests ([`fd6aa90`](https://github.com/spmadden/irox/commit/fd6aa90ec9c2fba058a973282538681e49e12ea0))
+    - New PRNG based on PCG-XSH-RR ([`ccf4aae`](https://github.com/spmadden/irox/commit/ccf4aae08cdaef94b0a2a542b32350e541b5bb37))
+    - New UUID struct ([`159ec4e`](https://github.com/spmadden/irox/commit/159ec4e01afcb3d3bc6c4005bc23351dddbc9906))
+    - Bits and MutBits no longer require Read & Write ([`cbaa8f4`](https://github.com/spmadden/irox/commit/cbaa8f43fb163b4022548b2733a187933e7fb2b5))
+    - Bits and MutBits no longer require Read & Write ([`b791aca`](https://github.com/spmadden/irox/commit/b791aca7dd8c0df67ed2912863d170b70684ae28))
+</details>
+
 ## v0.2.2 (2023-10-16)
 
 ### Documentation
@@ -22,7 +82,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 7 calendar days.
+ - 7 commits contributed to the release over the course of 7 calendar days.
  - 7 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -34,6 +94,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.2 ([`f49db4f`](https://github.com/spmadden/irox/commit/f49db4fc702003b0e464b0dbcc65cdcf0c629935))
     - Remove extra clone in scanner ([`b225754`](https://github.com/spmadden/irox/commit/b2257546d7d9ca0d8620851fbc80d0d68e25ad10))
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
     - Add collect_next_chunk method to itertools ([`5d0ee4c`](https://github.com/spmadden/irox/commit/5d0ee4c0a813a180de0c1bd79d98d84518e509cf))
