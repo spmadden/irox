@@ -1,6 +1,36 @@
 
 
 
+## v0.3.0 (2023-10-30)
+
+### New Features
+
+ - <csr-id-9aadde4fd718bb3c2aaf095eaf3507cb9f9315cb/> switch address to use new longest_consecutive_values fn
+ - <csr-id-f8b7c123400808017affc4f02754708044a41ded/> new IPv6Address basic impl
+ - <csr-id-43889bfa327f789f8913ced2394262d0a7039555/> new network addressing tools
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 22 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
+    - Switch address to use new longest_consecutive_values fn ([`9aadde4`](https://github.com/spmadden/irox/commit/9aadde4fd718bb3c2aaf095eaf3507cb9f9315cb))
+    - New IPv6Address basic impl ([`f8b7c12`](https://github.com/spmadden/irox/commit/f8b7c123400808017affc4f02754708044a41ded))
+    - New network addressing tools ([`43889bf`](https://github.com/spmadden/irox/commit/43889bfa327f789f8913ced2394262d0a7039555))
+</details>
+
 ## v0.2.1 (2023-10-08)
 
 ### Bug Fixes
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 19 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.2.1, irox v0.2.1 ([`5303955`](https://github.com/spmadden/irox/commit/5303955be8ac39766f2ba2ff3bde32e7d031a7f4))
     - Bump version to pull in new dep ([`fc10cc8`](https://github.com/spmadden/irox/commit/fc10cc83d34183fb0e7be80f6a521fac8f6cf933))
 </details>
 
