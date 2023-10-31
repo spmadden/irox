@@ -49,3 +49,59 @@ where
         f.write_fmt(format_args!("{buf}"))
     }
 }
+
+///
+/// The `retain+take` operation is exactly what it sounds like.  Retain only those elements that
+/// match the predicate, but return whole owned copies of the items.  For efficiency's sake, some
+/// implementations *may* iterate backwards through the container.
+pub trait RetainTake<T> {
+    fn retain_take<F>(&mut self, predicate: F) -> Vec<T>
+    where
+        F: FnMut(&T) -> bool;
+}
+
+impl<T> RetainTake<T> for Vec<T> {
+    fn retain_take<F>(&mut self, mut predicate: F) -> Vec<T>
+    where
+        F: FnMut(&T) -> bool,
+    {
+        let mut idx = self.len();
+        let mut out: Vec<T> = Vec::new();
+        loop {
+            idx -= 1;
+            if let Some(elem) = self.get(idx) {
+                if !predicate(elem) {
+                    out.push(self.swap_remove(idx));
+                }
+            }
+            if idx == 0 {
+                break;
+            }
+        }
+        out
+    }
+}
+
+impl<T> RetainTake<T> for VecDeque<T> {
+    fn retain_take<F>(&mut self, mut predicate: F) -> Vec<T>
+    where
+        F: FnMut(&T) -> bool,
+    {
+        let mut idx = self.len();
+        let mut out: Vec<T> = Vec::new();
+        loop {
+            idx -= 1;
+            if let Some(elem) = self.get(idx) {
+                if !predicate(elem) {
+                    if let Some(elem) = self.swap_remove_back(idx) {
+                        out.push(elem);
+                    }
+                }
+            }
+            if idx == 0 {
+                break;
+            }
+        }
+        out
+    }
+}
