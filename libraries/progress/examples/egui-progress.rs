@@ -2,7 +2,7 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
-use eframe::{App, Frame, NativeOptions};
+use eframe::{App, CreationContext, Frame, NativeOptions};
 use egui::{CentralPanel, Color32, Context, Window};
 use log::error;
 
@@ -14,7 +14,10 @@ struct ProgressApp {
     prog: EguiProgressWindow,
 }
 impl ProgressApp {
-    pub fn new(prog: EguiProgressWindow) -> ProgressApp {
+    pub fn new(cc: &CreationContext) -> ProgressApp {
+        let context = cc.egui_ctx.clone();
+        let prog = EguiProgressWindow::new(context);
+
         ProgressApp { prog }
     }
 
@@ -58,9 +61,6 @@ impl App for ProgressApp {
 }
 
 pub fn main() -> Result<(), std::io::Error> {
-    let prog = EguiProgressWindow::new();
-
-    let app = ProgressApp::new(prog);
     let native_options = NativeOptions {
         multisampling: 0,
         ..Default::default()
@@ -68,7 +68,7 @@ pub fn main() -> Result<(), std::io::Error> {
     if let Err(e) = eframe::run_native(
         "irox-progress-test",
         native_options,
-        Box::new(|_cc| Box::new(app)),
+        Box::new(|cc| Box::new(ProgressApp::new(cc))),
     ) {
         error!("{e:?}");
     };

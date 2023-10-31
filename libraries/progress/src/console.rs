@@ -14,7 +14,7 @@ use irox_time::format::iso8601::ISO8601Duration;
 use irox_time::format::Format;
 use irox_time::Duration;
 
-use crate::{ProgressPrinter, Task};
+use crate::{get_human, ProgressPrinter, Task};
 
 pub struct ConsoleProgressBar {
     width: usize,
@@ -24,22 +24,33 @@ impl ConsoleProgressBar {
     pub fn new(width: usize) -> Self {
         ConsoleProgressBar { width }
     }
+
+    pub fn print_infinite_progress(&self, task: &Task) -> Result<(), Error> {
+        let current = task.current_progress_count();
+        if let Some(started) = task.get_started() {
+            let current = current as f64;
+            let elapsed = started.elapsed().as_seconds_f64();
+            let avg_per_sec = current / elapsed;
+            let (avg_per_sec, avg_unit) = get_human!(avg_per_sec);
+            let (current, unit) = get_human!(current);
+
+            let out = format!("| ({current:.02}{unit}) {avg_per_sec:.02}{avg_unit}/s\r",);
+            let mut stdio = stdout();
+            stdio.write_all(out.as_bytes())?;
+            return stdio.flush();
+        }
+        Ok(())
+    }
+
     pub fn print_progress(&self, task: &Task) -> Result<(), Error> {
         let pct = task.current_progress_frac();
         let current = task.current_progress_count();
         let max = task.max_elements();
-
-        let mut rem_str = String::new();
-        if let Some(started) = task.get_started() {
-            if pct > 0. {
-                let mult = 1. / pct;
-                let elapsed = started.elapsed();
-                let est_end = elapsed * mult;
-                let remaining = est_end - elapsed;
-
-                rem_str = ISO8601Duration.format(&remaining);
-            }
+        if max == u64::MAX {
+            return self.print_infinite_progress(task);
         }
+
+        let rem_str = ISO8601Duration.format(&task.get_remaining_time());
 
         let w_pct = self.width as f64 * pct;
         let whole = w_pct.floor() as usize;

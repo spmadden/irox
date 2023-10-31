@@ -9,13 +9,28 @@
 #![forbid(unsafe_code)]
 
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, OnceLock, RwLock};
+use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
 use irox_time::epoch::UnixTimestamp;
+use irox_time::Duration;
+use irox_tools::random::Random;
+use irox_tools::vec::RetainTake;
 
 pub mod console;
 #[cfg(feature = "egui")]
 pub mod egui;
+pub mod read;
+pub mod write;
+
+static RAND: OnceLock<Mutex<Random>> = OnceLock::new();
+
+/// Shared random numbers.
+fn get_random_id() -> u64 {
+    if let Ok(mut rand) = RAND.get_or_init(|| Mutex::new(Random::default())).lock() {
+        return rand.next_u64();
+    };
+    Random::default().next_u64()
+}
 
 ///
 /// A way to display progress.
@@ -36,48 +51,86 @@ struct TaskInner {
     id: AtomicU64,
     name: String,
     counter: AtomicU64,
-    max_elements: u64,
+    max_elements: AtomicU64,
     _element_units: TaskElementUnits,
     created: UnixTimestamp,
     started: OnceLock<UnixTimestamp>,
     ended: OnceLock<UnixTimestamp>,
+    remaining: RwLock<Duration>,
     children: RwLock<Vec<Task>>,
 }
 
+///
+/// A task is a specific tracked operation.  It has:
+/// - A Name
+/// - A unique ID
+/// - A creation time
+/// - The current progress of the task (in "elements"), the 'counter'.
+/// - An (optional) maximum number of elements.
+/// - A time the task was "started"
+/// - The estimated amount of time the task has remaining
+/// - A time the task has "ended"
+/// - A list of any "Child Tasks" that this task can spawn.
 #[derive(Debug, Clone)]
 pub struct Task {
     inner: Arc<TaskInner>,
 }
 
 impl Task {
+    /// Creates a new finite, named task with the specified ID.
+    #[must_use]
     pub fn new(id: u64, name: String, max_elements: u64) -> Task {
         let inner = TaskInner {
             id: AtomicU64::new(id),
             name,
-            max_elements,
+            max_elements: AtomicU64::new(max_elements),
             _element_units: TaskElementUnits::None,
             counter: AtomicU64::new(0),
             children: RwLock::new(Vec::new()),
             created: UnixTimestamp::now(),
             started: OnceLock::new(),
             ended: OnceLock::new(),
+            remaining: RwLock::new(Duration::default()),
         };
         Task {
             inner: Arc::new(inner),
         }
     }
 
+    /// Creates a new infinite, named task with a specific ID.
+    #[must_use]
+    pub fn new_infinite(id: u64, name: String) -> Task {
+        Self::new(id, name, u64::MAX)
+    }
+
+    /// Creates a new infinite, named task with a random ID
+    #[must_use]
+    pub fn new_infinite_named(name: String) -> Task {
+        let id = get_random_id();
+        Task::new_infinite(id, name)
+    }
+
+    /// Creates a new finite, named task with a random ID.
+    #[must_use]
+    pub fn new_named(name: String, max_elements: u64) -> Task {
+        let id = get_random_id();
+        Task::new(id, name, max_elements)
+    }
+
     /// Returns the number of elements completed in the range `0..=max_elements`
+    #[must_use]
     pub fn current_progress_count(&self) -> u64 {
         self.inner.counter.load(Ordering::Relaxed)
     }
 
     /// Returns the maximum number of elements of this task
+    #[must_use]
     pub fn max_elements(&self) -> u64 {
-        self.inner.max_elements
+        self.inner.max_elements.load(Ordering::Relaxed)
     }
 
     /// Returns the current progress as a fraction in the range `0..=1`
+    #[must_use]
     pub fn current_progress_frac(&self) -> f64 {
         let cur = self.current_progress_count() as f64;
         let max = self.max_elements() as f64;
@@ -85,21 +138,25 @@ impl Task {
     }
 
     /// Returns the ID of this task.
+    #[must_use]
     pub fn get_id(&self) -> u64 {
         self.inner.id.load(Ordering::Relaxed)
     }
 
     /// Returns the name of this task
+    #[must_use]
     pub fn get_name(&self) -> &str {
         self.inner.name.as_str()
     }
 
     /// Returns the time this task was created
+    #[must_use]
     pub fn get_created(&self) -> UnixTimestamp {
         self.inner.created
     }
 
     /// Returns the time at which this task started, or [`None`] if the task hasn't started yet.
+    #[must_use]
     pub fn get_started(&self) -> Option<&UnixTimestamp> {
         self.inner.started.get()
     }
@@ -107,8 +164,23 @@ impl Task {
     /// Increments the 'completed' counter.
     pub fn mark_one_completed(&self) {
         let completed = self.inner.counter.fetch_add(1, Ordering::Relaxed);
-        if completed == self.inner.max_elements {
+        self.update_remaining();
+        if completed == self.max_elements() {
             self.mark_ended();
+        }
+    }
+
+    fn update_remaining(&self) {
+        let completed = self.inner.counter.load(Ordering::Relaxed);
+        if completed > 0 {
+            if let Some(started) = self.get_started() {
+                let mult = 1. / self.current_progress_frac();
+                let elapsed = started.elapsed();
+                let est_end = elapsed * mult;
+                if let Ok(mut remaining) = self.inner.remaining.write() {
+                    *remaining = est_end - elapsed;
+                }
+            }
         }
     }
 
@@ -116,8 +188,24 @@ impl Task {
     pub fn mark_all_completed(&self) {
         self.inner
             .counter
-            .store(self.inner.max_elements, Ordering::Relaxed);
+            .store(self.max_elements(), Ordering::Relaxed);
+        if let Ok(mut remaining) = self.inner.remaining.write() {
+            *remaining = Duration::default();
+        }
         self.mark_ended();
+    }
+
+    /// Mark some some portion of this task as completed.
+    pub fn mark_some_completed(&self, completed: u64) {
+        self.inner.counter.fetch_add(completed, Ordering::Relaxed);
+        self.update_remaining()
+    }
+
+    pub fn get_remaining_time(&self) -> Duration {
+        if let Ok(remaining) = self.inner.remaining.read() {
+            return *remaining;
+        }
+        Duration::default()
     }
 
     /// Marks this task as started.  If the task has already started, does nothing.
@@ -126,6 +214,7 @@ impl Task {
     }
 
     /// Returns the time at which this task ended, or None if the task hasn't ended yet.
+    #[must_use]
     pub fn get_ended(&self) -> Option<&UnixTimestamp> {
         self.inner.ended.get()
     }
@@ -136,6 +225,7 @@ impl Task {
     }
 
     /// Returns the number of child tasks this task has
+    #[must_use]
     pub fn num_children(&self) -> usize {
         let read = self.inner.children.read();
         let Ok(read) = read else {
@@ -153,6 +243,13 @@ impl Task {
         read.iter().for_each(func)
     }
 
+    pub fn clean_completed_children(&self) -> Vec<Task> {
+        if let Ok(mut write) = self.inner.children.write() {
+            return write.retain_take(Task::is_complete);
+        }
+        vec![]
+    }
+
     ///
     /// Creates a new child task of this task
     #[must_use]
@@ -168,8 +265,37 @@ impl Task {
         }
     }
 
+    ///
+    /// Appends this task as a tracked child task.
+    pub fn push_new_child_task(&self, task: Task) {
+        let write = self.inner.children.write();
+        if let Ok(mut write) = write {
+            write.push(task)
+        }
+    }
+
     /// Returns true if this task is complete.
+    #[must_use]
     pub fn is_complete(&self) -> bool {
         self.inner.ended.get().is_some() || self.current_progress_frac() >= 1.
     }
+}
+
+#[macro_export]
+macro_rules! get_human {
+    ($inp:ident) => {{
+        let temp = ((1. + $inp).log10() / 3.) as u32;
+        let chr = match temp {
+            0 => "",
+            1 => "K",
+            2 => "M",
+            3 => "G",
+            4 => "T",
+            5 => "P",
+            6 => "E",
+            _ => "?",
+        };
+        let inp = $inp / 10f64.powf(3. * temp as f64);
+        (inp, chr)
+    }};
 }
