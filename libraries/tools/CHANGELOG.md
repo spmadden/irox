@@ -1,7 +1,36 @@
 
 
 
+## v0.3.1 (2023-10-31)
+
+### New Features
+
+ - <csr-id-1f0e241f6207cf7b91b74377d393a0f867c1bb92/> add new RetainTake for Vec and VecDeque
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 day passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new RetainTake for Vec and VecDeque ([`1f0e241`](https://github.com/spmadden/irox/commit/1f0e241f6207cf7b91b74377d393a0f867c1bb92))
+</details>
+
 ## v0.3.0 (2023-10-30)
+
+<csr-id-3793f0549be87bcce984d72c6153851be869cb43/>
+<csr-id-f8ab392c14af57bb2f6198c45c82c602225ac356/>
+<csr-id-7680bf804c1d6b4dd1352dc68b371eaf06bd29c5/>
 
 ### Chore
 
@@ -33,7 +62,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release over the course of 1 calendar day.
+ - 15 commits contributed to the release over the course of 1 calendar day.
  - 14 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -45,6 +74,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - New 'ReadCounting' struct to count bytes read from a Read ([`991cff0`](https://github.com/spmadden/irox/commit/991cff0de29564748ccd2311eb080de249db40e9))
     - Fix fmt ([`3793f05`](https://github.com/spmadden/irox/commit/3793f0549be87bcce984d72c6153851be869cb43))
     - ALL THE LINTS. ([`f8ab392`](https://github.com/spmadden/irox/commit/f8ab392c14af57bb2f6198c45c82c602225ac356))
