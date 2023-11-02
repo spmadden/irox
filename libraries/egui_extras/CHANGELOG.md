@@ -1,7 +1,34 @@
 
 
 
+## v0.3.2 (2023-11-02)
+
+### New Features
+
+ - <csr-id-69bb1e4bcb962b22bcb7d46582c2b877a03b6322/> Add new progressbar impl with indeterminate mode
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 3 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new progressbar impl with indeterminate mode ([`69bb1e4`](https://github.com/spmadden/irox/commit/69bb1e4bcb962b22bcb7d46582c2b877a03b6322))
+</details>
+
 ## v0.3.1 (2023-10-30)
+
+<csr-id-7218f70a16f1a21f1ed716bb7aaa712511645476/>
 
 ### Chore
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 14 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.1 ([`8e46d34`](https://github.com/spmadden/irox/commit/8e46d34b6abc9fa1eb8379460dcbddcc8a2d4326))
     - ALL THE LINTS. ([`7218f70`](https://github.com/spmadden/irox/commit/7218f70a16f1a21f1ed716bb7aaa712511645476))
 </details>
 

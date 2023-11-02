@@ -1,5 +1,32 @@
 
 
+## v0.1.2 (2023-11-02)
+
+### New Features
+
+ - <csr-id-34a894a0983d80d78a2ec2b14e2962d2bd21a2b4/> Read/Write now impl Drop and close the task
+ - <csr-id-671aff4d9d0a261aa0af09a9ec1f4cb077e4c4fa/> Many improvements, like indeterminate mode
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 day passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Read/Write now impl Drop and close the task ([`34a894a`](https://github.com/spmadden/irox/commit/34a894a0983d80d78a2ec2b14e2962d2bd21a2b4))
+    - Many improvements, like indeterminate mode ([`671aff4`](https://github.com/spmadden/irox/commit/671aff4d9d0a261aa0af09a9ec1f4cb077e4c4fa))
+</details>
+
 ## v0.1.1 (2023-10-31)
 
 ### New Features
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.1.1 ([`7f88504`](https://github.com/spmadden/irox/commit/7f88504630f88205bddb282734a4807414512305))
     - Overhaul with Reader/Writers and infinite progress ([`c103035`](https://github.com/spmadden/irox/commit/c1030356909f880ba93d1e8ca8e533a2344a3760))
 </details>
 

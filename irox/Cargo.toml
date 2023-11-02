@@ -47,11 +47,11 @@ irox-influxdb_v1 = { version = "^0.4.0", optional = true, path = "../interfaces/
 irox-winlocation-api = {version = "^0.3.0", optional = true, path = "../interfaces/win-location-api"}
 
 irox-carto = { version = "^0.4.0", optional = true, path = "../libraries/carto"}
-irox-egui-extras = { version = "^0.3.1", optional = true, path = "../libraries/egui_extras"}
+irox-egui-extras = { version = "^0.3.2", optional = true, path = "../libraries/egui_extras"}
 irox-enums = { version = "0.2.0", optional = true, path = "../libraries/enums"}
 irox-enums_derive = { version = "0.2.0", optional = true, path = "../libraries/enums_derive"}
 irox-networking = { version = "^0.3.0", optional = true, path = "../libraries/network"}
-irox-progress = {version = "^0.1.1", optional = true, path = "../libraries/progress"}
+irox-progress = {version = "^0.1.2", optional = true, path = "../libraries/progress"}
 irox-stats = { version = "0.2.1", optional = true, path = "../libraries/stats"}
 irox-structs = { version = "^0.3.0", optional = true, path = "../libraries/structs"}
 irox-structs_derive = { version = "^0.2.2", optional = true, path = "../libraries/structs_derive"}
