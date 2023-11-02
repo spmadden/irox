@@ -20,6 +20,12 @@ impl<T: Write> WriterTask<T> {
     }
 }
 
+impl<T: Write> Drop for WriterTask<T> {
+    fn drop(&mut self) {
+        self.task.mark_all_completed();
+    }
+}
+
 impl<T: Write> Write for WriterTask<T> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let wrote = self.writer.write(buf)?;

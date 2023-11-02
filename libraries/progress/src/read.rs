@@ -14,11 +14,17 @@ pub struct ReaderTask<T: Read> {
 
 impl<T: Read> ReaderTask<T> {
     /// Creates a new reader task from the specified reader, and task
+    #[must_use]
     pub fn new(reader: T, task: Task) -> Self {
         ReaderTask { reader, task }
     }
 }
 
+impl<T: Read> Drop for ReaderTask<T> {
+    fn drop(&mut self) {
+        self.task.mark_all_completed();
+    }
+}
 impl<T: Read> Read for ReaderTask<T> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let read = self.reader.read(buf)?;
