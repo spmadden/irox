@@ -9,7 +9,7 @@ pub fn main() -> Result<(), std::io::Error> {
     let elements = 1000;
 
     let prog = ConsoleProgressPrinter::new_update_rate(Duration::from_millis(100));
-    let task = Task::new(0, "Test Task".to_string(), elements);
+    let task = Task::new(0, "Test Task".to_string(), u64::MAX);
     prog.track_task_progress(&task);
     task.mark_started();
     for _i in 0..elements {

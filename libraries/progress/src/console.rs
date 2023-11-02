@@ -34,7 +34,27 @@ impl ConsoleProgressBar {
             let (avg_per_sec, avg_unit) = get_human!(avg_per_sec);
             let (current, unit) = get_human!(current);
 
-            let out = format!("| ({current:.02}{unit}) {avg_per_sec:.02}{avg_unit}/s\r",);
+            let time = (elapsed * 2.) as u64 & 0x7;
+            let state = match time {
+                0 => "\u{25b6}\u{25b9}\u{25b9}\u{25b9}\u{25b9}",
+                1 => "\u{25b9}\u{25b6}\u{25b9}\u{25b9}\u{25b9}",
+                2 => "\u{25b9}\u{25b9}\u{25b6}\u{25b9}\u{25b9}",
+                3 => "\u{25b9}\u{25b9}\u{25b9}\u{25b6}\u{25b9}",
+                4 => "\u{25b9}\u{25b9}\u{25b9}\u{25b9}\u{25b6}",
+                _ => "\u{25b9}\u{25b9}\u{25b9}\u{25b9}\u{25b9}",
+            };
+            let state2 = match time & 0x3 {
+                0 => "\u{25dc}",
+                1 => "\u{25dd}",
+                2 => "\u{25de}",
+                _ => "\u{25df}",
+            };
+
+            let out = format!("| ({current:.02}{unit})  {avg_per_sec:.02}{avg_unit}/s\r");
+            let spaces =
+                " ".repeat(((self.width as i32 - out.len() as i32 - 9).max(1) / 4) as usize);
+            let out = format!("| ({current:.02}{unit}) {spaces}{state2}{spaces} {state} {spaces}{state2}{spaces}{avg_per_sec:.02}{avg_unit}/s\r");
+
             let mut stdio = stdout();
             stdio.write_all(out.as_bytes())?;
             return stdio.flush();
@@ -110,7 +130,7 @@ impl ConsoleProgressPrinter {
                 let next_run = last_run + update_rate;
                 let _r = stdout().write_all(&[0x1B, b'[', b'2', b'K']);
                 for task in &tasks {
-                    let _res = ConsoleProgressBar::new(40).print_progress(task);
+                    let _res = ConsoleProgressBar::new(60).print_progress(task);
                 }
 
                 match receiver.try_recv() {

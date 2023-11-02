@@ -8,7 +8,7 @@
 
 #![forbid(unsafe_code)]
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
 use irox_time::epoch::UnixTimestamp;
@@ -74,6 +74,7 @@ struct TaskInner {
 #[derive(Debug, Clone)]
 pub struct Task {
     inner: Arc<TaskInner>,
+    cancelled: Arc<AtomicBool>,
 }
 
 impl Task {
@@ -94,6 +95,7 @@ impl Task {
         };
         Task {
             inner: Arc::new(inner),
+            cancelled: Arc::new(AtomicBool::new(false)),
         }
     }
 
@@ -278,6 +280,19 @@ impl Task {
     #[must_use]
     pub fn is_complete(&self) -> bool {
         self.inner.ended.get().is_some() || self.current_progress_frac() >= 1.
+    }
+
+    /// Marks this task as "Cancelled".  Users of this task may opt to ignore this flag, it's
+    /// really more like a suggestion.
+    pub fn cancel(&self) {
+        self.cancelled.store(true, Ordering::Relaxed);
+    }
+
+    /// Returns true if this task has been marked 'cancelled'.  Cancelling a task is a one-way
+    /// operation.
+    #[must_use]
+    pub fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::Relaxed)
     }
 }
 
