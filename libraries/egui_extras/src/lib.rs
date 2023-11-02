@@ -13,3 +13,6 @@ pub mod styles;
 
 /// [`eframe::App`] composition tools
 pub mod composite;
+
+/// A customization of [`egui::widgets::ProgressBar`]
+pub mod progressbar;
