@@ -1,5 +1,8 @@
 <component name="CopyrightManager">
   <settings default="IROX">
+    <module2copyright>
+      <element module="All" copyright="IROX" />
+    </module2copyright>
     <LanguageOptions name="__TEMPLATE__">
       <option name="block" value="false" />
     </LanguageOptions>
