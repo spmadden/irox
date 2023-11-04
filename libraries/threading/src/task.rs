@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2023 IROX Contributors
 //
 
 use std::cell::{OnceCell, RefCell};
@@ -9,16 +9,20 @@ use std::rc::Rc;
 use std::sync::{Arc, Condvar, Mutex};
 use std::task::Poll;
 
-pub type SendFuture<'a, T> = dyn Future<Output = T> + Send + 'a;
-pub type SharedSendFuture<'a, T> = Arc<SendFuture<'a, T>>;
-pub type SharedFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 pub type LocalFuture<'a, T> = Pin<Box<dyn Future<Output = T> + 'a>>;
 pub type LocalVoidFuture<'a> = LocalFuture<'a, ()>;
 
 #[derive(Debug, Copy, Clone)]
 pub enum TaskError {
+
+    /// Mutex locking failed, probably due to panic
     LockingError,
+
+    /// Task was not completed
     NotCompletedError,
+
+    /// Executor cannot accept new tasks
+    ExecutorStoppingError,
 }
 
 struct CompletableTaskInner<T> {
@@ -56,6 +60,7 @@ impl<T> CompletableTaskInner<T> {
 ///
 /// This is thread-safe equivalent to [`OnceCell<T>`], but combines the ability
 /// to block the current thread until the task completes.
+#[derive(Clone)]
 pub struct CompletableTask<T> {
     inner: Arc<(Mutex<CompletableTaskInner<T>>, Condvar)>,
 }
@@ -149,6 +154,9 @@ impl<T> Default for CompletableTask<T> {
     }
 }
 
+///
+/// Local, Current thread version of [`CompletableTask`] that uses a [`Rc`] instead of
+/// an [`Arc`] for inner storage.
 pub struct LocalCompletableTask<T> {
     result: Rc<RefCell<Option<T>>>,
 }
@@ -162,12 +170,18 @@ impl<T> Clone for LocalCompletableTask<T> {
 }
 
 impl<T> LocalCompletableTask<T> {
+
+    /// Creates a new, uncompleted task.
     pub fn new() -> Self {
         LocalCompletableTask {
             result: Rc::new(RefCell::new(None)),
         }
     }
 
+    ///
+    /// Attempts to complete this task.  This will only actually fail if the
+    /// task has already been completed.  In this case, the original value will
+    /// be returned back as the 'Error' type.
     pub fn try_complete(&self, value: T) -> Result<(), T> {
         let res = self.result.clone();
         if res.borrow().is_some() {
@@ -179,6 +193,9 @@ impl<T> LocalCompletableTask<T> {
         Ok(())
     }
 
+    ///
+    /// Returns the current status of this task.  If the task is complete, returns
+    /// [`Poll::Ready(T)`], otherwise returns [`Poll::Pending`]
     pub fn get(&self) -> Poll<T> {
         if let Some(v) = self.result.take() {
             return Poll::Ready(v);
