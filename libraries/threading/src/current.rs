@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2023 IROX Contributors
 //
 
 use std::collections::VecDeque;
@@ -13,15 +13,23 @@ use crate::{LocalCompletableTask, LocalFuture};
 
 trait LocalFutureType<'a>: Future<Output = ()> + 'a + HasLocalWaker {}
 
+///
+/// An Executor that doesn't spawn new threads, just runs on the current thread.
 #[derive(Default)]
 pub struct CurrentThreadExecutor<'a> {
     processing_queue: VecDeque<Pin<Box<dyn LocalFutureType<'a, Output = ()>>>>,
 }
 
 impl<'a> CurrentThreadExecutor<'a> {
+    /// Create a new [`CurrentThreadExecutor`]
     pub fn new() -> Self {
         CurrentThreadExecutor::default()
     }
+
+    ///
+    /// Submit a new task to this executor.  Note:  This does not immediately run the task, you
+    /// still need to call either [`CurrentThreadExecutor::run_some`] or
+    /// [`CurrentThreadExecutor::run_until_complete`]
     pub fn submit<T: 'a>(&mut self, fut: impl Future<Output = T> + 'a) -> LocalTaskHandle<T> {
         let task = LocalTask {
             future: Box::pin(fut),
@@ -33,6 +41,9 @@ impl<'a> CurrentThreadExecutor<'a> {
         handle
     }
 
+    ///
+    /// Runs a single loop through the processing queue, in order, letting each task attempt to do
+    /// work.
     pub fn run_some(&mut self) {
         let mut pinned = Pin::new(self);
         let mut pending = VecDeque::new();
@@ -57,8 +68,18 @@ impl<'a> CurrentThreadExecutor<'a> {
         }
         pinned.processing_queue.append(&mut pending);
     }
+
+    ///
+    /// Runs this executor until all submitted tasks are complete.
+    pub fn run_until_complete(mut self) {
+        while !self.processing_queue.is_empty() {
+            self.run_some();
+        }
+    }
 }
 
+///
+/// Local thread Waker struct
 pub struct LocalWaker {
     needs_running: AtomicBool,
 }
@@ -82,6 +103,8 @@ trait HasLocalWaker {
     fn clear_wake(&self);
     fn get_waker(&self) -> Arc<LocalWaker>;
 }
+///
+/// A task that can be run on the current thread.
 pub struct LocalTask<'a, T> {
     future: LocalFuture<'a, T>,
     waker: Arc<LocalWaker>,
@@ -131,11 +154,16 @@ impl<'a, T> Future for LocalTask<'a, T> {
 
 impl<'a, T: 'a> LocalFutureType<'a> for LocalTask<'a, T> {}
 
+///
+/// A handle to the submitted task, to retrieve the result of the operation
 pub struct LocalTaskHandle<T> {
     result: LocalCompletableTask<T>,
 }
 
 impl<T> LocalTaskHandle<T> {
+    ///
+    /// Attempts to retrive the result of the operation.  If the operation isn't complete yet,
+    /// returns [`None`]
     pub fn get(&mut self) -> Option<T> {
         match self.result.get() {
             Poll::Ready(e) => Some(e),
@@ -158,7 +186,7 @@ mod tests {
         assert_eq!(None, handle.get());
         assert_eq!(None, handle2.get());
 
-        executor.run_some();
+        executor.run_until_complete();
 
         assert_ne!(None, handle.get());
         assert_ne!(None, handle2.get());
