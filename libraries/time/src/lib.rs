@@ -180,7 +180,7 @@ impl Time {
     /// Returns ONLY the fractional seconds component of the timestamp
     #[must_use]
     pub fn get_secondsfrac(&self) -> f64 {
-        self.nanoseconds as f64 / NANOS_TO_SEC
+        self.nanoseconds as f64 * NANOS_TO_SEC
     }
 
     ///
