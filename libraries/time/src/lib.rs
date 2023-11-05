@@ -203,7 +203,12 @@ impl Time {
 impl Display for Time {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let (h, m, s) = self.as_hms();
-        f.write_fmt(format_args!("{h:0}:{m:02}:{s:02}"))
+        if f.alternate() {
+            let s = s as f64 + self.get_secondsfrac();
+            f.write_fmt(format_args!("{h:02}:{m:02}:{s:09.6}"))
+        } else {
+            f.write_fmt(format_args!("{h:02}:{m:02}:{s:02}"))
+        }
     }
 }
 
