@@ -40,6 +40,7 @@ Current Modules & Organization:
     * [`enums`](https://github.com/spmadden/irox/blob/master/libraries/enums) - Traits for better Enumerated Types
     * [`enums_derive`](https://github.com/spmadden/irox/blob/master/libraries/enums_derive) - Derivable impls of the
       traits in irox-enums
+    * [`log`](https://github.com/spmadden/irox/blob/master/libraries/log) - Basic console and file logging
     * [`network`](https://github.com/spmadden/irox/blob/master/libraries/network) - Networking tools
     * [`progress`](https://github.com/spmadden/irox/blob/master/libraries/progress) - An ecosystem for displaying
       progress, either in a UI or on the terminal.
@@ -74,9 +75,10 @@ Version Status
 | `irox-enums_derive`    | [![Crates.io](https://img.shields.io/crates/v/irox-enums_derive.svg)](https://crates.io/crates/irox-enums_derive) [![Documentation](https://docs.rs/irox-enums_derive/badge.svg)](https://docs.rs/irox-enums_derive)             |
 | `irox-gpx`             | [![Crates.io](https://img.shields.io/crates/v/irox-gpx.svg)](https://crates.io/crates/irox-gpx) [![Documentation](https://docs.rs/irox-gpx/badge.svg)](https://docs.rs/irox-gpx)                                                 |
 | `irox-influxdb_v1`     | [![Crates.io](https://img.shields.io/crates/v/irox-influxdb_v1.svg)](https://crates.io/crates/irox-influxdb_v1) [![Documentation](https://docs.rs/irox-influxdb_v1/badge.svg)](https://docs.rs/irox-influxdb_v1)                 |
+| `irox-log`             | [![Crates.io](https://img.shields.io/crates/v/irox-log.svg)](https://crates.io/crates/irox-log) [![Documentation](https://docs.rs/irox-log/badge.svg)](https://docs.rs/irox-log)                                                 |
 | `irox-networking`      | [![Crates.io](https://img.shields.io/crates/v/irox-networking.svg)](https://crates.io/crates/irox-networking) [![Documentation](https://docs.rs/irox-networking/badge.svg)](https://docs.rs/irox-networking)                     |
-| `irox-progress`        | [![Crates.io](https://img.shields.io/crates/v/irox-progress.svg)](https://crates.io/crates/irox-progress) [![Documentation](https://docs.rs/irox-progress/badge.svg)](https://docs.rs/irox-progress)                             |
 | `irox-nmea0183`        | [![Crates.io](https://img.shields.io/crates/v/irox-nmea0183.svg)](https://crates.io/crates/irox-nmea0183) [![Documentation](https://docs.rs/irox-nmea0183/badge.svg)](https://docs.rs/irox-nmea0183)                             |
+| `irox-progress`        | [![Crates.io](https://img.shields.io/crates/v/irox-progress.svg)](https://crates.io/crates/irox-progress) [![Documentation](https://docs.rs/irox-progress/badge.svg)](https://docs.rs/irox-progress)                             |
 | `irox-raymarine-sonar` | [![Crates.io](https://img.shields.io/crates/v/irox-raymarine-sonar.svg)](https://crates.io/crates/irox-raymarine-sonar) [![Documentation](https://docs.rs/irox-raymarine-sonar/badge.svg)](https://docs.rs/irox-raymarine-sonar) |
 | `irox-sirf`            | [![Crates.io](https://img.shields.io/crates/v/irox-sirf.svg)](https://crates.io/crates/irox-sirf) [![Documentation](https://docs.rs/irox-sirf/badge.svg)](https://docs.rs/irox-sirf)                                             |
 | `irox-stats`           | [![Crates.io](https://img.shields.io/crates/v/irox-stats.svg)](https://crates.io/crates/irox-stats) [![Documentation](https://docs.rs/irox-stats/badge.svg)](https://docs.rs/irox-stats)                                         |

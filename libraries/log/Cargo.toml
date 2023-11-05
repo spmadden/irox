@@ -1,0 +1,18 @@
+[package]
+name = "irox-log"
+description = "Basic console and file logging"
+keywords = ["irox", "log", "console"]
+categories = ["command-line-interface", "development-tools::debugging"]
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+log = { workspace = true }
+irox-tools = { workspace = true }
+irox-time = { workspace = true }

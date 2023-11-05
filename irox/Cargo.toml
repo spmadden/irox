@@ -3,7 +3,7 @@ name = "irox"
 description = "irox Rust Tools & Libraries"
 keywords = ["irox"]
 categories = ["aerospace", "science", "mathematics"]
-version= "0.4.0"
+version = "0.4.0"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -14,49 +14,51 @@ repository.workspace = true
 
 [features]
 default = []
-csv = ["irox-csv"]
-gpx = ["irox-gpx"]
-nmea0183 = ["irox-nmea0183"]
-raymarine-sonar = ["irox-raymarine-sonar"]
-sirf = ["irox-sirf"]
-influxdb_v1 = ["irox-influxdb_v1"]
-win-loc-api = ["irox-winlocation-api"]
-carto = ["irox-carto"]
-egui-extras = ["irox-egui-extras"]
-enums = ["irox-enums"]
-enums_derive = ["irox-enums_derive"]
-networking = ["irox-networking"]
-progress = ["irox-progress"]
-stats = ["irox-stats"]
-structs = ["irox-structs"]
-structs_derive = ["irox-structs_derive"]
-threading = ["irox-threading"]
-time = ["irox-time"]
-tools = ["irox-tools"]
-types = ["irox-types"]
-units = ["irox-units"]
+csv = ["dep:irox-csv"]
+gpx = ["dep:irox-gpx"]
+nmea0183 = ["dep:irox-nmea0183"]
+raymarine-sonar = ["dep:irox-raymarine-sonar"]
+sirf = ["dep:irox-sirf"]
+influxdb_v1 = ["dep:irox-influxdb_v1"]
+win-loc-api = ["dep:irox-winlocation-api"]
+carto = ["dep:irox-carto"]
+egui-extras = ["dep:irox-egui-extras"]
+enums = ["dep:irox-enums"]
+enums_derive = ["dep:irox-enums_derive"]
+log = ["dep:irox-log"]
+networking = ["dep:irox-networking"]
+progress = ["dep:irox-progress"]
+stats = ["dep:irox-stats"]
+structs = ["dep:irox-structs"]
+structs_derive = ["dep:irox-structs_derive"]
+threading = ["dep:irox-threading"]
+time = ["dep:irox-time"]
+tools = ["dep:irox-tools"]
+types = ["dep:irox-types"]
+units = ["dep:irox-units"]
 
 [dependencies]
-irox-csv = { version = "^0.4.0", optional = true, path = "../data-formats/csv"}
-irox-gpx = { version = "^0.3.0", optional = true, path = "../data-formats/gpx"}
-irox-nmea0183 = { version = "^0.3.0", optional = true, path = "../data-formats/nmea0183"}
-irox-raymarine-sonar = { version = "^0.3.0", optional = true, path = "../data-formats/raymarine-sonar"}
-irox-sirf = { version = "^0.3.0", optional = true, path = "../data-formats/sirf"}
+irox-csv = { version = "^0.4.0", optional = true, path = "../data-formats/csv" }
+irox-gpx = { version = "^0.3.0", optional = true, path = "../data-formats/gpx" }
+irox-nmea0183 = { version = "^0.3.0", optional = true, path = "../data-formats/nmea0183" }
+irox-raymarine-sonar = { version = "^0.3.0", optional = true, path = "../data-formats/raymarine-sonar" }
+irox-sirf = { version = "^0.3.0", optional = true, path = "../data-formats/sirf" }
 
-irox-influxdb_v1 = { version = "^0.4.0", optional = true, path = "../interfaces/influxdb_v1"}
-irox-winlocation-api = {version = "^0.3.0", optional = true, path = "../interfaces/win-location-api"}
+irox-influxdb_v1 = { version = "^0.4.0", optional = true, path = "../interfaces/influxdb_v1" }
+irox-winlocation-api = { version = "^0.3.0", optional = true, path = "../interfaces/win-location-api" }
 
-irox-carto = { version = "^0.4.0", optional = true, path = "../libraries/carto"}
-irox-egui-extras = { version = "^0.3.2", optional = true, path = "../libraries/egui_extras"}
-irox-enums = { version = "0.2.0", optional = true, path = "../libraries/enums"}
-irox-enums_derive = { version = "0.2.0", optional = true, path = "../libraries/enums_derive"}
-irox-networking = { version = "^0.3.0", optional = true, path = "../libraries/network"}
-irox-progress = {version = "^0.1.2", optional = true, path = "../libraries/progress"}
-irox-stats = { version = "0.2.1", optional = true, path = "../libraries/stats"}
-irox-structs = { version = "^0.3.0", optional = true, path = "../libraries/structs"}
-irox-structs_derive = { version = "^0.2.2", optional = true, path = "../libraries/structs_derive"}
-irox-threading = {version = "^0.1.0", optional = true, path = "../libraries/threading"}
-irox-time = { version = "^0.2.0", optional = true, path = "../libraries/time"}
-irox-tools = { version = "^0.3.1", optional = true, path = "../libraries/tools"}
-irox-types = { version = "^0.2.2", optional = true, path = "../libraries/types"}
-irox-units = { version = "^0.3.1", optional = true, path = "../libraries/units"}
+irox-carto = { version = "^0.4.0", optional = true, path = "../libraries/carto" }
+irox-egui-extras = { version = "^0.3.2", optional = true, path = "../libraries/egui_extras" }
+irox-enums = { version = "0.2.0", optional = true, path = "../libraries/enums" }
+irox-enums_derive = { version = "0.2.0", optional = true, path = "../libraries/enums_derive" }
+irox-log = { version = "0.1.0", optional = true, path = "../libraries/log" }
+irox-networking = { version = "^0.3.0", optional = true, path = "../libraries/network" }
+irox-progress = { version = "^0.1.2", optional = true, path = "../libraries/progress" }
+irox-stats = { version = "0.2.1", optional = true, path = "../libraries/stats" }
+irox-structs = { version = "^0.3.0", optional = true, path = "../libraries/structs" }
+irox-structs_derive = { version = "^0.2.2", optional = true, path = "../libraries/structs_derive" }
+irox-threading = { version = "^0.1.0", optional = true, path = "../libraries/threading" }
+irox-time = { version = "^0.2.0", optional = true, path = "../libraries/time" }
+irox-tools = { version = "^0.3.1", optional = true, path = "../libraries/tools" }
+irox-types = { version = "^0.2.2", optional = true, path = "../libraries/types" }
+irox-units = { version = "^0.3.1", optional = true, path = "../libraries/units" }
