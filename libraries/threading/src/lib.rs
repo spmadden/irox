@@ -8,11 +8,13 @@
 #![forbid(unsafe_code)]
 
 pub use current::*;
+pub use mpmc::*;
+pub use multi::*;
 pub use single::*;
 pub use task::*;
 
 mod current;
+mod mpmc;
+mod multi;
 mod single;
 mod task;
-
-pub trait Executor {}

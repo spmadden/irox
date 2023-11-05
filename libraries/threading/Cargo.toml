@@ -12,6 +12,10 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[features]
+default = []
 
 [dependencies]
 log = "0.4.20"
+irox-log = {workspace = true}
+num_cpus = {workspace = true, optional = true}

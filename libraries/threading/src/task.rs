@@ -12,17 +12,19 @@ use std::task::Poll;
 pub type LocalFuture<'a, T> = Pin<Box<dyn Future<Output = T> + 'a>>;
 pub type LocalVoidFuture<'a> = LocalFuture<'a, ()>;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum TaskError {
-
     /// Mutex locking failed, probably due to panic
     LockingError,
 
     /// Task was not completed
     NotCompletedError,
 
-    /// Executor cannot accept new tasks
+    /// Executor cannot accept new tasks because it's stopping
     ExecutorStoppingError,
+
+    /// There was an error sending the task to a worker.
+    ExchangerError,
 }
 
 struct CompletableTaskInner<T> {
@@ -170,7 +172,6 @@ impl<T> Clone for LocalCompletableTask<T> {
 }
 
 impl<T> LocalCompletableTask<T> {
-
     /// Creates a new, uncompleted task.
     pub fn new() -> Self {
         LocalCompletableTask {

@@ -8,12 +8,10 @@
 
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::Arc;
 use std::sync::mpsc::{Sender, TryRecvError};
+use std::sync::Arc;
 use std::task::{Context, Poll};
 use std::thread::JoinHandle;
-
-use log::error;
 
 use crate::{CompletableTask, CurrentThreadExecutor, TaskError};
 
@@ -31,7 +29,7 @@ pub struct SingleThreadExecutor {
     handle: Option<JoinHandle<()>>,
 }
 
-pub(crate) type SingleThreadFuture<T> = Pin<Box<dyn Future<Output=T> + Send + 'static>>;
+pub(crate) type SingleThreadFuture<T> = Pin<Box<dyn Future<Output = T> + Send + 'static>>;
 
 impl SingleThreadExecutor {
     ///
@@ -50,7 +48,6 @@ impl SingleThreadExecutor {
                     Ok(e) => Some(e),
                     Err(e) => {
                         if e == TryRecvError::Disconnected {
-                            error!("Error receiving new task: {e:?}");
                             break;
                         }
                         None
@@ -76,7 +73,7 @@ impl SingleThreadExecutor {
     /// result from the operation itself.
     pub fn submit<T: Send + 'static>(
         &mut self,
-        fut: impl Future<Output=T> + Send + 'static,
+        fut: impl Future<Output = T> + Send + 'static,
     ) -> Result<TaskHandle<T>, TaskError> {
         let complete = Arc::new(CompletableTask::new());
         let task = SingleThreadTask::new(Box::pin(fut), complete.clone());
@@ -127,7 +124,7 @@ pub(crate) struct TaskExchange {
 ///
 /// A handle to the return result of the submitted task.
 pub struct TaskHandle<T> {
-    completer: Arc<CompletableTask<T>>,
+    pub(crate) completer: Arc<CompletableTask<T>>,
 }
 
 impl<T> TaskHandle<T> {
@@ -155,9 +152,7 @@ pub(crate) struct SingleThreadTask<T> {
 }
 
 impl<T> SingleThreadTask<T> {
-    pub fn new(future: SingleThreadFuture<T>,
-               complete: Arc<CompletableTask<T>>
-    ) -> Self {
+    pub fn new(future: SingleThreadFuture<T>, complete: Arc<CompletableTask<T>>) -> Self {
         SingleThreadTask { future, complete }
     }
 }
@@ -182,7 +177,7 @@ mod tests {
     use crate::{SingleThreadExecutor, TaskError};
 
     #[test]
-    pub fn test() -> Result<(), TaskError>{
+    pub fn test() -> Result<(), TaskError> {
         let mut exec = SingleThreadExecutor::new();
         let borrowed = String::new();
         let hnd = exec.submit(async move {

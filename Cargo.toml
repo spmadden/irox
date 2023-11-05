@@ -62,6 +62,7 @@ xml = {version = "^0.8", features = []}
 serial = {version = "^0.4", features = []}
 human-panic = {version = "^1.2", features = []}
 proc-macro2 = {version = "^1.0", features = []}
+num_cpus = {version = "1.16.0", features = []}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}
