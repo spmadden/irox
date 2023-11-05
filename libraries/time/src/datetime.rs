@@ -60,7 +60,7 @@ impl UTCDateTime {
     }
 
     #[must_use]
-    pub fn format<T: Format<Item = UTCDateTime>>(&self, format: &T) -> String {
+    pub fn format<T: Format<UTCDateTime>>(&self, format: &T) -> String {
         format.format(self)
     }
 }

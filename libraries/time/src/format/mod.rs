@@ -30,22 +30,19 @@ pub mod rfc3339;
 
 ///
 /// Provides a mechanism to translate a date or a time to a [`String`]
-pub trait Format {
-    type Item;
+pub trait Format<T> {
     ///
     /// Implementation-specific format of a date or time
-    fn format(&self, date: &Self::Item) -> String;
+    fn format(&self, date: &T) -> String;
 }
 
 ///
 /// Provides a mechanism to parse a date or time from a string.
 ///
-pub trait FormatParser {
-    type Item;
-
+pub trait FormatParser<T> {
     ///
     /// Tries to parse the specified string into the resultant item.
-    fn try_from(&self, data: &str) -> Result<Self::Item, FormatError>;
+    fn try_from(&self, data: &str) -> Result<T, FormatError>;
 }
 
 ///

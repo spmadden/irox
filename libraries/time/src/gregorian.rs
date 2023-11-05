@@ -389,13 +389,13 @@ impl Date {
     ///
     /// Formats this date using the specified formatter
     #[must_use]
-    pub fn format<F: Format<Item = Self>>(&self, format: &F) -> String {
+    pub fn format<F: Format<Self>>(&self, format: &F) -> String {
         format.format(self)
     }
 
     ///
     /// Attempts to parse a date from the string using the specified formatter
-    pub fn parse_from<F: FormatParser<Item = Self>>(
+    pub fn parse_from<F: FormatParser<Self>>(
         format: &F,
         string: &str,
     ) -> Result<Self, FormatError> {

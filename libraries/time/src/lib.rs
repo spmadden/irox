@@ -186,13 +186,13 @@ impl Time {
     ///
     /// Formats this Time using the specified formatter
     #[must_use]
-    pub fn format<F: Format<Item = Self>>(&self, format: &F) -> String {
+    pub fn format<F: Format<Self>>(&self, format: &F) -> String {
         format.format(self)
     }
 
     ///
     /// Tries to parse a Time from the string using the specified Formatter
-    pub fn parse_from<F: FormatParser<Item = Self>>(
+    pub fn parse_from<F: FormatParser<Self>>(
         format: &F,
         string: &str,
     ) -> Result<Self, FormatError> {

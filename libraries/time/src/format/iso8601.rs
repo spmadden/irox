@@ -25,9 +25,7 @@ pub struct BasicDateTimeOfDay;
 ///
 /// Equivalent to `YYYYMMddTHHmmssZ`
 pub const BASIC_DATE_TIME_OF_DAY: BasicDateTimeOfDay = BasicDateTimeOfDay {};
-impl Format for BasicDateTimeOfDay {
-    type Item = UTCDateTime;
-
+impl Format<UTCDateTime> for BasicDateTimeOfDay {
     fn format(&self, date: &UTCDateTime) -> String {
         format!(
             "{}{}",
@@ -36,9 +34,7 @@ impl Format for BasicDateTimeOfDay {
         )
     }
 }
-impl FormatParser for BasicDateTimeOfDay {
-    type Item = UTCDateTime;
-
+impl FormatParser<UTCDateTime> for BasicDateTimeOfDay {
     fn try_from(&self, data: &str) -> Result<UTCDateTime, FormatError> {
         let date = Date::parse_from(&BASIC_CALENDAR_DATE, data)?;
         let time = Time::parse_from(&BASIC_TIME_OF_DAY, data.split_at(8).1)?;
@@ -62,10 +58,8 @@ impl BasicCalendarDate {
         BasicCalendarDate.format(date)
     }
 }
-impl Format for BasicCalendarDate {
-    type Item = Date;
-
-    fn format(&self, date: &Self::Item) -> String {
+impl Format<Date> for BasicCalendarDate {
+    fn format(&self, date: &Date) -> String {
         format!(
             "{:04}{:02}{:02}",
             date.year(),
@@ -74,10 +68,8 @@ impl Format for BasicCalendarDate {
         )
     }
 }
-impl FormatParser for BasicCalendarDate {
-    type Item = Date;
-
-    fn try_from(&self, data: &str) -> Result<Self::Item, FormatError> {
+impl FormatParser<Date> for BasicCalendarDate {
+    fn try_from(&self, data: &str) -> Result<Date, FormatError> {
         // expecting a string of length 8
         let mut iter = data.chars();
         let year_str = iter.collect_next_chunk(4);
@@ -125,10 +117,8 @@ pub struct BasicTimeOfDay;
 /// Equivalent to `THHmmssZ`
 pub const BASIC_TIME_OF_DAY: BasicTimeOfDay = BasicTimeOfDay {};
 
-impl Format for BasicTimeOfDay {
-    type Item = Time;
-
-    fn format(&self, date: &Self::Item) -> String {
+impl Format<Time> for BasicTimeOfDay {
+    fn format(&self, date: &Time) -> String {
         let (h, m, s) = date.as_hms();
         format!("T{h:02}{m:02}{s:02}Z")
     }
@@ -137,6 +127,8 @@ impl FormatParser for BasicTimeOfDay {
     type Item = Time;
 
     fn try_from(&self, data: &str) -> Result<Self::Item, FormatError> {
+impl FormatParser<Time> for BasicTimeOfDay {
+    fn try_from(&self, data: &str) -> Result<Time, FormatError> {
         let mut iter = data.chars();
         let tee = iter.collect_next_chunk(1);
         let hour_string = iter.collect_next_chunk(2);
@@ -191,10 +183,8 @@ impl BasicTimeOfDay {
 pub struct ISO8601Duration;
 pub const DURATION: ISO8601Duration = ISO8601Duration;
 
-impl Format for ISO8601Duration {
-    type Item = Duration;
-
-    fn format(&self, date: &Self::Item) -> String {
+impl Format<Duration> for ISO8601Duration {
+    fn format(&self, date: &Duration) -> String {
         let (days, hours, minutes, seconds) = date.as_dhms();
         if days > 0 {
             return format!("P{days}DT{hours:02}H{minutes:02}M{seconds:02}S");
