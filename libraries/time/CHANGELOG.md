@@ -1,6 +1,45 @@
 
 
+## v0.3.0 (2023-11-05)
+
+### New Features
+
+ - <csr-id-d97683b8b34669c5efbc7464279ef172c4584c22/> impl Alternate display for Time to show fractional seconds to six digits
+ - <csr-id-d12df244ed837501d37d63903d5357c5c2ca14a7/> Impl basic formats for UTCDateTime
+
+### Bug Fixes
+
+ - <csr-id-b8b5ccb189d5fec9878de4e9cebce6a6e4786183/> Fix nanos frac calculation in Time
+
+### New Features (BREAKING)
+
+ - <csr-id-1654133411d46a4bf1697ffb6045946542e047f9/> Switching Format/FormatParser traits from types to generics so they can be implemented multiple times on a single format struct.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 6 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Impl Alternate display for Time to show fractional seconds to six digits ([`d97683b`](https://github.com/spmadden/irox/commit/d97683b8b34669c5efbc7464279ef172c4584c22))
+    - Fix nanos frac calculation in Time ([`b8b5ccb`](https://github.com/spmadden/irox/commit/b8b5ccb189d5fec9878de4e9cebce6a6e4786183))
+    - Impl basic formats for UTCDateTime ([`d12df24`](https://github.com/spmadden/irox/commit/d12df244ed837501d37d63903d5357c5c2ca14a7))
+    - Switching Format/FormatParser traits from types to generics so they can be implemented multiple times on a single format struct. ([`1654133`](https://github.com/spmadden/irox/commit/1654133411d46a4bf1697ffb6045946542e047f9))
+</details>
+
 ## v0.2.0 (2023-10-30)
+
+<csr-id-62a00cc08ddb4edc44b587e91db9d372ace2dcd8/>
 
 ### Chore
 
@@ -24,7 +63,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 13 commits contributed to the release over the course of 9 calendar days.
+ - 14 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 12 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -36,6 +75,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.2.0 ([`7901d52`](https://github.com/spmadden/irox/commit/7901d52aac33bb3d967b840a8d0855fd3c2f5505))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - ISO8601 Duration Formatting ([`15dd99e`](https://github.com/spmadden/irox/commit/15dd99ef00993e250220096016e140db9a978f11))
     - Publicly exporting Duration now ([`7748f68`](https://github.com/spmadden/irox/commit/7748f6820921d4174bd9644c2c877a1c6924f097))

@@ -1,6 +1,31 @@
 
 
 
+## v0.3.2 (2023-11-05)
+
+### New Features
+
+ - <csr-id-262121de9bc30c7501f3d1a7382a90c556137cd0/> new ANSI Color Codes
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New ANSI Color Codes ([`262121d`](https://github.com/spmadden/irox/commit/262121de9bc30c7501f3d1a7382a90c556137cd0))
+</details>
+
 ## v0.3.1 (2023-10-31)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.3.1 ([`f7eaa32`](https://github.com/spmadden/irox/commit/f7eaa327672c26b14a18869d6b10ce831a16a4a3))
     - Add new RetainTake for Vec and VecDeque ([`1f0e241`](https://github.com/spmadden/irox/commit/1f0e241f6207cf7b91b74377d393a0f867c1bb92))
 </details>
 
