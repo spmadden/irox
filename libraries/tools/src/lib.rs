@@ -3,6 +3,8 @@
 
 #![forbid(unsafe_code)]
 
+#[macro_use]
+pub mod ansi_colors;
 pub mod arrays;
 #[macro_use]
 pub mod assert;
