@@ -105,6 +105,12 @@ impl FormatParser<Date> for BasicCalendarDate {
     }
 }
 
+impl Format<UTCDateTime> for BasicCalendarDate {
+    fn format(&self, date: &UTCDateTime) -> String {
+        BasicCalendarDate.format(&date.date)
+    }
+}
+
 ///
 /// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3
 ///
@@ -123,10 +129,11 @@ impl Format<Time> for BasicTimeOfDay {
         format!("T{h:02}{m:02}{s:02}Z")
     }
 }
-impl FormatParser for BasicTimeOfDay {
-    type Item = Time;
-
-    fn try_from(&self, data: &str) -> Result<Self::Item, FormatError> {
+impl Format<UTCDateTime> for BasicTimeOfDay {
+    fn format(&self, date: &UTCDateTime) -> String {
+        BasicTimeOfDay::format(&date.time)
+    }
+}
 impl FormatParser<Time> for BasicTimeOfDay {
     fn try_from(&self, data: &str) -> Result<Time, FormatError> {
         let mut iter = data.chars();
