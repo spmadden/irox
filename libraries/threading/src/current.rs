@@ -71,7 +71,7 @@ impl<'a> CurrentThreadExecutor<'a> {
 
     ///
     /// Runs this executor until all submitted tasks are complete.
-    pub fn run_until_complete(mut self) {
+    pub fn run_until_complete(&mut self) {
         while !self.processing_queue.is_empty() {
             self.run_some();
         }
