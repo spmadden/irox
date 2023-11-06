@@ -13,6 +13,7 @@ use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 use irox_units::units::duration::{Duration, DurationUnit};
 
 use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
+use crate::format::iso8601::ExtendedDateFormat;
 use crate::format::{Format, FormatError, FormatParser};
 use crate::julian::{JulianDate, JulianDayNumber, JULIAN_EPOCH};
 use crate::SECONDS_IN_DAY;
@@ -219,6 +220,12 @@ pub struct Date {
     ///
     /// Day of Year is the day index into the specified year, range [0, 366)
     pub(crate) day_of_year: u16,
+}
+
+impl Display for Date {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", ExtendedDateFormat.format(self))
+    }
 }
 
 impl Date {
