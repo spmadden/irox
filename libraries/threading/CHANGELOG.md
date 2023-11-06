@@ -1,5 +1,42 @@
 
 
+## v0.2.0 (2023-11-06)
+
+### New Features
+
+ - <csr-id-1fa38e7e4d6a95fe6590fc3a94b917715fc6bc1e/> new multi-threaded executor
+ - <csr-id-82ebc8e0a346ce6b938f895d491c230f4f4c90f8/> Impl new SingleThreadExecutor
+ - <csr-id-7092bf0fdf023775913529398105f465ec7fdb43/> Impl 'run until complete' for CurrentThreadExecutor
+ - <csr-id-f8b45682a3fc53de2aa1adaaae417bcde907149f/> Cleaning up docs for Task
+
+### New Features (BREAKING)
+
+ - <csr-id-4749a7ed346d6d355666e1a6abda37257e5682de/> current thread takes a ref to itself rather than consumed
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 2 calendar days.
+ - 6 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
+    - New multi-threaded executor ([`1fa38e7`](https://github.com/spmadden/irox/commit/1fa38e7e4d6a95fe6590fc3a94b917715fc6bc1e))
+    - Current thread takes a ref to itself rather than consumed ([`4749a7e`](https://github.com/spmadden/irox/commit/4749a7ed346d6d355666e1a6abda37257e5682de))
+    - Impl new SingleThreadExecutor ([`82ebc8e`](https://github.com/spmadden/irox/commit/82ebc8e0a346ce6b938f895d491c230f4f4c90f8))
+    - Impl 'run until complete' for CurrentThreadExecutor ([`7092bf0`](https://github.com/spmadden/irox/commit/7092bf0fdf023775913529398105f465ec7fdb43))
+    - Cleaning up docs for Task ([`f8b4568`](https://github.com/spmadden/irox/commit/f8b45682a3fc53de2aa1adaaae417bcde907149f))
+</details>
+
 ## v0.1.0 (2023-10-30)
 
 ### New Features
@@ -10,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.1.0 ([`08f47a9`](https://github.com/spmadden/irox/commit/08f47a91b2ddfb3f1b229fe7c7202e3d443bd71d))
     - New async/threading module ([`d495715`](https://github.com/spmadden/irox/commit/d495715a0cfd5c30b1fe659382f16210e8dad538))
 </details>
 
