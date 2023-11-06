@@ -21,7 +21,7 @@
 
 use std::error::Error;
 use std::fmt::{Display, Formatter};
-use std::num::ParseIntError;
+use std::num::{ParseFloatError, ParseIntError};
 
 use irox_units::bounds::GreaterThanEqualToValueError;
 
@@ -50,7 +50,7 @@ pub trait FormatParser<T> {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum FormatErrorType {
     IOError,
-    IntegerFormatError,
+    NumberFormatError,
     OutOfRangeError,
     Other,
 }
@@ -100,13 +100,39 @@ impl From<std::io::Error> for FormatError {
 impl From<ParseIntError> for FormatError {
     fn from(value: ParseIntError) -> Self {
         FormatError {
-            error_type: FormatErrorType::IntegerFormatError,
+            error_type: FormatErrorType::NumberFormatError,
+            msg: value.to_string(),
+        }
+    }
+}
+impl From<ParseFloatError> for FormatError {
+    fn from(value: ParseFloatError) -> Self {
+        FormatError {
+            error_type: FormatErrorType::NumberFormatError,
             msg: value.to_string(),
         }
     }
 }
 impl From<GreaterThanEqualToValueError<u8>> for FormatError {
     fn from(value: GreaterThanEqualToValueError<u8>) -> Self {
+        FormatError {
+            error_type: FormatErrorType::OutOfRangeError,
+            msg: value.to_string(),
+        }
+    }
+}
+
+impl From<GreaterThanEqualToValueError<u16>> for FormatError {
+    fn from(value: GreaterThanEqualToValueError<u16>) -> Self {
+        FormatError {
+            error_type: FormatErrorType::OutOfRangeError,
+            msg: value.to_string(),
+        }
+    }
+}
+
+impl From<GreaterThanEqualToValueError<f64>> for FormatError {
+    fn from(value: GreaterThanEqualToValueError<f64>) -> Self {
         FormatError {
             error_type: FormatErrorType::OutOfRangeError,
             msg: value.to_string(),
