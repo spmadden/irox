@@ -1,5 +1,38 @@
 
 
+## v0.3.1 (2023-11-06)
+
+### New Features
+
+ - <csr-id-358ee9680adc36ab0061e4b43915aca5a0a3c8fb/> Much more complete (and correct) ISO8601 impl
+ - <csr-id-5ea2b40643882d7003c6f7267f13f5ea821aa17c/> impl Display for Date using ISO8601
+ - <csr-id-ecd70fb5f6d9c212e334c7b6f24289f458e20179/> new 'try_from_values' for UTCDateTime
+
+### Bug Fixes
+
+ - <csr-id-cc630d312b9cdd6b0dcbddc2d7717a52d4dac821/> fix inverted nanosecond calc in Time
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Much more complete (and correct) ISO8601 impl ([`358ee96`](https://github.com/spmadden/irox/commit/358ee9680adc36ab0061e4b43915aca5a0a3c8fb))
+    - Fix inverted nanosecond calc in Time ([`cc630d3`](https://github.com/spmadden/irox/commit/cc630d312b9cdd6b0dcbddc2d7717a52d4dac821))
+    - Impl Display for Date using ISO8601 ([`5ea2b40`](https://github.com/spmadden/irox/commit/5ea2b40643882d7003c6f7267f13f5ea821aa17c))
+    - New 'try_from_values' for UTCDateTime ([`ecd70fb`](https://github.com/spmadden/irox/commit/ecd70fb5f6d9c212e334c7b6f24289f458e20179))
+</details>
+
 ## v0.3.0 (2023-11-05)
 
 ### New Features
@@ -19,7 +52,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 6 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
     - Impl Alternate display for Time to show fractional seconds to six digits ([`d97683b`](https://github.com/spmadden/irox/commit/d97683b8b34669c5efbc7464279ef172c4584c22))
     - Fix nanos frac calculation in Time ([`b8b5ccb`](https://github.com/spmadden/irox/commit/b8b5ccb189d5fec9878de4e9cebce6a6e4786183))
     - Impl basic formats for UTCDateTime ([`d12df24`](https://github.com/spmadden/irox/commit/d12df244ed837501d37d63903d5357c5c2ca14a7))
