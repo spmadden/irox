@@ -11,6 +11,7 @@ use crate::format::Format;
 use crate::gregorian::Date;
 use crate::julian::JulianDate;
 use crate::Time;
+use irox_units::bounds::GreaterThanEqualToValueError;
 use irox_units::units::duration::Duration;
 use std::fmt::{Display, Formatter};
 use std::ops::Sub;
@@ -35,6 +36,36 @@ impl UTCDateTime {
     #[must_use]
     pub fn new(date: Date, time: Time) -> UTCDateTime {
         UTCDateTime { date, time }
+    }
+
+    ///
+    /// New UTC Date and Time from the specified values
+    pub fn try_from_values(
+        year: i32,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minute: u8,
+        seconds: u8,
+    ) -> Result<UTCDateTime, GreaterThanEqualToValueError<u8>> {
+        let date = Date::try_from_values(year, month, day)?;
+        let time = Time::from_hms(hour, minute, seconds)?;
+        Ok(UTCDateTime::new(date, time))
+    }
+
+    ///
+    /// New UTC date and Time from the specified values (fractional seconds)
+    pub fn try_from_values_f64(
+        year: i32,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minute: u8,
+        seconds: f64,
+    ) -> Result<UTCDateTime, GreaterThanEqualToValueError<f64>> {
+        let date = Date::try_from_values(year, month, day)?;
+        let time = Time::from_hms_f64(hour, minute, seconds)?;
+        Ok(UTCDateTime::new(date, time))
     }
 
     ///
