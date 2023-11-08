@@ -48,3 +48,6 @@ upgrade +FLAGS='':
 doc:
     rustup toolchain install nightly 2>&1 > /dev/null
     RUSTDOCFLAGS=$(xargs -aRustdoc.lints) cargo +nightly doc
+
+unused:
+    cargo clippy --bins --lib --examples --all-features -- -Dunused_crate_dependencies
