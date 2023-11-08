@@ -23,7 +23,6 @@ serde.workspace = true
 serde_json.workspace = true
 log.workspace = true
 signal-hook.workspace = true
-futures.workspace = true
 irox-sirf.workspace = true
 irox-nmea0183.workspace = true
 irox-tools.workspace = true
