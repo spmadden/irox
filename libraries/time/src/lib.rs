@@ -198,6 +198,51 @@ impl Time {
     ) -> Result<Self, FormatError> {
         format.try_from(string)
     }
+
+    ///
+    /// Adds the duration to this time, returning a new value of 'time'.  If the duration is longer
+    /// than a single day, returns the number of days that got consumed in the second 'duration'
+    /// parameter
+    /// # Example:
+    /// ```
+    /// # use std::error::Error;
+    /// # use irox_time::Time;
+    /// # use irox_units::bounds::GreaterThanEqualToValueError;
+    /// # use irox_units::units::duration::Duration;
+    /// # pub fn test() -> Result<(), GreaterThanEqualToValueError<u32>> {
+    ///     let time = Time::new(500, 0)?;
+    ///     let duration_to_add = Duration::from_seconds(129600); // 1.5 days
+    ///     let (time, excess) = time.wrapping_add(duration_to_add);
+    ///
+    ///     assert_eq!(time, Time::new(43700, 0)?);
+    ///     assert_eq!(excess, Duration::from_days(1));
+    /// #   Ok(())
+    /// # }
+    /// ```
+    #[must_use]
+    pub fn wrapping_add(&self, duration: Duration) -> (Time, Duration) {
+        let add_seconds = duration.as_seconds();
+        let add_nanos = (duration - Duration::from_seconds(add_seconds)).as_nanos();
+        let mut new_seconds = self.second_of_day as u64 + add_seconds;
+        let mut new_nanos = add_nanos + self.nanoseconds as u64;
+        if new_nanos >= NANOS_IN_SECOND as u64 {
+            new_nanos -= NANOS_IN_SECOND as u64;
+            new_seconds += 1;
+        }
+        let mut rollover = Duration::default();
+        if new_seconds >= SECONDS_IN_DAY as u64 {
+            let days = new_seconds / SECONDS_IN_DAY as u64;
+            new_seconds -= days * SECONDS_IN_DAY as u64;
+            rollover += Duration::from_days(days);
+        }
+        (
+            Time {
+                second_of_day: new_seconds as u32,
+                nanoseconds: new_nanos as u32,
+            },
+            rollover,
+        )
+    }
 }
 
 impl Display for Time {
@@ -236,6 +281,19 @@ pub const SECONDS_IN_HOUR: u32 = 3600;
 ///
 /// Generally 86400, but occasionally 86401 for leap seconds.
 pub const SECONDS_IN_DAY: u32 = 86400;
+
+///
+/// Nanoseconds in a Microsecond
+pub const NANOS_IN_MICRO: u32 = 1000;
+///
+/// Nanoseconds in a Millisecond
+pub const NANOS_IN_MILLI: u32 = 1_000_000;
+///
+/// Nanoseconds in a Second
+pub const NANOS_IN_SECOND: u32 = 1_000_000_000;
+///
+/// Nanoseconds in a Day
+pub const NANOS_IN_DAY: u64 = 86_400_000_000_000_u64;
 
 ///
 /// 32 Bit Fixed Precision Time Format, storing 16 bits of Seconds, and 16 bits
