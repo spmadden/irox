@@ -15,17 +15,8 @@ repository.workspace = true
 [dependencies]
 ureq.workspace = true
 url.workspace = true
-clap.workspace = true
 log.workspace = true
 irox-networking.workspace = true
 irox-types.workspace = true
 irox-csv.workspace = true
-env_logger = {workspace = true, optional = true}
 
-[features]
-default = ["cli"]
-cli = ["dep:env_logger"]
-
-[[bin]]
-name = "influx-cli"
-required-features = ["cli"]

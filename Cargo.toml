@@ -34,8 +34,9 @@ members = [
     "libraries/threading",
     "libraries/tools",
     "libraries/types",
+    "tools/gpsd",
     "tools/halflifes",
-    "tools/gpsd"
+    "tools/influx-cli"
 ]
 
 [workspace.dependencies]

@@ -1755,16 +1755,22 @@ dependencies = [
  "irox-egui-extras",
  "irox-stats",
  "log",
- "ron",
- "serde",
+]
+
+[[package]]
+name = "irox-influx-cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "env_logger",
+ "irox-influxdb_v1",
+ "log",
 ]
 
 [[package]]
 name = "irox-influxdb_v1"
 version = "0.4.0"
 dependencies = [
- "clap",
- "env_logger",
  "irox-csv",
  "irox-networking",
  "irox-types",

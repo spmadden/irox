@@ -1,0 +1,20 @@
+[package]
+name = "irox-influx-cli"
+description = ""
+keywords = ["irox"]
+categories = []
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-influxdb_v1.workspace = true
+clap.workspace = true
+env_logger.workspace = true
+log.workspace = true
+
