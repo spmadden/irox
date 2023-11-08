@@ -159,7 +159,7 @@ impl Sub<Self> for UTCDateTime {
         let ts1: JulianDate = self.into();
         let ts2: JulianDate = rhs.into();
 
-        ts2 - ts1
+        ts1 - ts2
     }
 }
 impl Sub<&Self> for UTCDateTime {
@@ -169,7 +169,7 @@ impl Sub<&Self> for UTCDateTime {
         let ts1: JulianDate = self.into();
         let ts2: JulianDate = rhs.into();
 
-        ts2 - ts1
+        ts1 - ts2
     }
 }
 
