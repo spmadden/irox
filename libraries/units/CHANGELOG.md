@@ -1,7 +1,34 @@
 
 
 
+## v0.3.2 (2023-11-08)
+
+### New Features
+
+ - <csr-id-2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9/> Impl Add, AddAssign for Date, UTCDateTime
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 9 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Impl Add, AddAssign for Date, UTCDateTime ([`2cbc2e1`](https://github.com/spmadden/irox/commit/2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9))
+</details>
+
 ## v0.3.1 (2023-10-30)
+
+<csr-id-f374b5ef4a7f69938753223712d28c52353bbb92/>
 
 ### Chore
 
@@ -18,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 9 calendar days.
+ - 6 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -30,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.1 ([`e0690ec`](https://github.com/spmadden/irox/commit/e0690ec6af8cc52fd98a9d67073e6b7b1b3089eb))
     - New Day/Hours/Minutes/Seconds extraction for Duration ([`7918120`](https://github.com/spmadden/irox/commit/7918120dc78e7b8a143d8b7e3175748fddbd21b8))
     - Impl SubAssign in the units macro ([`8488f47`](https://github.com/spmadden/irox/commit/8488f471efbd9083936eee4618eb3a37a28213f5))
     - ALL THE LINTS. ([`f374b5e`](https://github.com/spmadden/irox/commit/f374b5ef4a7f69938753223712d28c52353bbb92))

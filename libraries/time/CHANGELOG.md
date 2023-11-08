@@ -1,5 +1,32 @@
 
 
+## v0.3.2 (2023-11-08)
+
+### New Features
+
+ - <csr-id-2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9/> Impl Add, AddAssign for Date, UTCDateTime
+ - <csr-id-b615236b420d596cb4a12368f4061c9da9560be2/> Impl 'wrapping_add' for Time
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 2 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Impl Add, AddAssign for Date, UTCDateTime ([`2cbc2e1`](https://github.com/spmadden/irox/commit/2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9))
+    - Impl 'wrapping_add' for Time ([`b615236`](https://github.com/spmadden/irox/commit/b615236b420d596cb4a12368f4061c9da9560be2))
+</details>
+
 ## v0.3.1 (2023-11-06)
 
 ### New Features
@@ -16,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -27,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.3.1 ([`b16680c`](https://github.com/spmadden/irox/commit/b16680cb5843e54f4e8f39e04aeee27a09d3edd0))
     - Much more complete (and correct) ISO8601 impl ([`358ee96`](https://github.com/spmadden/irox/commit/358ee9680adc36ab0061e4b43915aca5a0a3c8fb))
     - Fix inverted nanosecond calc in Time ([`cc630d3`](https://github.com/spmadden/irox/commit/cc630d312b9cdd6b0dcbddc2d7717a52d4dac821))
     - Impl Display for Date using ISO8601 ([`5ea2b40`](https://github.com/spmadden/irox/commit/5ea2b40643882d7003c6f7267f13f5ea821aa17c))

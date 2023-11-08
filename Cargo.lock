@@ -1839,7 +1839,7 @@ dependencies = [
 
 [[package]]
 name = "irox-time"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "irox-enums",
  "irox-tools",
@@ -1861,7 +1861,7 @@ dependencies = [
 
 [[package]]
 name = "irox-units"
-version = "0.3.1"
+version = "0.3.2"
 
 [[package]]
 name = "irox-winlocation-api"
