@@ -1,5 +1,29 @@
 
 
+## v0.3.3 (2023-11-08)
+
+### Bug Fixes
+
+ - <csr-id-87d603a6aedcdf9c150cd3c61ede327c1c516c1b/> Fix duration math in Sub<Duration> for UTCDateTime
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix duration math in Sub<Duration> for UTCDateTime ([`87d603a`](https://github.com/spmadden/irox/commit/87d603a6aedcdf9c150cd3c61ede327c1c516c1b))
+</details>
+
 ## v0.3.2 (2023-11-08)
 
 ### New Features
@@ -11,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 2 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.2, irox-time v0.3.2 ([`320bab3`](https://github.com/spmadden/irox/commit/320bab39f3dea37a8c464f29459dbda1f962af4a))
     - Impl Add, AddAssign for Date, UTCDateTime ([`2cbc2e1`](https://github.com/spmadden/irox/commit/2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9))
     - Impl 'wrapping_add' for Time ([`b615236`](https://github.com/spmadden/irox/commit/b615236b420d596cb4a12368f4061c9da9560be2))
 </details>
