@@ -1,8 +1,8 @@
 [package]
 name = "irox-influx-cli"
-description = ""
+description = "Command line test tool to interface with the InfluxDB V1 API"
 keywords = ["irox"]
-categories = []
+categories = ["command-line-utilities", "database"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true

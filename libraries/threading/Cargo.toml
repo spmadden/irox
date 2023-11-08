@@ -17,5 +17,7 @@ default = []
 
 [dependencies]
 log = "0.4.20"
-irox-log = {workspace = true}
 num_cpus = {workspace = true, optional = true}
+
+[dev-dependencies]
+irox-log = {workspace = true}

@@ -18,4 +18,3 @@ log.workspace = true
 irox-time.workspace = true
 irox-units.workspace = true
 irox-carto.workspace = true
-irox-tools.workspace = true

@@ -1240,46 +1240,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures"
-version = "0.3.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da0290714b38af9b4a7b094b8a37086d1b4e61f2df9122c3cad2577669145335"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-executor",
- "futures-io",
- "futures-sink",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
-name = "futures-channel"
-version = "0.3.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff4dd66668b557604244583e3e1e1eada8c5c2e96a6d0d6653ede395b78bbacb"
-dependencies = [
- "futures-core",
- "futures-sink",
-]
-
-[[package]]
 name = "futures-core"
 version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb1d22c66e66d9d72e1758f0bd7d4fd0bee04cad842ee34587d68c07e45d088c"
-
-[[package]]
-name = "futures-executor"
-version = "0.3.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f4fb8693db0cf099eadcca0efe2a5a22e4550f98ed16aba6c48700da29597bc"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
 
 [[package]]
 name = "futures-io"
@@ -1313,17 +1277,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures-macro"
-version = "0.3.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53b153fd91e4b0147f4aced87be237c98248656bb01050b96bf3ee89220a8ddb"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.39",
-]
-
-[[package]]
 name = "futures-sink"
 version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1341,10 +1294,8 @@ version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a19526d624e703a3179b3d322efec918b6246ea0fa51d41124525f00f1cc8104"
 dependencies = [
- "futures-channel",
  "futures-core",
  "futures-io",
- "futures-macro",
  "futures-sink",
  "futures-task",
  "memchr",
@@ -1375,9 +1326,9 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.2.10"
+version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4136b2a15dd319360be1c07d9933517ccf0be8f16bf62a3bee4f0d618df427"
+checksum = "fe9006bed769170c11f845cf00c7c1e9092aeb3f268e007c3e760ac68008070f"
 dependencies = [
  "cfg-if",
  "libc",
@@ -1674,7 +1625,6 @@ dependencies = [
  "irox-time",
  "irox-tools",
  "irox-units",
- "log",
  "windows 0.51.1",
 ]
 
@@ -1716,7 +1666,6 @@ dependencies = [
  "clap",
  "clap-verbosity-flag",
  "env_logger",
- "futures",
  "human-panic",
  "irox-carto",
  "irox-networking",
@@ -1739,7 +1688,6 @@ version = "0.4.0"
 dependencies = [
  "irox-carto",
  "irox-time",
- "irox-tools",
  "irox-units",
  "log",
  "xml",
@@ -1803,7 +1751,6 @@ version = "0.4.0"
 dependencies = [
  "irox-carto",
  "irox-enums",
- "irox-structs",
  "irox-time",
  "irox-tools",
  "irox-units",
@@ -1826,11 +1773,7 @@ dependencies = [
 name = "irox-raymarine-sonar"
 version = "0.4.0"
 dependencies = [
- "clap",
- "clap-verbosity-flag",
- "env_logger",
  "irox-carto",
- "irox-gpx",
  "irox-time",
  "irox-tools",
  "irox-types",
@@ -1847,6 +1790,19 @@ version = "0.3.0"
 dependencies = [
  "irox-structs",
  "irox-tools",
+ "log",
+]
+
+[[package]]
+name = "irox-sonar-sdf-convert"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "clap-verbosity-flag",
+ "env_logger",
+ "irox-carto",
+ "irox-gpx",
+ "irox-raymarine-sonar",
  "log",
 ]
 
@@ -1911,7 +1867,6 @@ version = "0.3.1"
 name = "irox-winlocation-api"
 version = "0.4.0"
 dependencies = [
- "futures",
  "irox-carto",
  "irox-time",
  "irox-units",

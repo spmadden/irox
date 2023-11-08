@@ -12,10 +12,6 @@ exclude.workspace = true
 readme = "README.md"
 repository.workspace = true
 
-[features]
-default = []
-cli = ["dep:env_logger", "dep:clap", "dep:clap-verbosity-flag", "dep:irox-gpx"]
-
 [dependencies]
 rusqlite.workspace = true
 log.workspace = true
@@ -26,12 +22,3 @@ irox-units.workspace = true
 irox-carto.workspace = true
 irox-tools.workspace = true
 irox-time.workspace = true
-
-env_logger = { workspace = true, optional = true }
-clap = { workspace = true, optional = true }
-clap-verbosity-flag = { workspace = true, optional = true }
-irox-gpx = { workspace = true, optional = true }
-
-[[bin]]
-name = "sonar_sdf_convert"
-required-features = ["cli"]

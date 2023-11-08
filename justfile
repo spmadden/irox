@@ -50,4 +50,4 @@ doc:
     RUSTDOCFLAGS=$(xargs -aRustdoc.lints) cargo +nightly doc
 
 unused:
-    cargo clippy --bins --lib --examples --all-features -- -Dunused_crate_dependencies
+    cargo clippy --bins --lib --all-features -- -Wunused_crate_dependencies

@@ -17,7 +17,6 @@ irox-units.workspace = true
 irox-tools.workspace = true
 irox-enums.workspace = true
 irox-time.workspace = true
-log.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
