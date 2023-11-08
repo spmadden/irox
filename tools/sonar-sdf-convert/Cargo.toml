@@ -1,0 +1,23 @@
+[package]
+name = "irox-sonar-sdf-convert"
+description = "Raymarine SDF SonarLog Live conversion tool"
+keywords = ["irox", "raymarine", "gpx", "sonarlog"]
+categories = ["command-line-utilities", "encoding", "parser-implementations", "science::geo"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-carto.workspace = true
+irox-gpx.workspace = true
+irox-raymarine-sonar.workspace = true
+
+log.workspace = true
+env_logger.workspace = true
+clap.workspace = true
+clap-verbosity-flag.workspace = true

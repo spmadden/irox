@@ -36,7 +36,8 @@ members = [
     "libraries/types",
     "tools/gpsd",
     "tools/halflifes",
-    "tools/influx-cli"
+    "tools/influx-cli",
+    "tools/sonar-sdf-convert",
 ]
 
 [workspace.dependencies]
