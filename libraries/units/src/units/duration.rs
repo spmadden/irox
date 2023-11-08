@@ -386,6 +386,10 @@ impl Duration {
     pub const fn from_years(years: u64) -> Duration {
         Duration::new(years as f64, DurationUnit::Year)
     }
+
+    pub const fn from_seconds(seconds: u64) -> Duration {
+        Duration::new(seconds as f64, DurationUnit::Second)
+    }
 }
 
 impl Display for Duration {

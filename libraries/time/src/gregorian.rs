@@ -6,7 +6,7 @@
 //!
 
 use std::fmt::{Display, Formatter};
-use std::ops::{Add, Sub};
+use std::ops::{Add, AddAssign, Sub};
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
@@ -619,6 +619,21 @@ impl Add<Duration> for Date {
     fn add(self, rhs: Duration) -> Self::Output {
         let days = rhs.as_days();
         self.add_days(days as u32)
+    }
+}
+
+impl AddAssign<Duration> for Date {
+    fn add_assign(&mut self, rhs: Duration) {
+        let date = *self + rhs;
+        self.year = date.year;
+        self.day_of_year = date.day_of_year;
+    }
+}
+impl AddAssign<&Duration> for Date {
+    fn add_assign(&mut self, rhs: &Duration) {
+        let date = *self + *rhs;
+        self.year = date.year;
+        self.day_of_year = date.day_of_year;
     }
 }
 

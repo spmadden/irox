@@ -14,7 +14,7 @@ use crate::Time;
 use irox_units::bounds::GreaterThanEqualToValueError;
 use irox_units::units::duration::Duration;
 use std::fmt::{Display, Formatter};
-use std::ops::Sub;
+use std::ops::{Add, AddAssign, Sub};
 
 ///
 /// Represents a Gregorian Date and Time in UTC
@@ -170,5 +170,39 @@ impl Sub<&Self> for UTCDateTime {
         let ts2: JulianDate = rhs.into();
 
         ts2 - ts1
+    }
+}
+
+impl Add<Duration> for UTCDateTime {
+    type Output = UTCDateTime;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        let (time, excess) = self.time.wrapping_add(rhs);
+        let date = self.date + excess;
+        UTCDateTime { date, time }
+    }
+}
+impl Add<&Duration> for UTCDateTime {
+    type Output = UTCDateTime;
+
+    fn add(self, rhs: &Duration) -> Self::Output {
+        let (time, excess) = self.time.wrapping_add(*rhs);
+        let date = self.date + excess;
+        UTCDateTime { date, time }
+    }
+}
+
+impl AddAssign<Duration> for UTCDateTime {
+    fn add_assign(&mut self, rhs: Duration) {
+        let (time, excess) = self.time.wrapping_add(rhs);
+        self.time = time;
+        self.date += excess;
+    }
+}
+impl AddAssign<&Duration> for UTCDateTime {
+    fn add_assign(&mut self, rhs: &Duration) {
+        let (time, excess) = self.time.wrapping_add(*rhs);
+        self.time = time;
+        self.date += excess;
     }
 }
