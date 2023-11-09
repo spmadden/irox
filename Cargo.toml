@@ -21,6 +21,7 @@ members = [
     "eieio/nmea0183",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
+    "libraries/build-rs",
     "libraries/carto",
     "libraries/egui_extras",
     "libraries/enums",
