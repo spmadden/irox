@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+pub use client::*;
+mod client;
+
 ///
 /// Basic enumerated type to pick the HTTP protocol & port
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
@@ -28,4 +31,17 @@ impl HttpProtocol {
             HttpProtocol::HTTPS => "https",
         }
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum HttpMethod {
+    Connect,
+    Delete,
+    Get,
+    Head,
+    Options,
+    Post,
+    Put,
+    Trace,
+    Other(String)
 }
