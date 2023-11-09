@@ -5,6 +5,7 @@ use std::io::{Read, Write};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
+use std::sync::mpsc::Sender;
 
 use log::{error, info};
 
@@ -27,20 +28,12 @@ impl Default for ListenSettings {
     }
 }
 pub struct TCPServer {
-    conn_pool: TCPConnectionManager,
+    sender_to_clients: Sender<Box<Frame>>,
 }
 
 impl TCPServer {
     pub fn start(settings: ListenSettings, close: Arc<AtomicBool>) -> Result<TCPServer, GPSdError> {
         let sockaddr = SocketAddr::new(settings.listen_ip, settings.listen_port);
-
-        let conn_pool = match TCPConnectionManager::start(sockaddr, close) {
-            Ok(c) => c,
-            Err(e) => {
-                error!("Error starting TCPConnectionManager: {e:?}");
-                return Err(e.into());
-            }
-        };
 
         info!("GPSd server successfully started on {sockaddr}");
         Ok(TCPServer { conn_pool })

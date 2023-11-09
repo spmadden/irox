@@ -8,6 +8,7 @@ pub mod transport;
 
 mod nmea0183;
 mod sirf;
+mod commands;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
