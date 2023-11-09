@@ -51,3 +51,11 @@ doc:
 
 unused:
     cargo clippy --bins --lib --all-features -- -Wunused_crate_dependencies
+
+new-lib MOD:
+    cp -r dev/mod_template/base/* {{MOD}}
+    cp -r dev/mod_template/lib/* {{MOD}}
+
+new-bin MOD:
+    cp -r dev/mod_template/base/* {{MOD}}
+    cp -r dev/mod_template/tool/* {{MOD}}
