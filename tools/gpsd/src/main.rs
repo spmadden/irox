@@ -1,14 +1,6 @@
-pub use irox_carto as carto;
-pub use irox_units as units;
-
-pub mod config;
-pub mod error;
-pub mod output;
-pub mod transport;
-
-mod nmea0183;
-mod sirf;
-mod commands;
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+//
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -24,6 +16,15 @@ use output::FrameGenerator;
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};
 
+pub mod config;
+pub mod error;
+pub mod output;
+pub mod transport;
+
+mod commands;
+mod nmea0183;
+mod sirf;
+
 fn main() -> Result<(), GPSdError> {
     setup_panic!();
     env_logger::Builder::from_env("GPSD_LOG").init();
@@ -37,6 +38,7 @@ fn main() -> Result<(), GPSdError> {
 
     let server = match TCPServer::start(
         ListenSettings {
+            // listen_ip: IpAddr::V4(Ipv4Addr::LOCALHOST),
             ..Default::default()
         },
         term.clone(),
@@ -108,10 +110,11 @@ mod windows {
 
     use log::{error, info};
 
+    use irox_winlocation_api::WindowsLocationAPI;
+
     use crate::error::GPSdError;
     use crate::output::Frame;
     use crate::transport::TCPServer;
-    use irox_winlocation_api::WindowsLocationAPI;
 
     pub fn start_windows(mut server: TCPServer, term: &Arc<AtomicBool>) -> Result<(), GPSdError> {
         let locator = WindowsLocationAPI::connect()?;
