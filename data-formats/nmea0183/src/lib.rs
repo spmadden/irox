@@ -10,7 +10,7 @@ use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_tools::bits::Bits;
 use irox_tools::options::MaybeInto;
-use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
+pub use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
 use irox_tools::read::read_until;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::{Length, LengthUnits};
@@ -100,7 +100,7 @@ impl PacketBuilder<Frame> for NMEAParser {
         let key = read_until(&mut packet.as_slice(), &[b','])?;
         let mut pkt = packet.as_slice();
         let payload = if key.ends_with("GGA".as_bytes()) {
-            FramePayload::GGA(GGABuilder.build_from(&mut pkt)?)
+            FramePayload::GGA(GGABuilder::new().build_from(&mut pkt)?)
         } else if key.ends_with("GSA".as_bytes()) {
             FramePayload::GSA(GSABuilder.build_from(&mut pkt)?)
         } else if key.ends_with("GSV".as_bytes()) {

@@ -9,12 +9,13 @@ use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_enums::EnumName;
 use irox_time::Time;
+use irox_tools::format::DecimalFormatF64;
 use irox_tools::options::{MaybeInto, MaybeMap};
 use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_units::units::length::Length;
 
 use crate::{
-    calculate_checksum, maybe_altitude, maybe_latitude, maybe_length, maybe_longitude, Error,
+    calculate_checksum, Error, maybe_altitude, maybe_latitude, maybe_length, maybe_longitude,
     MessageType,
 };
 
@@ -48,6 +49,7 @@ impl GPSQualityIndicator {
         }
     }
 }
+
 impl From<u8> for GPSQualityIndicator {
     fn from(qual: u8) -> Self {
         match qual {
@@ -65,18 +67,88 @@ impl From<u8> for GPSQualityIndicator {
     }
 }
 
+///
+/// GGA - Global Positioning System Fix Data
+//
+// This is one of the sentences commonly emitted by GPS units.
+//
+// Time, Position and fix related data for a GPS receiver.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct GGA {
+    ///
+    /// `hhmmss.ss`
+    ///
+    /// UTC of this position report, hh is hours, mm is minutes, ss.ss is seconds.
     timestamp: Option<Time>,
+
+    ///
+    /// `ddmm.mm`
+    ///
+    /// Latitude, dd is degrees, mm.mm is minutes
     latitude: Option<Latitude>,
+
+    ///
+    /// `ddmm.mm`
+    ///
+    /// Longitude, dd is degrees, mm.mm is minutes
     longitude: Option<Longitude>,
+
+    /// GPS Quality Indicator - enum values
     quality: Option<GPSQualityIndicator>,
+
+    /// Number of satellites in use, 00 - 12
     num_sats: Option<u8>,
+
+    /// Horizontal Dilution of precision (meters)
     hdop: Option<Length>,
+
+    /// Antenna Altitude above/below mean-sea-level (geoid) (in meters)
     ant_alt: Option<Altitude>,
+
+    /// Geoidal separation, the difference between the WGS-84 earth
+    /// ellipsoid and mean-sea-level (geoid), "-" means mean-sea-level
+    /// below ellipsoid
     geoid_sep: Option<Length>,
+
+    /// Age of differential GPS data, time in seconds since last SC104
+    /// type 1 or 9 update, null field when DGPS is not used
     dgps_age: Option<Duration>,
+
+    /// Differential reference station ID, 0000-1023
     stn_id: Option<u16>,
+}
+
+impl GGA {
+    pub fn timestamp(&self) -> Option<Time> {
+        self.timestamp
+    }
+    pub fn latitude(&self) -> Option<Latitude> {
+        self.latitude
+    }
+    pub fn longitude(&self) -> Option<Longitude> {
+        self.longitude
+    }
+    pub fn quality(&self) -> Option<GPSQualityIndicator> {
+        self.quality
+    }
+    pub fn num_sats(&self) -> Option<u8> {
+        self.num_sats
+    }
+    pub fn hdop(&self) -> Option<Length> {
+        self.hdop
+    }
+    pub fn ant_alt(&self) -> Option<Altitude> {
+        self.ant_alt
+    }
+    pub fn geoid_sep(&self) -> Option<Length> {
+        self.geoid_sep
+    }
+    pub fn dgps_age(&self) -> Option<Duration> {
+        self.dgps_age
+    }
+    pub fn stn_id(&self) -> Option<u16> {
+        self.stn_id
+    }
 }
 
 impl Display for GGA {
@@ -128,9 +200,8 @@ impl Packet for GGA {
         let utctime = self
             .timestamp
             .map(|timestamp| {
-                let (hh, mm, ss) = timestamp.as_hms();
-                let ss = ss as f64 + timestamp.get_secondsfrac();
-                format!("{hh:02}{mm:02}{ss:02.3}")
+                let (hh, mm, ss) = timestamp.as_hms_f64();
+                format!("{hh:02}{mm:02}{}", DecimalFormatF64(2, 2, ss))
             })
             .unwrap_or_default();
 
@@ -143,7 +214,7 @@ impl Packet for GGA {
                     "S"
                 }
             };
-            format!("{lat_deg:02}{lat_min:02.04},{ns}")
+            format!("{lat_deg:02}{},{ns}", DecimalFormatF64(2, 5, lat_min))
         });
 
         let longitude = self.longitude.map_or(String::from(","), |lon| {
@@ -155,7 +226,7 @@ impl Packet for GGA {
                     "W"
                 }
             };
-            format!("{lon_deg:02}{lon_min:02.04},{ew}")
+            format!("{lon_deg:02}{},{ew}", DecimalFormatF64(2, 5, lon_min))
         });
         let fix = self
             .quality
@@ -166,7 +237,7 @@ impl Packet for GGA {
             .map_or(String::new(), |used| format!("{used}"));
         let hdop = self
             .hdop
-            .map(|hdop| format!("{:0.1}", hdop.as_meters().value()))
+            .map(|hdop| format!("{}", DecimalFormatF64(1, 2, hdop.as_meters().value())))
             .unwrap_or_default();
         let msl_alt = self
             .ant_alt
@@ -174,12 +245,15 @@ impl Packet for GGA {
                 if a.reference_frame() != AltitudeReferenceFrame::Geoid {
                     return None;
                 };
-                Some(format!("{:01.1},M", a.value().as_meters().value()))
+                Some(format!(
+                    "{},M",
+                    DecimalFormatF64(2, 2, a.value().as_meters().value())
+                ))
             })
             .unwrap_or(String::from(","));
         let geoid_sep = self
             .geoid_sep
-            .map(|f| format!("{:01.1},M", f.as_meters().value()))
+            .map(|f| format!("{},M", DecimalFormatF64(1, 2, f.as_meters().value())))
             .unwrap_or(String::from(","));
         let dgps_age = self
             .dgps_age
@@ -213,7 +287,11 @@ fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
     Time::from_hms_f64(hh, mm, ss).ok()
 }
 
-pub struct GGABuilder;
+#[derive(Default)]
+pub struct GGABuilder {
+    gga: GGA,
+}
+
 impl PacketBuilder<GGA> for GGABuilder {
     type Error = Error;
 
@@ -261,8 +339,115 @@ impl PacketBuilder<GGA> for GGABuilder {
     }
 }
 
-#[cfg(test)]
-mod test {
-    #[test]
-    pub fn test() {}
+impl GGABuilder {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    #[must_use]
+    pub fn build(self) -> GGA {
+        self.gga
+    }
+
+    pub fn set_timestamp(&mut self, time: Time) {
+        self.gga.timestamp = Some(time);
+    }
+
+    #[must_use]
+    pub fn with_timestamp(mut self, time: Time) -> Self {
+        self.gga.timestamp = Some(time);
+        self
+    }
+
+    pub fn set_latitude(&mut self, lat: Latitude) {
+        self.gga.latitude = Some(lat);
+    }
+
+    #[must_use]
+    pub fn with_latitude(mut self, lat: Latitude) -> Self {
+        self.gga.latitude = Some(lat);
+        self
+    }
+
+    pub fn set_longitude(&mut self, lon: Longitude) {
+        self.gga.longitude = Some(lon);
+    }
+
+    #[must_use]
+    pub fn with_longitude(mut self, lon: Longitude) -> Self {
+        self.gga.longitude = Some(lon);
+        self
+    }
+
+    pub fn set_quality(&mut self, quality: GPSQualityIndicator) {
+        self.gga.quality = Some(quality);
+    }
+
+    #[must_use]
+    pub fn with_quality(mut self, quality: GPSQualityIndicator) -> Self {
+        self.gga.quality = Some(quality);
+        self
+    }
+
+    pub fn set_num_sats(&mut self, num_sats: u8) {
+        self.gga.num_sats = Some(num_sats)
+    }
+
+    #[must_use]
+    pub fn with_num_sats(mut self, num_sats: u8) -> Self {
+        self.gga.num_sats = Some(num_sats);
+        self
+    }
+
+    pub fn set_hdop(&mut self, hdop: Length) {
+        self.gga.hdop = Some(hdop);
+    }
+
+    #[must_use]
+    pub fn with_hdop(mut self, hdop: Length) -> Self {
+        self.gga.hdop = Some(hdop);
+        self
+    }
+
+    pub fn set_ant_alt(&mut self, alt: Altitude) {
+        self.gga.ant_alt = Some(alt);
+    }
+
+    #[must_use]
+    pub fn with_ant_alt(mut self, alt: Altitude) -> Self {
+        self.gga.ant_alt = Some(alt);
+        self
+    }
+
+    pub fn set_geoid_sep(&mut self, sep: Length) {
+        self.gga.geoid_sep = Some(sep);
+    }
+
+    #[must_use]
+    pub fn with_geoid_sep(mut self, sep: Length) -> Self {
+        self.gga.geoid_sep = Some(sep);
+        self
+    }
+
+    pub fn set_dgps_age(&mut self, age: Duration) {
+        self.gga.dgps_age = Some(age);
+    }
+
+    #[must_use]
+    pub fn with_dgps_age(mut self, age: Duration) -> Self {
+        self.gga.dgps_age = Some(age);
+        self
+    }
+
+    pub fn set_stn_id(&mut self, stn_id: u16) {
+        self.gga.stn_id = Some(stn_id);
+    }
+
+    #[must_use]
+    pub fn with_stn_id(mut self, stn_id: u16) -> Self {
+        self.gga.stn_id = Some(stn_id);
+        self
+    }
 }
+
