@@ -10,6 +10,7 @@ pub mod arrays;
 pub mod assert;
 pub mod bits;
 pub mod f64;
+pub mod format;
 pub mod identifier;
 pub mod iterators;
 pub mod murmur3;
