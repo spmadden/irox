@@ -177,6 +177,17 @@ impl Time {
     }
 
     ///
+    /// Returns a triplet, (hours, minutes, seconds) representing this time, with seconds as [`f64`]
+    #[must_use]
+    pub fn as_hms_f64(&self) -> (u32, u32, f64) {
+        let hours = self.as_hours();
+        let minutes = self.as_minutes() - hours * MINUTES_IN_HOUR;
+        let seconds = self.get_seconds() - hours * SECONDS_IN_HOUR - minutes * SECONDS_IN_MINUTE;
+        let seconds = seconds as f64 + self.get_secondsfrac();
+        (hours, minutes, seconds)
+    }
+
+    ///
     /// Returns ONLY the fractional seconds component of the timestamp
     #[must_use]
     pub fn get_secondsfrac(&self) -> f64 {
