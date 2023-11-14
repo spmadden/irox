@@ -104,7 +104,7 @@ impl Widget for ProgressBar {
             ui.painter().rect(
                 inner_rect,
                 rounding,
-                Color32::from(Rgba::from(visuals.selection.bg_fill) * color_factor as f32),
+                Color32::from(Rgba::from(visuals.selection.bg_fill) * color_factor),
                 Stroke::NONE,
             );
 
