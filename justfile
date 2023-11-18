@@ -51,3 +51,8 @@ doc:
 
 unused:
     cargo clippy --bins --lib --all-features -- -Wunused_crate_dependencies
+
+new DEST: 
+   just check_install cargo-generate
+   mkdir -p {{DEST}}
+   cargo generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init

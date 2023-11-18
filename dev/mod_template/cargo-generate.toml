@@ -1,0 +1,13 @@
+[template]
+vcs = "None"
+
+[conditional.'type == "lib"']
+ignore = ["src/main.rs"]
+
+[conditional.'type == "bin"']
+ignore = ["src/lib.rs"]
+
+[placeholders.type]
+type = "string"
+prompt = "Crate type?"
+choices = ["lib", "bin"]
