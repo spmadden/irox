@@ -8,13 +8,16 @@ use irox_carto::gps::{DOPs, GPSFixType};
 use irox_tools::iterators::Itertools;
 use irox_tools::options::MaybeInto;
 use irox_tools::packetio::{Packet, PacketBuilder};
+use irox_tools::read::read_exact;
 
 use crate::{calculate_checksum, Error, MessageType};
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub enum SelectionMode {
     Manual,
     Auto2D3D,
+
+    #[default]
     Unknown,
 }
 
@@ -34,11 +37,11 @@ impl From<Option<&str>> for SelectionMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct GSA {
     selection_mode: SelectionMode,
     fix_mode: GPSFixType,
-    fix_sats: Vec<u8>,
+    fix_sats: [u8; 12],
     dops: DOPs,
 }
 
@@ -125,10 +128,12 @@ impl PacketBuilder<GSA> for GSABuilder {
         dops.horizontal = split.next().maybe_into().maybe_into();
         dops.vertical = split.next().maybe_into().maybe_into();
 
-        let fix_sats = sats
+        let fix_sats: Vec<u8> = sats
             .iter()
             .filter_map(|s| s.and_then(|s| s.parse().ok()))
-            .collect();
+            .collect_exact_or_default(12);
+
+        let fix_sats = read_exact(&mut fix_sats.as_slice())?;
 
         Ok(GSA {
             fix_mode,
