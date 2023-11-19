@@ -28,7 +28,7 @@ trait Accesses {
     fn get_bool(&self, key: &'static str) -> Option<bool>;
     fn get_duration(&self, key: &'static str) -> Option<Duration>;
     fn get_i64(&self, key: &'static str) -> Option<i64>;
-    fn get_blob(&self, key: &'static str) -> Option<Box<[u8]>>;
+    fn get_blob(&self, key: &'static str) -> Option<Vec<u8>>;
 }
 impl Accesses for Entry {
     fn get_str(&self, key: &'static str) -> Option<String> {
@@ -55,10 +55,10 @@ impl Accesses for Entry {
         })
     }
 
-    fn get_blob(&self, key: &'static str) -> Option<Box<[u8]>> {
+    fn get_blob(&self, key: &'static str) -> Option<Vec<u8>> {
         self.get(key).map(|v| match v {
-            PrimitiveValue::blob(b) => b.clone(),
-            _ => Box::new([0; 0]),
+            PrimitiveValue::u32_blob(b) => b.clone(),
+            _ => Vec::new(),
         })
     }
 }
@@ -108,7 +108,7 @@ impl SDFConnection {
                     ValueRef::Text(t) => {
                         PrimitiveValue::str(String::from_utf8_lossy(t).to_string())
                     }
-                    ValueRef::Blob(b) => PrimitiveValue::blob(Box::from(b)),
+                    ValueRef::Blob(b) => PrimitiveValue::u32_blob(b.into()),
                 };
                 debug!("Row returned {val:?} for {idx}/{col}");
                 map.insert(col.clone(), val);

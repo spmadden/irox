@@ -38,7 +38,7 @@ pub struct TrackData {
     point_count: Option<i64>,
     sonar_offset_meters: Option<f64>,
     sdf_point_schema: Option<String>,
-    bounds: Option<Box<[u8]>>,
+    bounds: Option<Vec<u8>>,
 }
 
 impl TrackData {
