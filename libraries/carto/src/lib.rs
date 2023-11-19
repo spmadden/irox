@@ -14,6 +14,7 @@ pub mod epsg3857;
 pub mod error;
 pub mod geo;
 pub mod gps;
+pub mod position_type;
 pub mod proj;
 pub mod tm;
 
