@@ -32,7 +32,10 @@ pub enum Primitives {
     bool,
     char,
     str,
-    blob,
+    u8_blob,
+    u16_blob,
+    u32_blob,
+    u64_blob,
     null,
 }
 
@@ -58,7 +61,10 @@ pub enum PrimitiveValue {
     bool(bool),
     char(char),
     str(String),
-    blob(Box<[u8]>),
+    u8_blob(Vec<u8>),
+    u16_blob(Vec<u8>),
+    u32_blob(Vec<u8>),
+    u64_blob(Vec<u8>),
     null,
 }
 
@@ -82,8 +88,11 @@ impl PrimitiveValue {
             PrimitiveValue::bool(_) => Primitives::bool,
             PrimitiveValue::char(_) => Primitives::char,
             PrimitiveValue::str(_) => Primitives::str,
-            PrimitiveValue::blob(_) => Primitives::blob,
             PrimitiveValue::null => Primitives::null,
+            PrimitiveValue::u8_blob(_) => Primitives::u8_blob,
+            PrimitiveValue::u16_blob(_) => Primitives::u16_blob,
+            PrimitiveValue::u32_blob(_) => Primitives::u32_blob,
+            PrimitiveValue::u64_blob(_) => Primitives::u64_blob,
         }
     }
 }
@@ -106,7 +115,10 @@ impl ToString for PrimitiveValue {
             PrimitiveValue::bool(v) => v.to_string(),
             PrimitiveValue::char(v) => v.to_string(),
             PrimitiveValue::str(v) => v.to_string(),
-            PrimitiveValue::blob(v) => String::from_utf8_lossy(v).to_string(),
+            PrimitiveValue::u8_blob(v)
+            | PrimitiveValue::u16_blob(v)
+            | PrimitiveValue::u32_blob(v)
+            | PrimitiveValue::u64_blob(v) => String::from_utf8_lossy(v).to_string(),
             PrimitiveValue::null => "null".to_string(),
         }
     }
