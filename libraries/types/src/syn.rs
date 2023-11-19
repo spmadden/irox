@@ -3,7 +3,7 @@
 
 use std::fmt::{Display, Formatter};
 
-use syn::{Expr, Field, Lit, Type, TypeArray, TypePath};
+use syn::{Expr, Field, GenericArgument, Lit, PathArguments, Type, TypeArray, TypePath};
 
 use crate::{NamedPrimitive, PrimitiveType, Primitives};
 
@@ -62,7 +62,21 @@ impl TryFrom<&TypePath> for Primitives {
         let Some(elem) = value.path.segments.first() else {
             return Error::path_elements(0);
         };
-        let ident = format!("{}", elem.ident);
+        let mut ident = format!("{}", elem.ident);
+
+        if let PathArguments::AngleBracketed(ang) = &elem.arguments {
+            if let Some(GenericArgument::Type(Type::Path(ty))) = ang.args.first() {
+                if let Some(seg) = ty.path.segments.first() {
+                    ident += format!("<{}>", seg.ident).as_str();
+                }
+            }
+        }
+
+        if "Vec<u8>" == ident {
+            // assume a u32?  need some better indicator
+            return Ok(Primitives::u32_blob);
+        }
+
         Primitives::try_from(ident.as_str())
             .map_err(|()| Error::new_str(ErrorType::BadType, format!("Bad type: {ident}")))
     }
