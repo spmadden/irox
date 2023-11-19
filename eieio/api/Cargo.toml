@@ -1,0 +1,17 @@
+[package]
+name = "irox-eieio-api"
+description = "IROX EIEIO API Traits - A system of abstracting common data-structures behind facades"
+keywords = ["irox", "eieio"]
+categories = ["data-structures", "encoding", "rust-patterns"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-carto.workspace = true
+irox-time.workspace = true
