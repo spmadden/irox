@@ -15,7 +15,7 @@ use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_units::units::length::Length;
 
 use crate::{
-    calculate_checksum, Error, maybe_altitude, maybe_latitude, maybe_length, maybe_longitude,
+    calculate_checksum, maybe_altitude, maybe_latitude, maybe_length, maybe_longitude, Error,
     MessageType,
 };
 
@@ -450,4 +450,3 @@ impl GGABuilder {
         self
     }
 }
-
