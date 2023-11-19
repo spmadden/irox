@@ -81,6 +81,11 @@ impl<T: Debug + Display + Clone + PartialOrd> LessThanValue<T> {
     pub const fn new(value: T) -> Self {
         Self { value }
     }
+
+    /// Returns the first invalid value for this range.  All values MUST be less than this value
+    pub fn value(&self) -> &T {
+        &self.value
+    }
 }
 impl<T: Debug + Display + Clone + PartialOrd> Range<T> for LessThanValue<T> {
     type Error = GreaterThanEqualToValueError<T>;
@@ -119,6 +124,18 @@ impl<T: Debug + Display + Clone + PartialOrd> Display for LessThanEqualToValueEr
     }
 }
 
+impl<T: Debug + Display + Clone + PartialOrd> LessThanEqualToValueError<T> {
+    /// Returns the offending value that is out of range
+    pub fn value(&self) -> &T {
+        &self.value
+    }
+
+    /// Returns the range of valid values this value breaks
+    pub fn valid_range(&self) -> &GreaterThanValue<T> {
+        &self.valid_range
+    }
+}
+
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for LessThanEqualToValueError<T> {}
 
 ///
@@ -132,8 +149,15 @@ where
 }
 
 impl<T: Debug + Display + Clone + PartialOrd> GreaterThanValue<T> {
+    #[must_use]
     pub const fn new(value: T) -> Self {
         Self { value }
+    }
+
+    /// Returns the first smallest invalid value for the range.  All values MUST be greater than
+    /// this value.
+    pub fn value(&self) -> &T {
+        &self.value
     }
 }
 
@@ -180,12 +204,23 @@ impl<T: Debug + Display + Clone + PartialOrd> std::error::Error
 }
 
 impl<T: Debug + Display + Clone + PartialOrd> GreaterThanEqualToValueError<T> {
+    #[must_use]
     pub fn new(value: T, valid_range: LessThanValue<T>) -> Self {
         Self { value, valid_range }
     }
 
     pub fn err<O>(value: T, valid_range: LessThanValue<T>) -> Result<O, Self> {
         Err(Self::new(value, valid_range))
+    }
+
+    /// Returns the value that is out of range.
+    pub fn value(&self) -> &T {
+        &self.value
+    }
+
+    /// Returns the valid range that the value is outside of.
+    pub fn valid_range(&self) -> &LessThanValue<T> {
+        &self.valid_range
     }
 }
 macro_rules! upconvert_error_type {
@@ -229,11 +264,28 @@ where
     pub(crate) upper_bound: LessThanValue<T>,
 }
 impl<T: Debug + Display + Clone + PartialOrd> WithinRange<T> {
+    /// Creates a new [`WithinRange`], which is implemented as the union of a [`LessThanValue<T>`]
+    /// and a [`GreaterThanValue<T>`].
+    ///
+    /// Somewhat confusingly, `lower_bound` and `upper_bound` are the first two INVALID values
+    /// bounding this range.
+    #[must_use]
     pub const fn new(lower_bound: T, upper_bound: T) -> Self {
         Self {
             lower_bound: GreaterThanValue::new(lower_bound),
             upper_bound: LessThanValue::new(upper_bound),
         }
+    }
+
+    /// Returns the lower bound of this range
+    #[must_use]
+    pub fn lower_bound(&self) -> &GreaterThanValue<T> {
+        &self.lower_bound
+    }
+    /// Returns the upper bound of this range
+    #[must_use]
+    pub fn upper_bound(&self) -> &LessThanValue<T> {
+        &self.upper_bound
     }
 }
 impl<T: Debug + Display + Clone + PartialOrd> Range<T> for WithinRange<T> {
@@ -263,6 +315,43 @@ where
 {
     pub(crate) lower_bound: LessThanValue<T>,
     pub(crate) upper_bound: GreaterThanValue<T>,
+}
+
+impl<T: Debug + Display + Clone + PartialOrd> OutsideRange<T> {
+    /// Creates a new Outside Range.  Valid values must be less than the lower bound, or greater
+    /// than the upper bound.  Both bounds specify the first invalid values ob either end.
+    #[must_use]
+    pub fn new(lower_bound: T, upper_bound: T) -> Self {
+        Self {
+            lower_bound: LessThanValue::new(lower_bound),
+            upper_bound: GreaterThanValue::new(upper_bound),
+        }
+    }
+
+    /// Returns the lower bound of this range, valid values are less than this value
+    pub fn lower_bound(&self) -> &LessThanValue<T> {
+        &self.lower_bound
+    }
+
+    /// Returns the upper bound of this range, valid values are greater than this value
+    pub fn upper_bound(&self) -> &GreaterThanValue<T> {
+        &self.upper_bound
+    }
+}
+
+impl<T: Debug + Display + Clone + PartialOrd> Range<T> for OutsideRange<T> {
+    type Error = InsideRangeError<T>;
+
+    fn value_is_valid(&self, value: &T) -> bool {
+        self.lower_bound.value_is_valid(value) || self.upper_bound.value_is_valid(value)
+    }
+
+    fn check_value_is_valid(&self, value: &T) -> Result<(), Self::Error> {
+        if !self.lower_bound.value_is_valid(value) && !self.upper_bound.value_is_valid(value) {
+            return InsideRangeError::err(value.clone(), self.clone());
+        }
+        Ok(())
+    }
 }
 
 ///
