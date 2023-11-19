@@ -19,6 +19,7 @@ members = [
     "data-formats/sirf",
     "eieio/api",
     "eieio/nmea0183",
+    "interfaces/aws",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
     "libraries/carto",
