@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Geodesy types and math, Ellipses, Ellipsoids, Elliptical Shapes
+
 use ellipse::Ellipse;
 
 use crate::geo::standards::wgs84::{WGS84_EPSG_SHAPE, WGS84_SHAPE};

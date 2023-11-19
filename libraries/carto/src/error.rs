@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Error Types
+
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 

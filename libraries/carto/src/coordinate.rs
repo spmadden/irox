@@ -1,23 +1,22 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use irox_time::datetime::UTCDateTime;
-use irox_time::epoch::UnixTimestamp;
+//!
+//! Latitude, Longitude, Elevation, and associated Coordinate types, Elliptical and Cartesian
+
 use std::fmt::{Display, Formatter};
 
+use irox_time::datetime::UTCDateTime;
+use irox_time::epoch::UnixTimestamp;
 use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
+use irox_units::units::angle::{Angle, AngleUnits};
 use irox_units::units::compass::Azimuth;
+use irox_units::units::length::Length;
 
 use crate::altitude::Altitude;
 use crate::error::ConvertError;
-use crate::{
-    geo::{standards, EllipticalShape},
-    units::{
-        angle::{Angle, AngleUnits},
-        length::Length,
-    },
-};
+use crate::geo::{standards, EllipticalShape};
 
 /// A generic coordinate type that does not distinguish between a [RelativeCoordinateType] or an
 /// [AbsoluteCoordinateType].
@@ -495,9 +494,9 @@ pub struct HorizontalCoordinate {
 
 #[cfg(target_os = "windows")]
 pub mod windows_conv {
-    use irox_time::epoch::{FromTimestamp, UnixTimestamp, WindowsNTTimestamp};
     use windows::Devices::Geolocation::Geocoordinate;
 
+    use irox_time::epoch::{FromTimestamp, UnixTimestamp, WindowsNTTimestamp};
     use irox_units::shapes::CircularDimension;
     use irox_units::units::angle::Angle;
     use irox_units::units::duration::{Duration, DurationUnit};

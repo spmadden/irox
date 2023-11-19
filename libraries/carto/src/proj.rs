@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Map Projection Traits
+
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate};
 
 ///

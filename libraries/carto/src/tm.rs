@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Transverse Mercator Map Projection.
+
 use irox_units::units::angle::Angle;
 use irox_units::units::length;
 use irox_units::units::length::Length;
@@ -10,14 +13,31 @@ use crate::geo::ellipsoid::{Ellipsoid, MeridianCalculators};
 use crate::geo::standards::StandardShapes;
 use crate::proj::Projection;
 
+///
+/// An implementation of the Transverse Mercator map projection.
+///
+/// This implementation uses the expansions contained within `DMA TM 8358.2`, however, 8358.2 has
+/// issues with how the 'Meridional Distance' is calculated.  As such, to get full proper nanometer
+/// accuracy, the [`crate::geo::ellipsoid::DeakinHunterKarneyMeridianCalculator`] is used to calculate meridian arc length.
+///
+/// Using the map center returned by Default is not recommended, as it is unlikely to be useful
+/// to your specific application.  Recommend ALWAYS setting a map projection center to be within
+/// +/- 6 degrees of your chosen area of interest.  6 degrees gives an excellent error factor, and
+/// as you get further from the map center, the error increases exponentially.
 #[derive(Debug, Clone)]
 pub struct TransverseMercator {
+    /// Center [0,0] coordinate of the map projection, defaults, to [0 lat, 0 lon]
     center: EllipticalCoordinate,
+    /// Shape of the Ellipsoid in use, defaults to WGS84
     shape: Ellipsoid,
 
+    /// The false northing offset on the X axis, defaults to `0` in the northern hemisphere, and
+    /// `10_000_000m` in the southern hemisphere
     false_northing: Length,
+    /// The false easting offset on the Y axis, defaults to `500_000m`
     false_easting: Length,
 
+    /// The scaling factor, defaults to `0.9996` as per TM 8358.2
     scale_factor: f64,
 }
 
@@ -30,6 +50,8 @@ impl TransverseMercator {
     }
 }
 
+///
+/// Builds a transverse mercator map projection
 #[derive(Debug, Clone, Default)]
 pub struct TMBuilder {
     tm: TransverseMercator,
@@ -37,16 +59,23 @@ pub struct TMBuilder {
     fn_set: bool,
 }
 impl TMBuilder {
+    ///
+    /// Opt for a specific scale factor
     #[must_use]
     pub fn with_scale_factor(mut self, scale_factor: f64) -> Self {
         self.tm.scale_factor = scale_factor;
         self
     }
+
+    ///
+    /// Opt for a custom, non-WGS84 Ellipsoid
     #[must_use]
     pub fn with_shape(mut self, shape: Ellipsoid) -> Self {
         self.tm.shape = shape;
         self
     }
+
+    /// Opt for a specific center of map projection, the 0,0 coordinates
     #[must_use]
     pub fn with_center(mut self, center: EllipticalCoordinate) -> Self {
         if !self.fn_set {
@@ -63,12 +92,18 @@ impl TMBuilder {
         self.tm.center = center;
         self
     }
+
+    ///
+    /// Opt for a specific 'False Northing' offset of the Y-axis.
     #[must_use]
     pub fn with_false_northing(mut self, false_northing: Length) -> Self {
         self.tm.false_northing = false_northing.as_meters();
         self.fn_set = true;
         self
     }
+
+    ///
+    /// Opt for a specific 'False Easting' offset of the X-axis.
     #[must_use]
     pub fn with_false_easting(mut self, false_easting: Length) -> Self {
         self.tm.false_easting = false_easting.as_meters();
@@ -99,6 +134,8 @@ impl Projection for TransverseMercator {
         &self.center
     }
 
+    ///
+    /// Projects (Lat, Lon, Alt) into TM (X-East, Y-North, Z-Up)
     fn project_to_cartesian(&self, coord: &EllipticalCoordinate) -> CartesianCoordinate {
         let w = (coord.get_longitude().0 - self.center.get_longitude().0)
             .as_radians()
@@ -178,6 +215,8 @@ impl Projection for TransverseMercator {
         CartesianCoordinate::new(easting, northing, length::ZERO)
     }
 
+    ///
+    /// Projects TM (X-East, Y-North, Z-Up) into (Lat, Lon, Alt)
     fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate {
         let phi_eps = 1e-9;
 

@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Altitude and Altitude Reference Frames
+
 use std::fmt::{Display, Formatter};
 
 use irox_units::units::length::Length;

@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Ellipsoids, and calculators therefor
+
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{Azimuth, Compass, CompassReference, RotationDirection};
 use irox_units::units::length::Length;
@@ -41,15 +44,27 @@ impl From<&Ellipsoid> for Ellipse {
 /// Ellipsoid calculation values with radius calculation methods.
 #[derive(Debug, Copy, Clone)]
 pub struct Ellipsoid {
+    /// The semi major axis is the axis with the longer length, typically the "equator"
+    /// of an ellipsoid
     pub(crate) semi_major_axis: Length,
+
+    /// Inverse flattening is the inverted ratio of the length of the semi-major axis to the length
+    /// of the semi-minor axis
     pub(crate) inverse_flattening: f64,
 
+    /// The semi minor axis is the axis with the shorter length, typically the "polar" axis of an
+    /// ellipsoid
     pub(crate) semi_minor_axis: Length,
 
+    /// First derivation of the eccentricity
     pub(crate) first_eccentricity: f64,
+    /// First derivation of the eccentricity squared
     pub(crate) first_eccentricity_squared: f64,
 
+    /// Second derivation of the eccentricity
     pub(crate) second_eccentricity: f64,
+
+    /// Second derivation of the eccentricity squared
     pub(crate) second_eccentricity_squared: f64,
 }
 
@@ -205,6 +220,9 @@ impl Ellipsoid {
     }
 }
 
+///
+/// Meridian Arc Length Calculators.  A Meridian Arc is an Arc that transits on a great circle path
+/// from one pole to the other pole - either from South to North, or North to South.
 pub enum MeridianCalculators {
     DeakinHunterKarney,
     Bessel,
@@ -223,10 +241,23 @@ impl MeridianCalculators {
     }
 }
 
+///
+/// Meridian Arc Length Calculators.  A Meridian Arc is an Arc that transits on a great circle path
+/// from one pole to the other pole - either from South to North, or North to South.
 pub trait MeridianCalculator {
     fn meridional_arc_distance(&self, delta_lat: &Angle) -> Length;
 }
 
+///
+/// An implementation of a Meridian Arc Length calculator.
+///
+/// The best I've found to date of the Karney-Krueger equations, as described by Deakin, Hunter, and
+/// Karney on p4, eq 38 of the cited paper.
+///
+/// Deakin, R.E., Hunter, M.N. and Karney, C.F.F., (2010).
+/// 'A FRESH LOOK AT THE UTM PROJECTION: Karney-Krueger equations V2', Presented at the Surveying and
+/// Spatial Sciences Institute (SSSI) Land Surveying Commission National Conference,
+/// Melbourne, 18-21 April, 2012
 pub struct DeakinHunterKarneyMeridianCalculator {
     third_flattening_n: f64,
     coefficients: [f64; 9],
@@ -267,6 +298,7 @@ impl DeakinHunterKarneyMeridianCalculator {
         }
     }
 }
+
 impl MeridianCalculator for DeakinHunterKarneyMeridianCalculator {
     fn meridional_arc_distance(&self, delta_lat: &Angle) -> Length {
         let lat = delta_lat.as_radians().value();
@@ -281,6 +313,12 @@ impl MeridianCalculator for DeakinHunterKarneyMeridianCalculator {
     }
 }
 
+///
+/// Bessel's formula for the Meridian Arc, as described on page 2, eq 5 of Kawase 2011:
+///
+/// Kawase, K. (2011): 'A General Formula for Calculating Meridian Arc Length and its Application to
+/// Coordinate Conversion in the Gauss-Krüger Projection', Bulletin of the Geospatial
+/// Information Authority of Japan, Vol.59 December, 2011
 pub struct BesselMeridianCalculator {
     coefficients: [f64; 4],
     prefix: Length,

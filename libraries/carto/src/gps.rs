@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! GPS Status Types, Satellite Signal, Fix Type, Dilution of Precision, etc
+
 use std::fmt::{Display, Formatter};
 
 use irox_tools::options::MaybeFrom;
