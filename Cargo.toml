@@ -17,6 +17,8 @@ members = [
     "data-formats/nmea0183",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
+    "eieio/api",
+    "eieio/nmea0183",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
     "libraries/carto",
@@ -70,6 +72,9 @@ irox-gpx = {version = "^0", path = "data-formats/gpx"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
 irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
+
+irox-eieio-api = {version="^0", path = "eieio/api"}
+irox-eieio-nmea0183 = {version="^0", path = "eieio/nmea0183"}
 
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
 irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}

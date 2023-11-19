@@ -1,0 +1,17 @@
+[package]
+name = "irox-eieio-nmea0183"
+description = "IROX EIEIO Implementation for NMEA0183"
+keywords = ["irox", "eieio", "nmea0183", "geo"]
+categories = ["data-structures", "encoding", "science::geo", "aerospace"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-eieio-api.workspace = true
+irox-nmea0183.workspace = true
