@@ -1,0 +1,17 @@
+[package]
+name = "irox-pcap"
+description = "PCAP and PCAP-NG packet capture format parsers and encoders"
+keywords = ["irox"]
+categories = ["encoding", "parser-implementations", "network-programming"]
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-structs.workspace = true
+irox-tools.workspace = true

@@ -15,6 +15,7 @@ members = [
     "data-formats/csv",
     "data-formats/gpx",
     "data-formats/nmea0183",
+    "data-formats/pcap",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
     "interfaces/influxdb_v1",
@@ -68,6 +69,7 @@ num_cpus = {version = "1.16.0", features = []}
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
+irox-pcap = {version = "^0", path = "data-formats/pcap"}
 irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
 
