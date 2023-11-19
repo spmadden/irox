@@ -287,7 +287,7 @@ fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
     Time::from_hms_f64(hh, mm, ss).ok()
 }
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct GGABuilder {
     gga: GGA,
 }
