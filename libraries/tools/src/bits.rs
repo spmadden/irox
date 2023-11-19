@@ -10,20 +10,69 @@ use std::io::{Error, ErrorKind, Read, Write};
 /// Read methods for the primitive types
 ///
 pub trait Bits {
+    /// Reads a single [`u8`]
     fn read_u8(&mut self) -> Result<u8, Error>;
+
+    /// Reads a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn read_be_u16(&mut self) -> Result<u16, Error>;
+
+    /// Reads a single [`u32`] in big-endian order, 4 bytes, MSB first.
     fn read_be_u32(&mut self) -> Result<u32, Error>;
+
+    /// Reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
     fn read_be_u64(&mut self) -> Result<u64, Error>;
+
+    /// Reads a single [`u128`] in big-endian order, 16 bytes, MSB first.
     fn read_be_u128(&mut self) -> Result<u128, Error>;
 
+    /// Reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding
     fn read_f32(&mut self) -> Result<f32, Error>;
+    /// Reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
     fn read_f64(&mut self) -> Result<f64, Error>;
 
+    /// Reads a single [`i16`] in big-endian order, 2 bytes, MSB first.
     fn read_be_i16(&mut self) -> Result<i16, Error>;
+    /// Reads a single [`i32`] in big-endian order, 4 bytes, MSB first.
     fn read_be_i32(&mut self) -> Result<i32, Error>;
+    /// Reads a single [`i64`] in big-endian order, 8 bytes, MSB first.
     fn read_be_i64(&mut self) -> Result<i64, Error>;
 
+    /// Advances the stream by at most 'len' bytes.  The actual amount of bytes advanced may be
+    /// less, and is returned in [`Ok(usize)`]
     fn advance(&mut self, len: usize) -> Result<usize, Error>;
+
+    /// Reads a sized blob, a series of bytes preceded by a [`u8`] declaring the size.
+    fn read_u8_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_u8()?;
+        self.read_exact_vec(size as usize)
+    }
+
+    /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
+    fn read_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_be_u16()?;
+        self.read_exact_vec(size as usize)
+    }
+
+    /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
+    fn read_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_be_u32()?;
+        self.read_exact_vec(size as usize)
+    }
+
+    /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
+    fn read_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_be_u64()?;
+        self.read_exact_vec(size as usize)
+    }
+
+    /// Reads the specified amount of bytes into a [`Vec<u8>`] and returns it
+    fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
+        let mut buf: Vec<u8> = vec![0; size];
+        for _i in 0..size {
+            buf.push(self.read_u8()?);
+        }
+        Ok(buf)
+    }
 }
 
 impl<T> Bits for T
@@ -93,22 +142,94 @@ where
         }
         Ok(len)
     }
+
+    fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
+        let mut buf: Vec<u8> = vec![0; size];
+        self.read_exact(buf.as_mut_slice())?;
+        Ok(buf)
+    }
 }
 
+///
+/// Write methods for the primitive types
 pub trait MutBits {
+    /// Writes a single [`u8`]
     fn write_u8(&mut self, val: u8) -> Result<(), Error>;
+    /// Writes a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn write_be_u16(&mut self, val: u16) -> Result<(), Error>;
+    /// Writes a single [`u32`] in big-endian order, 4 bytes, MSB first.
     fn write_be_u32(&mut self, val: u32) -> Result<(), Error>;
+    /// Writes a single [`u64`] in big-endian order, 8 bytes, MSB first.
     fn write_be_u64(&mut self, val: u64) -> Result<(), Error>;
+    /// Writes a single [`u128`] in big-endian order, 16 bytes, MSB first.
     fn write_be_u128(&mut self, val: u128) -> Result<(), Error>;
 
+    /// Writes a single [`f32`] in standard IEEE754 format, 4 bytes
     fn write_f32(&mut self, val: f32) -> Result<(), Error>;
+    /// Writes a single [`u16`] in standard IEEE754 format, 8 bytes
     fn write_f64(&mut self, val: f64) -> Result<(), Error>;
 
+    /// Writes a single [`i16`] in big-endian order, 2 bytes, MSB first.
     fn write_be_i16(&mut self, val: i16) -> Result<(), Error>;
+    /// Writes a single [`i32`] in big-endian order, 4 bytes, MSB first.
     fn write_be_i32(&mut self, val: i32) -> Result<(), Error>;
+    /// Writes a single [`i64`] in big-endian order, 8 bytes, MSB first.
     fn write_be_i64(&mut self, val: i64) -> Result<(), Error>;
+    /// Writes a single [`i128`] in big-endian order, 16 bytes, MSB first.
     fn write_be_i128(&mut self, val: i128) -> Result<(), Error>;
+
+    /// Writes a sized blob, a series of bytes preceded by a [`u8`] declaring the size
+    fn write_u8_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u8::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u8",
+            ));
+        }
+        self.write_u8(val.len() as u8)?;
+        self.write_all_bytes(val)
+    }
+    /// Writes a sized blob, a series of bytes preceded by a [`u16`] declaring the size
+    fn write_u16_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u16::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u16",
+            ));
+        }
+        self.write_be_u16(val.len() as u16)?;
+        self.write_all_bytes(val)
+    }
+    /// Writes a sized blob, a series of bytes preceded by a [`u32`] declaring the size
+    fn write_u32_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u32::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u32",
+            ));
+        }
+        self.write_be_u32(val.len() as u32)?;
+        self.write_all_bytes(val)
+    }
+    /// Writes a sized blob, a series of bytes preceded by a [`u64`] declaring the size
+    fn write_u64_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u64::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u64",
+            ));
+        }
+        self.write_be_u64(val.len() as u64)?;
+        self.write_all_bytes(val)
+    }
+
+    /// Writes all the bytes in order
+    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+        for val in val {
+            self.write_u8(*val)?;
+        }
+        Ok(())
+    }
 }
 
 impl<T> MutBits for T
