@@ -126,8 +126,43 @@ fn do_single_primitive(
                 #ident: input.read_u8()?,
             });
         }
-        _ => {
-            return Err(Error::new(Span::call_site(), "Unsupported"));
+        Primitives::u8_blob => {
+            writers.push(quote! {
+                out.write_u8_blob(&@dself.#ident)?;
+            });
+            readers.push(quote! {
+                #ident: input.read_u8_blob()?,
+            });
+        }
+        Primitives::u16_blob => {
+            writers.push(quote! {
+                out.write_u16_blob(&self.#ident)?;
+            });
+            readers.push(quote! {
+                #ident: input.read_u16_blob()?,
+            });
+        }
+        Primitives::u32_blob => {
+            writers.push(quote! {
+                out.write_u32_blob(&self.#ident)?;
+            });
+            readers.push(quote! {
+                #ident: input.read_u32_blob()?,
+            });
+        }
+        Primitives::u64_blob => {
+            writers.push(quote! {
+                out.write_u64_blob(&self.#ident)?;
+            });
+            readers.push(quote! {
+                #ident: input.read_u64_blob()?,
+            });
+        }
+        t => {
+            return Err(Error::new(
+                Span::call_site(),
+                format!("Unsupported type: {t:?}"),
+            ));
         }
     };
     Ok(())
