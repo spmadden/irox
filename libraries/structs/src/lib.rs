@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 pub use irox_structs_derive::*;
-use irox_tools::bits::{Bits, MutBits};
+pub use irox_tools::bits::{Bits, MutBits};
 
 pub trait Struct {
     type ImplType;
