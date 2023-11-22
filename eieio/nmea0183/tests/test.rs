@@ -6,6 +6,8 @@ use irox_eieio_api::carto::coordinate::{Latitude, Longitude};
 use irox_eieio_api::carto::irox_units::units::angle::Angle;
 use irox_eieio_api::carto::position_type::{PositionsBuilder, WGS84PositionBuilder};
 use irox_eieio_api::time::datetime::UTCDateTime;
+use irox_eieio_api::time::gregorian::Date;
+use irox_eieio_api::time::Time;
 use irox_eieio_api::BaseMessage;
 use irox_eieio_nmea0183::NMEA0183Codec;
 
@@ -18,7 +20,10 @@ pub fn test() {
         return;
     };
 
-    fix_bldr.set_timestamp(UTCDateTime::now());
+    fix_bldr.set_timestamp(UTCDateTime::new(
+        Date::new(2023, 11).unwrap(),
+        Time::from_hms(12, 34, 56).unwrap(),
+    ));
     fix_bldr.set_positions(
         PositionsBuilder::new()
             .with_latlon(
@@ -33,13 +38,11 @@ pub fn test() {
 
     let res = fix_bldr.build().unwrap();
 
-    println!("{res:#?}");
-
     let string = res
         .get_supported_writers()
         .string()
         .unwrap()
         .write_to_string()
         .unwrap();
-    println!("{string}",);
+    assert_eq!("$GPGGA,123456.00,4100.00000,N,7100.00000,W,,,,,,,,,*65\r\n$GPZDA,123456.00,11,01,2023,00,00*63\r\n", string);
 }
