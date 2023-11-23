@@ -14,7 +14,7 @@ repository.workspace = true
 
 [dependencies]
 eframe = {workspace = true, features = ["wgpu", "default_fonts"]}
-egui.workspace = true
+egui = {workspace = true, features = ["persistence"]}
 egui_plot.workspace = true
 log.workspace = true
 irox-egui-extras.workspace = true

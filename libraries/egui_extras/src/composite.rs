@@ -17,7 +17,6 @@ pub struct CompositeApp {
     apps: Vec<Box<dyn App>>,
 
     persist_egui_memory: bool,
-    warm_up_enabled: bool,
 }
 
 impl Default for CompositeApp {
@@ -25,7 +24,6 @@ impl Default for CompositeApp {
         CompositeApp {
             apps: Vec::new(),
             persist_egui_memory: true,
-            warm_up_enabled: false,
         }
     }
 }
@@ -51,14 +49,6 @@ impl App for CompositeApp {
         }
     }
 
-    fn on_close_event(&mut self) -> bool {
-        let mut ret = true;
-        for app in &mut self.apps {
-            ret &= app.on_close_event();
-        }
-        ret
-    }
-
     #[cfg(feature = "eframe/glow")]
     fn on_exit(&mut self, gl: Option<&eframe::glow::Context>) {
         for app in &mut self.apps {
@@ -76,15 +66,5 @@ impl App for CompositeApp {
 
     fn persist_egui_memory(&self) -> bool {
         self.persist_egui_memory
-    }
-
-    fn warm_up_enabled(&self) -> bool {
-        self.warm_up_enabled
-    }
-
-    fn post_rendering(&mut self, window_size_px: [u32; 2], frame: &Frame) {
-        for app in &mut self.apps {
-            app.post_rendering(window_size_px, frame)
-        }
     }
 }

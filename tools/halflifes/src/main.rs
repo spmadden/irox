@@ -4,7 +4,7 @@
 use std::time::Duration;
 
 use eframe::{self, Frame, NativeOptions};
-use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, Window};
+use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, ViewportCommand, Window};
 use egui_plot::{Line, Plot, PlotPoints};
 
 use irox_egui_extras::composite::CompositeApp;
@@ -114,7 +114,7 @@ impl eframe::App for HalflifesApp {
             menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Exit").clicked() {
-                        frame.close();
+                        ctx.send_viewport_cmd(ViewportCommand::Close);
                     }
                 });
                 ui.menu_button("Settings", |ui| {
