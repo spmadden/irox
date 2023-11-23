@@ -13,7 +13,7 @@ readme.workspace = true
 repository.workspace = true
 
 [dependencies]
-eframe.workspace = true
+eframe = {workspace = true, features = ["wgpu", "default_fonts"]}
 egui.workspace = true
 egui_plot.workspace = true
 log.workspace = true

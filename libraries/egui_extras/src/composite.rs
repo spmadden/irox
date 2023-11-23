@@ -59,6 +59,7 @@ impl App for CompositeApp {
         ret
     }
 
+    #[cfg(feature = "eframe/glow")]
     fn on_exit(&mut self, gl: Option<&eframe::glow::Context>) {
         for app in &mut self.apps {
             app.on_exit(gl)
