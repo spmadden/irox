@@ -50,7 +50,7 @@ ron = { version = "^0.8", features = ["integer128"] }
 serde = { version = "^1.0.193", features = ["derive"] }
 serde_json = {version = "^1.0", features = []}
 ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
-url = {version = "^2.4", features = []}
+url = {version = "^2.5", features = []}
 clap = {version = "^4.4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
 clap-verbosity-flag = {version = "^2.1"}
 log = {version = "^0.4", features = []}
