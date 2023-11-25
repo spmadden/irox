@@ -5,6 +5,7 @@ accepted = [
     "BSL-1.0",
     "OFL-1.1",
     "LicenseRef-UFL-1.0",
+    "UFL-1.0",
     "BSD-3-Clause",
     "BSD-2-Clause",
     "Zlib",
@@ -14,3 +15,7 @@ accepted = [
     "NOASSERTION",
     "CC0-1.0"
 ]
+workarounds = [
+    "ring", "rustls"
+]
+no-clearly-defined = true

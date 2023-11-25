@@ -9,11 +9,7 @@ updates:
     cargo update
 
 check_install prereq:
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    if ! type "{{prereq}}" > /dev/null; then
-      cargo install {{prereq}}
-    fi
+    cargo install --root target --quiet {{prereq}}
 
 deny +FLAGS='':
     just check_install cargo-deny
@@ -39,11 +35,12 @@ package:
 
 about:
     just check_install cargo-about
-    cargo about generate about.hbs > about.html
+    ./target/bin/cargo-about generate -c dev/about.toml dev/about.hbs > target/licenses.html
+    ./target/bin/cargo-about generate -c dev/about.toml dev/about-md.hbs > target/LICENSES.md
 
 upgrade +FLAGS='':
     just check_install cargo-edit
-    cargo upgrade --dry-run --pinned -i {{FLAGS}}
+    ./target/bin/cargo-upgrade --dry-run --pinned -i {{FLAGS}}
 
 doc:
     rustup toolchain install nightly 2>&1 > /dev/null
@@ -55,4 +52,16 @@ unused:
 new DEST: 
    just check_install cargo-generate
    mkdir -p {{DEST}}
-   cargo generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
+   ./target/bin/cargo-generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
+
+
+book: about
+   cargo install --quiet --git https://github.com/spmadden/mdbook mdbook --root target
+   ./target/bin/mdbook build
+
+servebook: book
+   ./target/bin/mdbook serve
+
+vet:
+   just check_install cargo-vet
+   ./target/bin/cargo-vet

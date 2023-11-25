@@ -1,0 +1,16 @@
+[book]
+authors = ["Sean P. Madden"]
+language = "en"
+multilingual = false
+src = "."
+title = "IROX Documentation"
+
+[build]
+build-dir = "public/book"
+
+[output.html]
+mathjax-support = true
+git-repository-url = "https://github.com/spmadden/irox"
+site-url = "/book"
+cname = "irox.spmadden.dev"
+no-copy-extra-files = true
