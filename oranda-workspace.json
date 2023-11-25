@@ -1,0 +1,14 @@
+{
+	"workspace": {
+		"name": "IROX",
+		"members": [
+			{ "slug": "units", "path": "./libraries/units"}
+		]
+	},
+	"components": {
+		"changelog": false
+	},
+	"styles": {
+		"theme": "light"
+	}
+}

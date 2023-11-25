@@ -54,6 +54,9 @@ new DEST:
    mkdir -p {{DEST}}
    ./target/bin/cargo-generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
 
+site:
+   just check_install oranda
+   ./target/bin/oranda build
 
 book: about
    cargo install --quiet --git https://github.com/spmadden/mdbook mdbook --root target
