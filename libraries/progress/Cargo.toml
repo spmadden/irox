@@ -27,7 +27,7 @@ egui = {workspace = true, optional = true}
 irox-egui-extras = {workspace = true, optional = true}
 
 [dev-dependencies]
-eframe = {workspace= true, features = ["wgpu", "default_fonts"]}
+eframe = {workspace= true, features = ["glow", "default_fonts"]}
 
 [[example]]
 name = "egui-progress"
