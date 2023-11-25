@@ -12,5 +12,8 @@ exclude.workspace = true
 readme = "README.md"
 repository.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 irox-tools.workspace = true

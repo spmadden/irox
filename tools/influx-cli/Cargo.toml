@@ -12,6 +12,9 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[lints]
+workspace = true
+
 [dependencies]
 irox-influxdb_v1.workspace = true
 clap.workspace = true

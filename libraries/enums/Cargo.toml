@@ -12,5 +12,8 @@ exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 irox-enums_derive.workspace = true

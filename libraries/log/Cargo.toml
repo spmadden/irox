@@ -12,6 +12,9 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[lints]
+workspace = true
+
 [dependencies]
 log = { workspace = true }
 irox-tools = { workspace = true }

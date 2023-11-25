@@ -12,4 +12,7 @@ exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]

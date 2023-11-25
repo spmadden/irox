@@ -12,4 +12,7 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[lints]
+workspace = true
+
 [dependencies]

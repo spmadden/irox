@@ -23,7 +23,7 @@ build +FLAGS='':
     cargo build --all-targets --all-features {{FLAGS}}
 
 test +FLAGS='':
-    cargo test --all-targets --all-features {{FLAGS}}
+    cargo test --all-features {{FLAGS}}
 
 format +FLAGS='':
     cargo fmt --all {{FLAGS}}
@@ -32,7 +32,7 @@ format_check +FLAGS='':
     cargo fmt --check --all {{FLAGS}}
 
 lints +FLAGS='':
-    xargs -aClippy.lints cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
+   cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
 
 package:
     cargo package --allow-dirty
@@ -46,8 +46,7 @@ upgrade +FLAGS='':
     cargo upgrade --dry-run --pinned -i {{FLAGS}}
 
 doc:
-    rustup toolchain install nightly 2>&1 > /dev/null
-    RUSTDOCFLAGS=$(xargs -aRustdoc.lints) cargo +nightly doc
+   cargo doc
 
 unused:
     cargo clippy --bins --lib --all-features -- -Wunused_crate_dependencies

@@ -12,6 +12,9 @@ exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 irox-units.workspace = true
 irox-tools.workspace = true
