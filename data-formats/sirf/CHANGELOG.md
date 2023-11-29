@@ -1,6 +1,31 @@
 
 
 
+## v0.3.1 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 3 calendar days.
+ - 30 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+</details>
+
 ## v0.3.0 (2023-10-30)
 
 ### Bug Fixes (BREAKING)
@@ -12,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 42 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-sirf v0.3.0 ([`3e12093`](https://github.com/spmadden/irox/commit/3e120930ef1d033ef69bdec09296ed177e10f82c))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - Bits and MutBits no longer require Read & Write ([`bba2c45`](https://github.com/spmadden/irox/commit/bba2c45c261c24124b9f4cd260d7177364e0794e))
     - Rename 'utc_seconds' to 'utc_milliseconds' in GeoNavData to reflect the actual contents of the field ([`e981099`](https://github.com/spmadden/irox/commit/e981099e141ffbc884031fd40d4adcebc46faaec))
