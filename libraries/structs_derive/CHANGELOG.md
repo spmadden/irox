@@ -1,6 +1,36 @@
 
 
 
+## v0.2.3 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-29987c2492e82336d874a5f0cc2082d565faa5bf/> derive the new Primitive blob types
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 9 calendar days.
+ - 30 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Derive the new Primitive blob types ([`29987c2`](https://github.com/spmadden/irox/commit/29987c2492e82336d874a5f0cc2082d565faa5bf))
+</details>
+
 ## v0.2.2 (2023-10-30)
 
 ### Bug Fixes
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 22 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.2.2 ([`34beb37`](https://github.com/spmadden/irox/commit/34beb379d42063a43f36ccc44919fdc8c0b7ce83))
     - Bump version to 0.2.2 ([`c608a4c`](https://github.com/spmadden/irox/commit/c608a4c0995d087749df00ff3b3053b25edffcec))
 </details>
 
