@@ -1335,7 +1335,7 @@ dependencies = [
 
 [[package]]
 name = "irox-units"
-version = "0.3.2"
+version = "0.3.3"
 
 [[package]]
 name = "irox-winlocation-api"
