@@ -1,5 +1,35 @@
 
 
+## v0.3.4 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-6f75e3f77356bd8ebb9ffdcd3b1b073f8948e477/> new Time::as_hms_f64 method which returns the final seconds as an f64
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 14 calendar days.
+ - 20 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - New Time::as_hms_f64 method which returns the final seconds as an f64 ([`6f75e3f`](https://github.com/spmadden/irox/commit/6f75e3f77356bd8ebb9ffdcd3b1b073f8948e477))
+</details>
+
 ## v0.3.3 (2023-11-08)
 
 ### Bug Fixes
@@ -10,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.3.3 ([`2b9a37f`](https://github.com/spmadden/irox/commit/2b9a37f3e23cae2c64fffe1a4ece21891c3bda4e))
     - Fix duration math in Sub<Duration> for UTCDateTime ([`87d603a`](https://github.com/spmadden/irox/commit/87d603a6aedcdf9c150cd3c61ede327c1c516c1b))
 </details>
 
