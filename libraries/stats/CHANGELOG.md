@@ -1,6 +1,31 @@
 
 
 
+## v0.2.2 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 3 calendar days.
+ - 52 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+</details>
+
 ## v0.2.1 (2023-10-08)
 
 ### New Features
@@ -16,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 12 calendar days.
+ - 4 commits contributed to the release over the course of 12 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.2.1, irox-carto v0.2.1, irox-egui-extras v0.2.1, irox-gpx v0.1.0, irox-types v0.2.1, irox-structs_derive v0.2.1, irox-raymarine-sonar v0.1.0, irox-stats v0.2.1, irox-winlocation-api v0.1.1, irox v0.2.1 ([`68d770b`](https://github.com/spmadden/irox/commit/68d770bb78abe49bf30364ca17ddb6f7bfda05d9))
     - New convolution and filtering module ([`f3d2d7b`](https://github.com/spmadden/irox/commit/f3d2d7bb7a12f1c49c5f732cd800afc1e5dd01fe))
     - Can actually create a gaussian now. ([`aa196c4`](https://github.com/spmadden/irox/commit/aa196c427363cde6523eb2b509b972ea0a089bb3))
     - Decay can use a duration now ([`cc0585f`](https://github.com/spmadden/irox/commit/cc0585f380c7ae6a25b1dd490489182a741fe3f8))
