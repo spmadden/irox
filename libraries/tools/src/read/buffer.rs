@@ -1,0 +1,81 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2023 IROX Contributors
+//
+
+use std::cmp::min;
+use std::collections::VecDeque;
+use std::io::{BufRead, BufReader, Read};
+use std::ops::RangeBounds;
+
+use crate::bits::Bits;
+
+///
+/// An effective, infinite cached buffer.  What [`BufRead`] and [`BufReader`]
+/// would be if they weren't backed by a fixed buffer.
+#[derive()]
+pub struct Buffer<T> {
+    reader: BufReader<T>,
+    buffer: VecDeque<u8>,
+}
+
+impl<T: Read> Buffer<T> {
+    ///
+    pub fn new(reader: T) -> Self {
+        Buffer {
+            reader: BufReader::new(reader),
+            buffer: VecDeque::new(),
+        }
+    }
+
+    /// The associated iterator call 'next' fills the buffer and returns the
+    /// individual byte-by-byte values.  This function returns and clears the
+    /// buffer as a consecutive block, up to 'len' items.
+    pub fn consume_read_buffer_up_to(&mut self, len: usize) -> Vec<u8> {
+        let len = min(len, self.buffer.len());
+        self.buffer.drain(0..len).collect()
+    }
+
+    /// The associated iterator call 'next' fills the buffer and returns the
+    /// individual byte-by-byte values. This function returns the entire read buffer.
+    pub fn consume_read_buffer(&mut self) -> VecDeque<u8> {
+        std::mem::take(&mut self.buffer)
+    }
+
+    /// Removes the specified range and throws it away.
+    pub fn drain<R: RangeBounds<usize>>(&mut self, range: R) {
+        self.buffer.drain(range);
+    }
+}
+
+impl<T: Read> Read for Buffer<T> {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let read = self.reader.read(buf)?;
+        self.buffer.extend(buf.iter().take(read));
+        Ok(read)
+    }
+}
+
+impl<T: Read> Iterator for Buffer<T> {
+    type Item = u8;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Ok(Some(val)) = self.reader.next_u8() {
+            self.buffer.push_back(val);
+            return Some(val);
+        };
+        None
+    }
+}
+
+impl<T: Read> BufRead for Buffer<T> {
+    fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
+        let buf = self.reader.fill_buf()?;
+        self.buffer.extend(buf.iter());
+        Ok(buf)
+    }
+
+    fn consume(&mut self, amt: usize) {
+        self.reader.consume(amt);
+        self.consume_read_buffer_up_to(amt);
+    }
+}

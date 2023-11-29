@@ -4,8 +4,10 @@
 use std::collections::VecDeque;
 use std::io::{Error, Read, Write};
 
+pub use buffer::*;
 pub use counting::*;
 
+mod buffer;
 mod counting;
 
 ///
