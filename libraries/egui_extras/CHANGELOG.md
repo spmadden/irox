@@ -1,6 +1,45 @@
 
 
 
+## v0.3.3 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-d08939007d939152e532b84654208b0156b3a8d6/> update egui to 0.24
+ - <csr-id-64c956eb3d26546caaf0f8d3e8c00d8ae44a74f1/> disable all default features for egui deps at workspace level
+
+### Bug Fixes
+
+ - <csr-id-33a3e98e1d2493e7703cf519d9a4514e0f7587a9/> put serde behind a feature gate to fix standalone checks
+ - <csr-id-222158b51b32dbb38a20b548fe2b4efd1b1d0486/> fix lint in egui progressbar
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release over the course of 14 calendar days.
+ - 27 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Put serde behind a feature gate to fix standalone checks ([`33a3e98`](https://github.com/spmadden/irox/commit/33a3e98e1d2493e7703cf519d9a4514e0f7587a9))
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Update egui to 0.24 ([`d089390`](https://github.com/spmadden/irox/commit/d08939007d939152e532b84654208b0156b3a8d6))
+    - Disable all default features for egui deps at workspace level ([`64c956e`](https://github.com/spmadden/irox/commit/64c956eb3d26546caaf0f8d3e8c00d8ae44a74f1))
+    - Fix lint in egui progressbar ([`222158b`](https://github.com/spmadden/irox/commit/222158b51b32dbb38a20b548fe2b4efd1b1d0486))
+</details>
+
 ## v0.3.2 (2023-11-02)
 
 ### New Features
@@ -11,7 +50,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 3 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +62,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.2, irox-progress v0.1.2 ([`73e0e72`](https://github.com/spmadden/irox/commit/73e0e7222582695151958708533c033c7eec61bc))
     - Add new progressbar impl with indeterminate mode ([`69bb1e4`](https://github.com/spmadden/irox/commit/69bb1e4bcb962b22bcb7d46582c2b877a03b6322))
 </details>
 
