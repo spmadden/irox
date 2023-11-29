@@ -1,7 +1,44 @@
 
 
 
+## v0.3.0 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-6919741e9ff5ca0b599e80a84c701b2fdb80a6af/> support converting a 'Vec<u8>' into a Primitives::u32_blob
+
+### New Features (BREAKING)
+
+ - <csr-id-69dd29057e64e9313e95d7e3be7ec3b948f9c1a9/> refactor 'Primitives::blob' into sized types
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 9 calendar days.
+ - 30 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Support converting a 'Vec<u8>' into a Primitives::u32_blob ([`6919741`](https://github.com/spmadden/irox/commit/6919741e9ff5ca0b599e80a84c701b2fdb80a6af))
+    - Refactor 'Primitives::blob' into sized types ([`69dd290`](https://github.com/spmadden/irox/commit/69dd29057e64e9313e95d7e3be7ec3b948f9c1a9))
+</details>
+
 ## v0.2.2 (2023-10-30)
+
+<csr-id-645afe2dca3b6f200aa6a8ed73c157316d30943c/>
 
 ### Chore
 
@@ -11,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 22 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.2.2 ([`9776f77`](https://github.com/spmadden/irox/commit/9776f7787fb3cbdfe84d96d5e0c2360d59f64e57))
     - ALL THE LINTS. ([`645afe2`](https://github.com/spmadden/irox/commit/645afe2dca3b6f200aa6a8ed73c157316d30943c))
 </details>
 
