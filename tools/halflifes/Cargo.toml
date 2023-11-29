@@ -20,5 +20,5 @@ eframe = {workspace = true, features = ["glow", "default_fonts"]}
 egui = {workspace = true, features = ["persistence"]}
 egui_plot.workspace = true
 log.workspace = true
-irox-egui-extras.workspace = true
+irox-egui-extras = {workspace = true, features = ["serde"]}
 irox-stats.workspace = true
