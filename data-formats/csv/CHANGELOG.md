@@ -1,6 +1,36 @@
 
 
 
+## v0.4.1 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-845a800f770075d06a32badb3acfd40e6b66a7e5/> make the map writer accept anything that can get turned into a string
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 3 calendar days.
+ - 30 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Make the map writer accept anything that can get turned into a string ([`845a800`](https://github.com/spmadden/irox/commit/845a800f770075d06a32badb3acfd40e6b66a7e5))
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+</details>
+
 ## v0.4.0 (2023-10-30)
 
 ### Bug Fixes
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 1 calendar day.
+ - 3 commits contributed to the release over the course of 1 calendar day.
  - 14 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-csv v0.4.0 ([`93c1ac5`](https://github.com/spmadden/irox/commit/93c1ac55b7d3c46f633457784b9d23002e78715b))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - Fix issue with CSV interspersing double/single quotes by default ([`47dec1c`](https://github.com/spmadden/irox/commit/47dec1ce858b6792544264c7e109e5494b05682c))
 </details>
