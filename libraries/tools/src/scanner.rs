@@ -2,7 +2,9 @@
 // Copyright 2023 IROX Contributors
 
 use std::collections::VecDeque;
-use std::io::{BufRead, BufReader, Read, Seek, SeekFrom};
+use std::io::{BufReader, Read};
+
+use crate::read::Buffer;
 
 ///
 /// What characters are considered "quotes"
@@ -195,7 +197,7 @@ where
     T: Read + Sized,
     R: Clone,
 {
-    reader: BufReader<T>,
+    reader: Buffer<BufReader<T>>,
     tokens: Vec<Token<R>>,
 }
 
@@ -204,7 +206,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     /// Creates a scanner with the default buffer capacity, 8KB
     pub fn new(input: T, delimiters: &[Token<R>]) -> Self {
         Scanner {
-            reader: BufReader::with_capacity(8 * 1024, input),
+            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
             tokens: Vec::from(delimiters),
         }
     }
@@ -213,7 +215,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     /// Creates a scanner with the specified buffer capacity
     pub fn with_max_lookahead(input: T, max_buffer: usize, delimiters: &[Token<R>]) -> Self {
         Scanner {
-            reader: BufReader::with_capacity(max_buffer, input),
+            reader: Buffer::new(BufReader::with_capacity(max_buffer, input)),
             tokens: Vec::from(delimiters),
         }
     }
@@ -228,18 +230,12 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     /// Returns `Ok(None)` if there are no additional characters to read in the buffer - we've hit EOF.
     /// Returns `Err(e)` if there's an error reading from the underlying stream
     pub fn scan_until_next(&mut self) -> Result<FoundToken<R>, std::io::Error> {
-        let data = self.reader.fill_buf()?;
-        if data.is_empty() {
-            // EOF
-            return Ok(FoundToken::NotFound);
-        }
-
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         let mut num_read = 0;
-        for char in data {
+        for char in &mut self.reader {
             for mem in &mut workingmem {
-                mem.push_back(*char);
+                mem.push_back(char);
 
                 if mem.matches() {
                     return Ok(FoundToken::Found {
@@ -257,67 +253,38 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     }
 
     pub fn read_next(&mut self) -> Result<ReadToken<R>, std::io::Error> {
-        let data = self.reader.fill_buf()?;
-        if data.is_empty() {
-            // EOF
-            return Ok(ReadToken::NotFound);
-        }
-
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
-        let mut num_read = 0;
-        for char in data {
-            num_read += 1;
+        for char in &mut self.reader {
             for mem in &mut workingmem {
-                mem.push_back(*char);
+                mem.push_back(char);
 
                 if mem.matches() {
-                    if let Some(field) = data.get(0..mem.offset) {
-                        let vec = Vec::from(field);
-                        self.reader.consume(num_read);
-                        return Ok(ReadToken::Found {
-                            data: vec,
-                            token: mem.token,
-                        });
-                    }
+                    let buf = self.reader.consume_read_buffer();
+                    let mut data: Vec<u8> = buf.into();
+                    data.truncate(mem.offset);
+                    return Ok(ReadToken::Found {
+                        data,
+                        token: mem.token,
+                    });
                 }
             }
         }
-        if let Some(field) = data.get(0..num_read) {
-            let vec = Vec::from(field);
-            self.reader.consume(num_read);
-            return Ok(ReadToken::EndOfData { data: vec });
+        let buf = self.reader.consume_read_buffer();
+        if !buf.is_empty() {
+            let data: Vec<u8> = buf.into();
+            return Ok(ReadToken::EndOfData { data });
         }
         Ok(ReadToken::NotFound)
     }
-}
 
-impl<T: Read + Sized, R: Clone> Read for Scanner<T, R> {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.reader.read(buf)
-    }
-}
-
-impl<T: Read + Sized, R: Clone> BufRead for Scanner<T, R> {
-    fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
-        self.reader.fill_buf()
-    }
-
-    fn consume(&mut self, amt: usize) {
-        self.reader.consume(amt)
-    }
-}
-
-impl<T: Read + Sized + Seek, R: Clone> Seek for Scanner<T, R> {
-    fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
-        self.reader.seek(pos)
+    pub fn consume(&mut self, len: usize) {
+        self.reader.drain(..len);
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::BufRead;
-
     use crate::scanner::*;
 
     #[derive(Copy, Clone, Eq, PartialEq, Debug)]
@@ -348,7 +315,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
@@ -373,7 +340,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
@@ -397,7 +364,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
@@ -421,7 +388,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
@@ -446,7 +413,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
@@ -471,7 +438,7 @@ mod tests {
                     panic!("None not expected")
                 }
             }
-            scanner.consume(exp + 1);
+            scanner.consume(exp);
         }
 
         Ok(())
