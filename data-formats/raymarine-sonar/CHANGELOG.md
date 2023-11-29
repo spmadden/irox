@@ -1,6 +1,43 @@
 
 
+## v0.4.0 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+ - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
+
+### New Features
+
+ - <csr-id-934f860fc30602a8f94d12ae1c4763bf0123ea9a/> pivot 'Box<[u8]>' into 'Vec<u8>' to support new Primitive blob types
+ - <csr-id-04061265a09ff431305834d70ec8cf0a1992ddd1/> move binary 'sonar-sdf-convert' to new tools module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release over the course of 23 calendar days.
+ - 30 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Pivot 'Box<[u8]>' into 'Vec<u8>' to support new Primitive blob types ([`934f860`](https://github.com/spmadden/irox/commit/934f860fc30602a8f94d12ae1c4763bf0123ea9a))
+    - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
+    - Move binary 'sonar-sdf-convert' to new tools module ([`0406126`](https://github.com/spmadden/irox/commit/04061265a09ff431305834d70ec8cf0a1992ddd1))
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
+</details>
+
 ## v0.3.0 (2023-10-30)
+
+<csr-id-3840427bd226f4fea576053351b0244bf817e55b/>
 
 ### Chore
 
@@ -18,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 9 calendar days.
+ - 5 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -30,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.3.0 ([`2db089f`](https://github.com/spmadden/irox/commit/2db089f40b072aa3eff9570ad14c6b5b2216eeac))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - Fix bin compilation ([`5d8962f`](https://github.com/spmadden/irox/commit/5d8962f7ff00e6bd0891fbe41c2acaf87f9cf279))
     - ALL THE LINTS. ([`3840427`](https://github.com/spmadden/irox/commit/3840427bd226f4fea576053351b0244bf817e55b))
