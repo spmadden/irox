@@ -9,6 +9,7 @@
 pub mod frame_history;
 
 /// Utilities around [`egui::style`]
+#[cfg(feature = "serde")]
 pub mod styles;
 
 /// [`eframe::App`] composition tools

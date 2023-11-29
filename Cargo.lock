@@ -1100,6 +1100,7 @@ dependencies = [
  "eframe",
  "egui",
  "ron",
+ "serde",
 ]
 
 [[package]]
