@@ -94,40 +94,80 @@ impl Bits for Random {
         Ok(self.next_u8())
     }
 
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        Ok(Some(self.next_u8()))
+    }
+
     fn read_be_u16(&mut self) -> Result<u16, Error> {
         Ok(self.next_u16())
+    }
+
+    fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
+        Ok(Some(self.next_u16()))
     }
 
     fn read_be_u32(&mut self) -> Result<u32, Error> {
         Ok(self.next_u32())
     }
 
+    fn next_be_u32(&mut self) -> Result<Option<u32>, Error> {
+        Ok(Some(self.next_u32()))
+    }
+
     fn read_be_u64(&mut self) -> Result<u64, Error> {
         Ok(self.next_u64())
+    }
+
+    fn next_be_u64(&mut self) -> Result<Option<u64>, Error> {
+        Ok(Some(self.next_u64()))
     }
 
     fn read_be_u128(&mut self) -> Result<u128, Error> {
         Ok(self.next_u128())
     }
 
+    fn next_be_u128(&mut self) -> Result<Option<u128>, Error> {
+        Ok(Some(self.next_u128()))
+    }
+
     fn read_f32(&mut self) -> Result<f32, Error> {
         Ok(self.next_f32())
+    }
+
+    fn next_f32(&mut self) -> Result<Option<f32>, Error> {
+        Ok(Some(self.next_f32()))
     }
 
     fn read_f64(&mut self) -> Result<f64, Error> {
         Ok(self.next_f64())
     }
 
+    fn next_f64(&mut self) -> Result<Option<f64>, Error> {
+        Ok(Some(self.next_f64()))
+    }
+
     fn read_be_i16(&mut self) -> Result<i16, Error> {
         Ok(self.next_u16() as i16)
+    }
+
+    fn next_be_i16(&mut self) -> Result<Option<i16>, Error> {
+        Ok(Some(self.next_u16() as i16))
     }
 
     fn read_be_i32(&mut self) -> Result<i32, Error> {
         Ok(self.next_u32() as i32)
     }
 
+    fn next_be_i32(&mut self) -> Result<Option<i32>, Error> {
+        Ok(Some(self.next_u32() as i32))
+    }
+
     fn read_be_i64(&mut self) -> Result<i64, Error> {
         Ok(self.next_u64() as i64)
+    }
+
+    fn next_be_i64(&mut self) -> Result<Option<i64>, Error> {
+        Ok(Some(self.next_u64() as i64))
     }
 
     fn advance(&mut self, len: usize) -> Result<usize, Error> {

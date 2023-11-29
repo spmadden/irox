@@ -13,29 +13,62 @@ pub trait Bits {
     /// Reads a single [`u8`]
     fn read_u8(&mut self) -> Result<u8, Error>;
 
+    /// Optionally returns a single [`u8`]
+    fn next_u8(&mut self) -> Result<Option<u8>, Error>;
+
     /// Reads a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn read_be_u16(&mut self) -> Result<u16, Error>;
+
+    /// Optionally reads a single [`u16`] in big-endian order, 2 bytes, MSB first.
+    fn next_be_u16(&mut self) -> Result<Option<u16>, Error>;
 
     /// Reads a single [`u32`] in big-endian order, 4 bytes, MSB first.
     fn read_be_u32(&mut self) -> Result<u32, Error>;
 
+    /// Optionally reads a single [`u32`] in big-endian order, 4 bytes, MSB first.
+    fn next_be_u32(&mut self) -> Result<Option<u32>, Error>;
+
     /// Reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
     fn read_be_u64(&mut self) -> Result<u64, Error>;
+
+    /// Optionally reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
+    fn next_be_u64(&mut self) -> Result<Option<u64>, Error>;
 
     /// Reads a single [`u128`] in big-endian order, 16 bytes, MSB first.
     fn read_be_u128(&mut self) -> Result<u128, Error>;
 
+    /// Optionally reads a single [`u128`] in big-endian order, 16 bytes, MSB first.
+    fn next_be_u128(&mut self) -> Result<Option<u128>, Error>;
+
     /// Reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding
     fn read_f32(&mut self) -> Result<f32, Error>;
+
+    /// Optionally reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding
+    fn next_f32(&mut self) -> Result<Option<f32>, Error>;
+
     /// Reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
     fn read_f64(&mut self) -> Result<f64, Error>;
 
+    /// Optionally reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
+    fn next_f64(&mut self) -> Result<Option<f64>, Error>;
+
     /// Reads a single [`i16`] in big-endian order, 2 bytes, MSB first.
     fn read_be_i16(&mut self) -> Result<i16, Error>;
+
+    /// Optionally reads a single [`i16`] in big-endian order, 2 bytes, MSB first.
+    fn next_be_i16(&mut self) -> Result<Option<i16>, Error>;
+
     /// Reads a single [`i32`] in big-endian order, 4 bytes, MSB first.
     fn read_be_i32(&mut self) -> Result<i32, Error>;
+
+    /// Optionally reads a single [`i32`] in big-endian order, 4 bytes, MSB first.
+    fn next_be_i32(&mut self) -> Result<Option<i32>, Error>;
+
     /// Reads a single [`i64`] in big-endian order, 8 bytes, MSB first.
     fn read_be_i64(&mut self) -> Result<i64, Error>;
+
+    /// Optionally reads a single [`i64`] in big-endian order, 8 bytes, MSB first.
+    fn next_be_i64(&mut self) -> Result<Option<i64>, Error>;
 
     /// Advances the stream by at most 'len' bytes.  The actual amount of bytes advanced may be
     /// less, and is returned in [`Ok(usize)`]
@@ -75,65 +108,132 @@ pub trait Bits {
     }
 }
 
+macro_rules! absorb_eof {
+    ($self:ident, $buf:ident) => {
+        if let Err(e) = $self.read_exact(&mut $buf) {
+            if e.kind() == ErrorKind::UnexpectedEof {
+                return Ok(None);
+            }
+            return Err(e);
+        }
+    };
+}
+
 impl<T> Bits for T
 where
     T: Read,
 {
     fn read_u8(&mut self) -> Result<u8, Error> {
+        let Some(val) = self.next_u8()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
+        Ok(val)
+    }
+
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         let mut buf: [u8; 1] = [0];
         let read = self.read(&mut buf)?;
         if read < 1 {
-            return Err(Error::from(ErrorKind::UnexpectedEof));
+            return Ok(None);
         }
-        Ok(buf[0])
+        Ok(Some(buf[0]))
     }
 
     fn read_be_u16(&mut self) -> Result<u16, Error> {
-        let first = self.read_u8()?;
-        let sec = self.read_u8()?;
-        let ret = u16::from(first) << 8 | u16::from(sec);
+        let Some(ret) = self.next_be_u16()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
         Ok(ret)
+    }
+
+    fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
+        let mut buf: [u8; 2] = [0; 2];
+        absorb_eof!(self, buf);
+        let [a, b] = buf;
+        let out: u16 = (a as u16) << 8 | (b as u16);
+        Ok(Some(out))
     }
 
     fn read_be_u32(&mut self) -> Result<u32, Error> {
-        let first = self.read_be_u16()?;
-        let sec = self.read_be_u16()?;
-        let ret = u32::from(first) << 16 | u32::from(sec);
+        let Some(ret) = self.next_be_u32()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
         Ok(ret)
+    }
+
+    fn next_be_u32(&mut self) -> Result<Option<u32>, Error> {
+        let mut buf: [u8; 4] = [0; 4];
+        absorb_eof!(self, buf);
+        let out = u32::from_be_bytes(buf);
+        Ok(Some(out))
     }
 
     fn read_be_u64(&mut self) -> Result<u64, Error> {
-        let first = self.read_be_u32()?;
-        let sec = self.read_be_u32()?;
-        let ret = u64::from(first) << 32 | u64::from(sec);
+        let Some(ret) = self.next_be_u64()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
         Ok(ret)
     }
 
+    fn next_be_u64(&mut self) -> Result<Option<u64>, Error> {
+        let mut buf: [u8; 8] = [0; 8];
+        absorb_eof!(self, buf);
+        let out = u64::from_be_bytes(buf);
+        Ok(Some(out))
+    }
+
     fn read_be_u128(&mut self) -> Result<u128, Error> {
-        let first = self.read_be_u64()?;
-        let sec = self.read_be_u64()?;
-        let ret = u128::from(first) << 32 | u128::from(sec);
+        let Some(ret) = self.next_be_u128()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
         Ok(ret)
+    }
+
+    fn next_be_u128(&mut self) -> Result<Option<u128>, Error> {
+        let mut buf: [u8; 16] = [0; 16];
+        absorb_eof!(self, buf);
+        let out = u128::from_be_bytes(buf);
+        Ok(Some(out))
     }
 
     fn read_f32(&mut self) -> Result<f32, Error> {
         Ok(f32::from_bits(self.read_be_u32()?))
     }
 
+    fn next_f32(&mut self) -> Result<Option<f32>, Error> {
+        Ok(self.next_be_u32()?.map(f32::from_bits))
+    }
+
     fn read_f64(&mut self) -> Result<f64, Error> {
         Ok(f64::from_bits(self.read_be_u64()?))
+    }
+
+    fn next_f64(&mut self) -> Result<Option<f64>, Error> {
+        Ok(self.next_be_u64()?.map(f64::from_bits))
     }
 
     fn read_be_i16(&mut self) -> Result<i16, Error> {
         Ok(self.read_be_u16()? as i16)
     }
 
+    fn next_be_i16(&mut self) -> Result<Option<i16>, Error> {
+        Ok(self.next_be_u16()?.map(|v| v as i16))
+    }
+
     fn read_be_i32(&mut self) -> Result<i32, Error> {
         Ok(self.read_be_u32()? as i32)
     }
 
+    fn next_be_i32(&mut self) -> Result<Option<i32>, Error> {
+        Ok(self.next_be_u32()?.map(|v| v as i32))
+    }
+
     fn read_be_i64(&mut self) -> Result<i64, Error> {
         Ok(self.read_be_u64()? as i64)
+    }
+
+    fn next_be_i64(&mut self) -> Result<Option<i64>, Error> {
+        Ok(self.next_be_u64()?.map(|v| v as i64))
     }
 
     fn advance(&mut self, len: usize) -> Result<usize, Error> {
@@ -284,12 +384,15 @@ where
 pub fn read_be_u32<T: Bits>(mut data: T) -> Result<u32, Error> {
     data.read_be_u32()
 }
+
 pub fn read_be_u64<T: Bits>(mut data: T) -> Result<u64, Error> {
     data.read_be_u64()
 }
+
 pub fn read_f32<T: Bits>(mut data: T) -> Result<f32, Error> {
     data.read_f32()
 }
+
 pub fn read_f64<T: Bits>(mut data: T) -> Result<f64, Error> {
     data.read_f64()
 }
