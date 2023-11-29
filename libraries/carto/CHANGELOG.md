@@ -1,6 +1,46 @@
 
 
 
+## v0.5.0 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+ - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
+
+### New Features
+
+ - <csr-id-5c80a81df3d651e32aa37ca7f7f33b0e01b281b1/> new PositionsBuilder and WGS84PositionBuilder
+ - <csr-id-5e4c0c9b9c524fbb66ac50f11bfc0503be8fe27f/> Add new 'Positions' structs to represent the same position
+
+### Other
+
+ - <csr-id-310985b4d9166fa77b198ca16f5c1f125506c615/> update/add docs to carto module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 23 calendar days.
+ - 30 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - New PositionsBuilder and WGS84PositionBuilder ([`5c80a81`](https://github.com/spmadden/irox/commit/5c80a81df3d651e32aa37ca7f7f33b0e01b281b1))
+    - Add new 'Positions' structs to represent the same position ([`5e4c0c9`](https://github.com/spmadden/irox/commit/5e4c0c9b9c524fbb66ac50f11bfc0503be8fe27f))
+    - Update/add docs to carto module ([`310985b`](https://github.com/spmadden/irox/commit/310985b4d9166fa77b198ca16f5c1f125506c615))
+    - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
+</details>
+
 ## v0.4.0 (2023-10-30)
 
 ### New Features
@@ -15,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.4.0 ([`6d2e0a6`](https://github.com/spmadden/irox/commit/6d2e0a65a94d9b8e230e547951c6d15d96f49259))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - Add ISO-3166-1 Country Codes ([`a28f0b7`](https://github.com/spmadden/irox/commit/a28f0b79d70f81e08545664b44ba91358dfc6056))
     - Pivot carto to use irox_time ([`03c0d13`](https://github.com/spmadden/irox/commit/03c0d132037144838952b786b2ac49acb5c177d8))
