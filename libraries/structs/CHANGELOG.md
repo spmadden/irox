@@ -1,7 +1,39 @@
 
 
 
+## 0.3.1 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-097319c31680f79ab5c5ef3850822764adf3d4ae/> expose Bits,MutBits to consumers
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 9 calendar days.
+ - 30 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Expose Bits,MutBits to consumers ([`097319c`](https://github.com/spmadden/irox/commit/097319c31680f79ab5c5ef3850822764adf3d4ae))
+</details>
+
 ## 0.3.0 (2023-10-30)
+
+<csr-id-9c88391ce24d34786e9526378b4f3830f44da1fa/>
 
 ### Chore
 
@@ -11,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 42 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs v0.3.0 ([`f5789b0`](https://github.com/spmadden/irox/commit/f5789b0aba04391dc38956e3538524bfe9a0b65c))
     - Add changelog ([`9c88391`](https://github.com/spmadden/irox/commit/9c88391ce24d34786e9526378b4f3830f44da1fa))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
 </details>
