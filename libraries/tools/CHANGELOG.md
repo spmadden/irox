@@ -1,6 +1,50 @@
 
 
 
+## v0.4.0 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-0320a56d87ea14313690eed22f07af2faf754db5/> new buffer extending BufReader to span multiple blocks
+ - <csr-id-0dd784548c69ac4e046210338f1d8bd71bd7479b/> Bits and MutBits can now read & write size-prefixed blobs
+ - <csr-id-965b956e2b125d74e36cf72d3f92871cfba57b94/> new DecimalFormatF32/F64 with ability to specify number of digits precision
+
+### Bug Fixes
+
+ - <csr-id-08e634e08675453d3cd9960635476dc05f53bef6/> Scanner now scans across block boundaries correctly
+
+### New Features (BREAKING)
+
+ - <csr-id-9e13976bb33d1cb990a9841184637a28a038f66e/> bits now has Optional 'next' methods
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 14 calendar days.
+ - 23 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bits now has Optional 'next' methods ([`9e13976`](https://github.com/spmadden/irox/commit/9e13976bb33d1cb990a9841184637a28a038f66e))
+    - Scanner now scans across block boundaries correctly ([`08e634e`](https://github.com/spmadden/irox/commit/08e634e08675453d3cd9960635476dc05f53bef6))
+    - New buffer extending BufReader to span multiple blocks ([`0320a56`](https://github.com/spmadden/irox/commit/0320a56d87ea14313690eed22f07af2faf754db5))
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Bits and MutBits can now read & write size-prefixed blobs ([`0dd7845`](https://github.com/spmadden/irox/commit/0dd784548c69ac4e046210338f1d8bd71bd7479b))
+    - New DecimalFormatF32/F64 with ability to specify number of digits precision ([`965b956`](https://github.com/spmadden/irox/commit/965b956e2b125d74e36cf72d3f92871cfba57b94))
+</details>
+
 ## v0.3.2 (2023-11-05)
 
 ### New Features
@@ -11,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
     - New ANSI Color Codes ([`262121d`](https://github.com/spmadden/irox/commit/262121de9bc30c7501f3d1a7382a90c556137cd0))
 </details>
 
