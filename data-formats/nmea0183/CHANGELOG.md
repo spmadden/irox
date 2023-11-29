@@ -1,6 +1,47 @@
 
 
 
+## v0.4.0 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+ - <csr-id-38d709a5df3fd8d11784427952480ca04e6ef965/> fix new formatting rules in nmea0183
+ - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
+
+### New Features
+
+ - <csr-id-b1614a35161bc14d45a7b8fb03a121e6683cc872/> new partial impl of ZDA
+ - <csr-id-e449164722df8fb8ef366cb41e2e23534ad24064/> GSA is now Copy+Clone+Default
+ - <csr-id-874afec7b6aa560623e0f995aec7fd96e3940542/> GGA is now Copy+Clone
+ - <csr-id-0a258cd962bd75a5b858b4cadb01a1ea697ba04c/> new GGA builder and tests
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 8 commits contributed to the release over the course of 23 calendar days.
+ - 30 days passed between releases.
+ - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - New partial impl of ZDA ([`b1614a3`](https://github.com/spmadden/irox/commit/b1614a35161bc14d45a7b8fb03a121e6683cc872))
+    - GSA is now Copy+Clone+Default ([`e449164`](https://github.com/spmadden/irox/commit/e449164722df8fb8ef366cb41e2e23534ad24064))
+    - GGA is now Copy+Clone ([`874afec`](https://github.com/spmadden/irox/commit/874afec7b6aa560623e0f995aec7fd96e3940542))
+    - Fix new formatting rules in nmea0183 ([`38d709a`](https://github.com/spmadden/irox/commit/38d709a5df3fd8d11784427952480ca04e6ef965))
+    - New GGA builder and tests ([`0a258cd`](https://github.com/spmadden/irox/commit/0a258cd962bd75a5b858b4cadb01a1ea697ba04c))
+    - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
+    - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
+</details>
+
 ## v0.3.0 (2023-10-30)
 
 ### New Features (BREAKING)
@@ -15,7 +56,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +68,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.3.0 ([`04e7ee6`](https://github.com/spmadden/irox/commit/04e7ee6238339648c3a3d5c1502c412f6321dfa9))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - Bits and MutBits no longer require Read & Write ([`0abcf44`](https://github.com/spmadden/irox/commit/0abcf44f6018f432a8715ff4f7a0ec1986ea1463))
     - Pivot to using irox_time ([`56d56f5`](https://github.com/spmadden/irox/commit/56d56f52703b29e4ba79b5e12e0b9332e1b0f400))
