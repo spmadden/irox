@@ -1,7 +1,40 @@
 
 
 
+## v0.4.1 (2023-11-29)
+
+### Chore
+
+ - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
+
+### New Features
+
+ - <csr-id-c26ec08a27749f485a32815f97c9046a7a84d382/> move binary to new 'influx-cli' module in 'tools'
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 21 calendar days.
+ - 30 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+    - Move binary to new 'influx-cli' module in 'tools' ([`c26ec08`](https://github.com/spmadden/irox/commit/c26ec08a27749f485a32815f97c9046a7a84d382))
+</details>
+
 ## v0.4.0 (2023-10-30)
+
+<csr-id-fc6f57b43d5c7656f156292a48a92af62da2c625/>
+<csr-id-32000651bebceb6f948b1182ba99a70602ecbcf5/>
 
 ### Chore
 
@@ -16,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 4 calendar days.
+ - 5 commits contributed to the release over the course of 4 calendar days.
  - 14 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-influxdb_v1 v0.4.0 ([`32913bb`](https://github.com/spmadden/irox/commit/32913bb085875946aa447b562aee5b3c5e06d690))
     - Release irox-tools v0.3.0, safety bump 12 crates ([`eb83b27`](https://github.com/spmadden/irox/commit/eb83b27b20c23e51e5b0fc3b7b3704e2c03af46c))
     - ALL THE LINTS. ([`fc6f57b`](https://github.com/spmadden/irox/commit/fc6f57b43d5c7656f156292a48a92af62da2c625))
     - Fix rustfmt ([`3200065`](https://github.com/spmadden/irox/commit/32000651bebceb6f948b1182ba99a70602ecbcf5))

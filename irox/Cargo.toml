@@ -47,7 +47,7 @@ irox-nmea0183 = { version = "^0.4.0", optional = true, path = "../data-formats/n
 irox-raymarine-sonar = { version = "^0.4.0", optional = true, path = "../data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0.3.0", optional = true, path = "../data-formats/sirf" }
 
-irox-influxdb_v1 = { version = "^0.4.0", optional = true, path = "../interfaces/influxdb_v1" }
+irox-influxdb_v1 = { version = "^0.4.1", optional = true, path = "../interfaces/influxdb_v1" }
 irox-winlocation-api = { version = "^0.4.0", optional = true, path = "../interfaces/win-location-api" }
 
 irox-carto = { version = "^0.5.0", optional = true, path = "../libraries/carto" }
