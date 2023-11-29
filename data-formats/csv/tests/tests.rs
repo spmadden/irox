@@ -118,9 +118,9 @@ pub fn writer_2() -> Result<(), CSVError> {
             .with_dialect(UNIX_DIALECT);
 
         let mut map = BTreeMap::new();
-        map.insert("first".to_string(), "4th".to_string());
-        map.insert("second".to_string(), "5th".to_string());
-        map.insert("third".to_string(), "6th".to_string());
+        map.insert("first", "4th".to_string());
+        map.insert("second", "5th".to_string());
+        map.insert("third", "6th".to_string());
         writer.write_fields(&map)?;
     }
     assert_eq!("first,second,third\n4th,5th,6th\n".as_bytes(), buf);

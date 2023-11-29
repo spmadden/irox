@@ -92,7 +92,10 @@ impl<T: Write + Sized> CSVWriter<T> {
     ///
     /// Note:  It is NOT required for the fields map to have every header/column within it.  Any
     /// missing fields will be replaced with an empty string.
-    pub fn write_fields(&mut self, fields: &BTreeMap<String, String>) -> Result<(), CSVError> {
+    pub fn write_fields<K: AsRef<str>, V: AsRef<str>>(
+        &mut self,
+        fields: &BTreeMap<K, V>,
+    ) -> Result<(), CSVError> {
         self.write_header()?;
         let Some(cols) = &self.columns else {
             return CSVError::err(
@@ -102,11 +105,17 @@ impl<T: Write + Sized> CSVWriter<T> {
         };
         let mut out = Vec::new();
         for col in cols {
-            let Some(val) = fields.get(col) else {
-                out.push(String::new());
-                continue;
-            };
-            out.push(val.to_string().clone());
+            out.push(
+                fields
+                    .iter()
+                    .find_map(|(k, v)| {
+                        if col == k.as_ref() {
+                            return Some(String::from(v.as_ref()));
+                        }
+                        None
+                    })
+                    .unwrap_or_default(),
+            );
         }
         let line = self.make_line(&out);
         self.output.write_all(line.as_bytes())?;
