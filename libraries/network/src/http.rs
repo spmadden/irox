@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use serde::{Deserialize, Serialize};
-
 ///
 /// Basic enumerated type to pick the HTTP protocol & port
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum HttpProtocol {
     HTTP,
 
