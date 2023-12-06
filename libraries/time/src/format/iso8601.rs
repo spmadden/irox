@@ -5,6 +5,7 @@
 //! Implementations of [`Format`] and [`FormatParser`] based on the ISO8601 specification
 //!
 
+use irox_tools::format::DecimalFormatF64;
 use std::str::FromStr;
 
 use irox_tools::iterators::Itertools;
@@ -170,7 +171,7 @@ impl Format<Time> for BasicTimeOfDay {
             format!("T{h:02}{m:02}{s:02}Z")
         } else {
             let s = s as f64 + date.get_secondsfrac();
-            format!("T{h:02}{m:02}{s:02.}")
+            format!("T{h:02}{m:02}{}", DecimalFormatF64(2, 9, s))
         }
     }
 }
@@ -311,7 +312,7 @@ impl Format<Time> for ExtendedTimeFormat {
             format!("T{h:02}:{m:02}:{s:02}Z")
         } else {
             let s = s as f64 + date.get_secondsfrac();
-            format!("T{h:02}:{m:02}:{s:02.}Z")
+            format!("T{h:02}:{m:02}:{}Z", DecimalFormatF64(2, 9, s))
         }
     }
 }
@@ -356,6 +357,7 @@ impl FormatParser<Time> for ExtendedTimeFormat {
 }
 
 pub struct ExtendedDateTimeFormat;
+pub const EXTENDED_DATE_TIME_FORMAT: ExtendedDateTimeFormat = ExtendedDateTimeFormat;
 
 impl Format<UTCDateTime> for ExtendedDateTimeFormat {
     fn format(&self, date: &UTCDateTime) -> String {
@@ -432,6 +434,7 @@ mod tests {
     use crate::format::iso8601::{
         ExtendedDateFormat, ExtendedDateTimeFormat, ExtendedTimeFormat, ISO8601Date,
         ISO8601DateTime, ISO8601Time, BASIC_CALENDAR_DATE, BASIC_TIME_OF_DAY,
+        EXTENDED_DATE_TIME_FORMAT,
     };
     use crate::format::{Format, FormatError, FormatParser};
     use crate::gregorian::Date;
@@ -870,6 +873,23 @@ mod tests {
         ];
 
         run_cases!(test_cases, ISO8601DateTime);
+
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_leading_zeros() -> Result<(), FormatError> {
+        let time = UTCDateTime::try_from_values(2023, 01, 04, 01, 01, 01)?;
+        assert_eq!(
+            "2023-01-04T01:01:01Z",
+            format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
+        );
+
+        let time = UTCDateTime::try_from_values_f64(2023, 01, 04, 01, 01, 01.01)?;
+        assert_eq!(
+            "2023-01-04T01:01:01.010000000Z",
+            format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
+        );
 
         Ok(())
     }
