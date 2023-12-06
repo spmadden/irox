@@ -1,6 +1,38 @@
 
 
+## v0.2.1 (2023-12-06)
+
+### New Features
+
+ - <csr-id-683cb6cd49b70669908f665458c4e5cd31007824/> egui bar shows new status, with better stretchy rendering
+ - <csr-id-a5e0e1afc03a54a74fa0fdcfd21a07c97c886188/> console bar shows new status
+ - <csr-id-9c02073388c41e3f05251ff1edee98acc89c5e00/> provide ability to add a textual status to Tasks
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 6 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Egui bar shows new status, with better stretchy rendering ([`683cb6c`](https://github.com/spmadden/irox/commit/683cb6cd49b70669908f665458c4e5cd31007824))
+    - Console bar shows new status ([`a5e0e1a`](https://github.com/spmadden/irox/commit/a5e0e1afc03a54a74fa0fdcfd21a07c97c886188))
+    - Provide ability to add a textual status to Tasks ([`9c02073`](https://github.com/spmadden/irox/commit/9c02073388c41e3f05251ff1edee98acc89c5e00))
+</details>
+
 ## v0.2.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
+<csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
 ### Chore
 
@@ -19,7 +51,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 23 calendar days.
+ - 6 commits contributed to the release over the course of 23 calendar days.
  - 27 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +63,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.2.0 ([`c378857`](https://github.com/spmadden/irox/commit/c37885767f976cf8c71d6905cf6201e651aba724))
     - Pivot back to using glow until I can fix wgpu support ([`f750866`](https://github.com/spmadden/irox/commit/f75086677bad001344a3618128473b748a27f05a))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Update egui to 0.24 ([`d089390`](https://github.com/spmadden/irox/commit/d08939007d939152e532b84654208b0156b3a8d6))
