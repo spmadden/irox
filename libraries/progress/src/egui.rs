@@ -8,7 +8,7 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 
 use egui::collapsing_header::CollapsingState;
-use egui::{Align, Context, CursorIcon, Layout, ProgressBar, Ui, Widget};
+use egui::{Align, Context, CursorIcon, Layout, Ui, Widget};
 
 use irox_time::format::iso8601::ISO8601Duration;
 use irox_time::format::Format;
@@ -64,34 +64,41 @@ impl EguiProgressWindow {
         let Ok(mut tasks) = tasks.write() else {
             return;
         };
-        ui.vertical(|ui| {
-            ui.horizontal(|ui| {
-                ui.allocate_ui_with_layout(
-                    egui::vec2(500., 20.),
-                    Layout::left_to_right(Align::Min)
-                        .with_main_align(Align::Min)
-                        .with_main_justify(true),
-                    |ui| {
-                        ui.label(format!(
-                            "{} tasks completed, {} tasks pending",
-                            self.completed.load(Ordering::Relaxed),
-                            tasks.len()
-                        ));
-                        if ui.button("XX").on_hover_text("Cancel all tasks").clicked() {
-                            tasks.iter().for_each(Task::cancel);
-                        }
-                    },
-                );
-            });
-            let mut any_tasks_active = false;
-            tasks.retain(|task| {
-                let active = self.paint_task(ui, task);
-                any_tasks_active |= active;
-                active
-            });
-            self.any_tasks_active
-                .store(any_tasks_active, Ordering::Relaxed);
-        });
+        ui.allocate_ui_with_layout(
+            ui.available_size(),
+            Layout::top_down_justified(Align::Min),
+            |ui| {
+                ui.horizontal(|ui| {
+                    ui.label(format!(
+                        "{} tasks completed, {} tasks pending",
+                        self.completed.load(Ordering::Relaxed),
+                        tasks.len()
+                    ));
+                    ui.allocate_ui_with_layout(
+                        ui.available_size_before_wrap(),
+                        Layout::right_to_left(Align::Center),
+                        |ui| {
+                            if ui
+                                .button("\u{1F5D9}*")
+                                .on_hover_text("Cancel all tasks")
+                                .clicked()
+                            {
+                                tasks.iter().for_each(Task::cancel);
+                            }
+                        },
+                    );
+                });
+
+                let mut any_tasks_active = false;
+                tasks.retain(|task| {
+                    let active = self.paint_task(ui, task);
+                    any_tasks_active |= active;
+                    active
+                });
+                self.any_tasks_active
+                    .store(any_tasks_active, Ordering::Relaxed);
+            },
+        );
     }
 
     fn get_speed_text(task: &Task) -> String {
@@ -104,18 +111,7 @@ impl EguiProgressWindow {
         String::new()
     }
 
-    fn get_infinite_text(task: &Task) -> String {
-        let current = task.current_progress_count();
-        let name = task.get_name();
-
-        let current = current as f64;
-        let (current, unit) = get_human!(current);
-        let speed = Self::get_speed_text(task);
-
-        format!("{name}  {current:.02}{unit} {speed}")
-    }
-
-    fn get_task_text(task: &Task) -> String {
+    fn paint_finite_header(ui: &mut Ui, task: &Task) {
         let frac = task.current_progress_frac() as f32;
         let current = task.current_progress_count();
         let max = task.max_elements();
@@ -127,52 +123,69 @@ impl EguiProgressWindow {
 
         let max = max as f64;
         let (max, maxunit) = get_human!(max);
+        let status = task
+            .current_status()
+            .map(|v| format!(" {v}"))
+            .unwrap_or_default();
 
         let rem_str = ISO8601Duration.format(&task.get_remaining_time());
-        format!(
-            "{:<3.0}% {name} ({current:.02}{unit}/{max:.02}{maxunit}) {rem_str} {speed}",
-            frac * 100.
-        )
+        let left_text = format!("{:<3.0}% {name}{status}", frac * 100.);
+        let right_text = format!("({current:.02}{unit}/{max:.02}{maxunit}) {rem_str} {speed} ");
+        irox_egui_extras::progressbar::ProgressBar::new(frac)
+            .text_left(left_text)
+            .text_right(right_text)
+            .ui(ui);
     }
 
     fn paint_infinite_header(ui: &mut Ui, task: &Task) {
-        let text = Self::get_infinite_text(task);
-        // ui.monospace(text);
-        irox_egui_extras::progressbar::ProgressBar::indeterminate()
-            .desired_width(350.)
-            .text(text)
-            .ui(ui);
+        let current = task.current_progress_count();
+        let name = task.get_name();
 
-        if task.is_cancelled() {
-            ui.label("\u{1F6AB}")
-                .on_hover_cursor(CursorIcon::Wait)
-                .on_hover_text("Task cancelled");
-        } else if ui
-            .button("\u{1F5D9}")
-            .on_hover_text("Request Task Cancel")
-            .clicked()
-        {
-            task.cancel();
-        };
+        let current = current as f64;
+        let (current, unit) = get_human!(current);
+        let speed = Self::get_speed_text(task);
+        let status = task
+            .current_status()
+            .map(|v| format!(": {v}"))
+            .unwrap_or_default();
+        let left_text = format!("{name}{status}");
+        let right_text = format!("{current:.02}{unit} {speed}");
+
+        irox_egui_extras::progressbar::ProgressBar::indeterminate()
+            // .desired_width(desired_width)
+            .text_left(left_text)
+            .text_right(right_text)
+            .ui(ui);
     }
 
     fn paint_task(&self, ui: &mut Ui, task: &Task) -> bool {
-        let frac = task.current_progress_frac() as f32;
-        let max = task.max_elements();
-
-        let is_infinite = max == u64::MAX;
+        let is_infinite = task.max_elements() == u64::MAX;
 
         let id = ui.make_persistent_id(task.get_id());
         CollapsingState::load_with_default_open(ui.ctx(), id, true)
             .show_header(ui, |ui| {
-                if is_infinite {
-                    Self::paint_infinite_header(ui, task);
-                } else {
-                    ProgressBar::new(frac)
-                        .desired_width(350.)
-                        .text(Self::get_task_text(task))
-                        .ui(ui);
-                }
+                ui.allocate_ui_with_layout(
+                    ui.available_size_before_wrap(),
+                    Layout::right_to_left(Align::Center),
+                    |ui| {
+                        if task.is_cancelled() {
+                            ui.label("\u{1F6AB}")
+                                .on_hover_cursor(CursorIcon::Wait)
+                                .on_hover_text("Task cancelled");
+                        } else if ui
+                            .button("\u{1F5D9}")
+                            .on_hover_text("Request Task Cancel")
+                            .clicked()
+                        {
+                            task.cancel();
+                        };
+                        if is_infinite {
+                            Self::paint_infinite_header(ui, task);
+                        } else {
+                            Self::paint_finite_header(ui, task);
+                        }
+                    },
+                );
             })
             .body(|ui| {
                 task.each_child(|t| {

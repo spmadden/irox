@@ -69,6 +69,9 @@ impl ProgressApp {
             for _i in 0..62500000 {
                 // 500MB
                 out.write_be_u64(rand.next_u64())?;
+                if task.is_cancelled() {
+                    break;
+                }
             }
             task.mark_all_completed();
             Ok(())
@@ -78,11 +81,14 @@ impl ProgressApp {
     pub fn start_task_thread(task: Task, elements: u64) {
         std::thread::spawn(move || {
             task.mark_started();
-            for _i in 0..elements {
-                if task.is_cancelled() {
-                    break;
-                }
+            for i in 0..elements {
+                // if task.is_cancelled() {
+                //     break;
+                // }
                 task.mark_one_completed();
+                if i % 10 == 0 {
+                    task.set_current_status(Some(format!("Phase {i}")));
+                }
 
                 std::thread::sleep(std::time::Duration::from_millis(10));
             }

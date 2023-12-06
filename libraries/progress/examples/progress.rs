@@ -12,8 +12,11 @@ pub fn main() -> Result<(), std::io::Error> {
     let task = Task::new(0, "Test Task".to_string(), u64::MAX);
     prog.track_task_progress(&task);
     task.mark_started();
-    for _i in 0..elements {
+    for i in 0..elements {
         task.mark_one_completed();
+
+        let status = format!("Phase {}", i / 100);
+        task.set_current_status(Some(status));
 
         std::thread::sleep(std::time::Duration::from_millis(5));
     }
