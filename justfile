@@ -55,3 +55,7 @@ new DEST:
    just check_install cargo-generate
    mkdir -p {{DEST}}
    cargo generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
+
+release +FLAGS='':
+   just check_install cargo-smart-release
+   cargo smart-release -u {{FLAGS}}
