@@ -1,7 +1,36 @@
 
 
 
+## v0.4.1 (2023-12-06)
+
+### New Features
+
+ - <csr-id-59c9d9821ced4b102b3f6a63fbb647d201ee82b1/> new synchronization primitive 'SynchronizedOptional' like 'OnceLock', but different.
+ - <csr-id-4e6c8961dc8820c39ccabc0e8283f5d50aefed2f/> new hexdump module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 4 calendar days.
+ - 6 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New synchronization primitive 'SynchronizedOptional' like 'OnceLock', but different. ([`59c9d98`](https://github.com/spmadden/irox/commit/59c9d9821ced4b102b3f6a63fbb647d201ee82b1))
+    - New hexdump module ([`4e6c896`](https://github.com/spmadden/irox/commit/4e6c8961dc8820c39ccabc0e8283f5d50aefed2f))
+</details>
+
 ## v0.4.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -25,7 +54,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 14 calendar days.
+ - 7 commits contributed to the release over the course of 14 calendar days.
  - 23 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -37,6 +66,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.4.0 ([`6abaf62`](https://github.com/spmadden/irox/commit/6abaf62cde62c90b2d68c14dbf6a4f86b599768c))
     - Bits now has Optional 'next' methods ([`9e13976`](https://github.com/spmadden/irox/commit/9e13976bb33d1cb990a9841184637a28a038f66e))
     - Scanner now scans across block boundaries correctly ([`08e634e`](https://github.com/spmadden/irox/commit/08e634e08675453d3cd9960635476dc05f53bef6))
     - New buffer extending BufReader to span multiple blocks ([`0320a56`](https://github.com/spmadden/irox/commit/0320a56d87ea14313690eed22f07af2faf754db5))
