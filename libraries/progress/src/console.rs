@@ -53,7 +53,8 @@ impl ConsoleProgressBar {
             let out = format!("| ({current:.02}{unit})  {avg_per_sec:.02}{avg_unit}/s\r");
             let spaces =
                 " ".repeat(((self.width as i32 - out.len() as i32 - 9).max(1) / 4) as usize);
-            let out = format!("| ({current:.02}{unit}) {spaces}{state2}{spaces} {state} {spaces}{state2}{spaces}{avg_per_sec:.02}{avg_unit}/s\r");
+            let status = task.current_status().unwrap_or_default();
+            let out = format!("| ({current:.02}{unit}) {spaces}{state2}{spaces} {state} {spaces}{state2}{spaces}{avg_per_sec:.02}{avg_unit}/s {status}\r");
 
             let mut stdio = stdout();
             stdio.write_all(out.as_bytes())?;
@@ -98,8 +99,9 @@ impl ConsoleProgressBar {
         }
         let whole = "\u{2588}".repeat(whole);
         let rem = " ".repeat(rem);
+        let status = task.current_status().unwrap_or_default();
         let out = format!(
-            "{:>3.0}%|{whole}{char}{rem}| ({current}/{max}) {rem_str}\r",
+            "{:>3.0}%|{whole}{char}{rem}| ({current}/{max}) {rem_str} {status}\r",
             pct * 100.
         );
         let mut stdio = stdout();
