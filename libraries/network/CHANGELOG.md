@@ -1,7 +1,34 @@
 
 
 
+## v0.3.2 (2023-12-06)
+
+### New Features
+
+ - <csr-id-4e408cab037480839fb013f3692e753dc824ecb5/> put serde behind a feature gate
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 5 calendar days.
+ - 6 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Put serde behind a feature gate ([`4e408ca`](https://github.com/spmadden/irox/commit/4e408cab037480839fb013f3692e753dc824ecb5))
+</details>
+
 ## v0.3.1 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 3 calendar days.
+ - 2 commits contributed to the release over the course of 3 calendar days.
  - 30 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.3.1 ([`6a1d3d2`](https://github.com/spmadden/irox/commit/6a1d3d227697ea28db8086b7c246d45714d3267a))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
 </details>
 
