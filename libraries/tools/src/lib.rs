@@ -20,6 +20,7 @@ pub mod packetio;
 pub mod random;
 pub mod read;
 pub mod scanner;
+pub mod sync;
 pub mod u16;
 pub mod u64;
 pub mod u8;
