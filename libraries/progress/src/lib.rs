@@ -11,9 +11,11 @@
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
+pub use irox_time;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::Duration;
 use irox_tools::random::Random;
+use irox_tools::sync::SynchronizedOptional;
 use irox_tools::vec::RetainTake;
 
 pub mod console;
@@ -52,6 +54,7 @@ struct TaskInner {
     name: String,
     counter: AtomicU64,
     max_elements: AtomicU64,
+    current_status: SynchronizedOptional<String>,
     _element_units: TaskElementUnits,
     created: UnixTimestamp,
     started: OnceLock<UnixTimestamp>,
@@ -87,6 +90,7 @@ impl Task {
             max_elements: AtomicU64::new(max_elements),
             _element_units: TaskElementUnits::None,
             counter: AtomicU64::new(0),
+            current_status: SynchronizedOptional::empty(),
             children: RwLock::new(Vec::new()),
             created: UnixTimestamp::now(),
             started: OnceLock::new(),
@@ -122,13 +126,24 @@ impl Task {
     /// Returns the number of elements completed in the range `0..=max_elements`
     #[must_use]
     pub fn current_progress_count(&self) -> u64 {
-        self.inner.counter.load(Ordering::Relaxed)
+        self.inner.counter.load(Ordering::SeqCst)
+    }
+
+    /// Updates the current progress counter to be the specified value
+    pub fn set_current_progress_count(&self, current_progress: u64) {
+        self.inner.counter.store(current_progress, Ordering::SeqCst);
     }
 
     /// Returns the maximum number of elements of this task
     #[must_use]
     pub fn max_elements(&self) -> u64 {
-        self.inner.max_elements.load(Ordering::Relaxed)
+        self.inner.max_elements.load(Ordering::SeqCst)
+    }
+
+    pub fn set_max_elements(&self, max_elements: u64) {
+        self.inner
+            .max_elements
+            .store(max_elements, Ordering::SeqCst)
     }
 
     /// Returns the current progress as a fraction in the range `0..=1`
@@ -142,7 +157,7 @@ impl Task {
     /// Returns the ID of this task.
     #[must_use]
     pub fn get_id(&self) -> u64 {
-        self.inner.id.load(Ordering::Relaxed)
+        self.inner.id.load(Ordering::SeqCst)
     }
 
     /// Returns the name of this task
@@ -165,7 +180,7 @@ impl Task {
 
     /// Increments the 'completed' counter.
     pub fn mark_one_completed(&self) {
-        let completed = self.inner.counter.fetch_add(1, Ordering::Relaxed);
+        let completed = self.inner.counter.fetch_add(1, Ordering::SeqCst);
         self.update_remaining();
         if completed == self.max_elements() {
             self.mark_ended();
@@ -173,7 +188,7 @@ impl Task {
     }
 
     fn update_remaining(&self) {
-        let completed = self.inner.counter.load(Ordering::Relaxed);
+        let completed = self.inner.counter.load(Ordering::SeqCst);
         if completed > 0 {
             if let Some(started) = self.get_started() {
                 let mult = 1. / self.current_progress_frac();
@@ -190,7 +205,7 @@ impl Task {
     pub fn mark_all_completed(&self) {
         self.inner
             .counter
-            .store(self.max_elements(), Ordering::Relaxed);
+            .store(self.max_elements(), Ordering::SeqCst);
         if let Ok(mut remaining) = self.inner.remaining.write() {
             *remaining = Duration::default();
         }
@@ -199,7 +214,7 @@ impl Task {
 
     /// Mark some some portion of this task as completed.
     pub fn mark_some_completed(&self, completed: u64) {
-        self.inner.counter.fetch_add(completed, Ordering::Relaxed);
+        self.inner.counter.fetch_add(completed, Ordering::SeqCst);
         self.update_remaining()
     }
 
@@ -293,6 +308,20 @@ impl Task {
     #[must_use]
     pub fn is_cancelled(&self) -> bool {
         self.cancelled.load(Ordering::Relaxed)
+    }
+
+    /// Gets a copy of the current status
+    #[must_use]
+    pub fn current_status(&self) -> Option<Arc<String>> {
+        self.inner.current_status.get()
+    }
+
+    /// Sets the optional current status of this task
+    pub fn set_current_status<T: AsRef<str>>(&self, status: Option<T>) {
+        let _res = self
+            .inner
+            .current_status
+            .set(status.map(|v| v.as_ref().to_string()));
     }
 }
 
