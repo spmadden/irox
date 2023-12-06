@@ -1,7 +1,34 @@
 
 
 
+## v0.3.4 (2023-12-06)
+
+### New Features
+
+ - <csr-id-92294eb04dda490695d7ab4fde72de759be4045e/> progress bar now can draw text left, center, and right aligned
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 6 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Progress bar now can draw text left, center, and right aligned ([`92294eb`](https://github.com/spmadden/irox/commit/92294eb04dda490695d7ab4fde72de759be4045e))
+</details>
+
 ## v0.3.3 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -21,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 14 calendar days.
+ - 6 commits contributed to the release over the course of 14 calendar days.
  - 27 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -33,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.3 ([`bd453bc`](https://github.com/spmadden/irox/commit/bd453bc79951479f48db0be8f12dc035fab95ed0))
     - Put serde behind a feature gate to fix standalone checks ([`33a3e98`](https://github.com/spmadden/irox/commit/33a3e98e1d2493e7703cf519d9a4514e0f7587a9))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Update egui to 0.24 ([`d089390`](https://github.com/spmadden/irox/commit/d08939007d939152e532b84654208b0156b3a8d6))
