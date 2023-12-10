@@ -6,12 +6,12 @@
 use std::io::{BufRead, BufReader, Lines, Read};
 use std::path::Path;
 
+use log::{error, info};
 use rusqlite::Connection;
 
 pub use error::*;
-use irox_enums::EnumName;
+use irox_enums::{EnumIterItem, EnumName};
 use irox_time::format::iso8601::BASIC_CALENDAR_DATE;
-use log::{error, info};
 pub use registry::*;
 pub use types::*;
 
@@ -57,8 +57,14 @@ impl<T: Read> Iterator for RIRParser<T> {
 pub struct RIRExchangeDatabase {
     connection: Connection,
 }
+const PRAGMAS: &str = "
+PRAGMA locking_mode = EXCLUSIVE;
+PRAGMA journal_mode = OFF;
+PRAGMA synchronous = OFF;
+PRAGMA page_size = 4096;
+PRAGMA cache_size = 1048576;
+";
 const CREATE: &str = "
-PRAGMA cache_size = -1048576;
 CREATE TABLE IF NOT EXISTS records (registry text, country_code text, entry_type text, start_value text, value int, date text, opaque_id text);
 CREATE INDEX IF NOT EXISTS idx_country ON records (country_code);
 CREATE INDEX IF NOT EXISTS idx_org ON records (opaque_id);
@@ -68,6 +74,7 @@ impl RIRExchangeDatabase {
     pub fn open<T: AsRef<Path>>(path: T) -> Result<RIRExchangeDatabase, Error> {
         let connection = Connection::open(path)?;
 
+        connection.execute_batch(PRAGMAS)?;
         connection.execute_batch(CREATE)?;
 
         Ok(RIRExchangeDatabase { connection })
@@ -133,11 +140,21 @@ impl RIRExchangeDatabase {
 
     #[cfg(feature = "download")]
     pub fn download_from(&self, rir: RegionalRegistry) -> Result<(), Error> {
+        info!("Starting download from: {rir}");
         let req = ureq::get(rir.url());
         let Ok(resp) = req.call() else {
             return Ok(());
         };
         self.import_from(resp.into_reader())?;
+        Ok(())
+    }
+
+    #[cfg(feature = "download")]
+    pub fn download_from_all_registries(&self) -> Result<(), Error> {
+        for rir in RegionalRegistry::iter_items() {
+            self.download_from(rir)?;
+        }
+        info!("Download complete.");
         Ok(())
     }
 }
@@ -165,7 +182,7 @@ fn split(value: &str) -> Vec<String> {
 
 #[cfg(test)]
 mod test {
-    use crate::{RIRExchangeDatabase, RegionalRegistry};
+    use crate::RIRExchangeDatabase;
 
     #[test]
     #[ignore]
@@ -174,8 +191,8 @@ mod test {
         let output = "test.db";
 
         let db = RIRExchangeDatabase::open(output)?;
-        // db.import_from(file)?;
-        db.download_from(RegionalRegistry::apnic)?;
+        // db.import_from(std::io::BufReader::new(std::fs::File::open("tests/assets/delegated-apnic-extended-latest")?))?;
+        // db.download_from(crate::RegionalRegistry::apnic)?;
         let orgs = db.get_unique_organizations()?;
         println!("{}", orgs.len());
 
