@@ -2,6 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
+use std::fmt::{Display, Formatter};
 
 use crate::Error;
 
@@ -49,5 +50,11 @@ impl TryFrom<&String> for RegionalRegistry {
             "ripencc" => RegionalRegistry::ripencc,
             e => return Error::invalid(format!("Invalid value for RegionalRegistry: {e}")),
         })
+    }
+}
+
+impl Display for RegionalRegistry {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name().to_ascii_uppercase())
     }
 }
