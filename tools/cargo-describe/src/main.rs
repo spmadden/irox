@@ -109,6 +109,7 @@ pub fn main() {
             let _ = print_csv(&fields, &context);
         }
         OutputFormat::MDTable => print_md(&fields, &context),
+        OutputFormat::Plain => print_plain(&context),
     }
 
     return;
@@ -189,5 +190,13 @@ pub fn print_md(fields: &Vec<Fields>, context: &Context) {
             values.push(format!(" {value:<width$} "));
         }
         println!("|{}|", values.join("|"));
+    }
+}
+
+pub fn print_plain(context: &Context) {
+    for krate in &context.crates {
+        for field in &krate.fields {
+            println!("{}", field.value.clone().unwrap_or_default())
+        }
     }
 }

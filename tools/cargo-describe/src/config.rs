@@ -23,6 +23,9 @@ pub enum OutputFormat {
 
     /// Markdown Table
     MDTable,
+
+    /// No formatting, one value per line
+    Plain,
 }
 
 #[derive(Debug, Clone, Parser)]
