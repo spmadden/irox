@@ -108,7 +108,7 @@ pub fn main() {
         OutputFormat::CSV => {
             let _ = print_csv(&fields, &context);
         }
-        OutputFormat::MDTable => {}
+        OutputFormat::MDTable => print_md(&fields, &context),
     }
 
     return;
@@ -149,4 +149,45 @@ pub fn print_csv(fields: &Vec<Fields>, context: &Context) -> Result<(), CSVError
     }
 
     Ok(())
+}
+
+pub fn print_md(fields: &Vec<Fields>, context: &Context) {
+    let mut max_field_lens: BTreeMap<Fields, usize> = BTreeMap::new();
+    for krate in &context.crates {
+        for field in &krate.fields {
+            let flen = field.value.as_ref().map(|v| v.len()).unwrap_or(0);
+            let len = field.field.name().len().max(flen);
+            let val = max_field_lens.entry(field.field).or_default();
+            *val = len.max(*val);
+        }
+    }
+    let mut values = Vec::new();
+    let mut widths = Vec::new();
+    for field in fields {
+        let name = field.name();
+        let width = max_field_lens.get(&field).copied().unwrap_or(name.len());
+        widths.push(width);
+        // let width = width - name.len();
+        values.push(format!(" {name:<width$} "));
+    }
+    println!("|{}|", values.join("|"));
+    println!(
+        "|{}|",
+        widths
+            .iter()
+            .map(|w| format!("{:-<1$}", "", *w + 2))
+            .collect::<Vec<String>>()
+            .join("|")
+    );
+    for krate in &context.crates {
+        values.clear();
+        for val in &krate.fields {
+            let field = val.field;
+            let value = val.value.clone().unwrap_or_default();
+            let width = max_field_lens.get(&field).copied().unwrap_or(value.len());
+            // let width = width - value.len();
+            values.push(format!(" {value:<width$} "));
+        }
+        println!("|{}|", values.join("|"));
+    }
 }

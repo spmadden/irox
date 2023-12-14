@@ -6,7 +6,7 @@ use clap::ValueEnum;
 use irox_enums::{EnumIterItem, EnumName};
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, ValueEnum, EnumName, EnumIterItem)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, ValueEnum, EnumName, EnumIterItem)]
 pub enum Fields {
     /// Name of the package
     Name,
