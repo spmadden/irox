@@ -46,6 +46,9 @@ pub struct Config {
     /// An optional list of crate packages members to display in this workspace
     #[arg(short, long, required = false)]
     pub package: Vec<String>,
+
+    #[arg(hide = true)]
+    pub describe: Option<String>,
 }
 
 impl Config {
