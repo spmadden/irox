@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 pub use log::Level;
+use std::str::FromStr;
 
 pub mod console;
 
@@ -45,5 +46,19 @@ pub fn init_console_level(max_level: Level) {
         Level::Trace => {
             set_con_logger!(TRACE_LOGGER);
         }
+    }
+}
+
+///
+/// Initializes the console logger from the configuration in the specified
+/// environment variable.
+pub fn init_console_from_env(varbl: &str) {
+    if let Ok(level) = std::env::var(varbl) {
+        let Ok(level) = Level::from_str(&level) else {
+            return;
+        };
+        init_console_level(level);
+    } else {
+        init_console_level(Level::Warn);
     }
 }
