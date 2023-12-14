@@ -42,7 +42,7 @@ pub struct Config {
 
     /// An optional list of crate packages members to display in this workspace
     #[arg(short, long, required = false)]
-    pub crates: Vec<String>,
+    pub package: Vec<String>,
 }
 
 impl Config {
@@ -81,7 +81,7 @@ impl Config {
     }
 
     pub fn get_context(&self, workspace: &Workspace) -> Context {
-        if self.crates.is_empty() {
+        if self.package.is_empty() {
             let krates = workspace
                 .members()
                 .map(|p| Krate {
@@ -92,7 +92,7 @@ impl Config {
             Context { crates: krates }
         } else {
             let krates = self
-                .crates
+                .package
                 .iter()
                 .map(|s| Krate {
                     crate_name: s.clone(),
