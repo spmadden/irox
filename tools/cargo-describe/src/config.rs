@@ -10,6 +10,7 @@ use std::path::PathBuf;
 
 use crate::fields::{FieldInfo, Fields};
 use clap::{Parser, ValueEnum};
+use irox_enums::EnumIterItem;
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, ValueEnum)]
 pub enum OutputFormat {
@@ -61,8 +62,16 @@ impl Config {
         }
     }
 
+    pub fn get_fields(&self) -> Vec<Fields> {
+        if self.fields.contains(&Fields::All) {
+            Fields::iter_items().filter(|v| *v != Fields::All).collect()
+        } else {
+            self.fields.clone()
+        }
+    }
+
     pub fn get_field_info(&self) -> Vec<FieldInfo> {
-        self.fields
+        self.get_fields()
             .iter()
             .map(|f| FieldInfo {
                 field: *f,
@@ -94,10 +103,12 @@ impl Config {
         }
     }
 }
+
 pub struct Krate {
     pub crate_name: String,
     pub fields: Vec<FieldInfo>,
 }
+
 pub struct Context {
     pub crates: Vec<Krate>,
 }

@@ -51,9 +51,10 @@ pub fn main() {
     };
 
     let mut context = config.get_context(&wksp);
+    let fields = config.get_fields();
 
     let mut gitctx = Vec::new();
-    if config.fields.contains(&Fields::GitVersion) {
+    if fields.contains(&Fields::GitVersion) {
         gitctx = do_git_log(&wksp);
     }
 
@@ -96,6 +97,7 @@ pub fn main() {
                     Fields::ModuleAbsolutePath => modpath.clone(),
                     Fields::ModuleRelativeManifestPath => relmanifest.clone(),
                     Fields::ModuleAbsoluteManifestPath => manifestpath.clone(),
+                    Fields::All => String::new(),
                 });
             }
         }
@@ -104,7 +106,7 @@ pub fn main() {
     match &config.output_format {
         OutputFormat::HumanText => print_human_text(&context),
         OutputFormat::CSV => {
-            let _ = print_csv(&config.fields, &context);
+            let _ = print_csv(&fields, &context);
         }
         OutputFormat::MDTable => {}
     }

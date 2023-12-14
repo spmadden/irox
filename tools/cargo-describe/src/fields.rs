@@ -3,10 +3,10 @@
 //
 
 use clap::ValueEnum;
-use irox_enums::EnumName;
+use irox_enums::{EnumIterItem, EnumName};
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, ValueEnum, EnumName)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, ValueEnum, EnumName, EnumIterItem)]
 pub enum Fields {
     /// Name of the package
     Name,
@@ -28,6 +28,9 @@ pub enum Fields {
 
     /// Absolute path on disk to the module's Cargo.toml
     ModuleAbsoluteManifestPath,
+
+    /// Prints everything
+    All,
 }
 
 impl Display for Fields {
@@ -43,6 +46,7 @@ impl Display for Fields {
                 Fields::ModuleAbsolutePath => "Module Absolute Path",
                 Fields::ModuleRelativeManifestPath => "Manifest Relative Path",
                 Fields::ModuleAbsoluteManifestPath => "Manifest Absolute Path",
+                Fields::All => "All", // but it's not likely to be used!
             }
         )
     }
