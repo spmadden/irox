@@ -1,5 +1,5 @@
 [package]
-name = "irox-"
+name = "{{project-name}}"
 description = ""
 keywords = ["irox"]
 categories = []
