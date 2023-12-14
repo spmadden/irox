@@ -36,6 +36,7 @@ members = [
     "libraries/threading",
     "libraries/tools",
     "libraries/types",
+    "tools/cargo-describe",
     "tools/gpsd",
     "tools/halflifes",
     "tools/influx-cli",
@@ -66,6 +67,8 @@ serial = {version = "^0.4", features = []}
 human-panic = {version = "^1.2", features = []}
 proc-macro2 = {version = "^1.0", features = []}
 num_cpus = {version = "1.16.0", features = []}
+git2 = {version = "0.18.1", features = ["vendored-openssl", "vendored-libgit2"]}
+cargo = {version = "0.75.1", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}
