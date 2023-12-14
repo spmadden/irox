@@ -61,6 +61,8 @@ Current Modules & Organization:
       Frames
 * [`tools`](https://github.com/spmadden/irox/blob/master/tools) - Rust 'binary' crates, mostly just binaries that depend
   on crates in `libraries`
+    * [`cargo-describe`](https://github.com/spmadden/irox/blob/master/tools/cargo-describe) - CLI tool to produce
+      human-friendly information from cargo-metadata
     * [`gpsd`](https://github.com/spmadden/irox/blob/master/tools/gpsd) - Implementation of GPSd in Rust, with support
       for windows targets!
 
@@ -89,4 +91,5 @@ Version Status
 | `irox-tools`           | [![Crates.io](https://img.shields.io/crates/v/irox-tools.svg)](https://crates.io/crates/irox-tools) [![Documentation](https://docs.rs/irox-tools/badge.svg)](https://docs.rs/irox-tools)                                         |
 | `irox-units`           | [![Crates.io](https://img.shields.io/crates/v/irox-units.svg)](https://crates.io/crates/irox-units) [![Documentation](https://docs.rs/irox-units/badge.svg)](https://docs.rs/irox-units)                                         |
 | `irox-winlocation-api` | [![Crates.io](https://img.shields.io/crates/v/irox-winlocation-api.svg)](https://crates.io/crates/irox-winlocation-api) [![Documentation](https://docs.rs/irox-winlocation-api/badge.svg)](https://docs.rs/irox-winlocation-api) |
+| `cargo-describe`       | [![Crates.io](https://img.shields.io/crates/v/cargo-describe.svg)](https://crates.io/crates/cargo-describe) [![Documentation](https://docs.rs/cargo-describe/badge.svg)](https://docs.rs/cargo-describe)                         |
 
