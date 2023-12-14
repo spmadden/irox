@@ -57,12 +57,34 @@ pub fn main() {
         gitctx = do_git_log(&wksp);
     }
 
+    let wksp_root = format!(
+        "{}{}",
+        wksp.root().display().to_string(),
+        std::path::MAIN_SEPARATOR_STR
+    );
     for krate in &mut context.crates {
         for mem in wksp.members() {
             if mem.name() != krate.crate_name.as_str() {
                 continue;
             }
             let gitmeminfo = gitctx.iter().find(|v| mem.name() == v.krate.as_str());
+            let root = mem
+                .root()
+                .display()
+                .to_string()
+                .strip_prefix(&wksp_root)
+                .map(String::from)
+                .unwrap_or_default();
+            let manifestpath = mem.manifest_path().display().to_string();
+            let modpath = manifestpath
+                .strip_suffix("Cargo.toml")
+                .map(String::from)
+                .unwrap_or_default();
+            let relmanifest = manifestpath
+                .strip_prefix(&wksp_root)
+                .map(String::from)
+                .unwrap_or_default();
+            // let relmod = relmanifest.strip_suffix("Cargo.toml").map(String::from).unwrap_or_default();
             for field in &mut krate.fields {
                 field.value = Some(match field.field {
                     Fields::Name => mem.name().to_string(),
@@ -70,10 +92,10 @@ pub fn main() {
                     Fields::GitVersion => gitmeminfo
                         .map(|v| v.result.clone().unwrap_or_default())
                         .unwrap_or_default(),
-                    Fields::ModuleRelativePath => mem.manifest_path().display().to_string(),
-                    Fields::ModuleAbsolutePath => mem.manifest_path().display().to_string(),
-                    Fields::ModuleRelativeManifestPath => mem.manifest_path().display().to_string(),
-                    Fields::ModuleAbsoluteManifestPath => mem.manifest_path().display().to_string(),
+                    Fields::ModuleRelativePath => root.clone(),
+                    Fields::ModuleAbsolutePath => modpath.clone(),
+                    Fields::ModuleRelativeManifestPath => relmanifest.clone(),
+                    Fields::ModuleAbsoluteManifestPath => manifestpath.clone(),
                 });
             }
         }
@@ -81,7 +103,9 @@ pub fn main() {
 
     match &config.output_format {
         OutputFormat::HumanText => print_human_text(&context),
-        OutputFormat::CSV => {}
+        OutputFormat::CSV => {
+            let _ = print_csv(&config.fields, &context);
+        }
         OutputFormat::MDTable => {}
     }
 

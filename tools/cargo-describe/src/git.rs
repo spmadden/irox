@@ -122,11 +122,5 @@ pub fn try_do_git_log_for_members(mut context: Context) -> Result<Vec<MemberInfo
         }
     }
 
-    for cur in &context.members {
-        if let Some(res) = &cur.result {
-            println!("{res}")
-        }
-    }
-
     Ok(context.members)
 }
