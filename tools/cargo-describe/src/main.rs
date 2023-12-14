@@ -6,6 +6,8 @@
 //!
 
 #![forbid(unsafe_code)]
+#![allow(clippy::print_stdout)]
+#![allow(clippy::upper_case_acronyms)]
 
 use cargo::core::{Package, Workspace};
 use clap::Parser;
@@ -58,11 +60,7 @@ pub fn main() {
         gitctx = do_git_log(&wksp);
     }
 
-    let wksp_root = format!(
-        "{}{}",
-        wksp.root().display().to_string(),
-        std::path::MAIN_SEPARATOR_STR
-    );
+    let wksp_root = format!("{}{}", wksp.root().display(), std::path::MAIN_SEPARATOR_STR);
     for krate in &mut context.crates {
         for mem in wksp.members() {
             if mem.name() != krate.crate_name.as_str() {
@@ -111,8 +109,6 @@ pub fn main() {
         OutputFormat::MDTable => print_md(&fields, &context),
         OutputFormat::Plain => print_plain(&context),
     }
-
-    return;
 }
 
 pub fn do_manifest_log_for_member(member: &Package) -> String {
@@ -137,8 +133,8 @@ pub fn print_human_text(context: &Context) {
     }
 }
 
-pub fn print_csv(fields: &Vec<Fields>, context: &Context) -> Result<(), CSVError> {
-    let headers: Vec<&str> = fields.iter().map(|v| v.name()).collect();
+pub fn print_csv(fields: &[Fields], context: &Context) -> Result<(), CSVError> {
+    let headers: Vec<&str> = fields.iter().map(EnumName::name).collect();
     let mut writer = irox_csv::CSVWriter::new(std::io::stdout()).with_column_names(&headers);
     writer.write_header()?;
     for krate in &context.crates {
@@ -152,11 +148,11 @@ pub fn print_csv(fields: &Vec<Fields>, context: &Context) -> Result<(), CSVError
     Ok(())
 }
 
-pub fn print_md(fields: &Vec<Fields>, context: &Context) {
+pub fn print_md(fields: &[Fields], context: &Context) {
     let mut max_field_lens: BTreeMap<Fields, usize> = BTreeMap::new();
     for krate in &context.crates {
         for field in &krate.fields {
-            let flen = field.value.as_ref().map(|v| v.len()).unwrap_or(0);
+            let flen = field.value.as_ref().map(String::len).unwrap_or(0);
             let len = field.field.name().len().max(flen);
             let val = max_field_lens.entry(field.field).or_default();
             *val = len.max(*val);
@@ -166,7 +162,7 @@ pub fn print_md(fields: &Vec<Fields>, context: &Context) {
     let mut widths = Vec::new();
     for field in fields {
         let name = field.name();
-        let width = max_field_lens.get(&field).copied().unwrap_or(name.len());
+        let width = max_field_lens.get(field).copied().unwrap_or(name.len());
         widths.push(width);
         // let width = width - name.len();
         values.push(format!(" {name:<width$} "));
