@@ -47,6 +47,10 @@ pub struct Config {
     #[arg(short, long, required = false)]
     pub package: Vec<String>,
 
+    /// Display a set of package versions, suitable for copying into an issue tracker's bug report
+    #[arg(short, long, required = false, exclusive = true)]
+    pub dbg_versions: bool,
+
     #[arg(hide = true)]
     pub describe: Option<String>,
 }
@@ -69,7 +73,9 @@ impl Config {
     }
 
     pub fn get_fields(&self) -> Vec<Fields> {
-        if self.fields.contains(&Fields::All) {
+        if self.dbg_versions {
+            vec![Fields::Name, Fields::GitVersion]
+        } else if self.fields.contains(&Fields::All) {
             Fields::iter_items().filter(|v| *v != Fields::All).collect()
         } else {
             self.fields.clone()

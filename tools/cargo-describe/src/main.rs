@@ -101,6 +101,11 @@ pub fn main() {
         }
     }
 
+    if config.dbg_versions {
+        print_dbg(&context);
+        return;
+    }
+
     match &config.output_format {
         OutputFormat::HumanText => print_human_text(&context),
         OutputFormat::CSV => {
@@ -115,6 +120,18 @@ pub fn do_manifest_log_for_member(member: &Package) -> String {
     let name = member.name();
     let version = member.version();
     format!("{name}-{version}")
+}
+
+pub fn print_dbg(context: &Context) {
+    for krate in &context.crates {
+        let val = krate
+            .fields
+            .iter()
+            .map(|v| v.value.clone().unwrap_or_default())
+            .collect::<Vec<String>>()
+            .join(":");
+        println!("{val}");
+    }
 }
 
 pub fn print_human_text(context: &Context) {
