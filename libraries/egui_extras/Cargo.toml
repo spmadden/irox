@@ -21,6 +21,6 @@ serde = ["dep:serde", "egui/serde"]
 
 [dependencies]
 egui.workspace = true
-eframe.workspace = true
+eframe = {workspace = true, features=["x11", "wayland"]}
 ron.workspace = true
 serde = {workspace = true, optional = true }
