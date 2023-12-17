@@ -1,4 +1,4 @@
-FROM rust:latest
+FROM docker.io/rust:latest
 LABEL description="Irox development image, preconfigured with all required deps"
 LABEL authors="spmadden"
 
