@@ -1,0 +1,52 @@
+name: Bug/Defect report
+description: Create a report to help us improve
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for filing a 🐛 bug report 😄!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: >
+        Please provide a clear and concise description of what the bug is,
+        including what currently happens and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: Please list the steps to reproduce the bug.
+      placeholder: |
+        Steps to reproduce the behavior:
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+  - type: textarea
+    id: possible-solutions
+    attributes:
+      label: Possible Solution(s)
+      description: >
+        Not obligatory, but suggest a fix/reason for the bug,
+        or ideas how to implement the addition or change.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes & Additional Context
+      description: |
+        Provide any additional notes that might be helpful.
+        Things to consider:
+         * OS/Smartphone device type & version
+         * How you're running & using this software
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: >
+        Please paste the output of running `cargo-describe -d` or which version
+        of the library you are using.
+      render: Text

@@ -1,0 +1,52 @@
+name: Enhancement/Feature Request
+description: Suggest an idea for this project
+labels:
+  - enhancement
+  - needs-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a 🙋 feature request 😄!
+  - type: checkboxes
+    id: ive-searched-issues
+    attributes:
+      label: Is there an existing request for this?
+      description: Please search to see if a request already exists.
+      options:
+        - label: I have searched existing issues
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Statement of Objective
+      description: Please describe your use case, problem, or gap the feature is trying to solve.
+      placeholder: |
+        A clear and concise description of what the request is. 
+        Ex. I'm always frustrated when [...]
+        Ex. It would be awesome if I could [...]
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like, or the altered/new behavior you'd like to see.
+      placeholder: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Describe alternatives you've considered
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    id: addtl-context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
+
+
