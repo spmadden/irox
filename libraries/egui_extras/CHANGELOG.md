@@ -1,6 +1,31 @@
 
 
 
+## v0.3.5 (2023-12-17)
+
+### Bug Fixes
+
+ - <csr-id-b4a61eaee2797b459366487c8b2c60dd19b46f99/> fix packaging on linux
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 11 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix packaging on linux ([`b4a61ea`](https://github.com/spmadden/irox/commit/b4a61eaee2797b459366487c8b2c60dd19b46f99))
+</details>
+
 ## v0.3.4 (2023-12-06)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 6 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.4 ([`2858b60`](https://github.com/spmadden/irox/commit/2858b6001041e20427f878cd13df280406dac271))
     - Progress bar now can draw text left, center, and right aligned ([`92294eb`](https://github.com/spmadden/irox/commit/92294eb04dda490695d7ab4fde72de759be4045e))
 </details>
 
