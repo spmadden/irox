@@ -35,7 +35,7 @@ lints +FLAGS='':
    cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
 
 package:
-    cargo package --allow-dirty
+    cargo package -p irox --all-features
 
 about:
     just check_install cargo-about
