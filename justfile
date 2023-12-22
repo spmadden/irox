@@ -2,7 +2,7 @@
 
 default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints FLAGS) about doc upgrade package
+ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade package
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
 
@@ -49,6 +49,10 @@ lints +FLAGS='':
     @just logstart lints
     cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
     @just logend
+
+lints_deny +FLAGS='':
+  cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
+
 
 package:
     @just logstart package
