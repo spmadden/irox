@@ -2753,6 +2753,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-imagery"
+version = "0.1.0"
+dependencies = [
+ "irox-carto",
+ "irox-units",
+]
+
+[[package]]
 name = "irox-influx-cli"
 version = "0.1.0"
 dependencies = [
