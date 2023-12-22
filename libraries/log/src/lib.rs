@@ -7,7 +7,8 @@
 
 #![forbid(unsafe_code)]
 
-pub use log::Level;
+pub use log;
+use log::Level;
 use std::str::FromStr;
 
 pub mod console;
