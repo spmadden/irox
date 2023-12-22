@@ -7,7 +7,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::rc::Rc;
 use std::sync::{Arc, Condvar, Mutex};
-use std::task::Poll;
+use std::task::{Context, Poll, Waker};
 
 pub type LocalFuture<'a, T> = Pin<Box<dyn Future<Output = T> + 'a>>;
 pub type LocalVoidFuture<'a> = LocalFuture<'a, ()>;
@@ -30,12 +30,14 @@ pub enum TaskError {
 struct CompletableTaskInner<T> {
     result: OnceCell<T>,
     is_complete: bool,
+    waker: Option<Waker>,
 }
 impl<T> CompletableTaskInner<T> {
     pub fn new() -> Self {
         CompletableTaskInner {
             result: OnceCell::new(),
             is_complete: false,
+            waker: None,
         }
     }
 
@@ -45,6 +47,9 @@ impl<T> CompletableTaskInner<T> {
         };
         let oldval = self.result.set(value);
         self.is_complete = true;
+        if let Some(waker) = self.waker.take() {
+            waker.wake();
+        }
         oldval?;
 
         Ok(())
@@ -148,11 +153,41 @@ impl<T> CompletableTask<T> {
         }
         Err(TaskError::NotCompletedError)
     }
+
+    /// If this is a future, sets the waker to be notified
+    pub(crate) fn set_waker(&self, waker: Waker) -> Result<(), TaskError> {
+        let arc = self.inner.clone();
+        let Ok(mut inner) = arc.0.lock() else {
+            return Err(TaskError::LockingError);
+        };
+        if let Some(waker) = inner.waker.replace(waker) {
+            // clean out the old waker, and wake it up.
+            waker.wake();
+        }
+
+        Ok(())
+    }
 }
 
 impl<T> Default for CompletableTask<T> {
     fn default() -> Self {
         CompletableTask::new()
+    }
+}
+
+impl<T> Future for CompletableTask<T> {
+    type Output = Result<T, TaskError>;
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        if let Err(e) = self.set_waker(cx.waker().clone()) {
+            return Poll::Ready(Err(e));
+        }
+
+        match self.try_take() {
+            Ok(Poll::Ready(v)) => Poll::Ready(Ok(v)),
+            Ok(Poll::Pending) => Poll::Pending,
+            Err(e) => Poll::Ready(Err(e)),
+        }
     }
 }
 
