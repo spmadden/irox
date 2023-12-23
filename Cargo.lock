@@ -2376,6 +2376,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-fixedmath"
+version = "0.1.0"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-git-tools"
 version = "0.2.0"
 dependencies = [

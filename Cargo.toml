@@ -30,6 +30,7 @@ members = [
     "libraries/egui_extras",
     "libraries/enums",
     "libraries/enums_derive",
+    "libraries/fixedmath",
     "libraries/git-tools",
     "libraries/log",
     "libraries/mbtiles",
