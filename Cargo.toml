@@ -25,6 +25,7 @@ members = [
     "libraries/egui_extras",
     "libraries/enums",
     "libraries/enums_derive",
+    "libraries/fixedmath",
     "libraries/log",
     "libraries/network",
     "libraries/progress",
