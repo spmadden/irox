@@ -119,7 +119,7 @@ pub fn main() {
 pub fn do_manifest_log_for_member(member: &Package) -> String {
     let name = member.name();
     let version = member.version();
-    format!("{name}-{version}")
+    format!("{name}-v{version}")
 }
 
 pub fn print_dbg(context: &Context) {
