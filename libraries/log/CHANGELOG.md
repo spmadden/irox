@@ -1,5 +1,30 @@
 
 
+## v0.1.3 (2023-12-25)
+
+### New Features
+
+ - <csr-id-11480d42b094640ecdc1f8e70741da931dbbb6f2/> re-export the log crate
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 2 calendar days.
+ - 11 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Re-export the log crate ([`11480d4`](https://github.com/spmadden/irox/commit/11480d42b094640ecdc1f8e70741da931dbbb6f2))
+</details>
+
 ## v0.1.2 (2023-12-14)
 
 ### New Features
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 14 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-log v0.1.2 ([`524ffd6`](https://github.com/spmadden/irox/commit/524ffd6f40e670498dd3f0ad108808e37e4b678f))
     - Add setting level from the environment ([`5eaebbb`](https://github.com/spmadden/irox/commit/5eaebbb60128a2b595623cf6300267fc2ee455ce))
 </details>
 
