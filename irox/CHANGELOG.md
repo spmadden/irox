@@ -1,7 +1,45 @@
 
 
 
+## v0.5.1 (2023-12-25)
+
+### New Features
+
+ - <csr-id-72fa70c474e0b77806f5f7d5941b9076f162b55e/> new module 'build-rs' to provide compile-time build metadata.
+ - <csr-id-838f93781f1cbeb85a055c738e70cc83802e7d4b/> new git-tools module to wrap git2 functions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release over the course of 19 calendar days.
+ - 26 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-threading v0.2.2 ([`4ee9f9f`](https://github.com/spmadden/irox/commit/4ee9f9f7e75357203f586193dd9f2f71d397da20))
+    - Release irox-log v0.1.3 ([`8f5ea53`](https://github.com/spmadden/irox/commit/8f5ea538d39d965eb18e181d73e6e8db06993734))
+    - New module 'build-rs' to provide compile-time build metadata. ([`72fa70c`](https://github.com/spmadden/irox/commit/72fa70c474e0b77806f5f7d5941b9076f162b55e))
+    - New git-tools module to wrap git2 functions ([`838f937`](https://github.com/spmadden/irox/commit/838f93781f1cbeb85a055c738e70cc83802e7d4b))
+    - Release irox-egui-extras v0.3.5 ([`c6bfcae`](https://github.com/spmadden/irox/commit/c6bfcae2dd3a43b06859a309639474829734afca))
+    - Release irox-log v0.1.2 ([`524ffd6`](https://github.com/spmadden/irox/commit/524ffd6f40e670498dd3f0ad108808e37e4b678f))
+    - Release irox-progress v0.2.1 ([`5c599f1`](https://github.com/spmadden/irox/commit/5c599f16e8be73a3a31adbc09c013f05772de6ce))
+    - Release irox-networking v0.3.2 ([`23110f9`](https://github.com/spmadden/irox/commit/23110f90aecb29115923ce4c0b749854caee7fde))
+    - Release irox-egui-extras v0.3.4 ([`2858b60`](https://github.com/spmadden/irox/commit/2858b6001041e20427f878cd13df280406dac271))
+    - Release irox-time v0.3.5 ([`82dec83`](https://github.com/spmadden/irox/commit/82dec838b5f1f567016ea826d99c27285cb859d9))
+    - Release irox-tools v0.4.1 ([`367158e`](https://github.com/spmadden/irox/commit/367158e54237e29b2e7203e1b33139684ac43086))
+</details>
+
 ## v0.5.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -15,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 26 commits contributed to the release over the course of 28 calendar days.
+ - 27 commits contributed to the release over the course of 28 calendar days.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +65,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.5.0 ([`88e3d1a`](https://github.com/spmadden/irox/commit/88e3d1a1dfc1772fb005cd194d33c03f37528403))
     - Release irox-egui-extras v0.3.3 ([`bd453bc`](https://github.com/spmadden/irox/commit/bd453bc79951479f48db0be8f12dc035fab95ed0))
     - Release irox-threading v0.2.1 ([`94e762c`](https://github.com/spmadden/irox/commit/94e762cce4ceffcef7b6bfb7bc09e7640bcfb211))
     - Release irox-stats v0.2.2 ([`77e1ba9`](https://github.com/spmadden/irox/commit/77e1ba9869cfe0701249d5c7c50935baf08bc206))
