@@ -32,6 +32,7 @@ Current Modules & Organization:
 * [`irox`](https://github.com/spmadden/irox/blob/master/irox) - Aggregator module
 * [`libraries`](https://github.com/spmadden/irox/blob/master/libraries) - Rust 'library' crates, usually without
   binaries
+    * [`build-rs`] - Compile-time build metadata injection inspired by shadow-rs
     * [`carto`] - Cartographic & Geospatial tools
     * [`egui-extras`] - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
     * [`enums`] - Traits for better Enumerated Types
@@ -58,6 +59,7 @@ Version Status
 
 | Crate                  | Status                                                                                                      |
 |------------------------|-------------------------------------------------------------------------------------------------------------|
+| `irox-build-rs`        | [![build-rs-vsn-shield]][build-rs-crate] [![build-rs-doc-shield]][build-rs-doc]                             |
 | `irox-carto`           | [![carto-vsn-shield]][carto-crate] [![carto-doc-shield]][carto-doc]                                         |
 | `irox-csv`             | [![csv-vsn-shield]][csv-crate] [![csv-doc-shield]][csv-doc]                                                 |
 | `irox-egui-extras`     | [![egui-extras-vsn-shield]][egui-extras-crate] [![egui-extras-doc-shield]][egui-extras-doc]                 |
@@ -82,6 +84,12 @@ Version Status
 | `irox-units`           | [![units-vsn-shield]][units-crate] [![units-doc-shield]][units-doc]                                         |
 | `irox-winlocation-api` | [![winloc-api-vsn-shield]][winloc-api-crate] [![winloc-api-doc-shield]][winloc-api-doc]                     |
 | `cargo-describe`       | [![cargo-describe-vsn-shield]][cargo-describe-crate]                                                        |
+
+[`build-rs`]: https://github.com/spmadden/irox/blob/master/libraries/build-rs
+[build-rs-vsn-shield]: https://img.shields.io/crates/v/irox-build-rs.svg
+[build-rs-doc-shield]: https://docs.rs/irox-build-rs/badge.svg
+[build-rs-crate]: https://crates.io/crates/irox-build-rs
+[build-rs-doc]: https://docs.rs/irox-build-rs
 
 
 [`carto`]: https://github.com/spmadden/irox/blob/master/libraries/carto
@@ -119,7 +127,6 @@ Version Status
 [git-tools-doc-shield]: https://docs.rs/irox-git-tools/badge.svg
 [git-tools-crate]: https://crates.io/crates/irox-git-tools
 [git-tools-doc]: https://docs.rs/irox-git-tools
-
 
 [`gpx`]: https://github.com/spmadden/irox/blob/master/libraries/gpx
 [gpx-vsn-shield]: https://img.shields.io/crates/v/irox-gpx.svg

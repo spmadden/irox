@@ -1,9 +1,9 @@
 [package]
 name = "irox-build-rs"
-description = ""
-keywords = ["irox"]
-categories = []
-version= "0.1.0"
+description = "Compile-time build metadata injection inspired by shadow-rs"
+keywords = ["irox", "build-tools", "metadata", "cargo", "git"]
+categories = ["development-tools::build-utils", "config"]
+version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -13,10 +13,12 @@ repository.workspace = true
 readme = "README.md"
 
 [features]
-git = ["dep:git2"]
+git = ["dep:git2", "dep:irox-git-tools", "dep:irox-time"]
 
 [dependencies]
-git2 = { workspace = true, optional = true}
+git2 = { workspace = true, optional = true }
+irox-git-tools = { workspace = true, optional = true }
+irox-time = { workspace = true, optional = true }
 
 [[example]]
 name = "example"

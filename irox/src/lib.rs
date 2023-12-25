@@ -3,6 +3,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "build-rs")]
+pub use irox_build_rs;
 #[cfg(feature = "carto")]
 pub use irox_carto;
 #[cfg(feature = "csv")]
