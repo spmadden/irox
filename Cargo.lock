@@ -2507,7 +2507,6 @@ version = "0.3.5"
 dependencies = [
  "eframe",
  "egui",
- "irox-build-rs",
  "ron",
  "serde",
 ]
