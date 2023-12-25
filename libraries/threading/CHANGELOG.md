@@ -1,6 +1,34 @@
 
 
+## v0.2.2 (2023-12-25)
+
+### New Features
+
+ - <csr-id-3d915d93f2f99a851e3c5a830da20d2e0ae8b541/> CompletableTask is now async
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 2 calendar days.
+ - 26 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - CompletableTask is now async ([`3d915d9`](https://github.com/spmadden/irox/commit/3d915d93f2f99a851e3c5a830da20d2e0ae8b541))
+</details>
+
 ## v0.2.1 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
+<csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
 ### Chore
 
@@ -11,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 21 calendar days.
+ - 3 commits contributed to the release over the course of 21 calendar days.
  - 22 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.2.1 ([`94e762c`](https://github.com/spmadden/irox/commit/94e762cce4ceffcef7b6bfb7bc09e7640bcfb211))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
 </details>
