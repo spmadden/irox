@@ -26,6 +26,7 @@ members = [
     "libraries/egui_extras",
     "libraries/enums",
     "libraries/enums_derive",
+    "libraries/git-tools",
     "libraries/log",
     "libraries/network",
     "libraries/progress",
@@ -87,6 +88,7 @@ irox-carto = {version = "^0", path = "libraries/carto"}
 irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
 irox-enums = {version = "^0", path = "libraries/enums"}
 irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
+irox-git-tools = {version = "^0", path = "libraries/git-tools"}
 irox-log = {version = "^0", path = "libraries/log"}
 irox-networking = {version = "^0", path = "libraries/network"}
 irox-progress = {version = "^0", path = "libraries/progress"}

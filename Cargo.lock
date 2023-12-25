@@ -2533,6 +2533,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-git-tools"
+version = "0.1.0"
+dependencies = [
+ "git2",
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-gpsd"
 version = "0.1.0"
 dependencies = [

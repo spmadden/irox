@@ -1,0 +1,20 @@
+[package]
+name = "irox-git-tools"
+description = "Tools and wrappers to help with GitOps"
+keywords = ["irox", "git"]
+categories = ["config", "development-tools::build-utils"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+git2.workspace = true
+irox-tools.workspace = true

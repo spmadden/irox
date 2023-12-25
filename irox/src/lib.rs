@@ -13,6 +13,8 @@ pub use irox_egui_extras;
 pub use irox_enums;
 #[cfg(feature = "enums_derive")]
 pub use irox_enums_derive;
+#[cfg(feature = "git-tools")]
+pub use irox_git_tools;
 #[cfg(feature = "gpx")]
 pub use irox_gpx;
 #[cfg(feature = "influxdb_v1")]

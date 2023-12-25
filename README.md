@@ -36,6 +36,7 @@ Current Modules & Organization:
     * [`egui-extras`] - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
     * [`enums`] - Traits for better Enumerated Types
     * [`enums_derive`] - Derivable impls of the traits in irox-enums
+    * [`git-tools`] - Tools and wrappers to help with GitOps
     * [`log`] - Basic console and file logging
     * [`networking`] - Networking tools
     * [`progress`] - An ecosystem for displaying progress, either in a UI or on the terminal.
@@ -62,6 +63,7 @@ Version Status
 | `irox-egui-extras`     | [![egui-extras-vsn-shield]][egui-extras-crate] [![egui-extras-doc-shield]][egui-extras-doc]                 |
 | `irox-enums`           | [![enums-vsn-shield]][enums-crate] [![enums-doc-shield]][enums-doc]                                         |
 | `irox-enums_derive`    | [![enums_derive-vsn-shield]][enums_derive-crate] [![enums_derive-doc-shield]][enums_derive-doc]             |
+| `irox-git-tools`       | [![git-tools-vsn-shield]][git-tools-crate] [![git-tools-doc-shield]][git-tools-doc]                         |
 | `irox-gpx`             | [![gpx-vsn-shield]][gpx-crate] [![gpx-doc-shield]][gpx-doc]                                                 |
 | `irox-influxdb_v1`     | [![influxdb_v1-vsn-shield]][influxdb_v1-crate] [![influxdb_v1-doc-shield]][influxdb_v1-doc]                 |
 | `irox-log`             | [![log-vsn-shield]][log-crate] [![log-doc-shield]][log-doc]                                                 |
@@ -111,6 +113,13 @@ Version Status
 [enums_derive-doc-shield]: https://docs.rs/irox-enums_derive/badge.svg
 [enums_derive-crate]: https://crates.io/crates/irox-enums_derive
 [enums_derive-doc]: https://docs.rs/irox-enums_derive
+
+[`git-tools`]: https://github.com/spmadden/irox/blob/master/libraries/git-tools
+[git-tools-vsn-shield]: https://img.shields.io/crates/v/irox-git-tools.svg
+[git-tools-doc-shield]: https://docs.rs/irox-git-tools/badge.svg
+[git-tools-crate]: https://crates.io/crates/irox-git-tools
+[git-tools-doc]: https://docs.rs/irox-git-tools
+
 
 [`gpx`]: https://github.com/spmadden/irox/blob/master/libraries/gpx
 [gpx-vsn-shield]: https://img.shields.io/crates/v/irox-gpx.svg
