@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::collections::VecDeque;
+extern crate alloc;
+use alloc::collections::VecDeque;
 use std::io::{BufReader, Read};
 
 use crate::read::Buffer;
@@ -281,6 +282,37 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     pub fn consume(&mut self, len: usize) {
         self.reader.drain(..len);
     }
+
+    pub fn take_back(self) -> Buffer<BufReader<T>> {
+        self.reader
+    }
+}
+impl<T: Read + Sized> Scanner<T, LineEnding> {
+    pub fn new_lf(input: T) -> Self {
+        Scanner {
+            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            tokens: vec![Token::new("\n", LineEnding::LineFeed)],
+        }
+    }
+    pub fn new_crlf(input: T) -> Self {
+        Scanner {
+            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            tokens: vec![Token::new("\r\n", LineEnding::CarriageReturnLineFeed)],
+        }
+    }
+    pub fn new_cr(input: T) -> Self {
+        Scanner {
+            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            tokens: vec![Token::new("\r", LineEnding::CarriageReturn)],
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum LineEnding {
+    LineFeed,
+    CarriageReturnLineFeed,
+    CarriageReturn,
 }
 
 #[cfg(test)]
