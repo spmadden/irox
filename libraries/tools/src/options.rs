@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! `MaybeInto`, `MaybeFrom`, and `MaybeMap` - traits to improve chaining of optional functions and erasing `Result`s
+//!
+
 ///
 /// Like [`TryInto<T>`] but instead of returning a [`Result<Ok, Err>`] it returns simply an
 /// [`Option<T>`].  Semantically identical to `Result<Ok, Err>.ok()`

@@ -2,6 +2,10 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
+//!
+//! Functions and tools for manipulating arrays of items.
+//!
+
 ///
 /// Scans through the array, looking for the maximum value contained within it, using the
 /// [`PartialOrd`] operation.  Returns the first index of the maximum detected value.
