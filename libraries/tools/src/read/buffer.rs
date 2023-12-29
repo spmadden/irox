@@ -49,8 +49,12 @@ impl<T: Read> Buffer<T> {
 
 impl<T: Read> Read for Buffer<T> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        let read = self.reader.read(buf)?;
-        self.buffer.extend(buf.iter().take(read));
+        if self.buffer.is_empty() {
+            let mut buf: [u8; 4096] = [0; 4096];
+            let read = self.reader.read(&mut buf)?;
+            self.buffer.extend(buf.get(0..read).unwrap_or_default());
+        }
+        let read = self.buffer.read(buf)?;
         Ok(read)
     }
 }
