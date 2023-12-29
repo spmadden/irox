@@ -7,6 +7,8 @@
 //!
 
 use self::looping_forever::LoopingForever;
+extern crate alloc;
+use alloc::vec::Vec;
 
 pub mod looping_forever;
 

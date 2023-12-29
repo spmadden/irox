@@ -4,8 +4,26 @@
 
 //!
 //! Formatting structs and traits
+//!
 
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
+extern crate alloc;
+#[allow(unused_imports)]
+use crate::f64::FloatExt;
+use alloc::string::String;
+
+#[macro_export]
+macro_rules! format {
+    ($($arg:tt)*) => {{
+        extern crate alloc;
+        use alloc::string::String;
+        use core::fmt::Write;
+
+        let mut val = String::new();
+        val.write_fmt(format_args!($($arg)*)).expect("a formatting trait implementation returned an error");
+        val
+    }};
+}
 
 ///
 /// This struct allows you to print a specific number of digits before the decimal point,
@@ -20,17 +38,17 @@ use std::fmt::{Display, Formatter};
 ///
 /// # Example:
 /// ```
-/// use irox_tools::format::DecimalFormatF64;
+/// use irox_tools::fmt::DecimalFormatF64;
 /// assert_eq!("00.1235", format!("{}", DecimalFormatF64(2,4,0.1234567)));
 /// ```
 pub struct DecimalFormatF64(pub usize, pub usize, pub f64);
 
 impl Display for DecimalFormatF64 {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let mut base = self.2.trunc();
         let width = self.0;
         let prec = self.1;
-        let powi = 10_f64.powi(self.1 as i32);
+        let powi = 10_u32.pow(self.1 as u32) as f64;
         let mut val = (self.2.fract().abs() * powi).round();
         if val >= powi {
             base += 1.;
@@ -54,17 +72,17 @@ impl Display for DecimalFormatF64 {
 ///
 /// # Example:
 /// ```
-/// use irox_tools::format::DecimalFormatF32;
+/// use irox_tools::fmt::DecimalFormatF32;
 /// assert_eq!("00.1235", format!("{}", DecimalFormatF32(2,4,0.1234567)));
 /// ```
 pub struct DecimalFormatF32(pub usize, pub usize, pub f32);
 
 impl Display for DecimalFormatF32 {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let mut base = self.2.trunc();
         let width = self.0;
         let prec = self.1;
-        let powi = 10_f32.powi(self.1 as i32);
+        let powi = 10_u32.pow(self.1 as u32) as f32;
         let mut val = (self.2.fract().abs() * powi).round();
         if val >= powi {
             base += 1.;
@@ -88,7 +106,7 @@ impl Display for DecimalFormatF32 {
 ///
 /// # Example:
 /// ```
-/// use irox_tools::format::DecimalFormat;
+/// use irox_tools::fmt::DecimalFormat;
 /// let fmt = DecimalFormat::new(2,4);
 ///
 /// assert_eq!("00.1235", fmt.format_f64(0.1234567));
@@ -108,7 +126,7 @@ impl DecimalFormat {
     ///
     /// # Example:
     /// ```
-    /// use irox_tools::format::DecimalFormat;
+    /// use irox_tools::fmt::DecimalFormat;
     /// let fmt = DecimalFormat::new(2,4);
     ///
     /// assert_eq!("00.1235", fmt.format_f64(0.1234567));
@@ -122,7 +140,7 @@ impl DecimalFormat {
     ///
     /// # Example:
     /// ```
-    /// use irox_tools::format::DecimalFormat;
+    /// use irox_tools::fmt::DecimalFormat;
     /// let fmt = DecimalFormat::new(2,4);
     ///
     /// assert_eq!("00.1235", fmt.format_f32(0.1234567));
@@ -134,7 +152,7 @@ impl DecimalFormat {
 
 #[cfg(test)]
 mod tests {
-    use crate::format::DecimalFormatF64;
+    use crate::fmt::DecimalFormatF64;
 
     #[test]
     pub fn test() {

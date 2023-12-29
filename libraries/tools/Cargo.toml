@@ -16,3 +16,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+
+[features]
+default = ["std"]
+std = []

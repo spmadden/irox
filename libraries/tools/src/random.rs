@@ -6,11 +6,7 @@
 //! Pseudo-Random Number Generators (PRNGs)
 //!
 
-use std::io::Error;
-use std::ops::BitXorAssign;
-use std::time::UNIX_EPOCH;
-
-use crate::bits::Bits;
+use core::ops::BitXorAssign;
 
 /// Default starting state/seed if the system clock fails
 const DEFAULT_STATE: u64 = 0x4d595df4d0f33173u64;
@@ -89,88 +85,88 @@ impl Random {
     }
 }
 
-impl Bits for Random {
-    fn read_u8(&mut self) -> Result<u8, Error> {
+impl crate::bits::Bits for Random {
+    fn read_u8(&mut self) -> Result<u8, crate::bits::Error> {
         Ok(self.next_u8())
     }
 
-    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+    fn next_u8(&mut self) -> Result<Option<u8>, crate::bits::Error> {
         Ok(Some(self.next_u8()))
     }
 
-    fn read_be_u16(&mut self) -> Result<u16, Error> {
+    fn read_be_u16(&mut self) -> Result<u16, crate::bits::Error> {
         Ok(self.next_u16())
     }
 
-    fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
+    fn next_be_u16(&mut self) -> Result<Option<u16>, crate::bits::Error> {
         Ok(Some(self.next_u16()))
     }
 
-    fn read_be_u32(&mut self) -> Result<u32, Error> {
+    fn read_be_u32(&mut self) -> Result<u32, crate::bits::Error> {
         Ok(self.next_u32())
     }
 
-    fn next_be_u32(&mut self) -> Result<Option<u32>, Error> {
+    fn next_be_u32(&mut self) -> Result<Option<u32>, crate::bits::Error> {
         Ok(Some(self.next_u32()))
     }
 
-    fn read_be_u64(&mut self) -> Result<u64, Error> {
+    fn read_be_u64(&mut self) -> Result<u64, crate::bits::Error> {
         Ok(self.next_u64())
     }
 
-    fn next_be_u64(&mut self) -> Result<Option<u64>, Error> {
+    fn next_be_u64(&mut self) -> Result<Option<u64>, crate::bits::Error> {
         Ok(Some(self.next_u64()))
     }
 
-    fn read_be_u128(&mut self) -> Result<u128, Error> {
+    fn read_be_u128(&mut self) -> Result<u128, crate::bits::Error> {
         Ok(self.next_u128())
     }
 
-    fn next_be_u128(&mut self) -> Result<Option<u128>, Error> {
+    fn next_be_u128(&mut self) -> Result<Option<u128>, crate::bits::Error> {
         Ok(Some(self.next_u128()))
     }
 
-    fn read_f32(&mut self) -> Result<f32, Error> {
+    fn read_f32(&mut self) -> Result<f32, crate::bits::Error> {
         Ok(self.next_f32())
     }
 
-    fn next_f32(&mut self) -> Result<Option<f32>, Error> {
+    fn next_f32(&mut self) -> Result<Option<f32>, crate::bits::Error> {
         Ok(Some(self.next_f32()))
     }
 
-    fn read_f64(&mut self) -> Result<f64, Error> {
+    fn read_f64(&mut self) -> Result<f64, crate::bits::Error> {
         Ok(self.next_f64())
     }
 
-    fn next_f64(&mut self) -> Result<Option<f64>, Error> {
+    fn next_f64(&mut self) -> Result<Option<f64>, crate::bits::Error> {
         Ok(Some(self.next_f64()))
     }
 
-    fn read_be_i16(&mut self) -> Result<i16, Error> {
+    fn read_be_i16(&mut self) -> Result<i16, crate::bits::Error> {
         Ok(self.next_u16() as i16)
     }
 
-    fn next_be_i16(&mut self) -> Result<Option<i16>, Error> {
+    fn next_be_i16(&mut self) -> Result<Option<i16>, crate::bits::Error> {
         Ok(Some(self.next_u16() as i16))
     }
 
-    fn read_be_i32(&mut self) -> Result<i32, Error> {
+    fn read_be_i32(&mut self) -> Result<i32, crate::bits::Error> {
         Ok(self.next_u32() as i32)
     }
 
-    fn next_be_i32(&mut self) -> Result<Option<i32>, Error> {
+    fn next_be_i32(&mut self) -> Result<Option<i32>, crate::bits::Error> {
         Ok(Some(self.next_u32() as i32))
     }
 
-    fn read_be_i64(&mut self) -> Result<i64, Error> {
+    fn read_be_i64(&mut self) -> Result<i64, crate::bits::Error> {
         Ok(self.next_u64() as i64)
     }
 
-    fn next_be_i64(&mut self) -> Result<Option<i64>, Error> {
+    fn next_be_i64(&mut self) -> Result<Option<i64>, crate::bits::Error> {
         Ok(Some(self.next_u64() as i64))
     }
 
-    fn advance(&mut self, len: usize) -> Result<usize, Error> {
+    fn advance(&mut self, len: usize) -> Result<usize, crate::bits::Error> {
         let whole_u32s = len / 4;
         let rem = len - whole_u32s * 4;
         for _i in 0..whole_u32s {
@@ -183,12 +179,19 @@ impl Bits for Random {
     }
 }
 
+#[cfg(feature = "std")]
 impl Default for Random {
     fn default() -> Self {
-        let seed = match std::time::SystemTime::now().duration_since(UNIX_EPOCH) {
+        let seed = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(e) => e.as_nanos() as u64,
             Err(_) => DEFAULT_STATE,
         };
         Random::new_seed(seed)
+    }
+}
+#[cfg(not(feature = "std"))]
+impl Default for Random {
+    fn default() -> Self {
+        Random::new_seed(DEFAULT_STATE)
     }
 }

@@ -7,9 +7,12 @@
 //! or [`UUID`].
 //!
 
+extern crate alloc;
+use crate::format;
 use crate::murmur3::murmur3_128;
 use crate::uuid::UUID;
-use std::fmt::{Display, Formatter};
+use alloc::string::{String, ToString};
+use core::fmt::{Display, Formatter};
 
 ///
 /// Represents a way to uniquely identify an item.
@@ -65,7 +68,7 @@ impl Identifier {
 }
 
 impl Display for Identifier {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             Identifier::Integer(i) => f.write_fmt(format_args!("{i}")),
             Identifier::String(s) => f.write_fmt(format_args!("{s}")),

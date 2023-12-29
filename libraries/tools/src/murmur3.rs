@@ -5,7 +5,7 @@
 //! Implementation of Murmurhash3.  Currently only x128 implemented.
 //!
 
-use std::ops::BitXorAssign;
+use core::ops::BitXorAssign;
 
 const C1: u64 = 0x87c3_7b91_1142_53d5;
 const C2: u64 = 0x4cf5_ad43_2745_937f;
@@ -104,6 +104,9 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
 #[cfg(test)]
 mod test {
     use crate::murmur3::murmur3_128;
+    use alloc::vec;
+    extern crate alloc;
+    use alloc::vec::Vec;
 
     #[test]
     pub fn tests() {
@@ -153,7 +156,6 @@ mod test {
         ];
         for (data, exp) in tests {
             let hash = murmur3_128(data.as_bytes());
-            println!("{hash:X} {data}");
             assert_eq!(exp, hash);
         }
     }

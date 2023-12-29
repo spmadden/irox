@@ -6,11 +6,9 @@
 //! A basic implementation of a UUID
 //!
 
-use std::fmt::{Display, Formatter};
-use std::io::Error;
+use core::fmt::{Display, Formatter};
 
-use crate::bits::{Bits, MutBits};
-use crate::random::Random;
+use crate::bits::{Bits, Error, MutBits};
 
 ///
 /// A basic UUID structure.
@@ -157,7 +155,7 @@ where
 }
 
 impl Display for UUID {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         // 8-4-4-4-12 chars : 4-2-2-2-6 bytes : 32-16-16-16-48 bits
         let a = (self.inner & 0xFFFFFFFF_0000_0000_0000_000000000000) >> 96;
         let b = (self.inner & 0x00000000_FFFF_0000_0000_000000000000) >> 80;
@@ -171,8 +169,10 @@ impl Display for UUID {
 impl UUID {
     ///
     /// Generates a new random UUID
+    #[must_use]
+    #[cfg(feature = "std")]
     pub fn new_random() -> UUID {
-        let mut random = Random::default();
+        let mut random = crate::random::Random::default();
         UUID {
             inner: random.next_u128(),
         }

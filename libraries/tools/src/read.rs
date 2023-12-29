@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::collections::VecDeque;
+extern crate alloc;
+use alloc::collections::VecDeque;
 use std::io::{Error, Read, Write};
 
 pub use buffer::*;
+pub use conv::*;
 pub use counting::*;
 
+#[cfg(feature = "std")]
 mod buffer;
+mod conv;
 mod counting;
 
 ///

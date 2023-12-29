@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+extern crate alloc;
+use alloc::vec::Vec;
+
 #[must_use]
 pub struct LoopingForever<T>
 where
