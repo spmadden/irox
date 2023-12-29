@@ -9,7 +9,7 @@ use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_enums::EnumName;
 use irox_time::Time;
-use irox_tools::format::DecimalFormatF64;
+use irox_tools::fmt::DecimalFormatF64;
 use irox_tools::options::{MaybeInto, MaybeMap};
 use irox_tools::packetio::{Packet, PacketBuilder};
 use irox_units::units::length::Length;

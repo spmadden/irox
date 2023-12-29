@@ -6,7 +6,7 @@ use crate::{calculate_checksum, Error, MessageType};
 use irox_time::datetime::UTCDateTime;
 use irox_time::gregorian::Date;
 use irox_time::Time;
-use irox_tools::format::DecimalFormatF64;
+use irox_tools::fmt::DecimalFormatF64;
 use irox_tools::packetio::Packet;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
