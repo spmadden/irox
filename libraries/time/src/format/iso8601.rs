@@ -5,7 +5,7 @@
 //! Implementations of [`Format`] and [`FormatParser`] based on the ISO8601 specification
 //!
 
-use irox_tools::format::DecimalFormatF64;
+use irox_tools::fmt::DecimalFormatF64;
 use std::str::FromStr;
 
 use irox_tools::iterators::Itertools;
