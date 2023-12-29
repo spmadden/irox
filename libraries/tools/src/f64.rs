@@ -4,6 +4,7 @@
 //!
 //! A collection of utilities for the f64 built-in
 //!
+
 ///
 /// Finds the minimum and maximum value in the provided iterator.
 /// Example:
@@ -25,4 +26,60 @@ pub fn min_max(iter: &[f64]) -> (f64, f64) {
     }
 
     (min, max)
+}
+
+pub trait FloatExt {
+    type Type;
+    fn trunc(self) -> Self::Type;
+    fn fract(self) -> Self::Type;
+    fn abs(self) -> Self::Type;
+    fn round(self) -> Self::Type;
+    fn floor(self) -> Self::Type;
+    fn ceil(self) -> Self::Type;
+    fn signum(self) -> Self::Type;
+}
+
+#[cfg(not(feature = "std"))]
+impl FloatExt for f64 {
+    type Type = f64;
+
+    fn trunc(self) -> f64 {
+        (self as u64) as f64
+    }
+
+    fn fract(self) -> f64 {
+        self - self.trunc()
+    }
+
+    fn abs(self) -> f64 {
+        f64::from_bits(self.to_bits() & 0x7FFF_FFFF_FFFF_FFFFu64)
+    }
+
+    fn round(self) -> f64 {
+        (self + 0.5 * self.signum()).trunc()
+    }
+
+    fn floor(self) -> f64 {
+        if self.is_sign_negative() {
+            return (self - 1.0).trunc();
+        }
+        self.trunc()
+    }
+
+    fn ceil(self) -> f64 {
+        if self.is_sign_positive() {
+            return (self + 1.0).trunc();
+        }
+        self.trunc()
+    }
+
+    fn signum(self) -> f64 {
+        if self.is_nan() {
+            return f64::NAN;
+        }
+        if self.is_sign_negative() {
+            return -1.0;
+        }
+        1.0
+    }
 }
