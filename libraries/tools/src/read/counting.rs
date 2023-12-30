@@ -2,9 +2,9 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
+use alloc::sync::Arc;
+use core::sync::atomic::{AtomicU64, Ordering};
 use std::io::Read;
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
 
 ///
 /// Wraps the reader, providing a convenient way to count the number of bytes read from the

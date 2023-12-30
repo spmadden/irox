@@ -22,7 +22,7 @@ pub mod codec;
 pub mod f64;
 #[macro_use]
 pub mod fmt;
-mod f32;
+pub mod f32;
 #[cfg(feature = "std")]
 pub mod hex;
 pub mod identifier;

@@ -4,8 +4,9 @@
 
 //! Contains the [`SynchronizedOptional`] and other associated primitives
 
-use std::fmt::{Debug, Formatter};
-use std::sync::{Arc, RwLock};
+use alloc::sync::Arc;
+use core::fmt::{Debug, Formatter};
+use std::sync::RwLock;
 
 ///
 /// Basically a [`RwLock<Option<Arc<T>>>`] - the benefits here being:
@@ -124,7 +125,7 @@ impl<T> Debug for SynchronizedOptional<T>
 where
     T: Debug,
 {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:?}", self.get())
     }
 }

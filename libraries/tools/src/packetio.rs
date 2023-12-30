@@ -4,7 +4,7 @@
 //!
 //! Traits for packetization of data and movement of packets of data
 
-use std::collections::VecDeque;
+use alloc::collections::VecDeque;
 use std::io::{ErrorKind, Read, Write};
 
 /// A packet is a series of bytes

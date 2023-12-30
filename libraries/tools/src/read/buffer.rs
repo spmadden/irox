@@ -2,10 +2,10 @@
 // Copyright 2023 IROX Contributors
 //
 
-use std::cmp::min;
-use std::collections::VecDeque;
+use alloc::collections::VecDeque;
+use core::cmp::min;
+use core::ops::RangeBounds;
 use std::io::{BufRead, BufReader, Read};
-use std::ops::RangeBounds;
 
 use crate::bits::Bits;
 
@@ -38,7 +38,7 @@ impl<T: Read> Buffer<T> {
     /// The associated iterator call 'next' fills the buffer and returns the
     /// individual byte-by-byte values. This function returns the entire read buffer.
     pub fn consume_read_buffer(&mut self) -> VecDeque<u8> {
-        std::mem::take(&mut self.buffer)
+        core::mem::take(&mut self.buffer)
     }
 
     /// Removes the specified range and throws it away.
