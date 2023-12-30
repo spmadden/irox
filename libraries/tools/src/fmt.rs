@@ -48,7 +48,7 @@ impl Display for DecimalFormatF64 {
         let mut base = self.2.trunc();
         let width = self.0;
         let prec = self.1;
-        let powi = 10_u32.pow(self.1 as u32) as f64;
+        let powi = 10_u64.pow(self.1 as u32) as f64;
         let mut val = (self.2.fract().abs() * powi).round();
         if val >= powi {
             base += 1.;
@@ -82,7 +82,7 @@ impl Display for DecimalFormatF32 {
         let mut base = self.2.trunc();
         let width = self.0;
         let prec = self.1;
-        let powi = 10_u32.pow(self.1 as u32) as f32;
+        let powi = 10_u64.pow(self.1 as u32) as f32;
         let mut val = (self.2.fract().abs() * powi).round();
         if val >= powi {
             base += 1.;
