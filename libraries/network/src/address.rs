@@ -2,8 +2,11 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
+use std::net::ToSocketAddrs;
+use std::str::FromStr;
 
 use irox_tools::arrays::longest_consecutive_values;
+use irox_tools::options::MaybeMap;
 use irox_tools::u16::{FromU16Array, ToU16Array};
 
 ///
@@ -35,11 +38,35 @@ pub enum NetworkError {
     NotANetworkAddress(IPAddress),
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum AddressError {
+    InvalidAddress,
+}
+
 /// A generic Internet Protocol Address, could be a [`IPv4Address`] or a [`IPv6Address`]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum IPAddress {
     IPv4(IPv4Address),
     IPv6(IPv6Address),
+}
+impl IPAddress {
+    pub fn sockaddr(&self, port: u16) -> std::net::SocketAddr {
+        std::net::SocketAddr::new(self.into(), port)
+    }
+}
+
+impl From<IPAddress> for std::net::IpAddr {
+    fn from(value: IPAddress) -> Self {
+        (&value).into()
+    }
+}
+impl From<&IPAddress> for std::net::IpAddr {
+    fn from(value: &IPAddress) -> Self {
+        match value {
+            IPAddress::IPv4(i) => std::net::IpAddr::V4(i.into()),
+            IPAddress::IPv6(i) => std::net::IpAddr::V6(i.into()),
+        }
+    }
 }
 
 /// A 32-bit Internet Protocol Version 4 address as specified in RFC791
@@ -62,12 +89,53 @@ impl IPv4Address {
     pub fn from_be_bytes(bytes: &[u8; 4]) -> IPv4Address {
         bytes.into()
     }
+
+    pub fn sockaddr(&self, port: u16) -> std::net::SocketAddr {
+        std::net::SocketAddr::new(self.into(), port)
+    }
 }
 
 impl Display for IPv4Address {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let [a, b, c, d] = self.address.to_be_bytes();
         f.write_fmt(format_args!("{a}.{b}.{c}.{d}"))
+    }
+}
+
+impl FromStr for IPv4Address {
+    type Err = AddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(if s.contains('.') {
+            // assume standard dotted-decimal
+            let mut split = s.split('.');
+            let Some(first) = split.next().maybe_map(|v| u8::from_str(v).ok()) else {
+                return Err(AddressError::InvalidAddress);
+            };
+            let Some(second) = split.next().maybe_map(|v| u8::from_str(v).ok()) else {
+                return Err(AddressError::InvalidAddress);
+            };
+            let Some(third) = split.next().maybe_map(|v| u8::from_str(v).ok()) else {
+                return Err(AddressError::InvalidAddress);
+            };
+            let Some(fourth) = split.next().maybe_map(|v| u8::from_str(v).ok()) else {
+                return Err(AddressError::InvalidAddress);
+            };
+
+            IPv4Address::from_be_bytes(&[first, second, third, fourth])
+        } else if s.starts_with("0x") {
+            // assume hex 32-bit
+            let Ok(val) = u32::from_str_radix(s, 16) else {
+                return Err(AddressError::InvalidAddress);
+            };
+            IPv4Address::from(val)
+        } else {
+            // assume 32-bit int.
+            let Ok(val) = u32::from_str(s) else {
+                return Err(AddressError::InvalidAddress);
+            };
+            IPv4Address::from(val)
+        })
     }
 }
 
@@ -91,6 +159,26 @@ impl From<&[u8; 4]> for IPv4Address {
     }
 }
 
+impl From<IPv4Address> for std::net::Ipv4Addr {
+    fn from(value: IPv4Address) -> Self {
+        std::net::Ipv4Addr::from(value.address)
+    }
+}
+impl From<&IPv4Address> for std::net::Ipv4Addr {
+    fn from(value: &IPv4Address) -> Self {
+        std::net::Ipv4Addr::from(value.address)
+    }
+}
+impl From<&IPv4Address> for std::net::IpAddr {
+    fn from(value: &IPv4Address) -> Self {
+        std::net::IpAddr::V4(value.into())
+    }
+}
+impl From<IPv4Address> for std::net::IpAddr {
+    fn from(value: IPv4Address) -> Self {
+        std::net::IpAddr::V4(value.into())
+    }
+}
 ///
 /// An Internet Protocol Version 4 Network, an [`IPv4Address`] and a Netmask/CIDR.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
@@ -469,5 +557,16 @@ impl Display for IPv6Address {
         fmt.write_fmt(format_args!(
             "{a:x}:{b:x}:{c:x}:{d:x}:{e:x}:{f:x}:{g:x}:{h:x}"
         ))
+    }
+}
+
+impl From<IPv6Address> for std::net::Ipv6Addr {
+    fn from(value: IPv6Address) -> Self {
+        std::net::Ipv6Addr::from(value.address)
+    }
+}
+impl From<&IPv6Address> for std::net::Ipv6Addr {
+    fn from(value: &IPv6Address) -> Self {
+        std::net::Ipv6Addr::from(value.address)
     }
 }

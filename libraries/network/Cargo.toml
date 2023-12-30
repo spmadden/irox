@@ -18,10 +18,15 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde"]
-websockets = ["dep:reqwest"]
 
 [dependencies]
 serde = {workspace = true, optional = true}
 log.workspace = true
 irox-tools.workspace = true
-reqwest = {workspace = true, optional = true}
+irox-enums.workspace = true
+irox-structs.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+serde.workspace = true
+irox-log.workspace = true
