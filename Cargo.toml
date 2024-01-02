@@ -50,7 +50,7 @@ egui = { version = "^0.24", default-features = false }
 eframe = { version = "^0.24", default-features = false }
 egui_plot = { version = "^0.24", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.193", features = ["derive"] }
+serde = { version = "^1.0.194", features = ["derive"] }
 serde_json = {version = "^1.0", features = []}
 ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2.5", features = []}
@@ -70,7 +70,7 @@ human-panic = {version = "^1.2", features = []}
 proc-macro2 = {version = "^1.0", features = []}
 num_cpus = {version = "1.16.0", features = []}
 git2 = {version = "0.18.1", features = ["vendored-openssl", "vendored-libgit2"]}
-cargo = {version = "0.75.1", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
+cargo = {version = "0.76.0", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
 wasm-bindgen-futures = "0.4"
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
