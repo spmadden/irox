@@ -22,3 +22,6 @@ egui_plot.workspace = true
 log.workspace = true
 irox-egui-extras = {workspace = true, features = ["serde"]}
 irox-stats.workspace = true
+
+[target.'cfg(target_arch="wasm32")'.dependencies]
+wasm-bindgen-futures.workspace = true

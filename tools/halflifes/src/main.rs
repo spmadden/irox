@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use eframe::{self, Frame, NativeOptions};
+use eframe::{self, Frame};
 use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, ViewportCommand, Window};
 use egui_plot::{Line, Plot, PlotPoints};
 
@@ -17,8 +17,9 @@ use crate::run::Run;
 
 mod run;
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main() {
-    let native_options = NativeOptions {
+    let native_options = eframe::NativeOptions {
         multisampling: 0,
         ..Default::default()
     };
@@ -35,6 +36,30 @@ fn main() {
     ) {
         error!("{e:?}");
     };
+}
+#[cfg(target_arch = "wasm32")]
+fn main() {
+    // Redirect `log` message to `console.log` and friends:
+    eframe::WebLogger::init(log::LevelFilter::Debug).ok();
+
+    let web_options = eframe::WebOptions::default();
+
+    wasm_bindgen_futures::spawn_local(async {
+        eframe::WebRunner::new()
+            .start(
+                "the_canvas_id", // hardcode it
+                web_options,
+                Box::new(|cc| {
+                    let mut comp = CompositeApp::default();
+                    comp.add(Box::new(StylePersistingApp::new(cc)));
+                    comp.add(Box::new(HalflifesApp::new(cc)));
+
+                    Box::new(comp)
+                }),
+            )
+            .await
+            .expect("failed to start eframe");
+    });
 }
 
 struct HalflifesApp {
@@ -142,6 +167,8 @@ impl eframe::App for HalflifesApp {
                 // .allow_drag(true)
                 // .allow_scroll(true)
                 .allow_boxed_zoom(true)
+                .auto_bounds_x()
+                .auto_bounds_y()
                 // .allow_double_click_reset(true)
                 // .allow_zoom(AxisBools { x: true, y: false })
                 // .data_aspect(1.0)
