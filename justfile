@@ -30,6 +30,18 @@ build +FLAGS='':
     cargo build --all-targets --all-features {{FLAGS}}
     @just logend
 
+check TARGET +FLAGS='':
+   @just logstart check-{{TARGET}}
+   just check_install cargo-describe
+   cargo describe -f name -o plain | sed 's/.*/\-p \0/' | xargs cargo clean
+   cargo check --target {{TARGET}} {{FLAGS}}
+   @just logend
+
+check_all +FLAGS='':
+    @just check x86_64-pc-windows-msvc {{FLAGS}}
+    @just check x86_64-unknown-linux-gnu {{FLAGS}}
+    @just check wasm32-unknown-unknown {{FLAGS}}
+
 test +FLAGS='':
     @just logstart test
     cargo test --all-features {{FLAGS}}

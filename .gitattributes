@@ -1,0 +1,7 @@
+*		-text
+*.pdf 		-text
+*.sh		text eol=lf
+*.bat		text eol=crlf
+*.rs		text eol=lf
+*.toml		text eol=lf
+justfile	text eol=lf
