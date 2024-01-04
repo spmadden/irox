@@ -14,14 +14,11 @@ pub mod ansi_colors;
 pub mod arrays;
 #[macro_use]
 pub mod assert;
-pub mod base64;
-pub mod bits;
 pub mod codec;
 #[macro_use]
 pub mod fmt;
 #[cfg(feature = "std")]
 pub mod hex;
-pub mod identifier;
 pub mod iterators;
 pub mod murmur3;
 pub mod options;
@@ -31,11 +28,10 @@ pub mod random;
 #[cfg(feature = "std")]
 pub mod read;
 #[cfg(feature = "std")]
-pub mod scanner;
-#[cfg(feature = "std")]
 pub mod sync;
-pub mod uuid;
 pub mod vec;
 
 pub use primitives::*;
 mod primitives;
+pub use util::*;
+mod util;
