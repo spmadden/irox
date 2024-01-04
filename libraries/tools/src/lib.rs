@@ -14,10 +14,8 @@ pub mod ansi_colors;
 pub mod arrays;
 #[macro_use]
 pub mod assert;
-#[cfg(feature = "std")]
 pub mod base64;
 pub mod bits;
-#[cfg(feature = "std")]
 pub mod codec;
 pub mod f64;
 #[macro_use]

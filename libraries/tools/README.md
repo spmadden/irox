@@ -3,6 +3,11 @@ IROX-TOOLS
 
 *Stuff that should have been in the Rust STL, but are not.*
 
+### No-STD support:
+* Include with `--no-default-features`
+
+### Features:
+* `std` (default) - Enables additional modules that make use of elements in `std` (annotated below)
 
 ### Modules:
 * [`ansi_colors`](./src/ansi_colors.rs) - List of some basic ANSI Console colors

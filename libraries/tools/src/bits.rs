@@ -292,12 +292,12 @@ where
     T: std::io::Read,
 {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        let mut buf: [u8; 1] = [0];
-        let read = self.read(&mut buf)?;
+        let mut byte: u8 = 0;
+        let read = self.read(core::slice::from_mut(&mut byte))?;
         if read < 1 {
             return Ok(None);
         }
-        Ok(Some(buf[0]))
+        Ok(Some(byte))
     }
 
     fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
@@ -342,27 +342,47 @@ pub trait MutBits {
     /// Writes a single [`u8`]
     fn write_u8(&mut self, val: u8) -> Result<(), Error>;
     /// Writes a single [`u16`] in big-endian order, 2 bytes, MSB first.
-    fn write_be_u16(&mut self, val: u16) -> Result<(), Error>;
+    fn write_be_u16(&mut self, val: u16) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`u32`] in big-endian order, 4 bytes, MSB first.
-    fn write_be_u32(&mut self, val: u32) -> Result<(), Error>;
+    fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`u64`] in big-endian order, 8 bytes, MSB first.
-    fn write_be_u64(&mut self, val: u64) -> Result<(), Error>;
+    fn write_be_u64(&mut self, val: u64) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`u128`] in big-endian order, 16 bytes, MSB first.
-    fn write_be_u128(&mut self, val: u128) -> Result<(), Error>;
+    fn write_be_u128(&mut self, val: u128) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
 
     /// Writes a single [`f32`] in standard IEEE754 format, 4 bytes
-    fn write_f32(&mut self, val: f32) -> Result<(), Error>;
+    fn write_f32(&mut self, val: f32) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`u16`] in standard IEEE754 format, 8 bytes
-    fn write_f64(&mut self, val: f64) -> Result<(), Error>;
+    fn write_f64(&mut self, val: f64) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
 
     /// Writes a single [`i16`] in big-endian order, 2 bytes, MSB first.
-    fn write_be_i16(&mut self, val: i16) -> Result<(), Error>;
+    fn write_be_i16(&mut self, val: i16) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`i32`] in big-endian order, 4 bytes, MSB first.
-    fn write_be_i32(&mut self, val: i32) -> Result<(), Error>;
+    fn write_be_i32(&mut self, val: i32) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`i64`] in big-endian order, 8 bytes, MSB first.
-    fn write_be_i64(&mut self, val: i64) -> Result<(), Error>;
+    fn write_be_i64(&mut self, val: i64) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
     /// Writes a single [`i128`] in big-endian order, 16 bytes, MSB first.
-    fn write_be_i128(&mut self, val: i128) -> Result<(), Error>;
+    fn write_be_i128(&mut self, val: i128) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_be_bytes())
+    }
 
     /// Writes a sized blob, a series of bytes preceded by a [`u8`] declaring the size
     fn write_u8_blob(&mut self, val: &[u8]) -> Result<(), Error> {
@@ -468,13 +488,42 @@ where
     }
 }
 #[cfg(not(feature = "std"))]
-impl Bits for &[u8] {
-    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        let Some((first, rest)) = self.split_first() else {
-            return Ok(None);
-        };
-        *self = rest;
-        Ok(Some(*first))
+pub use nostdimpls::*;
+#[cfg(not(feature = "std"))]
+mod nostdimpls {
+    use crate::bits::{Error, ErrorKind};
+    use alloc::vec::Vec;
+
+    impl crate::bits::Bits for &[u8] {
+        fn next_u8(&mut self) -> Result<Option<u8>, crate::bits::Error> {
+            let Some((first, rest)) = self.split_first() else {
+                return Ok(None);
+            };
+            *self = rest;
+            Ok(Some(*first))
+        }
+    }
+    impl crate::bits::MutBits for &mut [u8] {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            let Some((a, b)) = core::mem::take(self).split_first_mut() else {
+                return Err(ErrorKind::UnexpectedEof.into());
+            };
+            *a = val;
+            *self = b;
+            Ok(())
+        }
+    }
+    impl crate::bits::MutBits for &mut Vec<u8> {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.push(val);
+            Ok(())
+        }
+    }
+    impl crate::bits::MutBits for Vec<u8> {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.push(val);
+            Ok(())
+        }
     }
 }
 

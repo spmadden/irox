@@ -6,10 +6,10 @@
 //! RFC-4648 Compliant Base64, Base32, and Base16 encoders and decoders
 //!
 extern crate alloc;
-use crate::bits::MutBits;
+use crate::bits::{Bits, Error, ErrorKind, MutBits};
 use crate::codec::Codec;
 use alloc::collections::BTreeMap;
-use std::io::{Error, ErrorKind, Read, Write};
+use alloc::string::String;
 
 /// `A-Z,a-z,0-9,+,/` - not filesystem or URL-safe
 pub static BASE64_ALPHABET: [u8; 64] = [
@@ -41,7 +41,7 @@ pub static BASE16_ALPHABET: [u8; 16] = [
 ];
 
 macro_rules! getalpha {
-    ($alpha:ident,$idx:ident) => {
+    ($alpha:ident,$idx:tt) => {
         $alpha.get($idx).map(|v| *v).unwrap_or_default()
     };
 }
@@ -83,14 +83,13 @@ impl SixBitCodec {
     }
 }
 impl Codec for SixBitCodec {
-    fn encode<I: Read, O: Write>(&self, input: I, output: &mut O) -> Result<usize, Error> {
+    fn encode<I: Bits, O: MutBits>(&self, mut input: I, output: &mut O) -> Result<usize, Error> {
         let mut buf: u32 = 0;
         let mut ctr = 0;
         let mut written = 0;
         let alpha = self.alphabet;
-        let mut bytes = input.bytes();
         loop {
-            let Some(Ok(v)) = bytes.next() else {
+            let Some(v) = input.next_u8()? else {
                 break;
             };
 
@@ -102,7 +101,7 @@ impl Codec for SixBitCodec {
                 let b = ((buf & 0x03_F000) >> 12) as usize;
                 let c = ((buf & 0x00_0FC0) >> 6) as usize;
                 let d = (buf & 0x00_003F) as usize;
-                output.write_all(&[
+                output.write_all_bytes(&[
                     getalpha!(alpha, a),
                     getalpha!(alpha, b),
                     getalpha!(alpha, c),
@@ -118,7 +117,7 @@ impl Codec for SixBitCodec {
             let a = ((buf & 0x03_F000) >> 12) as usize;
             let b = ((buf & 0x00_0FC0) >> 6) as usize;
             let c = (buf & 0x00_003F) as usize;
-            output.write_all(&[
+            output.write_all_bytes(&[
                 getalpha!(alpha, a),
                 getalpha!(alpha, b),
                 getalpha!(alpha, c),
@@ -129,19 +128,23 @@ impl Codec for SixBitCodec {
             buf <<= 4;
             let a = ((buf & 0xFC0) >> 6) as usize;
             let b = (buf & 0x030) as usize;
-            output.write_all(&[getalpha!(alpha, a), getalpha!(alpha, b), self.pad, self.pad])?;
+            output.write_all_bytes(&[
+                getalpha!(alpha, a),
+                getalpha!(alpha, b),
+                self.pad,
+                self.pad,
+            ])?;
             written += 4;
         }
         Ok(written)
     }
 
-    fn decode<I: Read, O: Write>(&self, input: I, output: &mut O) -> Result<usize, Error> {
+    fn decode<I: Bits, O: MutBits>(&self, mut input: I, output: &mut O) -> Result<usize, Error> {
         let mut buf: u32 = 0;
         let mut ctr = 0;
         let mut written = 0;
-        let mut bytes = input.bytes();
         loop {
-            let Some(Ok(var)) = bytes.next() else {
+            let Some(var) = input.next_u8()? else {
                 break;
             };
             if var == self.pad {
@@ -158,7 +161,7 @@ impl Codec for SixBitCodec {
             ctr += 1;
             if ctr == 4 {
                 let [_, a, b, c] = buf.to_be_bytes();
-                output.write_all(&[a, b, c])?;
+                output.write_all_bytes(&[a, b, c])?;
                 ctr = 0;
                 buf = 0;
                 written += 3;
@@ -193,46 +196,47 @@ pub fn new_base64_safe_codec() -> SixBitCodec {
 
 /// Encodes the provided the input, writing the encoding to output, using the standard RFC-4648
 /// [`BASE64_ALPHABET`], upon success, returns the number of bytes written out
-pub fn base64_encode<I: Read, O: Write>(input: I, output: &mut O) -> Result<usize, Error> {
+pub fn base64_encode<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_codec().encode(input, output)
 }
 /// Decodes the provided the input, writing the decoded data to output, using the standard RFC-4648
 /// [`BASE64_ALPHABET`], upon success, returns the number of bytes written out
-pub fn base64_decode<I: Read, O: Write>(input: I, output: &mut O) -> Result<usize, Error> {
+pub fn base64_decode<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_codec().decode(input, output)
 }
 /// Encodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`]
-pub fn base64_encode_to_str<I: Read>(input: I) -> Result<String, Error> {
+pub fn base64_encode_to_str<I: Bits>(input: I) -> Result<String, Error> {
     new_base64_codec().encode_to_str(input)
 }
 /// Decodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`], dropping
 /// any characters that aren't UTF-8.
-pub fn base64_decode_to_str_lossy<I: Read>(input: I) -> Result<String, Error> {
+pub fn base64_decode_to_str_lossy<I: Bits>(input: I) -> Result<String, Error> {
     new_base64_codec().decode_to_str_lossy(input)
 }
 
 /// Encodes the provided the input, writing the encoding to output, using the filesystem and
 /// URL-safe RFC-4648 [`BASE64URL_ALPHABET`], , upon success, returns the number of bytes written out
-pub fn base64_encode_safe<I: Read, O: Write>(input: I, output: &mut O) -> Result<usize, Error> {
+pub fn base64_encode_safe<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_safe_codec().encode(input, output)
 }
 /// Decodes the provided the input, writing the decoded data to output, using the filesystem and
 /// URL-safe RFC-4648 [`BASE64URL_ALPHABET`], upon success, returns the number of bytes written out
-pub fn base64_decode_safe<I: Read, O: Write>(input: I, output: &mut O) -> Result<usize, Error> {
+pub fn base64_decode_safe<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_safe_codec().decode(input, output)
 }
 /// Encodes the provided input to a string, using the using the filesystem and
 /// URL-safe RFC-4648 [`BASE64URL_ALPHABET`]
-pub fn base64_encode_safe_to_str<I: Read>(input: I) -> Result<String, Error> {
+pub fn base64_encode_safe_to_str<I: Bits>(input: I) -> Result<String, Error> {
     new_base64_safe_codec().encode_to_str(input)
 }
 /// Decodes the provided the input, to a string, using the filesystem and URL-safe RFC-4648
 /// [`BASE64URL_ALPHABET`], any characters not valid UTF-8 are dropped.
-pub fn base64_decode_safe_to_str_lossy<I: Read>(input: I) -> Result<String, Error> {
+pub fn base64_decode_safe_to_str_lossy<I: Bits>(input: I) -> Result<String, Error> {
     new_base64_safe_codec().decode_to_str_lossy(input)
 }
 
 #[cfg(test)]
+#[cfg(feature = "std")]
 mod tests {
     use crate::base64::new_base64_codec;
     use crate::codec::Codec;
