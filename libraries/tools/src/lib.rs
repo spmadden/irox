@@ -17,10 +17,8 @@ pub mod assert;
 pub mod base64;
 pub mod bits;
 pub mod codec;
-pub mod f64;
 #[macro_use]
 pub mod fmt;
-pub mod f32;
 #[cfg(feature = "std")]
 pub mod hex;
 pub mod identifier;
@@ -36,8 +34,8 @@ pub mod read;
 pub mod scanner;
 #[cfg(feature = "std")]
 pub mod sync;
-pub mod u16;
-pub mod u64;
-pub mod u8;
 pub mod uuid;
 pub mod vec;
+
+pub use primitives::*;
+mod primitives;
