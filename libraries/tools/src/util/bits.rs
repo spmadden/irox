@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
+//
 
 //!
 //! Basic Bit Buffer interface
@@ -8,7 +9,9 @@
 // use std::io::{Error, ErrorKind, Read, Write};
 
 extern crate alloc;
+use alloc::fmt::format;
 use alloc::{vec, vec::Vec};
+use core::fmt::Arguments;
 
 #[cfg(feature = "std")]
 pub type Error = std::io::Error;
@@ -39,8 +42,21 @@ mod error {
                 msg: match kind {
                     BitsErrorKind::InvalidData => "Invalid Data",
                     BitsErrorKind::UnexpectedEof => "Unexpected EOF",
+                    BitsErrorKind::FormatError => "Unspecified Formatting Error",
                 },
             }
+        }
+    }
+
+    impl From<BitsError> for core::fmt::Error {
+        fn from(_kind: BitsError) -> Self {
+            core::fmt::Error
+        }
+    }
+
+    impl From<core::fmt::Error> for BitsError {
+        fn from(_value: core::fmt::Error) -> Self {
+            BitsErrorKind::FormatError.into()
         }
     }
 
@@ -48,6 +64,7 @@ mod error {
     pub enum BitsErrorKind {
         InvalidData,
         UnexpectedEof,
+        FormatError,
     }
 }
 
@@ -435,6 +452,10 @@ pub trait MutBits {
             self.write_u8(*val)?;
         }
         Ok(())
+    }
+
+    fn write_fmt(&mut self, args: Arguments<'_>) -> Result<(), Error> {
+        self.write_all_bytes(format(args).as_bytes())
     }
 }
 
