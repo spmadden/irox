@@ -17,7 +17,6 @@ pub mod assert;
 pub mod codec;
 #[macro_use]
 pub mod fmt;
-#[cfg(feature = "std")]
 pub mod hex;
 pub mod iterators;
 pub mod murmur3;

@@ -5,7 +5,8 @@
 //!
 //! Hexdump & Hex manipulation
 
-use std::io::{Error, Write};
+use crate::bits::{Error, MutBits};
+use alloc::vec::Vec;
 
 /// 0-9, A-F
 pub static HEX_UPPER_CHARS: [char; 16] = [
@@ -21,18 +22,20 @@ pub static HEX_LOWER_CHARS: [char; 16] = [
 /// `hexdump -C`
 pub trait HexDump {
     /// Hexdump this data structure to stdout
+    #[cfg(feature = "std")]
     fn hexdump(&self);
 
     /// Hexdump to the specified writer.
-    fn hexdump_to<T: Write>(&self, out: &mut T) -> Result<(), std::io::Error>;
+    fn hexdump_to(&self, out: &mut dyn MutBits) -> Result<(), Error>;
 }
 
 impl<S: AsRef<[u8]>> HexDump for S {
+    #[cfg(feature = "std")]
     fn hexdump(&self) {
         let _ = self.hexdump_to(&mut std::io::stdout());
     }
 
-    fn hexdump_to<T: Write>(&self, out: &mut T) -> Result<(), Error> {
+    fn hexdump_to(&self, out: &mut dyn MutBits) -> Result<(), Error> {
         let mut idx = 0;
         let val = self.as_ref();
         loop {
@@ -77,11 +80,13 @@ impl<S: AsRef<[u8]>> HexDump for S {
 }
 
 #[cfg(test)]
+#[cfg(feature = "std")]
 mod tests {
     use crate::hex::HexDump;
+    use alloc::vec::Vec;
 
     #[test]
-    pub fn test() -> Result<(), std::io::Error> {
+    pub fn test() -> Result<(), crate::bits::Error> {
         let mut buf: Vec<u8> = Vec::new();
         for v in u8::MIN..=u8::MAX {
             buf.push(v);
