@@ -17,24 +17,30 @@ const MULTIPLIER: u64 = 6364136223846793005u64;
 /// incremental incrementer for each state
 const INCREMENT: u64 = 1442695040888963407u64;
 
+const MULTIPLIER_128: u128 = 25492979953554139244865540595714422341u128;
+const INCREMENT_128: u128 = 63641362238467930051442695040888963407u128;
+
+pub type Random = PcgXshRR;
 ///
 /// Basic Random Number Generator based on the `PCG-XSH-RR`
-pub struct Random {
+pub struct PcgXshRR {
     state: u64,
 }
 
-impl Random {
+impl PcgXshRR {
     ///
     /// Creates a random seeded with this number.
-    pub fn new_seed(seed: u64) -> Random {
-        Random {
+    pub fn new_seed(seed: u64) -> Self {
+        Self {
             state: seed.wrapping_mul(2).wrapping_add(1),
         }
     }
+}
 
+impl PRNG for PcgXshRR {
     ///
     /// Gets the next random [`u32`] for this random sequence
-    pub fn next_u32(&mut self) -> u32 {
+    fn next_u32(&mut self) -> u32 {
         // standard PCG-XSH-RR
         let count = (self.state >> 59) as u32;
         let mut x = self.state;
@@ -43,141 +49,174 @@ impl Random {
         let x = (x >> 27) as u32;
         x.rotate_right(count)
     }
+}
 
+///
+/// Basic Random Number Generator based on the `PCG-XSL-RR-RR`
+pub struct PcgXslRrRr {
+    state: u128,
+}
+impl PcgXslRrRr {
+    ///
+    /// Creates a random seeded with this number.
+    pub fn new_seed(seed: u128) -> Self {
+        Self {
+            state: seed.wrapping_mul(2).wrapping_add(1),
+        }
+    }
+}
+
+impl PRNG for PcgXslRrRr {
+    fn next_u32(&mut self) -> u32 {
+        self.next_u128() as u32
+    }
+
+    fn next_u128(&mut self) -> u128 {
+        let state = self.state;
+        self.state = state
+            .wrapping_mul(MULTIPLIER_128)
+            .wrapping_add(INCREMENT_128);
+        let rot1 = (state >> 122) as u32;
+        let high = (state >> 64) as u64;
+        let newlow = (high ^ state as u64).rotate_right(rot1);
+        let newhigh = high.rotate_right((newlow & 0x3F) as u32);
+        (newhigh as u128) << 64 | newlow as u128
+    }
+}
+
+pub trait PRNG {
+    ///
+    /// Gets the next random [`u32`] for this random sequence
+    fn next_u32(&mut self) -> u32;
     ///
     /// Gets the next random [`u8`] for this random sequence
-    pub fn next_u8(&mut self) -> u8 {
+    fn next_u8(&mut self) -> u8 {
         self.next_u32() as u8
     }
-
     ///
     /// Gets the next random [`u16`] for this random sequence
-    pub fn next_u16(&mut self) -> u16 {
+    fn next_u16(&mut self) -> u16 {
         self.next_u32() as u16
     }
-
     ///
     /// Gets the next random [`u64`] for this random sequence
-    pub fn next_u64(&mut self) -> u64 {
+    fn next_u64(&mut self) -> u64 {
         let a: u64 = self.next_u32() as u64;
         let b: u64 = self.next_u32() as u64;
         a << 32 | b
     }
-
     ///
     /// Gets the next random [`u128`] for this random sequence
-    pub fn next_u128(&mut self) -> u128 {
+    fn next_u128(&mut self) -> u128 {
         let a: u128 = self.next_u64() as u128;
         let b: u128 = self.next_u64() as u128;
         a << 64 | b
     }
-
     ///
     /// Gets the next random [`f32`] for this random sequence
-    pub fn next_f32(&mut self) -> f32 {
+    fn next_f32(&mut self) -> f32 {
         f32::from_bits(self.next_u32())
     }
-
     ///
     /// Gets the next random [`f64`] for this random sequence
-    pub fn next_f64(&mut self) -> f64 {
+    fn next_f64(&mut self) -> f64 {
         f64::from_bits(self.next_u64())
     }
 }
 
-impl crate::bits::Bits for Random {
-    fn read_u8(&mut self) -> Result<u8, crate::bits::Error> {
-        Ok(self.next_u8())
-    }
-
-    fn next_u8(&mut self) -> Result<Option<u8>, crate::bits::Error> {
-        Ok(Some(self.next_u8()))
-    }
-
-    fn read_be_u16(&mut self) -> Result<u16, crate::bits::Error> {
-        Ok(self.next_u16())
-    }
-
-    fn next_be_u16(&mut self) -> Result<Option<u16>, crate::bits::Error> {
-        Ok(Some(self.next_u16()))
-    }
-
-    fn read_be_u32(&mut self) -> Result<u32, crate::bits::Error> {
-        Ok(self.next_u32())
-    }
-
-    fn next_be_u32(&mut self) -> Result<Option<u32>, crate::bits::Error> {
-        Ok(Some(self.next_u32()))
-    }
-
-    fn read_be_u64(&mut self) -> Result<u64, crate::bits::Error> {
-        Ok(self.next_u64())
-    }
-
-    fn next_be_u64(&mut self) -> Result<Option<u64>, crate::bits::Error> {
-        Ok(Some(self.next_u64()))
-    }
-
-    fn read_be_u128(&mut self) -> Result<u128, crate::bits::Error> {
-        Ok(self.next_u128())
-    }
-
-    fn next_be_u128(&mut self) -> Result<Option<u128>, crate::bits::Error> {
-        Ok(Some(self.next_u128()))
-    }
-
-    fn read_f32(&mut self) -> Result<f32, crate::bits::Error> {
-        Ok(self.next_f32())
-    }
-
-    fn next_f32(&mut self) -> Result<Option<f32>, crate::bits::Error> {
-        Ok(Some(self.next_f32()))
-    }
-
-    fn read_f64(&mut self) -> Result<f64, crate::bits::Error> {
-        Ok(self.next_f64())
-    }
-
-    fn next_f64(&mut self) -> Result<Option<f64>, crate::bits::Error> {
-        Ok(Some(self.next_f64()))
-    }
-
-    fn read_be_i16(&mut self) -> Result<i16, crate::bits::Error> {
-        Ok(self.next_u16() as i16)
-    }
-
-    fn next_be_i16(&mut self) -> Result<Option<i16>, crate::bits::Error> {
-        Ok(Some(self.next_u16() as i16))
-    }
-
-    fn read_be_i32(&mut self) -> Result<i32, crate::bits::Error> {
-        Ok(self.next_u32() as i32)
-    }
-
-    fn next_be_i32(&mut self) -> Result<Option<i32>, crate::bits::Error> {
-        Ok(Some(self.next_u32() as i32))
-    }
-
-    fn read_be_i64(&mut self) -> Result<i64, crate::bits::Error> {
-        Ok(self.next_u64() as i64)
-    }
-
-    fn next_be_i64(&mut self) -> Result<Option<i64>, crate::bits::Error> {
-        Ok(Some(self.next_u64() as i64))
-    }
-
-    fn advance(&mut self, len: usize) -> Result<usize, crate::bits::Error> {
-        let whole_u32s = len / 4;
-        let rem = len - whole_u32s * 4;
-        for _i in 0..whole_u32s {
-            self.next_u32();
-        }
-        for _i in 0..rem {
-            self.next_u8();
-        }
-        Ok(len)
-    }
-}
+// impl crate::bits::Bits for PcgXshRR {
+//     fn read_u8(&mut self) -> Result<u8, crate::bits::Error> {
+//         Ok(self.next_u8())
+//     }
+//
+//     fn next_u8(&mut self) -> Result<Option<u8>, crate::bits::Error> {
+//         Ok(Some(self.next_u8()))
+//     }
+//
+//     fn read_be_u16(&mut self) -> Result<u16, crate::bits::Error> {
+//         Ok(self.next_u16())
+//     }
+//
+//     fn next_be_u16(&mut self) -> Result<Option<u16>, crate::bits::Error> {
+//         Ok(Some(self.next_u16()))
+//     }
+//
+//     fn read_be_u32(&mut self) -> Result<u32, crate::bits::Error> {
+//         Ok(self.next_u32())
+//     }
+//
+//     fn next_be_u32(&mut self) -> Result<Option<u32>, crate::bits::Error> {
+//         Ok(Some(self.next_u32()))
+//     }
+//
+//     fn read_be_u64(&mut self) -> Result<u64, crate::bits::Error> {
+//         Ok(self.next_u64())
+//     }
+//
+//     fn next_be_u64(&mut self) -> Result<Option<u64>, crate::bits::Error> {
+//         Ok(Some(self.next_u64()))
+//     }
+//
+//     fn read_be_u128(&mut self) -> Result<u128, crate::bits::Error> {
+//         Ok(self.next_u128())
+//     }
+//
+//     fn next_be_u128(&mut self) -> Result<Option<u128>, crate::bits::Error> {
+//         Ok(Some(self.next_u128()))
+//     }
+//
+//     fn read_f32(&mut self) -> Result<f32, crate::bits::Error> {
+//         Ok(self.next_f32())
+//     }
+//
+//     fn next_f32(&mut self) -> Result<Option<f32>, crate::bits::Error> {
+//         Ok(Some(self.next_f32()))
+//     }
+//
+//     fn read_f64(&mut self) -> Result<f64, crate::bits::Error> {
+//         Ok(self.next_f64())
+//     }
+//
+//     fn next_f64(&mut self) -> Result<Option<f64>, crate::bits::Error> {
+//         Ok(Some(self.next_f64()))
+//     }
+//
+//     fn read_be_i16(&mut self) -> Result<i16, crate::bits::Error> {
+//         Ok(self.next_u16() as i16)
+//     }
+//
+//     fn next_be_i16(&mut self) -> Result<Option<i16>, crate::bits::Error> {
+//         Ok(Some(self.next_u16() as i16))
+//     }
+//
+//     fn read_be_i32(&mut self) -> Result<i32, crate::bits::Error> {
+//         Ok(self.next_u32() as i32)
+//     }
+//
+//     fn next_be_i32(&mut self) -> Result<Option<i32>, crate::bits::Error> {
+//         Ok(Some(self.next_u32() as i32))
+//     }
+//
+//     fn read_be_i64(&mut self) -> Result<i64, crate::bits::Error> {
+//         Ok(self.next_u64() as i64)
+//     }
+//
+//     fn next_be_i64(&mut self) -> Result<Option<i64>, crate::bits::Error> {
+//         Ok(Some(self.next_u64() as i64))
+//     }
+//
+//     fn advance(&mut self, len: usize) -> Result<usize, crate::bits::Error> {
+//         let whole_u32s = len / 4;
+//         let rem = len - whole_u32s * 4;
+//         for _i in 0..whole_u32s {
+//             self.next_u32();
+//         }
+//         for _i in 0..rem {
+//             self.next_u8();
+//         }
+//         Ok(len)
+//     }
+// }
 
 #[cfg(feature = "std")]
 impl Default for Random {

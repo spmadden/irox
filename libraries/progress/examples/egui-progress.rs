@@ -14,7 +14,7 @@ use irox_progress::egui::EguiProgressWindow;
 use irox_progress::write::WriterTask;
 use irox_progress::{ProgressPrinter, Task};
 use irox_tools::bits::MutBits;
-use irox_tools::random::Random;
+use irox_tools::random::{Random, PRNG};
 
 struct ProgressApp {
     prog: EguiProgressWindow,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2023 IROX Contributors
 //
 
 //!
@@ -172,6 +172,7 @@ impl UUID {
     #[must_use]
     #[cfg(feature = "std")]
     pub fn new_random() -> UUID {
+        use crate::random::PRNG;
         let mut random = crate::random::Random::default();
         UUID {
             inner: random.next_u128(),

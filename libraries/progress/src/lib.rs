@@ -14,7 +14,7 @@ use std::sync::{Arc, Mutex, OnceLock, RwLock};
 pub use irox_time;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::Duration;
-use irox_tools::random::Random;
+use irox_tools::random::{Random, PRNG};
 use irox_tools::sync::SynchronizedOptional;
 use irox_tools::vec::RetainTake;
 

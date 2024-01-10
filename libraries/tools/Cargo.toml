@@ -17,6 +17,16 @@ workspace = true
 
 [dependencies]
 
+[dev-dependencies]
+criterion.workspace = true
+
 [features]
 default = ["std"]
 std = []
+
+[lib]
+bench = false
+
+[[bench]]
+harness = false
+name = "random"
