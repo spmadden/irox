@@ -7,6 +7,8 @@
 //! encoding formats
 //!
 
+pub mod vbyte;
+
 use crate::bits::{Bits, Error, MutBits};
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
