@@ -1,6 +1,36 @@
 
 
 
+## v0.3.6 (2024-01-12)
+
+### Chore
+
+ - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
+
+### New Features
+
+ - <csr-id-303aca0c8fb37543c95ab4c14770e671db4d5b11/> playing with wasm, now can make webpages!
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 10 calendar days.
+ - 25 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
+    - Playing with wasm, now can make webpages! ([`303aca0`](https://github.com/spmadden/irox/commit/303aca0c8fb37543c95ab4c14770e671db4d5b11))
+</details>
+
 ## v0.3.5 (2023-12-17)
 
 ### Bug Fixes
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 11 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.5 ([`c6bfcae`](https://github.com/spmadden/irox/commit/c6bfcae2dd3a43b06859a309639474829734afca))
     - Fix packaging on linux ([`b4a61ea`](https://github.com/spmadden/irox/commit/b4a61eaee2797b459366487c8b2c60dd19b46f99))
 </details>
 

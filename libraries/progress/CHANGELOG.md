@@ -1,5 +1,31 @@
 
 
+## v0.3.0 (2024-01-12)
+
+### New Features (BREAKING)
+
+ - <csr-id-59aa3f65a355740f793ea3db923629833fc0053c/> refactor random to have PRNG trait, impl new random algorithm
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 2 calendar days.
+ - 37 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+    - Refactor random to have PRNG trait, impl new random algorithm ([`59aa3f6`](https://github.com/spmadden/irox/commit/59aa3f65a355740f793ea3db923629833fc0053c))
+</details>
+
 ## v0.2.1 (2023-12-06)
 
 ### New Features
@@ -12,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 6 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.2.1 ([`5c599f1`](https://github.com/spmadden/irox/commit/5c599f16e8be73a3a31adbc09c013f05772de6ce))
     - Egui bar shows new status, with better stretchy rendering ([`683cb6c`](https://github.com/spmadden/irox/commit/683cb6cd49b70669908f665458c4e5cd31007824))
     - Console bar shows new status ([`a5e0e1a`](https://github.com/spmadden/irox/commit/a5e0e1afc03a54a74fa0fdcfd21a07c97c886188))
     - Provide ability to add a textual status to Tasks ([`9c02073`](https://github.com/spmadden/irox/commit/9c02073388c41e3f05251ff1edee98acc89c5e00))
