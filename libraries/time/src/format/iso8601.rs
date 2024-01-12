@@ -5,9 +5,9 @@
 //! Implementations of [`Format`] and [`FormatParser`] based on the ISO8601 specification
 //!
 
-use irox_tools::fmt::DecimalFormatF64;
 use std::str::FromStr;
 
+use irox_tools::fmt::DecimalFormatF64;
 use irox_tools::iterators::Itertools;
 use irox_units::units::duration::{Duration, SEC_TO_NANOS};
 
@@ -435,8 +435,20 @@ impl FormatParser<Time> for ISO8601Time {
     }
 }
 
+pub struct ISO8601WeekNumber;
+pub const ISO8601_WEEK_NUMBER: ISO8601WeekNumber = ISO8601WeekNumber;
+impl Format<Date> for ISO8601WeekNumber {
+    fn format(&self, date: &Date) -> String {
+        let (year, wkno) = date.week_number();
+        format!("{year}W{wkno:02}")
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use irox_tools::ansi_colors::{FORMAT_COLOR_FG_GREEN, FORMAT_COLOR_FG_RED, FORMAT_RESET};
+    use irox_units::bounds::GreaterThanEqualToValueError;
+
     use crate::datetime::UTCDateTime;
     use crate::epoch::{
         COMMON_ERA_EPOCH, GPS_EPOCH, GREGORIAN_EPOCH, NTP_EPOCH, PRIME_EPOCH, UNIX_EPOCH,
@@ -445,12 +457,11 @@ mod tests {
     use crate::format::iso8601::{
         ExtendedDateFormat, ExtendedDateTimeFormat, ExtendedTimeFormat, ISO8601Date,
         ISO8601DateTime, ISO8601Time, BASIC_CALENDAR_DATE, BASIC_TIME_OF_DAY,
-        EXTENDED_DATE_TIME_FORMAT, ISO8601_DATE_TIME,
+        EXTENDED_DATE_TIME_FORMAT, ISO8601_DATE_TIME, ISO8601_WEEK_NUMBER,
     };
     use crate::format::{Format, FormatError, FormatParser};
     use crate::gregorian::Date;
     use crate::Time;
-    use irox_tools::ansi_colors::{FORMAT_COLOR_FG_GREEN, FORMAT_COLOR_FG_RED, FORMAT_RESET};
 
     #[test]
     pub fn test_basic_date() -> Result<(), FormatError> {
@@ -928,6 +939,30 @@ mod tests {
             "2023-04-01T01:01:01.010000000Z",
             format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
         );
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_week_numbers() -> Result<(), GreaterThanEqualToValueError<u8>> {
+        let test_cases = vec![
+            (Date::try_from_values(1977, 01, 01)?, "1976W53"),
+            (Date::try_from_values(1977, 01, 02)?, "1976W53"),
+            (Date::try_from_values(1977, 01, 03)?, "1977W01"),
+            (Date::try_from_values(2000, 01, 02)?, "1999W52"),
+            (Date::try_from_values(2000, 01, 03)?, "2000W01"),
+            (Date::try_from_values(2000, 03, 05)?, "2000W09"),
+            (Date::try_from_values(2000, 03, 06)?, "2000W10"),
+            (Date::try_from_values(2000, 10, 29)?, "2000W43"),
+            (Date::try_from_values(2000, 10, 30)?, "2000W44"),
+            (Date::try_from_values(2019, 12, 29)?, "2019W52"),
+            (Date::try_from_values(2019, 12, 30)?, "2020W01"),
+            (Date::try_from_values(2019, 12, 31)?, "2020W01"),
+            (Date::try_from_values(2020, 01, 01)?, "2020W01"),
+            (Date::try_from_values(2020, 01, 06)?, "2020W02"),
+        ];
+        for (d, e) in test_cases {
+            assert_eq!(e, d.format(&ISO8601_WEEK_NUMBER));
+        }
         Ok(())
     }
 }

@@ -15,7 +15,7 @@ use irox_units::units::duration::{Duration, DurationUnit};
 use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
 use crate::format::iso8601::ExtendedDateFormat;
 use crate::format::{Format, FormatError, FormatParser};
-use crate::julian::{JulianDate, JulianDayNumber, JULIAN_EPOCH};
+use crate::julian::{JulianDate, JulianDayNumber, PrimeDate, JULIAN_EPOCH};
 use crate::SECONDS_IN_DAY;
 
 /// Days per 4 Year Window
@@ -408,6 +408,118 @@ impl Date {
     ) -> Result<Self, FormatError> {
         format.try_from(string)
     }
+
+    ///
+    /// Returns the day-of-the-week name of this date, using ISO8601 convention that the week starts on Monday.
+    pub fn day_of_week(&self) -> DayOfWeek {
+        let prime: PrimeDate = self.as_julian_day().into();
+        let dow = prime.get_day_number() as i32 % 7;
+        match dow {
+            1 => DayOfWeek::Tuesday,
+            2 => DayOfWeek::Wednesday,
+            3 => DayOfWeek::Thursday,
+            4 => DayOfWeek::Friday,
+            5 => DayOfWeek::Saturday,
+            6 => DayOfWeek::Sunday,
+            _ => DayOfWeek::Monday,
+        }
+    }
+
+    ///
+    /// Returns a pair (year number, week of year)
+    pub fn week_number(&self) -> (i32, u8) {
+        let jan01 = Date {
+            year: self.year,
+            day_of_year: 0,
+        };
+        let dow = self.day_of_week() as i32;
+        let wkno = (9 + self.day_of_year as i32 - dow) / 7;
+
+        if wkno == 0 {
+            let dow = jan01.day_of_week() as i32;
+            if (0..=3).contains(&dow) {
+                return (self.year, 1);
+            }
+            let year = self.year - 1;
+            if dow == 4 {
+                // friday, always W53 of prev year
+                return (year, 53);
+            }
+            if dow == 5 {
+                // saturday, W53 in leaps, W52 otherwise.
+                let prev_yr_starts_on = Date {
+                    year,
+                    day_of_year: 0,
+                }
+                .day_of_week();
+                if is_leap_year(year) && prev_yr_starts_on == DayOfWeek::Thursday {
+                    return (year, 53);
+                }
+            }
+            // sunday, always W52
+            return (year, 52);
+        }
+        if wkno == 53 {
+            // only actually 53 if is a long year
+            if is_long_year(self.year) {
+                return (self.year, 53);
+            }
+            // otherwise is Year 01 of the following year.
+            return (self.year + 1, 1);
+        }
+
+        (self.year, wkno as u8)
+    }
+}
+
+///
+/// Day of the week enumeration, following ISO8601 convention of "Monday is the start of the week"
+#[derive(
+    Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, EnumName, EnumIterItem, EnumTryFromStr,
+)]
+pub enum DayOfWeek {
+    Monday = 0,
+    Tuesday = 1,
+    Wednesday = 2,
+    Thursday = 3,
+    Friday = 4,
+    Saturday = 5,
+    Sunday = 6,
+}
+
+impl TryFrom<u8> for DayOfWeek {
+    type Error = GreaterThanEqualToValueError<u8>;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => DayOfWeek::Monday,
+            1 => DayOfWeek::Tuesday,
+            2 => DayOfWeek::Wednesday,
+            3 => DayOfWeek::Thursday,
+            4 => DayOfWeek::Friday,
+            5 => DayOfWeek::Saturday,
+            6 => DayOfWeek::Sunday,
+            e => return GreaterThanEqualToValueError::err(e, LessThanValue::new(8)),
+        })
+    }
+}
+
+///
+/// Returns true if the indicated year is a ISO8601 "Long Year" with 53 Weeks in it.
+pub fn is_long_year(year: i32) -> bool {
+    let start_day = Date {
+        year,
+        day_of_year: 0,
+    }
+    .day_of_week();
+    let is_leap = is_leap_year(year);
+    if start_day == DayOfWeek::Thursday {
+        return true;
+    }
+    if start_day == DayOfWeek::Wednesday && is_leap {
+        return true;
+    }
+    false
 }
 
 ///
