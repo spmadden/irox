@@ -838,12 +838,12 @@ mod tests {
     pub fn test_day_of_year() -> Result<(), GreaterThanEqualToValueError<u8>> {
         let date = Date {
             year: 2021,
-            day_of_year: 90
+            day_of_year: 90,
         };
         assert_eq!("2021-04-01", date.to_string());
         let date = Date {
             year: 2021,
-            day_of_year: 91
+            day_of_year: 91,
         };
         assert_eq!("2021-04-02", date.to_string());
         Ok(())
