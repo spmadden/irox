@@ -10,6 +10,7 @@ use irox_units::units::duration::{Duration, DurationUnit};
 use std::marker::PhantomData;
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
+use crate::epoch::{PrimeEpoch, PRIME_EPOCH};
 use crate::{
     epoch::{Epoch, UnixTimestamp, COMMON_ERA_EPOCH, GREGORIAN_EPOCH},
     gregorian::Date,
@@ -151,6 +152,11 @@ pub const RATA_DIE_JD_OFFSET: f64 = 1721424.5_f64;
 /// The offset from the [`JULIAN_EPOCH`] for the [`UnixTimestamp`]
 pub const UNIX_TS_JD_OFFSET: f64 = 2240587.5_f64;
 
+///
+/// The Prime Date is the fixed number of days since 01-JAN-1900.
+pub type PrimeDate = JulianDayNumber<PrimeEpoch>;
+pub const PRIME_JD_OFFSET: f64 = 2415020.5_f64;
+
 macro_rules! impl_julian {
     ($date:ident,$epoch:ident,$offset:ident) => {
         impl From<JulianDate> for $date {
@@ -276,3 +282,4 @@ impl_julian!(
 );
 impl_julian!(LilianDate, GREGORIAN_EPOCH, LILIAN_JD_OFFSET);
 impl_julian!(RataDieDate, COMMON_ERA_EPOCH, RATA_DIE_JD_OFFSET);
+impl_julian!(PrimeDate, PRIME_EPOCH, PRIME_JD_OFFSET);

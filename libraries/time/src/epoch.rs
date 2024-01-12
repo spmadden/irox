@@ -308,5 +308,15 @@ pub const PRIME_EPOCH: Epoch = Epoch(Date {
     day_of_year: 0,
 });
 ///
+/// Represents a duration offset from the [`WINDOWS_NT_EPOCH`]
+///
+/// Note: when a duration is actually retrieved from the windows FILETIME
+/// routines, it comes back in 100-nanosecond increments from this epoch.
+pub type PrimeTimestamp = Timestamp<PrimeEpoch>;
+/// `PrimeEpoch` is a compile-time check for [`PrimeTimestamp`] = [`Timestamp<crate::epoch::PrimeEpoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub struct PrimeEpoch;
+derive_timestamp_impl!(PRIME_EPOCH, PrimeTimestamp);
+///
 /// The NTP epoch is the same as the [`PRIME_EPOCH`]
 pub const NTP_EPOCH: Epoch = PRIME_EPOCH;
