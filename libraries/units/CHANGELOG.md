@@ -1,7 +1,34 @@
 
 
 
+## v0.3.4 (2024-01-12)
+
+### Chore
+
+ - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 44 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
+</details>
+
 ## v0.3.3 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -15,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 9 calendar days.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 20 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.3 ([`68456ec`](https://github.com/spmadden/irox/commit/68456ecdeac7235a36eef43712410626d0dae174))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Add getters, docs to bounds ([`9457b54`](https://github.com/spmadden/irox/commit/9457b54f25f571b98cb41be1aee5c46692bfa6a8))
 </details>
