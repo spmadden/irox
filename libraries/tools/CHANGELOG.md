@@ -1,6 +1,92 @@
 
 
 
+## v0.5.0 (2024-01-12)
+
+### Chore
+
+ - <csr-id-4160ef3c3d173bddc6688473113fb1a25a45a22a/> clean up lints for no-std compliance
+ - <csr-id-af906604969d656432218f6843a8ac3f825b4a04/> clean up lints for no-std compliance
+
+### New Features
+
+ - <csr-id-098c51c276447937fb20dd65c9c48ca1d6b84019/> add additional PCG random impls
+ - <csr-id-0b67aa6b1dd893688862973d0b48029d6cce1924/> starting new vbyte impls
+ - <csr-id-4000e53b0222938eed42e1534059f33efc337842/> HexDump is now no-std
+ - <csr-id-65021dccf264ac2ac909dbc6fbd38b0f5a7186ec/> MutBits can now be used with write!()
+ - <csr-id-f43a9291a7b8b2f8b092ed51bab40d685c8350ae/> Bits, Codec, Base64 now fully no_std
+ - <csr-id-26986c9bd6c1ea2a7d9b8a174c2f10c9a03d847c/> new easy Line ending scanners
+ - <csr-id-94bbd1d5ffb530559e016a8f3472d353d9f2d3ed/> new ReadAny and ReadEmpty, for converting random stuff into Read's
+ - <csr-id-23d81e57f7cc5c044f827e8dbe644dbaa9c5a0d5/> new f32 and f64 traits for no-std
+ - <csr-id-91705d832edccfc49849d0ba018f4cbf3210fd1d/> new 'Base64' conversions, compatible with RFC4648
+ - <csr-id-7febef2493a70a7f25883b7e76a167afe6806836/> new 'Codec' trait for byte encoding conversions
+ - <csr-id-1ad20e1bcd42018c5abbf62f9cb32d32456f107e/> Now 'no_std' capable (without the 'std' feature)
+ - <csr-id-a9c45bfedc2d7b35a1f726ee5cd7fc555ebd6c81/> Now 'no_std' capable (without the 'std' feature)
+
+### Bug Fixes
+
+ - <csr-id-194adf37e50dd9677bcab9fe0540ea8a90c9f069/> bump u32 to u64 in fmt to fix rollover in tests
+ - <csr-id-2b00a47d28d1856f2e2e00b03f2aa40ee5b2033a/> fix busted impl of Read in Buffer
+
+### Other
+
+ - <csr-id-4dc4b9d0b73f0ebf5d97ff2685db6233e527cb92/> Added missing readme?
+ - <csr-id-c9bb39737d83b6d83376ce4700c088f20ec23b37/> Module docs for arrays, assert, options
+
+### Refactor
+
+ - <csr-id-00bc196ddd2e8e0eb60fdb68fae661593752f3c0/> mv codec.rs into codec/mod.rs
+ - <csr-id-081d7694415883c4569d762fe4da7864cbed8de4/> rename 'sync.rs' into 'sync/mod.rs'
+ - <csr-id-cf0bff72254d93594a8b7ebd4067485f0434607a/> rename 'read.rs' into 'read/mod.rs'
+ - <csr-id-ca28aa6647aa5425067b557f532844022546bb95/> move base64, bits, id, scanner, uuid to 'utils' module
+ - <csr-id-e753938da0ffabd720a5c91f63d8c998e2cec483/> move associated primitives into primitives module
+
+### New Features (BREAKING)
+
+ - <csr-id-59aa3f65a355740f793ea3db923629833fc0053c/> refactor random to have PRNG trait, impl new random algorithm
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 24 commits contributed to the release over the course of 8 calendar days.
+ - 37 days passed between releases.
+ - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add additional PCG random impls ([`098c51c`](https://github.com/spmadden/irox/commit/098c51c276447937fb20dd65c9c48ca1d6b84019))
+    - Starting new vbyte impls ([`0b67aa6`](https://github.com/spmadden/irox/commit/0b67aa6b1dd893688862973d0b48029d6cce1924))
+    - Refactor random to have PRNG trait, impl new random algorithm ([`59aa3f6`](https://github.com/spmadden/irox/commit/59aa3f65a355740f793ea3db923629833fc0053c))
+    - Mv codec.rs into codec/mod.rs ([`00bc196`](https://github.com/spmadden/irox/commit/00bc196ddd2e8e0eb60fdb68fae661593752f3c0))
+    - Rename 'sync.rs' into 'sync/mod.rs' ([`081d769`](https://github.com/spmadden/irox/commit/081d7694415883c4569d762fe4da7864cbed8de4))
+    - Rename 'read.rs' into 'read/mod.rs' ([`cf0bff7`](https://github.com/spmadden/irox/commit/cf0bff72254d93594a8b7ebd4067485f0434607a))
+    - HexDump is now no-std ([`4000e53`](https://github.com/spmadden/irox/commit/4000e53b0222938eed42e1534059f33efc337842))
+    - MutBits can now be used with write!() ([`65021dc`](https://github.com/spmadden/irox/commit/65021dccf264ac2ac909dbc6fbd38b0f5a7186ec))
+    - Move base64, bits, id, scanner, uuid to 'utils' module ([`ca28aa6`](https://github.com/spmadden/irox/commit/ca28aa6647aa5425067b557f532844022546bb95))
+    - Move associated primitives into primitives module ([`e753938`](https://github.com/spmadden/irox/commit/e753938da0ffabd720a5c91f63d8c998e2cec483))
+    - Bits, Codec, Base64 now fully no_std ([`f43a929`](https://github.com/spmadden/irox/commit/f43a9291a7b8b2f8b092ed51bab40d685c8350ae))
+    - Clean up lints for no-std compliance ([`4160ef3`](https://github.com/spmadden/irox/commit/4160ef3c3d173bddc6688473113fb1a25a45a22a))
+    - Clean up lints for no-std compliance ([`af90660`](https://github.com/spmadden/irox/commit/af906604969d656432218f6843a8ac3f825b4a04))
+    - Bump u32 to u64 in fmt to fix rollover in tests ([`194adf3`](https://github.com/spmadden/irox/commit/194adf37e50dd9677bcab9fe0540ea8a90c9f069))
+    - Added missing readme? ([`4dc4b9d`](https://github.com/spmadden/irox/commit/4dc4b9d0b73f0ebf5d97ff2685db6233e527cb92))
+    - New easy Line ending scanners ([`26986c9`](https://github.com/spmadden/irox/commit/26986c9bd6c1ea2a7d9b8a174c2f10c9a03d847c))
+    - New ReadAny and ReadEmpty, for converting random stuff into Read's ([`94bbd1d`](https://github.com/spmadden/irox/commit/94bbd1d5ffb530559e016a8f3472d353d9f2d3ed))
+    - Module docs for arrays, assert, options ([`c9bb397`](https://github.com/spmadden/irox/commit/c9bb39737d83b6d83376ce4700c088f20ec23b37))
+    - Fix busted impl of Read in Buffer ([`2b00a47`](https://github.com/spmadden/irox/commit/2b00a47d28d1856f2e2e00b03f2aa40ee5b2033a))
+    - New f32 and f64 traits for no-std ([`23d81e5`](https://github.com/spmadden/irox/commit/23d81e57f7cc5c044f827e8dbe644dbaa9c5a0d5))
+    - New 'Base64' conversions, compatible with RFC4648 ([`91705d8`](https://github.com/spmadden/irox/commit/91705d832edccfc49849d0ba018f4cbf3210fd1d))
+    - New 'Codec' trait for byte encoding conversions ([`7febef2`](https://github.com/spmadden/irox/commit/7febef2493a70a7f25883b7e76a167afe6806836))
+    - Now 'no_std' capable (without the 'std' feature) ([`1ad20e1`](https://github.com/spmadden/irox/commit/1ad20e1bcd42018c5abbf62f9cb32d32456f107e))
+    - Now 'no_std' capable (without the 'std' feature) ([`a9c45bf`](https://github.com/spmadden/irox/commit/a9c45bfedc2d7b35a1f726ee5cd7fc555ebd6c81))
+</details>
+
 ## v0.4.1 (2023-12-06)
 
 ### New Features
@@ -12,7 +98,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 4 calendar days.
+ - 3 commits contributed to the release over the course of 4 calendar days.
  - 6 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +110,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.4.1 ([`367158e`](https://github.com/spmadden/irox/commit/367158e54237e29b2e7203e1b33139684ac43086))
     - New synchronization primitive 'SynchronizedOptional' like 'OnceLock', but different. ([`59c9d98`](https://github.com/spmadden/irox/commit/59c9d9821ced4b102b3f6a63fbb647d201ee82b1))
     - New hexdump module ([`4e6c896`](https://github.com/spmadden/irox/commit/4e6c8961dc8820c39ccabc0e8283f5d50aefed2f))
 </details>

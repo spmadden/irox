@@ -502,7 +502,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-describe"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cargo",
  "clap",
@@ -2525,7 +2525,7 @@ dependencies = [
 
 [[package]]
 name = "irox"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "irox-build-rs",
  "irox-carto",
@@ -2555,7 +2555,7 @@ dependencies = [
 
 [[package]]
 name = "irox-build-rs"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "git2",
  "irox-git-tools",
@@ -2564,7 +2564,7 @@ dependencies = [
 
 [[package]]
 name = "irox-carto"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "irox-csv",
  "irox-enums",
@@ -2576,7 +2576,7 @@ dependencies = [
 
 [[package]]
 name = "irox-csv"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "irox-tools",
 ]
@@ -2625,7 +2625,7 @@ dependencies = [
 
 [[package]]
 name = "irox-git-tools"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "git2",
  "irox-tools",
@@ -2656,7 +2656,7 @@ dependencies = [
 
 [[package]]
 name = "irox-gpx"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "irox-carto",
  "irox-time",
@@ -2690,7 +2690,7 @@ dependencies = [
 
 [[package]]
 name = "irox-influxdb_v1"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "irox-csv",
  "irox-networking",
@@ -2702,7 +2702,7 @@ dependencies = [
 
 [[package]]
 name = "irox-log"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "irox-time",
  "irox-tools",
@@ -2711,7 +2711,7 @@ dependencies = [
 
 [[package]]
 name = "irox-networking"
-version = "0.3.2"
+version = "0.4.0"
 dependencies = [
  "irox-tools",
  "log",
@@ -2720,7 +2720,7 @@ dependencies = [
 
 [[package]]
 name = "irox-nmea0183"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "irox-carto",
  "irox-enums",
@@ -2732,7 +2732,7 @@ dependencies = [
 
 [[package]]
 name = "irox-progress"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "eframe",
  "egui",
@@ -2744,7 +2744,7 @@ dependencies = [
 
 [[package]]
 name = "irox-raymarine-sonar"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "irox-carto",
  "irox-time",
@@ -2759,7 +2759,7 @@ dependencies = [
 
 [[package]]
 name = "irox-sirf"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "irox-structs",
  "irox-tools",
@@ -2785,7 +2785,7 @@ version = "0.2.2"
 
 [[package]]
 name = "irox-structs"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "irox-structs_derive",
  "irox-tools",
@@ -2812,7 +2812,7 @@ dependencies = [
 
 [[package]]
 name = "irox-time"
-version = "0.3.5"
+version = "0.4.0"
 dependencies = [
  "irox-enums",
  "irox-tools",
@@ -2821,7 +2821,7 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "criterion",
 ]
@@ -2841,7 +2841,7 @@ version = "0.3.3"
 
 [[package]]
 name = "irox-winlocation-api"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "irox-carto",
  "irox-time",
