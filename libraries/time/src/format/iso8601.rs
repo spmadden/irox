@@ -431,11 +431,7 @@ mod tests {
         COMMON_ERA_EPOCH, GPS_EPOCH, GREGORIAN_EPOCH, NTP_EPOCH, PRIME_EPOCH, UNIX_EPOCH,
         WINDOWS_NT_EPOCH,
     };
-    use crate::format::iso8601::{
-        ExtendedDateFormat, ExtendedDateTimeFormat, ExtendedTimeFormat, ISO8601Date,
-        ISO8601DateTime, ISO8601Time, BASIC_CALENDAR_DATE, BASIC_TIME_OF_DAY,
-        EXTENDED_DATE_TIME_FORMAT,
-    };
+    use crate::format::iso8601::{ExtendedDateFormat, ExtendedDateTimeFormat, ExtendedTimeFormat, ISO8601Date, ISO8601DateTime, ISO8601Time, BASIC_CALENDAR_DATE, BASIC_TIME_OF_DAY, EXTENDED_DATE_TIME_FORMAT, ISO8601_DATE_TIME};
     use crate::format::{Format, FormatError, FormatParser};
     use crate::gregorian::Date;
     use crate::Time;
@@ -891,6 +887,29 @@ mod tests {
             format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
         );
 
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_april_fools_day() -> Result<(), FormatError> {
+        let time = UTCDateTime::try_from_values(2023, 04, 01, 01, 01, 01)?;
+        assert_eq!(
+            "2023-04-01T01:01:01Z",
+            format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
+        );
+        let time = UTCDateTime::try_from_values(2023, 04, 02, 01, 01, 01)?;
+        assert_eq!(
+            "2023-04-02T01:01:01Z",
+            format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
+        );
+        let time = ISO8601_DATE_TIME.try_from("2023-04-01T01:01:01Z")?;
+        assert_eq!("2023-04-01T01:01:01Z", time.format(&EXTENDED_DATE_TIME_FORMAT));
+
+        let time = UTCDateTime::try_from_values_f64(2023, 04, 01, 01, 01, 01.01)?;
+        assert_eq!(
+            "2023-04-01T01:01:01.010000000Z",
+            format!("{}", time.format(&EXTENDED_DATE_TIME_FORMAT))
+        );
         Ok(())
     }
 }

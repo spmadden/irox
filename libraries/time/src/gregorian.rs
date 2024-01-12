@@ -89,7 +89,7 @@ impl Month {
     }
 
     ///
-    /// Returns the start day of the year for this month for the indicated year.
+    /// Returns the start day of the year for this month for the indicated year, zero-based 01-JAN is 00.
     #[must_use]
     pub const fn start_day_of_year(&self, year: i32) -> u16 {
         if is_leap_year(year) {
@@ -126,27 +126,12 @@ impl Month {
     }
 
     ///
-    /// Returns the end day of the year for this month for the indicated year.
+    /// Returns the end day of the year for this month for the indicated year, zero-based, JAN-31 is 30.
     #[must_use]
     pub const fn end_day_of_year(&self, year: i32) -> u16 {
         if is_leap_year(year) {
             match self {
-                Month::January => 31,
-                Month::February => 60,
-                Month::March => 91,
-                Month::April => 121,
-                Month::May => 152,
-                Month::June => 182,
-                Month::July => 213,
-                Month::August => 244,
-                Month::September => 274,
-                Month::October => 305,
-                Month::November => 335,
-                Month::December => 366,
-            }
-        } else {
-            match self {
-                Month::January => 31,
+                Month::January => 30,
                 Month::February => 59,
                 Month::March => 90,
                 Month::April => 120,
@@ -158,6 +143,21 @@ impl Month {
                 Month::October => 304,
                 Month::November => 334,
                 Month::December => 365,
+            }
+        } else {
+            match self {
+                Month::January => 30,
+                Month::February => 58,
+                Month::March => 89,
+                Month::April => 119,
+                Month::May => 150,
+                Month::June => 180,
+                Month::July => 211,
+                Month::August => 242,
+                Month::September => 272,
+                Month::October => 303,
+                Month::November => 333,
+                Month::December => 364,
             }
         }
     }
@@ -831,6 +831,21 @@ mod tests {
             2460235.5
         );
 
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_day_of_year() -> Result<(), GreaterThanEqualToValueError<u8>> {
+        let date = Date {
+            year: 2021,
+            day_of_year: 90
+        };
+        assert_eq!("2021-04-01", date.to_string());
+        let date = Date {
+            year: 2021,
+            day_of_year: 91
+        };
+        assert_eq!("2021-04-02", date.to_string());
         Ok(())
     }
 }
