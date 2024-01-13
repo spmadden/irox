@@ -6,6 +6,7 @@
 pub mod address;
 pub mod r#async;
 pub mod blocking;
+pub mod error;
 pub mod http;
 pub mod pool;
 pub mod url;
