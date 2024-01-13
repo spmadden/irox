@@ -959,6 +959,12 @@ mod tests {
             (Date::try_from_values(2019, 12, 31)?, "2020W01"),
             (Date::try_from_values(2020, 01, 01)?, "2020W01"),
             (Date::try_from_values(2020, 01, 06)?, "2020W02"),
+            (Date::try_from_values(2021, 03, 31)?, "2021W13"),
+            (Date::try_from_values(2021, 04, 01)?, "2021W13"),
+            (Date::try_from_values(2021, 04, 04)?, "2021W13"),
+            (Date::try_from_values(2021, 04, 05)?, "2021W14"),
+            (Date::try_from_values(2023, 04, 28)?, "2023W17"),
+            (Date::try_from_values(2023, 10, 31)?, "2023W44"),
         ];
         for (d, e) in test_cases {
             assert_eq!(e, d.format(&ISO8601_WEEK_NUMBER));
