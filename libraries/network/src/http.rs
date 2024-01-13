@@ -6,9 +6,11 @@ use std::io::{Read, Write};
 use std::num::ParseIntError;
 use std::str::FromStr;
 
+use crate::error::Error;
 pub use client::*;
 pub use h2::*;
 pub use headers::*;
+use irox_enums::EnumIterItem;
 pub use request::*;
 pub use response::*;
 
@@ -20,7 +22,7 @@ mod response;
 
 ///
 /// Basic enumerated type to pick the HTTP protocol & port
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, EnumIterItem)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum HttpProtocol {
     HTTP,
@@ -44,6 +46,19 @@ impl HttpProtocol {
             HttpProtocol::HTTP => "http",
             HttpProtocol::HTTPS => "https",
         }
+    }
+}
+
+impl FromStr for HttpProtocol {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for item in HttpProtocol::iter_items() {
+            if item.name().to_lowercase() == s {
+                return Ok(item);
+            }
+        }
+        Error::unknown_scheme_err(format!("Unknown scheme: {s}"))
     }
 }
 

@@ -9,7 +9,8 @@ use irox_tools::{impl_err_fn, impl_error, impl_from_error};
 pub enum ErrorType {
     IOError,
     AddressError,
-    MissingPortError,
+    MissingPort,
+    UnknownScheme,
 }
 
 impl_error!(Error, ErrorType);
@@ -18,7 +19,13 @@ impl_from_error!(Error, AddressError, ErrorType::AddressError);
 
 impl_err_fn!(
     Error,
-    ErrorType::MissingPortError,
+    ErrorType::MissingPort,
     missing_port,
     missing_port_err
+);
+impl_err_fn!(
+    Error,
+    ErrorType::UnknownScheme,
+    unknown_scheme,
+    unknown_scheme_err
 );
