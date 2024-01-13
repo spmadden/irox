@@ -1,7 +1,37 @@
 
 
 
+## v0.6.0 (2024-01-13)
+
+### Chore
+
+ - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 45 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+    - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
+</details>
+
 ## v0.5.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
+<csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
+<csr-id-310985b4d9166fa77b198ca16f5c1f125506c615/>
 
 ### Chore
 
@@ -21,7 +51,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 23 calendar days.
+ - 7 commits contributed to the release over the course of 23 calendar days.
  - 30 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -33,6 +63,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.5.0 ([`a74be9f`](https://github.com/spmadden/irox/commit/a74be9f9d18eba26d661f6abd9faf4771762edaa))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - New PositionsBuilder and WGS84PositionBuilder ([`5c80a81`](https://github.com/spmadden/irox/commit/5c80a81df3d651e32aa37ca7f7f33b0e01b281b1))
     - Add new 'Positions' structs to represent the same position ([`5e4c0c9`](https://github.com/spmadden/irox/commit/5e4c0c9b9c524fbb66ac50f11bfc0503be8fe27f))
