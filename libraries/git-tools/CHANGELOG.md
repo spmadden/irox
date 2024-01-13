@@ -1,5 +1,26 @@
 
 
+## Unreleased
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 18 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
 ## v0.1.0 (2023-12-25)
 
 ### New Features
@@ -10,7 +31,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +42,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-git-tools v0.1.0 ([`84812ab`](https://github.com/spmadden/irox/commit/84812ab385e3bae9a8b3f487ff9f503c99cbe8fa))
     - New git-tools module to wrap git2 functions ([`838f937`](https://github.com/spmadden/irox/commit/838f93781f1cbeb85a055c738e70cc83802e7d4b))
 </details>
 
