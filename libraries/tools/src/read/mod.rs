@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Helper functions around [`std::io::Read`]
+
 extern crate alloc;
 use alloc::collections::VecDeque;
 use std::io::{Error, Read, Write};

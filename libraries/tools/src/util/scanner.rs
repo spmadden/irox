@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! A utility to scan for tokens in a byte stream
+//!
+
 extern crate alloc;
 use alloc::collections::VecDeque;
 use std::io::{BufReader, Read};
