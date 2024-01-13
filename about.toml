@@ -12,5 +12,14 @@ accepted = [
     "Unicode-DFS-2016",
     "MPL-2.0",
     "NOASSERTION",
-    "CC0-1.0"
+    "CC0-1.0",
 ]
+no-clearly-defined = true
+workarounds = ["ring"]
+
+[epaint.clarify]
+license = "(MIT OR Apache-2.0) AND OFL-1.1 AND LicenseRef-UFL-1.0"
+[[epaint.clarify.files]]
+path = "fonts/UFL.txt"
+license = "LicenseRef-UFL-1.0"
+checksum = "0cebe8aa1ba75c4fdf57946d6109ed0a8ce12ae6bb420bad4e4f302c5c147d78"
