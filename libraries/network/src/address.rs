@@ -2,7 +2,6 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use std::net::ToSocketAddrs;
 use std::str::FromStr;
 
 use irox_tools::arrays::longest_consecutive_values;

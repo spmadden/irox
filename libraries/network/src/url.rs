@@ -257,6 +257,7 @@ impl URLBuilder {
     }
 }
 
+#[macro_export]
 macro_rules! url {
     ($scheme:literal, $host:literal) => {{
         crate::url::URLBuilder::new($scheme, $host).build()

@@ -2713,9 +2713,13 @@ dependencies = [
 name = "irox-networking"
 version = "0.4.0"
 dependencies = [
+ "irox-enums",
+ "irox-log",
+ "irox-structs",
  "irox-tools",
  "log",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

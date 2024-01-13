@@ -36,6 +36,7 @@ mod test {
     use crate::url::{UrlError, URL};
 
     #[test]
+    #[ignore]
     pub fn test() -> Result<(), UrlError> {
         irox_log::init_console_level(Level::Debug);
         let req = HttpRequest::new(URL::from_str("http://10.169.0.27:8080/get")?);

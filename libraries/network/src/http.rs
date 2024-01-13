@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-pub use client::*;
-pub use headers::*;
-pub use request::*;
-pub use response::*;
 use std::fmt::{Display, Formatter};
 use std::io::{Read, Write};
 use std::num::ParseIntError;
 use std::str::FromStr;
+
+pub use client::*;
+pub use h2::*;
+pub use headers::*;
+pub use request::*;
+pub use response::*;
 
 mod client;
 mod h2;
