@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
+use core::fmt::{Display, Formatter};
+use core::str::FromStr;
 
 use irox_tools::arrays::longest_consecutive_values;
 use irox_tools::options::MaybeMap;
@@ -40,6 +40,11 @@ pub enum NetworkError {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum AddressError {
     InvalidAddress,
+}
+impl Display for AddressError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 /// A generic Internet Protocol Address, could be a [`IPv4Address`] or a [`IPv6Address`]
