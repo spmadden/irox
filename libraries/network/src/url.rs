@@ -260,21 +260,21 @@ impl URLBuilder {
 #[macro_export]
 macro_rules! url {
     ($scheme:literal, $host:literal) => {{
-        crate::url::URLBuilder::new($scheme, $host).build()
+        $crate::url::URLBuilder::new($scheme, $host).build()
     }};
     ($scheme:literal, $host:literal, $path:literal) => {{
-        let mut tmp = crate::url::URLBuilder::new($scheme, $host);
+        let mut tmp = $crate::url::URLBuilder::new($scheme, $host);
         tmp.with_path($path);
         tmp.build()
     }};
     ($scheme:literal, $host:literal, $path:literal, $frag:literal) => {{
-        let mut tmp = crate::url::URLBuilder::new($scheme, $host);
+        let mut tmp = $crate::url::URLBuilder::new($scheme, $host);
         tmp.with_path($path);
         tmp.with_fragment($frag);
         tmp.build()
     }};
     ($scheme:literal, $host:literal, $path:literal,{$($qk:literal,$qv:literal)+}) => {{
-        let mut tmp = crate::url::URLBuilder::new($scheme, $host);
+        let mut tmp = $crate::url::URLBuilder::new($scheme, $host);
         tmp.with_path($path);
         $(
             tmp.add_query($qk,$qv);
@@ -282,7 +282,7 @@ macro_rules! url {
         tmp.build()
     }};
     ($scheme:literal, $host:literal, $path:literal, $frag:literal, {$($qk:literal,$qv:literal)+}) => {{
-        let mut tmp = crate::url::URLBuilder::new($scheme, $host);
+        let mut tmp = $crate::url::URLBuilder::new($scheme, $host);
         tmp.with_path($path);
         tmp.with_fragment($frag);
         $(
