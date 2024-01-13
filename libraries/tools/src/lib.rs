@@ -33,4 +33,5 @@ pub mod vec;
 pub use primitives::*;
 mod primitives;
 pub use util::*;
+pub mod errors;
 mod util;
