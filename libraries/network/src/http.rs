@@ -383,12 +383,79 @@ impl HttpCodes {
     }
 }
 
-impl TryFrom<&str> for HttpCodes {
-    type Error = ParseIntError;
+impl FromStr for HttpCodes {
+    type Err = ParseIntError;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
         let val = u16::from_str(value)?;
         Ok(match val {
+            100 => HttpCodes::Info_100_Continue,
+            101 => HttpCodes::Info_101_SwitchingProtocols,
+            102 => HttpCodes::Info_102_Processing,
+            103 => HttpCodes::Info_103_EarlyHints,
+
+            200 => HttpCodes::Success_200_Ok,
+            201 => HttpCodes::Success_201_Created,
+            202 => HttpCodes::Success_202_Accepted,
+            203 => HttpCodes::Success_203_NotAuthoritative,
+            204 => HttpCodes::Success_204_NoContent,
+            205 => HttpCodes::Success_205_ResetContent,
+            206 => HttpCodes::Success_206_PartialContent,
+            207 => HttpCodes::Success_207_MultiStatus,
+            208 => HttpCodes::Success_208_AlreadyReported,
+            226 => HttpCodes::Success_226_IMUsed,
+
+            300 => HttpCodes::Redirect_300_MultipleChoices,
+            301 => HttpCodes::Redirect_301_MovedPermanently,
+            302 => HttpCodes::Redirect_302_Found,
+            303 => HttpCodes::Redirect_303_SeeOther,
+            304 => HttpCodes::Redirect_304_NotModified,
+            305 => HttpCodes::Redirect_305_UseProxy,
+            306 => HttpCodes::Redirect_306_Unused,
+            307 => HttpCodes::Redirect_307_Temporary,
+            308 => HttpCodes::Redirect_308_PermanentRedirect,
+
+            400 => HttpCodes::ClientError_400_BadRequest,
+            401 => HttpCodes::ClientError_401_Unauthorized,
+            402 => HttpCodes::ClientError_402_PaymentRequired,
+            403 => HttpCodes::ClientError_403_Forbidden,
+            404 => HttpCodes::ClientError_404_NotFound,
+            405 => HttpCodes::ClientError_405_MethodNotAllowed,
+            406 => HttpCodes::ClientError_406_NotAcceptable,
+            407 => HttpCodes::ClientError_407_ProxyAuthenticationRequired,
+            408 => HttpCodes::ClientError_408_RequestTimeout,
+            409 => HttpCodes::ClientError_409_Conflict,
+            410 => HttpCodes::ClientError_410_Gone,
+            411 => HttpCodes::ClientError_411_LengthRequired,
+            412 => HttpCodes::ClientError_412_PreconditionFailed,
+            413 => HttpCodes::ClientError_413_PayloadTooLarge,
+            414 => HttpCodes::ClientError_414_URITooLong,
+            415 => HttpCodes::ClientError_415_UnsupportedMediaType,
+            416 => HttpCodes::ClientError_416_RangeNotSatisfiable,
+            417 => HttpCodes::ClientError_417_ExpectationFailed,
+            418 => HttpCodes::ClientError_418_ImATeapot,
+            421 => HttpCodes::ClientError_421_MisdirectedRequest,
+            422 => HttpCodes::ClientError_422_UnprocessableContent,
+            423 => HttpCodes::ClientError_423_Locked,
+            424 => HttpCodes::ClientError_424_FailedDependency,
+            425 => HttpCodes::ClientError_425_TooEarly,
+            426 => HttpCodes::ClientError_426_UpgradeRequired,
+            427 => HttpCodes::ClientError_428_PreconditionRequired,
+            429 => HttpCodes::ClientError_429_TooManyRequests,
+            431 => HttpCodes::ClientError_431_RequestHeaderFieldsTooLarge,
+            451 => HttpCodes::ClientError_451_UnavailableForLegalReasons,
+
+            500 => HttpCodes::ServerError_500_InternalServerError,
+            501 => HttpCodes::ServerError_501_NotImplemented,
+            502 => HttpCodes::ServerError_502_BadGateway,
+            503 => HttpCodes::ServerError_503_ServiceUnavailable,
+            504 => HttpCodes::ServerError_504_GatewayTimeout,
+            505 => HttpCodes::ServerError_505_HTTPVersionNotSupported,
+            506 => HttpCodes::ServerError_506_VariantAlsoNegotiates,
+            507 => HttpCodes::ServerError_507_InsufficientStorage,
+            508 => HttpCodes::ServerError_508_LoopDetected,
+            510 => HttpCodes::ServerError_510_NotExtended,
+            511 => HttpCodes::ServerError_511_NetworkAuthenticationRequired,
             e => HttpCodes::UnknownOther(e),
         })
     }
