@@ -1,9 +1,40 @@
 
 
-## v0.4.0 (2024-01-13)
+## v0.4.1 (2024-01-13)
+
+### Chore
+
+ - <csr-id-701cfdabf93315d4ec035d67522e139917ee57fb/> bump time to 0.4.1
+
+### Test
+
+ - <csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/> some extra 8601 week tests
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump time to 0.4.1 ([`701cfda`](https://github.com/spmadden/irox/commit/701cfdabf93315d4ec035d67522e139917ee57fb))
+    - Release irox-time v0.4.0 ([`da5300f`](https://github.com/spmadden/irox/commit/da5300f1bf2f3d97dbc27a05233628e901c2382f))
+    - Some extra 8601 week tests ([`a5d9a40`](https://github.com/spmadden/irox/commit/a5d9a4055841d8207e3be50b09436b19508b6040))
+</details>
+
+## v0.4.0 (2024-01-12)
 
 <csr-id-90899a9c3d23b8e9bb977d5604adb44fcd173f32/>
 <csr-id-94e82bc9ad4eab534cbb1cd234b0100658e8d607/>
+<csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/>
 
 ### Chore
 
@@ -32,8 +63,9 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 9 commits contributed to the release over the course of 8 calendar days.
+ - 37 days passed between releases.
+ - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -43,7 +75,15 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
-    - Some extra 8601 week tests ([`a5d9a40`](https://github.com/spmadden/irox/commit/a5d9a4055841d8207e3be50b09436b19508b6040))
+    - Release irox-time v0.4.0 ([`8dcc5b3`](https://github.com/spmadden/irox/commit/8dcc5b306c09e9d1252477ca28804c6c61f1a7ea))
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+    - New Date.day_of_week and ISO8601 week number formatting ([`310ea52`](https://github.com/spmadden/irox/commit/310ea52244cc9529d170a070e9a9516c8ae5b6c2))
+    - New PrimeEpoch and PrimeDate ([`cd8e796`](https://github.com/spmadden/irox/commit/cd8e7961c0a0fc9b53e4280efd2d3fd1e8fc4dab))
+    - Default ISO8601 date formats to extended format ([`c930047`](https://github.com/spmadden/irox/commit/c930047cf9d679dc23d2aafb69a7dc335bb1e9cd))
+    - Fixup format ([`90899a9`](https://github.com/spmadden/irox/commit/90899a9c3d23b8e9bb977d5604adb44fcd173f32))
+    - Add julian calendar doc ([`94e82bc`](https://github.com/spmadden/irox/commit/94e82bc9ad4eab534cbb1cd234b0100658e8d607))
+    - Month::end dates were 1-indexed, not 0-indexed as intended ([`b78731f`](https://github.com/spmadden/irox/commit/b78731f08bdcd48f0fa5becd8b4180eafdaa0c9d))
+    - Fix import of tools::fmt ([`2d441bf`](https://github.com/spmadden/irox/commit/2d441bfe429979f1ce5bdba94b709cd960a948f6))
 </details>
 
 ## v0.3.5 (2023-12-06)
