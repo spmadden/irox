@@ -1,14 +1,18 @@
 
 
-## Unreleased
+## 0.2.0 (2024-01-13)
+
+### Chore
+
+ - <csr-id-419be2e8158e3f2bf81858af89e57b4ace2247b1/> tweak git-tools changelog
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 18 days passed between releases.
- - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -18,6 +22,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Tweak git-tools changelog ([`419be2e`](https://github.com/spmadden/irox/commit/419be2e8158e3f2bf81858af89e57b4ace2247b1))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
 
