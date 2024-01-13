@@ -11,7 +11,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 5 calendar days.
+ - 2 commits contributed to the release over the course of 5 calendar days.
  - 6 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +23,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.3.2 ([`23110f9`](https://github.com/spmadden/irox/commit/23110f90aecb29115923ce4c0b749854caee7fde))
     - Put serde behind a feature gate ([`4e408ca`](https://github.com/spmadden/irox/commit/4e408cab037480839fb013f3692e753dc824ecb5))
 </details>
 
@@ -52,6 +53,58 @@
  * **Uncategorized**
     - Release irox-networking v0.3.1 ([`6a1d3d2`](https://github.com/spmadden/irox/commit/6a1d3d227697ea28db8086b7c246d45714d3267a))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
+</details>
+
+## v0.4.0 (2024-01-13)
+
+### Other
+
+ - <csr-id-6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f/> wip snap HTTP client, basic interaction works
+ - <csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/> wip snap HTTP client, basic interaction works
+
+### Bug Fixes
+
+ - <csr-id-be738eef324236d125b8b1bc235cbfd0278f51db/> cleanup lints/unwraps in client and response
+ - <csr-id-8ccfa7133187fdedbd5e271548857ecc29735922/> use $crate ident in url macro
+
+### New Features
+
+ - <csr-id-01ef5caa98730e8c1c4a9415ea7f6395543178dc/> impl Display for AddressError
+ - <csr-id-8f320425909ce9d9db1b2c3d3e9e1dafe1b160af/> impl FromStr for HttpProtocol
+ - <csr-id-4381c274ae9858202cf43dac4c1574b4105805fd/> finish impl FromStr for HttpCodes
+ - <csr-id-bbf2b845292f6ddee8cc3d06c0e0e982649827fd/> new error module using the new macros
+ - <csr-id-c5511546b4615d7739b2d4c481e4a400c4d84cbf/> snap WIP http/ws client
+
+### Chore
+
+ - <csr-id-e1a2beccad777886c8495d0d15a72d4d666bbc2f/> cleanup some lints on networking before snap release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release.
+ - 10 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.2 ([`89b01ec`](https://github.com/spmadden/irox/commit/89b01ec20e8637408a1497fa88a30452233efc97))
+    - Cleanup lints/unwraps in client and response ([`be738ee`](https://github.com/spmadden/irox/commit/be738eef324236d125b8b1bc235cbfd0278f51db))
+    - Impl Display for AddressError ([`01ef5ca`](https://github.com/spmadden/irox/commit/01ef5caa98730e8c1c4a9415ea7f6395543178dc))
+    - Impl FromStr for HttpProtocol ([`8f32042`](https://github.com/spmadden/irox/commit/8f320425909ce9d9db1b2c3d3e9e1dafe1b160af))
+    - Use $crate ident in url macro ([`8ccfa71`](https://github.com/spmadden/irox/commit/8ccfa7133187fdedbd5e271548857ecc29735922))
+    - Finish impl FromStr for HttpCodes ([`4381c27`](https://github.com/spmadden/irox/commit/4381c274ae9858202cf43dac4c1574b4105805fd))
+    - New error module using the new macros ([`bbf2b84`](https://github.com/spmadden/irox/commit/bbf2b845292f6ddee8cc3d06c0e0e982649827fd))
+    - Cleanup some lints on networking before snap release ([`e1a2bec`](https://github.com/spmadden/irox/commit/e1a2beccad777886c8495d0d15a72d4d666bbc2f))
+    - Wip snap HTTP client, basic interaction works ([`6a313ea`](https://github.com/spmadden/irox/commit/6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f))
+    - Wip snap HTTP client, basic interaction works ([`663496c`](https://github.com/spmadden/irox/commit/663496c6dee3b0bd7c6bc2e2abf00fba851b786d))
+    - Snap WIP http/ws client ([`c551154`](https://github.com/spmadden/irox/commit/c5511546b4615d7739b2d4c481e4a400c4d84cbf))
 </details>
 
 ## v0.3.0 (2023-10-30)
