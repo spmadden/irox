@@ -63,8 +63,9 @@ lints +FLAGS='':
     @just logend
 
 lints_deny +FLAGS='':
-  cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
-
+    @just logstart lints
+    cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
+    @just logend
 
 package:
     @just logstart package
