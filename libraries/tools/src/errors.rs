@@ -2,6 +2,9 @@
 // Copyright 2023 IROX Contributors
 //
 
+//!
+//! Macros to aid in the creation of crate-level error structs
+
 #[macro_export]
 macro_rules! impl_error {
     ($ErrorName:ident, $ErrorType:ident) => {
