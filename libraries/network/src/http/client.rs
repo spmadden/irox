@@ -6,17 +6,28 @@ use std::net::TcpStream;
 use std::str::FromStr;
 
 use crate::address::IPv4Address;
-use crate::http::{HttpRequest, HttpResponse};
+use crate::error::Error;
+use crate::http::{HttpProtocol, HttpRequest, HttpResponse};
 
 pub const DEFAULT_USER_AGENT: &str = "irox-networking/0.1.0";
 
 pub struct Client;
 
 impl Client {
-    pub fn request(&mut self, req: HttpRequest) -> Result<HttpResponse, std::io::Error> {
+    pub fn request(&mut self, req: HttpRequest) -> Result<HttpResponse, Error> {
         let url = &req.url;
-        let ip = IPv4Address::from_str(url.host()).unwrap();
-        let port = url.port().unwrap();
+        let ip = IPv4Address::from_str(url.host())?;
+        let Some(port) = url.port().or_else(|| {
+            let Ok(port) = HttpProtocol::from_str(&url.scheme) else {
+                return None;
+            };
+            Some(port.port())
+        }) else {
+            return Error::missing_port_err(format!(
+                "Port must be specified for unknown URL scheme: {}",
+                url.scheme
+            ));
+        };
         let mut stream = TcpStream::connect(ip.sockaddr(port))?;
         req.write_to(&mut stream)?;
 

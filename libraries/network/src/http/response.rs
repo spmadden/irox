@@ -23,7 +23,7 @@ impl HttpResponse {
         let mut bufread = BufReader::new(input);
         let mut line = String::new();
         let _read = bufread.read_line(&mut line)?;
-        let mut status = line.split(" ");
+        let mut status = line.split(' ');
         let version = status.next().unwrap_or_default().to_string();
         let code = status.next().unwrap_or_default().to_string();
         let status = status.collect::<Vec<&str>>().join(" ");
