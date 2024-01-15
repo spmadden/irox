@@ -1,7 +1,40 @@
 
 
 
+## v0.5.3 (2024-01-15)
+
+### New Features
+
+ - <csr-id-a3849cc09b4aec74df31d0e722cca2648bcc4bca/> new fs mod for filename/filesystem utils
+ - <csr-id-464a2db730a363e79190823a72339177009e510f/> new eventually complete ecosystem
+ - <csr-id-e599d63fec9c05c8ebc2aaa7d5e4ad59fa43d73e/> new lazy static initialization macro
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 1 day passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New fs mod for filename/filesystem utils ([`a3849cc`](https://github.com/spmadden/irox/commit/a3849cc09b4aec74df31d0e722cca2648bcc4bca))
+    - New eventually complete ecosystem ([`464a2db`](https://github.com/spmadden/irox/commit/464a2db730a363e79190823a72339177009e510f))
+    - New lazy static initialization macro ([`e599d63`](https://github.com/spmadden/irox/commit/e599d63fec9c05c8ebc2aaa7d5e4ad59fa43d73e))
+</details>
+
 ## v0.5.2 (2024-01-13)
+
+<csr-id-7bb9983b0e144be41483b4b9a3e610c773aa26f4/>
+<csr-id-350e0f8529bdc3a936149b634ebd824abd440d2f/>
+<csr-id-5be0cba49e4e0559570102152dfe0b4b73422158/>
 
 ### Chore
 
@@ -20,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -31,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.5.2 ([`89b01ec`](https://github.com/spmadden/irox/commit/89b01ec20e8637408a1497fa88a30452233efc97))
     - Bump tools to 0.5.2 ([`7bb9983`](https://github.com/spmadden/irox/commit/7bb9983b0e144be41483b4b9a3e610c773aa26f4))
     - Update readme for error macros ([`350e0f8`](https://github.com/spmadden/irox/commit/350e0f8529bdc3a936149b634ebd824abd440d2f))
     - New errors macros to accelerate error conversions ([`55f7016`](https://github.com/spmadden/irox/commit/55f70163a3d46f63956eb935645e344ec9c3ee13))
