@@ -22,6 +22,7 @@ IROX-TOOLS
 | [`bits`](./src/util/bits.rs)             | ![no_std]    | Powerful Bit Buffer interfaces, giving `std::io::Read` more power                                                 |
 | [`codec`](./src/codec)                   | ![no_std]    | A trait that provides `encode` and `decode` to convert to/from different byte encoding formats                    |
 | [`errors`](./src/errors.rs)              | ![no_std]    | Macros to aid in the creation of crate-level error structs                                                        |
+| [`fs`](./src/fs)                         | ![no_std]    | Filesystem utilities                                                                                              |
 | [`f64`](./src/primitives/f64.rs)         | ![no_std]    | A collection of utilities for the f64 built-in                                                                    |                                  
 | [`fmt`](./src/fmt.rs)                    | ![no_std]    | Formatting structs and traits                                                                                     |                                                              
 | [`hex`](./src/hex.rs)                    | ![no_std]    | Hexdump & Hex manipulation                                                                                        |                                                                  

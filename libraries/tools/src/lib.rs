@@ -8,6 +8,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate alloc;
+extern crate core;
 
 #[macro_use]
 pub mod ansi_colors;
@@ -34,4 +35,5 @@ pub use primitives::*;
 mod primitives;
 pub use util::*;
 pub mod errors;
+pub mod fs;
 mod util;
