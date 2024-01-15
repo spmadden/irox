@@ -101,7 +101,7 @@ new DEST:
 
 release +FLAGS='':
    just check_install cargo-smart-release
-   cargo smart-release -u {{FLAGS}}
+   cargo smart-release --no-conservative-pre-release-version-handling --no-isolate-dependencies-from-breaking-changes -u {{FLAGS}}
 
 logstart RECIPE:
     #!/bin/bash
