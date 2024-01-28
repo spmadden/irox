@@ -10,11 +10,13 @@ use std::io::{Error, Read, Write};
 pub use buffer::*;
 pub use conv::*;
 pub use counting::*;
+pub use readerator::*;
 
 #[cfg(feature = "std")]
 mod buffer;
 mod conv;
 mod counting;
+mod readerator;
 
 ///
 /// Reads the exact amount of bytes into an array and returns it
