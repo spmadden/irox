@@ -7,11 +7,12 @@ use core::cmp::min;
 use core::ops::RangeBounds;
 use std::io::{BufRead, BufReader, Read};
 
-use crate::bits::Bits;
-
 ///
 /// An effective, infinite cached buffer.  What [`BufRead`] and [`BufReader`]
 /// would be if they weren't backed by a fixed buffer.
+///
+/// Calls to `read()` and `next()` fill the internal buffer & peek the data, but do not consume it.  Call either
+/// `drain()` or one of the `consume_*` functions.
 #[derive()]
 pub struct Buffer<T> {
     reader: BufReader<T>,
@@ -63,10 +64,14 @@ impl<T: Read> Iterator for Buffer<T> {
     type Item = u8;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Ok(Some(val)) = self.reader.next_u8() {
-            self.buffer.push_back(val);
-            return Some(val);
+        let mut buf: [u8; 1] = [0; 1];
+        let Ok(val) = self.reader.read(&mut buf) else {
+            return None;
         };
+        if val == 1 {
+            self.buffer.push_back(buf[0]);
+            return Some(buf[0]);
+        }
         None
     }
 }
@@ -74,12 +79,13 @@ impl<T: Read> Iterator for Buffer<T> {
 impl<T: Read> BufRead for Buffer<T> {
     fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
         let buf = self.reader.fill_buf()?;
+        let len = buf.len();
         self.buffer.extend(buf.iter());
-        Ok(buf)
+        self.reader.consume(len);
+        Ok(self.buffer.make_contiguous())
     }
 
     fn consume(&mut self, amt: usize) {
-        self.reader.consume(amt);
         self.consume_read_buffer_up_to(amt);
     }
 }

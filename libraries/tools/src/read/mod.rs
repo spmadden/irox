@@ -5,7 +5,6 @@
 //! Helper functions around [`std::io::Read`]
 
 extern crate alloc;
-use alloc::collections::VecDeque;
 use std::io::{Error, Read, Write};
 
 pub use buffer::*;
@@ -16,59 +15,6 @@ pub use counting::*;
 mod buffer;
 mod conv;
 mod counting;
-
-///
-/// Consumes data from the input stream until:
-/// 1. The byte stream represented by 'search' has been found or
-/// 2. The input reader returns 0 bytes read (or errors out)
-///
-/// Note: The input stream position is left JUST AFTER the found search string.
-pub fn consume_until<T: Read>(input: &mut T, search: &[u8]) -> Result<(), Error> {
-    let mut ringbuf: VecDeque<u8> = VecDeque::with_capacity(search.len());
-    input.read_exact(ringbuf.as_mut_slices().0)?;
-
-    let mut onebuf: [u8; 1] = [0; 1];
-    loop {
-        if ringbuf.iter().eq(search) {
-            return Ok(());
-        }
-
-        if input.read(&mut onebuf)? == 0 {
-            return Ok(());
-        }
-
-        ringbuf.pop_front();
-        ringbuf.push_back(onebuf[0]);
-    }
-}
-
-///
-/// Reads from the input stream until:
-/// 1. The byte stream represented by 'search' has been found or
-/// 2. The input stream returns 0 bytes read (or errors out)
-/// It returns all bytes read in the interim
-pub fn read_until<T: Read>(input: &mut T, search: &[u8]) -> Result<Vec<u8>, Error> {
-    let mut ringbuf: VecDeque<u8> = VecDeque::with_capacity(search.len());
-
-    let mut out = Vec::new();
-    let mut onebuf: [u8; 1] = [0; 1];
-    loop {
-        if ringbuf.iter().eq(search) {
-            return Ok(out);
-        }
-
-        if input.read(&mut onebuf)? == 0 {
-            return Ok(out);
-        }
-
-        if ringbuf.len() == search.len() {
-            if let Some(val) = ringbuf.pop_front() {
-                out.push(val);
-            }
-        }
-        ringbuf.push_back(onebuf[0]);
-    }
-}
 
 ///
 /// Reads the exact amount of bytes into an array and returns it

@@ -5,6 +5,7 @@
 //!
 //! Filesystem utilities
 
+use alloc::string::String;
 use core::fmt::{Display, Formatter};
 
 ///

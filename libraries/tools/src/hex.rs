@@ -26,16 +26,16 @@ pub trait HexDump {
     fn hexdump(&self);
 
     /// Hexdump to the specified writer.
-    fn hexdump_to(&self, out: &mut dyn MutBits) -> Result<(), Error>;
+    fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error>;
 }
 
 impl<S: AsRef<[u8]>> HexDump for S {
     #[cfg(feature = "std")]
     fn hexdump(&self) {
-        let _ = self.hexdump_to(&mut std::io::stdout());
+        let _ = self.hexdump_to(&mut crate::bits::BitsWrapper(&mut std::io::stdout().lock()));
     }
 
-    fn hexdump_to(&self, out: &mut dyn MutBits) -> Result<(), Error> {
+    fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error> {
         let mut idx = 0;
         let val = self.as_ref();
         loop {

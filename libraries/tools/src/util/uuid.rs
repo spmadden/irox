@@ -170,7 +170,6 @@ impl UUID {
     ///
     /// Generates a new random UUID
     #[must_use]
-    #[cfg(feature = "std")]
     pub fn new_random() -> UUID {
         use crate::random::PRNG;
         let mut random = crate::random::Random::default();

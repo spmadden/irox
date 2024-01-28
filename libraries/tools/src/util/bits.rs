@@ -6,20 +6,22 @@
 //! Basic Bit Buffer interface
 //!
 
-// use std::io::{Error, ErrorKind, Read, Write};
-
 extern crate alloc;
+
+use alloc::collections::VecDeque;
 use alloc::fmt::format;
+use alloc::string::{String, ToString};
 use alloc::{vec, vec::Vec};
 use core::fmt::Arguments;
+
+#[cfg(not(feature = "std"))]
+pub use error::*;
 
 #[cfg(feature = "std")]
 pub type Error = std::io::Error;
 #[cfg(feature = "std")]
 pub type ErrorKind = std::io::ErrorKind;
 
-#[cfg(not(feature = "std"))]
-pub use error::*;
 #[cfg(not(feature = "std"))]
 mod error {
     pub type Error = BitsError;
@@ -284,10 +286,100 @@ pub trait Bits {
     /// Reads the specified amount of bytes into a [`Vec<u8>`] and returns it
     fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
         let mut buf: Vec<u8> = vec![0; size];
-        for _i in 0..size {
-            buf.push(self.read_u8()?);
-        }
+        self.read_exact_into(size, &mut buf)?;
         Ok(buf)
+    }
+
+    /// Reads the specified amount of bytes into the specified target.
+    fn read_exact_into<T: MutBits>(&mut self, size: usize, into: &mut T) -> Result<(), Error> {
+        for _i in 0..size {
+            into.write_u8(self.read_u8()?)?;
+        }
+        Ok(())
+    }
+
+    /// Reads the entire stream into a UTF-8 String, dropping all other packets.
+    fn read_all_str_lossy(&mut self) -> Result<String, Error> {
+        Ok(String::from_utf8_lossy(&self.read_all_vec()?).to_string())
+    }
+
+    /// Reads to the end of the stream and returns the data as a [`Vec<u8>`]
+    fn read_all_vec(&mut self) -> Result<Vec<u8>, Error> {
+        let mut out: Vec<u8> = vec![];
+        self.read_all_into(&mut out)?;
+        Ok(out)
+    }
+
+    /// Reads to the end of the stream, and writes it into the specified target.
+    fn read_all_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        while let Some(val) = self.next_u8()? {
+            into.write_u8(val)?;
+        }
+        Ok(())
+    }
+
+    /// Reads some subset of the data into the specified target.
+    fn read_some_into<T: MutBits>(&mut self, buf: &mut T) -> Result<usize, Error> {
+        let mut read = 0;
+        for _ in 0..4096 {
+            let Some(val) = self.next_u8()? else {
+                return Ok(read);
+            };
+            buf.write_u8(val)?;
+            read += 1;
+        }
+        Ok(read)
+    }
+
+    ///
+    /// Reads from the input stream until:
+    /// 1. The byte stream represented by 'search' has been found or
+    /// 2. The input stream returns 0 bytes read (or errors out)
+    /// It returns all bytes read in the interim
+    fn read_until(&mut self, search: &[u8]) -> Result<Vec<u8>, Error> {
+        let mut ringbuf: VecDeque<u8> = VecDeque::with_capacity(search.len());
+
+        let mut out = Vec::new();
+        loop {
+            if ringbuf.iter().eq(search) {
+                return Ok(out);
+            }
+
+            let Some(val) = self.next_u8()? else {
+                return Ok(out);
+            };
+
+            if ringbuf.len() == search.len() {
+                if let Some(val) = ringbuf.pop_front() {
+                    out.push(val);
+                }
+            }
+            ringbuf.push_back(val);
+        }
+    }
+
+    ///
+    /// Consumes data from the input stream until:
+    /// 1. The byte stream represented by 'search' has been found or
+    /// 2. The input reader returns 0 bytes read (or errors out)
+    ///
+    /// Note: The input stream position is left JUST AFTER the found search string.
+    fn consume_until(&mut self, search: &[u8]) -> Result<(), Error> {
+        let mut ringbuf: VecDeque<u8> = VecDeque::with_capacity(search.len());
+        self.read_exact_into(search.len(), &mut ringbuf)?;
+
+        loop {
+            if ringbuf.iter().eq(search) {
+                return Ok(());
+            }
+
+            let Some(val) = self.next_u8()? else {
+                return Ok(());
+            };
+
+            ringbuf.pop_front();
+            ringbuf.push_back(val);
+        }
     }
 }
 
@@ -303,53 +395,85 @@ macro_rules! absorb_eof {
     };
 }
 
-#[cfg(feature = "std")]
-impl<T> Bits for T
-where
-    T: std::io::Read,
-{
-    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        let mut byte: u8 = 0;
-        let read = self.read(core::slice::from_mut(&mut byte))?;
-        if read < 1 {
-            return Ok(None);
+macro_rules! impl_bits_pop {
+    ($($ty:tt)+) => {
+        impl Bits for $($ty)+ {
+            fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+                Ok(self.pop().map(|v| v as u8))
+            }
+
+            fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
+                Ok(into.write_some_bytes(self.as_ref()))
+            }
         }
-        Ok(Some(byte))
+    };
+}
+
+impl_bits_pop!(String);
+impl_bits_pop!(&mut String);
+impl_bits_pop!(Vec<u8>);
+impl_bits_pop!(&mut Vec<u8>);
+macro_rules! impl_bits_vecdeque {
+    ($($ty:tt)+) => {
+        impl Bits for $($ty)+ {
+            fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+                Ok(self.pop_front())
+            }
+
+            fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
+                let mut wrote = 0;
+                while let Some(val) = self.pop_front() {
+                    let Ok(()) = into.write_u8(val) else {
+                        return Ok(wrote);
+                    };
+                    wrote += 1;
+                }
+                Ok(wrote)
+            }
+        }
+    };
+}
+impl_bits_vecdeque!(VecDeque<u8>);
+impl_bits_vecdeque!(&mut VecDeque<u8>);
+
+impl Bits for &[u8] {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        let Some((first, rest)) = self.split_first() else {
+            return Ok(None);
+        };
+        *self = rest;
+        Ok(Some(*first))
     }
 
-    fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
-        let mut buf: [u8; 2] = [0; 2];
-        absorb_eof!(self, buf);
-        let [a, b] = buf;
-        let out: u16 = (a as u16) << 8 | (b as u16);
-        Ok(Some(out))
+    fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
+        Ok(into.write_some_bytes(self))
+    }
+}
+
+impl Bits for &mut [u8] {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        if let Some((first, rem)) = core::mem::take(self).split_first_mut() {
+            *self = rem;
+            return Ok(Some(*first));
+        }
+        Ok(None)
     }
 
-    fn next_be_u32(&mut self) -> Result<Option<u32>, Error> {
-        let mut buf: [u8; 4] = [0; 4];
-        absorb_eof!(self, buf);
-        let out = u32::from_be_bytes(buf);
-        Ok(Some(out))
+    fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
+        Ok(into.write_some_bytes(self))
     }
+}
 
-    fn next_be_u64(&mut self) -> Result<Option<u64>, Error> {
-        let mut buf: [u8; 8] = [0; 8];
-        absorb_eof!(self, buf);
-        let out = u64::from_be_bytes(buf);
-        Ok(Some(out))
-    }
-
-    fn next_be_u128(&mut self) -> Result<Option<u128>, Error> {
-        let mut buf: [u8; 16] = [0; 16];
-        absorb_eof!(self, buf);
-        let out = u128::from_be_bytes(buf);
-        Ok(Some(out))
-    }
-
-    fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
-        let mut buf: Vec<u8> = vec![0; size];
-        self.read_exact(buf.as_mut_slice())?;
-        Ok(buf)
+#[cfg(feature = "std")]
+impl Bits for std::fs::File {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        use std::io::Read;
+        let mut buf: [u8; 1] = [0];
+        let read = self.read(&mut buf)?;
+        if read == 1 {
+            return Ok(Some(buf[0]));
+        }
+        Ok(None)
     }
 }
 
@@ -457,96 +581,97 @@ pub trait MutBits {
     fn write_fmt(&mut self, args: Arguments<'_>) -> Result<(), Error> {
         self.write_all_bytes(format(args).as_bytes())
     }
+
+    fn write_some_bytes(&mut self, val: &[u8]) -> usize {
+        let mut wrote = 0;
+        for val in val {
+            if self.write_u8(*val).is_err() {
+                return wrote;
+            }
+            wrote += 1;
+        }
+        wrote
+    }
 }
 
 #[cfg(feature = "std")]
-impl<T> MutBits for T
-where
-    T: std::io::Write,
-{
+impl MutBits for std::fs::File {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        use std::io::Write;
         self.write_all(&[val])
     }
+}
 
-    fn write_be_u16(&mut self, val: u16) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
+macro_rules! impl_push {
+    ($cast:ty, $($ty:tt)+) => {
+        impl MutBits for $($ty)+ {
+            fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+                self.push(val as $cast);
+                Ok(())
+            }
+        }
+    };
+}
 
-    fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_u64(&mut self, val: u64) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_u128(&mut self, val: u128) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_f32(&mut self, val: f32) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_f64(&mut self, val: f64) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_i16(&mut self, val: i16) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_i32(&mut self, val: i32) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_i64(&mut self, val: i64) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
-    }
-
-    fn write_be_i128(&mut self, val: i128) -> Result<(), Error> {
-        self.write_all(&val.to_be_bytes())
+impl_push!(char, &mut String);
+impl_push!(char, String);
+impl_push!(u8, Vec<u8>);
+impl_push!(u8, &mut Vec<u8>);
+impl MutBits for &mut [u8] {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        let Some((a, b)) = core::mem::take(self).split_first_mut() else {
+            return Err(ErrorKind::UnexpectedEof.into());
+        };
+        *a = val;
+        *self = b;
+        Ok(())
     }
 }
-#[cfg(not(feature = "std"))]
-pub use nostdimpls::*;
-#[cfg(not(feature = "std"))]
-mod nostdimpls {
-    use crate::bits::{Error, ErrorKind};
-    use alloc::vec::Vec;
 
-    impl crate::bits::Bits for &[u8] {
-        fn next_u8(&mut self) -> Result<Option<u8>, crate::bits::Error> {
-            let Some((first, rest)) = self.split_first() else {
+macro_rules! impl_mutbits_vecdeque {
+    ($($ty:tt)+) => {
+        impl MutBits for $($ty)+ {
+            fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+                self.push_back(val);
+                Ok(())
+            }
+        }
+    };
+}
+
+impl_mutbits_vecdeque!(VecDeque<u8>);
+impl_mutbits_vecdeque!(&mut VecDeque<u8>);
+
+#[cfg(feature = "std")]
+pub mod stdwrappers {
+    use crate::bits::{Bits, Error, MutBits};
+    pub struct BitsWrapper<'a, T>(pub &'a mut T);
+
+    impl<'a, T> Bits for BitsWrapper<'a, T>
+    where
+        T: std::io::Read,
+    {
+        fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+            let mut byte: u8 = 0;
+            let read = self.0.read(core::slice::from_mut(&mut byte))?;
+            if read < 1 {
                 return Ok(None);
-            };
-            *self = rest;
-            Ok(Some(*first))
+            }
+            Ok(Some(byte))
         }
     }
-    impl crate::bits::MutBits for &mut [u8] {
+
+    impl<'a, T> MutBits for BitsWrapper<'a, T>
+    where
+        T: std::io::Write,
+    {
         fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-            let Some((a, b)) = core::mem::take(self).split_first_mut() else {
-                return Err(ErrorKind::UnexpectedEof.into());
-            };
-            *a = val;
-            *self = b;
-            Ok(())
-        }
-    }
-    impl crate::bits::MutBits for &mut Vec<u8> {
-        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-            self.push(val);
-            Ok(())
-        }
-    }
-    impl crate::bits::MutBits for Vec<u8> {
-        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-            self.push(val);
-            Ok(())
+            self.0.write_all(&[val])
         }
     }
 }
+#[cfg(feature = "std")]
+pub use stdwrappers::*;
 
 pub fn read_be_u32<T: Bits>(mut data: T) -> Result<u32, Error> {
     data.read_be_u32()
