@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::Read;
-
 use irox_structs::Struct;
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Default, Debug, Copy, Clone, Struct)]
@@ -41,7 +40,7 @@ pub static BUILDER: NavLibSVStateBuilder = NavLibSVStateBuilder;
 impl PacketBuilder<NavLibSVState> for NavLibSVStateBuilder {
     type Error = std::io::Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<NavLibSVState, Self::Error> {
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<NavLibSVState, Self::Error> {
         NavLibSVState::parse_from(input)
     }
 }

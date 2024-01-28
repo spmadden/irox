@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::Read;
-
+use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Debug, Default, Clone)]
@@ -27,11 +26,9 @@ pub static BUILDER: AsciiDataBuilder = AsciiDataBuilder;
 impl PacketBuilder<AsciiData> for AsciiDataBuilder {
     type Error = std::io::Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<AsciiData, Self::Error> {
-        let mut buf: Vec<u8> = Vec::new();
-        input.read_to_end(&mut buf)?;
-        let str = String::from_utf8_lossy(&buf).to_string();
-
-        Ok(AsciiData { message: str })
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<AsciiData, Self::Error> {
+        Ok(AsciiData {
+            message: input.read_all_str_lossy()?,
+        })
     }
 }

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::{ErrorKind, Read, Write};
+use std::io::{ErrorKind, Write};
 
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
-use irox_tools::read::{consume_until, read_exact, read_exact_vec};
 
 use crate::error::{Error, ErrorType};
 use crate::input::x02_mesnavdata::MeasuredNavigationData;
@@ -108,21 +107,21 @@ impl Packetizer {
         Packetizer {}
     }
 }
-impl<T: Read + Bits> Packetization<T> for Packetizer {
+impl<T: Bits> Packetization<T> for Packetizer {
     fn read_next_packet(&mut self, input: &mut T) -> Result<PacketData, std::io::Error> {
         loop {
             if let Err(e) = read_start(input) {
                 if e.kind() != ErrorKind::InvalidData {
                     return Err(e);
                 }
-                consume_until(input, &END_SEQ)?;
+                input.consume_until(&END_SEQ)?;
                 continue;
             }
             break;
         }
 
         let payload_len = input.read_be_u16()?;
-        let payload = read_exact_vec(input, payload_len as usize)?;
+        let payload = input.read_exact_vec(payload_len as usize)?;
         let checksum = input.read_be_u16()?;
         let end = input.read_be_u16()?;
 
@@ -152,7 +151,7 @@ pub struct PacketParser;
 impl PacketBuilder<PacketType> for PacketParser {
     type Error = std::io::Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
         let payload = Packetizer::new().read_next_packet(input)?;
 
         let (_pld_len, payload) = payload.split_at(2);
@@ -211,8 +210,8 @@ impl PacketBuilder<PacketType> for PacketParser {
     }
 }
 
-fn read_start<T: Read>(input: &mut T) -> Result<(), std::io::Error> {
-    let buf: [u8; START_LEN] = read_exact(input)?;
+fn read_start<T: Bits>(input: &mut T) -> Result<(), std::io::Error> {
+    let buf = input.read_exact_vec(START_LEN)?;
 
     if buf.eq(&START_SEQ) {
         return Ok(());
