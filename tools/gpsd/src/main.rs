@@ -1,14 +1,3 @@
-pub use irox_carto as carto;
-pub use irox_units as units;
-
-pub mod config;
-pub mod error;
-pub mod output;
-pub mod transport;
-
-mod nmea0183;
-mod sirf;
-
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
@@ -19,9 +8,18 @@ use log::{error, info};
 
 use config::{GPSdConfig, Transport};
 use error::GPSdError;
+use irox_tools::bits::{Bits, BitsWrapper};
 use output::FrameGenerator;
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};
+
+pub mod config;
+pub mod error;
+pub mod output;
+pub mod transport;
+
+mod nmea0183;
+mod sirf;
 
 fn main() -> Result<(), GPSdError> {
     setup_panic!();
@@ -63,6 +61,7 @@ fn main() -> Result<(), GPSdError> {
 
     Ok(())
 }
+trait BitsRead: Bits + std::io::Read {}
 
 pub fn start_serial(
     mut server: TCPServer,
@@ -70,15 +69,15 @@ pub fn start_serial(
     config: &SerialConfig,
 ) -> Result<(), GPSdError> {
     let encoding = config.encoding;
-    let port = match transport::serial::open(config) {
+    let mut port = match transport::serial::open(config) {
         Ok(p) => p,
         Err(e) => {
             error!("Unable to open serial port: {:?}", e.0);
             return Err(e.0);
         }
     };
-
-    let mut framebuilder = FrameGenerator::new(encoding, port);
+    let mut port = BitsWrapper(&mut port);
+    let mut framebuilder = FrameGenerator::new(encoding, &mut port);
     while !shouldquit.load(Ordering::Relaxed) {
         let frame = framebuilder.build_from();
         let frame = match frame {
@@ -107,10 +106,11 @@ mod windows {
 
     use log::{error, info};
 
+    use irox_winlocation_api::WindowsLocationAPI;
+
     use crate::error::GPSdError;
     use crate::output::Frame;
     use crate::transport::TCPServer;
-    use irox_winlocation_api::WindowsLocationAPI;
 
     pub fn start_windows(mut server: TCPServer, term: &Arc<AtomicBool>) -> Result<(), GPSdError> {
         let locator = WindowsLocationAPI::connect()?;

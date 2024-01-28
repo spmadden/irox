@@ -1,11 +1,10 @@
-use std::io::{ErrorKind, Read, Write};
+use std::io::ErrorKind;
 
 use log::{debug, warn};
 use serde::ser::SerializeMap;
 use serde::Serializer;
 
 pub use att::*;
-pub use device::*;
 pub use gst::*;
 use irox_nmea0183::input::pollswver::PollSWVersion;
 use irox_nmea0183::input::ratectrl::RateControlRF103;
@@ -13,11 +12,8 @@ use irox_nmea0183::MessageType;
 use irox_tools::bits::{Bits, MutBits};
 use irox_tools::options::MaybeInto;
 use irox_tools::packetio::{Packet, PacketBuilder};
-pub use poll::*;
 pub use sky::*;
 pub use tpv::*;
-pub use version::*;
-pub use watch::*;
 
 use crate::error::GPSdError;
 use crate::transport::serial::EncodingType;
@@ -101,33 +97,33 @@ impl Frame {
     }
 }
 
-pub struct FrameGenerator<T: Bits + MutBits> {
+pub struct FrameGenerator<'a, T: Bits + MutBits> {
     encoding: EncodingType,
-    source: T,
+    source: &'a mut T,
 }
 
-impl<T: Read + Write> FrameGenerator<T> {
-    pub fn new(encoding: EncodingType, mut source: T) -> FrameGenerator<T> {
+impl<'a, T: Bits + MutBits> FrameGenerator<'a, T> {
+    pub fn new(encoding: EncodingType, source: &'a mut T) -> Self {
         if let EncodingType::Nmea0183 = encoding {
-            let _ = PollSWVersion.write_to(&mut source);
-            let _ = RateControlRF103::enable_5hz_nav(false).write_to(&mut source);
-            let _ = RateControlRF103::enable_sbas_ranging(true).write_to(&mut source);
-            let _ = RateControlRF103::enable_fts(true).write_to(&mut source);
-            let _ = RateControlRF103::enable_reverseee(false).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::GGA, 1).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::GLL, 1).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::GSA, 5).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::GSV, 5).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::MSS, 1).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::RMC, 1).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::VTG, 1).write_to(&mut source);
-            let _ = RateControlRF103::set_rate(MessageType::ZDA, 10).write_to(&mut source);
+            let _ = PollSWVersion.write_to(source);
+            let _ = RateControlRF103::enable_5hz_nav(false).write_to(source);
+            let _ = RateControlRF103::enable_sbas_ranging(true).write_to(source);
+            let _ = RateControlRF103::enable_fts(true).write_to(source);
+            let _ = RateControlRF103::enable_reverseee(false).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::GGA, 1).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::GLL, 1).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::GSA, 5).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::GSV, 5).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::MSS, 1).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::RMC, 1).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::VTG, 1).write_to(source);
+            let _ = RateControlRF103::set_rate(MessageType::ZDA, 10).write_to(source);
         }
         FrameGenerator { encoding, source }
     }
     fn build_from_nmea(&mut self) -> Result<Frame, GPSdError> {
         loop {
-            let frame = irox_nmea0183::NMEAParser.build_from(&mut self.source)?;
+            let frame = irox_nmea0183::NMEAParser.build_from(self.source)?;
             debug!("NMEA: {frame}");
             if let Some(frame) = frame.maybe_into() {
                 return Ok(frame);
@@ -136,7 +132,7 @@ impl<T: Read + Write> FrameGenerator<T> {
     }
     fn build_from_sirf(&mut self) -> Result<Frame, GPSdError> {
         loop {
-            let frame = match irox_sirf::packet::PacketParser.build_from(&mut self.source) {
+            let frame = match irox_sirf::packet::PacketParser.build_from(self.source) {
                 Ok(frame) => frame,
                 Err(e) => {
                     if e.kind() == ErrorKind::InvalidData {
