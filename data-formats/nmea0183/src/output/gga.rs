@@ -2,13 +2,13 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use std::io::Read;
 use std::time::Duration;
 
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_enums::EnumName;
 use irox_time::Time;
+use irox_tools::bits::Bits;
 use irox_tools::fmt::DecimalFormatF64;
 use irox_tools::options::{MaybeInto, MaybeMap};
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -295,9 +295,8 @@ pub struct GGABuilder {
 impl PacketBuilder<GGA> for GGABuilder {
     type Error = Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<GGA, Self::Error> {
-        let mut ent = String::new();
-        let _read = input.read_to_string(&mut ent)?;
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<GGA, Self::Error> {
+        let ent = input.read_all_str_lossy()?;
         let mut split = ent.split(',');
 
         let _key = split.next();

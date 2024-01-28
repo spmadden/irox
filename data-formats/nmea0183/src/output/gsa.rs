@@ -2,9 +2,10 @@
 // Copyright 2023 IROX Contributors
 
 use std::fmt::{Display, Formatter};
-use std::io::{Read, Write};
+use std::io::Write;
 
 use irox_carto::gps::{DOPs, GPSFixType};
+use irox_tools::bits::Bits;
 use irox_tools::iterators::Itertools;
 use irox_tools::options::MaybeInto;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -112,9 +113,8 @@ pub struct GSABuilder;
 impl PacketBuilder<GSA> for GSABuilder {
     type Error = Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<GSA, Self::Error> {
-        let mut buf = String::new();
-        let _read = input.read_to_string(&mut buf)?;
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<GSA, Self::Error> {
+        let buf = input.read_all_str_lossy()?;
 
         let mut split = buf.split(',');
         let selection_mode = split.next().into();

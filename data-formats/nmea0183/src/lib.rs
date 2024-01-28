@@ -1,17 +1,15 @@
 #![forbid(unsafe_code)]
 
 use std::fmt::{Display, Formatter};
-use std::io::Read;
 
 use log::trace;
 
 pub use error::*;
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
-use irox_tools::bits::Bits;
+use irox_tools::bits::{Bits, ErrorKind};
 use irox_tools::options::MaybeInto;
 pub use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
-use irox_tools::read::read_until;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::{Length, LengthUnits};
 pub use output::*;
@@ -45,7 +43,7 @@ pub struct Frame {
 }
 
 impl Display for Frame {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("NMEA Frame: {}", self.payload))
     }
 }
@@ -59,7 +57,7 @@ pub enum FramePayload {
 }
 
 impl Display for FramePayload {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             FramePayload::GGA(gga) => f.write_fmt(format_args!("GGA: {gga}")),
             FramePayload::GSA(gsa) => f.write_fmt(format_args!("GSA: {gsa}")),
@@ -72,7 +70,7 @@ impl Display for FramePayload {
 impl Packet for Frame {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, irox_tools::bits::Error> {
         if let Some(raw) = &self.raw {
             return Ok(Vec::from(raw.as_bytes()));
         }
@@ -80,7 +78,7 @@ impl Packet for Frame {
             FramePayload::GGA(gga) => gga.get_bytes(),
             FramePayload::GSA(gsa) => gsa.get_bytes(),
             FramePayload::GSV(gsv) => gsv.get_bytes(),
-            FramePayload::Unknown(_) => Err(std::io::ErrorKind::Unsupported.into()),
+            FramePayload::Unknown(_) => Err(ErrorKind::Unsupported.into()),
         }
     }
 
@@ -92,12 +90,12 @@ pub struct NMEAParser;
 impl PacketBuilder<Frame> for NMEAParser {
     type Error = Error;
 
-    fn build_from<T: Read>(&self, input: &mut T) -> Result<Frame, Self::Error> {
+    fn build_from<T: Bits>(&self, input: &mut T) -> Result<Frame, Self::Error> {
         let packet = NMEAPacketizer::new().read_next_packet(input)?;
         let raw = String::from_utf8_lossy(&packet).to_string();
         trace!("PKT: {}", raw);
 
-        let key = read_until(&mut packet.as_slice(), &[b','])?;
+        let key = packet.as_slice().read_until(&[b','])?;
         let mut pkt = packet.as_slice();
         let payload = if key.ends_with("GGA".as_bytes()) {
             FramePayload::GGA(GGABuilder::new().build_from(&mut pkt)?)
@@ -123,8 +121,8 @@ impl NMEAPacketizer {
         NMEAPacketizer {}
     }
 }
-impl<T: Read> Packetization<T> for NMEAPacketizer {
-    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, std::io::Error> {
+impl<T: Bits> Packetization<T> for NMEAPacketizer {
+    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, irox_tools::bits::Error> {
         loop {
             let val = source.read_u8()?;
             // search for SOF
@@ -134,7 +132,7 @@ impl<T: Read> Packetization<T> for NMEAPacketizer {
         }
 
         let mut packet: Vec<u8> = vec![b'$'];
-        packet.append(&mut read_until(source, &[b'\r', b'\n'])?);
+        packet.append(&mut source.read_until(&[b'\r', b'\n'])?);
         Ok(packet)
     }
 }

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+extern crate alloc;
+use alloc::string::String;
+use core::fmt::{Display, Formatter};
+use core::num::{ParseFloatError, ParseIntError};
 use irox_units::bounds::GreaterThanEqualToValueError;
-use std::fmt::{Display, Formatter};
-use std::num::{ParseFloatError, ParseIntError};
 
 #[derive(Debug, Copy, Clone)]
 pub enum ErrorType {
@@ -20,7 +22,7 @@ pub struct Error {
 }
 
 impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "NMEA0183 Error: {:?}: {}", self.error_type, self.error)
     }
 }
