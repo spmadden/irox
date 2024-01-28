@@ -22,7 +22,6 @@ pub mod hex;
 pub mod iterators;
 pub mod murmur3;
 pub mod options;
-#[cfg(feature = "std")]
 pub mod packetio;
 pub mod random;
 #[cfg(feature = "std")]

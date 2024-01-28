@@ -30,7 +30,7 @@ IROX-TOOLS
 | [`iterators`](./src/iterators)           | ![no_std]    | Iterators adds the `Itertools` Trait, which adds a number of additional helper methods to the `Iterator` Trait.   |
 | [`murmur3`](./src/murmur3.rs)            | ![no_std]    | Implementation of Murmurhash3                                                                                     |
 | [`options`](./src/options.rs)            | ![no_std]    | `MaybeInto`, `MaybeFrom`, and `MaybeMap` - traits to improve chaining of optional functions and erasing `Result`s |
-| [`packetio`](./src/packetio.rs)          | ![std]       | Traits for packetization of data and movement of packets of data                                                  |
+| [`packetio`](./src/packetio.rs)          | ![no_std]    | Traits for packetization of data and movement of packets of data                                                  |
 | [`random`](./src/random.rs)              | ![no_std]    | Pseudo-Random Number Generators (PRNGs), implementation                                                           |
 | [`read`](./src/read)                     | ![std]       | Helper functions around `std::io::Read`                                                                           |
 | [`scanner`](./src/util/scanner.rs)       | ![std]       | A utility to scan for tokens in a byte stream                                                                     |

@@ -45,6 +45,7 @@ mod error {
                     BitsErrorKind::InvalidData => "Invalid Data",
                     BitsErrorKind::UnexpectedEof => "Unexpected EOF",
                     BitsErrorKind::FormatError => "Unspecified Formatting Error",
+                    BitsErrorKind::OutOfMemory => "Out of Memory",
                 },
             }
         }
@@ -67,6 +68,7 @@ mod error {
         InvalidData,
         UnexpectedEof,
         FormatError,
+        OutOfMemory,
     }
 }
 
