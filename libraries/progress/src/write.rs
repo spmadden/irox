@@ -3,6 +3,7 @@
 //
 
 use crate::Task;
+use irox_tools::bits::{Error, MutBits};
 use std::io::Write;
 
 ///
@@ -35,5 +36,11 @@ impl<T: Write> Write for WriterTask<T> {
 
     fn flush(&mut self) -> std::io::Result<()> {
         self.writer.flush()
+    }
+}
+
+impl<T: Write> MutBits for WriterTask<T> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        self.writer.write_all(&[val])
     }
 }
