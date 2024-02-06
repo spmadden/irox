@@ -17,14 +17,24 @@ workspace = true
 
 [features]
 default = []
-serde = ["dep:serde", "egui/serde"]
+serde = ["dep:serde", "egui/serde", "dep:irox-tools"]
 
 [dependencies]
 egui.workspace = true
 eframe = {workspace = true, features=["x11", "wayland"]}
 ron.workspace = true
 serde = {workspace = true, optional = true }
+irox-tools = {workspace = true, optional = true}
+log.workspace = true
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 eframe = {workspace = true, features = ["glow"]}
 wasm-bindgen-futures.workspace = true
+
+[dev-dependencies]
+eframe = {workspace = true, features = ["default"]}
+
+[[example]]
+name = "irox_egui_gallery"
+required-features = ["serde"]
+
