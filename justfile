@@ -1,8 +1,8 @@
 #!/usr/bin/env -S just --justfile
 
-default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
+default +FLAGS='': updates (recurse FLAGS) (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
+ci +FLAGS='': updates deny (recurse_ci FLAGS) (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
 
@@ -95,13 +95,27 @@ unused:
     @just logend
 
 new DEST: 
-   just check_install cargo-generate
-   mkdir -p {{DEST}}
-   cargo generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
+    just check_install cargo-generate
+    mkdir -p {{DEST}}
+    cargo generate --destination `pwd`/{{DEST}} --path `pwd`/dev/mod_template --init
 
 release +FLAGS='':
-   just check_install cargo-smart-release
-   cargo smart-release --no-conservative-pre-release-version-handling --no-isolate-dependencies-from-breaking-changes -u {{FLAGS}}
+    just check_install cargo-smart-release
+    cargo smart-release --no-conservative-pre-release-version-handling --no-isolate-dependencies-from-breaking-changes -u {{FLAGS}}
+
+recurse +FLAGS='':
+    @for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
+        just logstart module-$module; \
+        just $module/default {{FLAGS}}; \
+        just logend; \
+    done
+
+recurse_ci +FLAGS='':
+    @for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
+        just logstart module-$module; \
+        just $module/ci {{FLAGS}}; \
+        just logend; \
+    done
 
 logstart RECIPE:
     #!/bin/bash

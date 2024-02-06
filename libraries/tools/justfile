@@ -1,0 +1,30 @@
+#!/usr/bin/env -S just --justfile
+set fallback
+
+default +FLAGS='': (build FLAGS) (test FLAGS) (lints FLAGS)
+
+ci +FLAGS='': build test lints_deny
+
+build +FLAGS='':
+    @just logstart irox-tools::build-nostd
+    cargo build --no-default-features {{FLAGS}}
+    @just logend
+    @just logstart irox-tools::build-std
+    cargo build {{FLAGS}}
+    @just logend
+
+test +FLAGS='':
+    cargo test --no-default-features {{FLAGS}}
+    cargo test {{FLAGS}}
+
+lints +FLAGS='':
+    @just logstart lints
+    cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} --
+    cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
+    @just logend
+
+lints_deny +FLAGS='':
+    @just logstart lints
+    cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} -- -Dwarnings
+    cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
+    @just logend
