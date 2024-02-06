@@ -134,8 +134,6 @@ impl eframe::App for HalflifesApp {
                 // .allow_drag(true)
                 // .allow_scroll(true)
                 .allow_boxed_zoom(true)
-                .auto_bounds_x()
-                .auto_bounds_y()
                 // .allow_double_click_reset(true)
                 // .allow_zoom(AxisBools { x: true, y: false })
                 // .data_aspect(1.0)

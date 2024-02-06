@@ -46,18 +46,18 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0.24", default-features = false }
-eframe = { version = "^0.24", default-features = false }
-egui_plot = { version = "^0.24", features = [], default-features = false }
+egui = { version = "^0.26", default-features = false }
+eframe = { version = "^0.26", default-features = false }
+egui_plot = { version = "^0.26", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.194", features = ["derive"] }
+serde = { version = "^1.0.196", features = ["derive"] }
 serde_json = {version = "^1.0", features = []}
 ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2.5", features = []}
 clap = {version = "^4.4", features = ["derive", "wrap_help", "string", "cargo", "env"]}
 clap-verbosity-flag = {version = "^2.1"}
 log = {version = "^0.4", features = []}
-env_logger = {version = "^0.10", features = []}
+env_logger = {version = "^0.11", features = []}
 syn = {version = "^2.0", features = ["extra-traits"]}
 quote = {version = "^1.0", features = []}
 signal-hook = {version = "^0.3", features = []}

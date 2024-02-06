@@ -179,11 +179,7 @@ impl Widget for ProgressBar {
                 let text_color = visuals
                     .override_text_color
                     .unwrap_or(visuals.selection.stroke.color);
-                galley.paint_with_fallback_color(
-                    &ui.painter().with_clip_rect(outer_rect),
-                    text_pos,
-                    text_color,
-                );
+                ui.painter().galley(text_pos, galley, text_color);
             }
             if let Some(text) = center_text {
                 let text: WidgetText = text.into();
@@ -194,11 +190,7 @@ impl Widget for ProgressBar {
                 let text_color = visuals
                     .override_text_color
                     .unwrap_or(visuals.selection.stroke.color);
-                galley.paint_with_fallback_color(
-                    &ui.painter().with_clip_rect(outer_rect),
-                    text_pos,
-                    text_color,
-                );
+                ui.painter().galley(text_pos, galley, text_color);
             }
 
             if let Some(text) = right_text {
@@ -212,11 +204,7 @@ impl Widget for ProgressBar {
                 let text_color = visuals
                     .override_text_color
                     .unwrap_or(visuals.selection.stroke.color);
-                galley.paint_with_fallback_color(
-                    &ui.painter().with_clip_rect(outer_rect),
-                    text_pos,
-                    text_color,
-                );
+                ui.painter().galley(text_pos, galley, text_color);
             }
         }
 
