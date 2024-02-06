@@ -4,14 +4,14 @@
 use std::time::Duration;
 
 use eframe::{self, Frame};
-use egui::{menu, CentralPanel, Context, Id, TopBottomPanel, ViewportCommand, Window};
+use egui::{CentralPanel, Context};
 use egui_plot::{Line, Plot, PlotPoints};
+use log::error;
 
 use irox_egui_extras::composite::CompositeApp;
-use irox_egui_extras::frame_history::FrameHistory;
 use irox_egui_extras::styles::StylePersistingApp;
+use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_stats::Distribution;
-use log::error;
 
 use crate::run::Run;
 
@@ -29,7 +29,10 @@ fn main() {
         Box::new(|cc| {
             let mut comp = CompositeApp::default();
             comp.add(Box::new(StylePersistingApp::new(cc)));
-            comp.add(Box::new(HalflifesApp::new(cc)));
+            comp.add(Box::new(ToolFrame::new(
+                cc,
+                Box::new(HalflifesApp::new(cc)),
+            )));
 
             Box::new(comp)
         }),
@@ -63,11 +66,7 @@ fn main() {
 }
 
 struct HalflifesApp {
-    style_ui: bool,
-    full_speed: bool,
     data: Vec<Vec<[f64; 2]>>,
-
-    frame_history: FrameHistory,
 }
 
 impl HalflifesApp {
@@ -104,12 +103,7 @@ impl HalflifesApp {
             })
             .collect();
 
-        HalflifesApp {
-            style_ui: false,
-            full_speed: false,
-            frame_history: FrameHistory::default(),
-            data,
-        }
+        HalflifesApp { data }
     }
 }
 
@@ -131,34 +125,7 @@ fn _generate_profile_for_start_time(start_time: i32) -> [Vec<[f64; 2]>; 2] {
 }
 
 impl eframe::App for HalflifesApp {
-    fn update(&mut self, ctx: &Context, frame: &mut Frame) {
-        self.frame_history
-            .on_new_frame(ctx.input(|i| i.time), frame.info().cpu_usage);
-
-        TopBottomPanel::top(Id::new("top_panel")).show(ctx, |ui| {
-            menu::bar(ui, |ui| {
-                ui.menu_button("File", |ui| {
-                    if ui.button("Exit").clicked() {
-                        ctx.send_viewport_cmd(ViewportCommand::Close);
-                    }
-                });
-                ui.menu_button("Settings", |ui| {
-                    ui.checkbox(&mut self.full_speed, "Continuous Render");
-
-                    if ui.button("Style").clicked() {
-                        self.style_ui = true;
-                        ui.close_menu();
-                    }
-                });
-            });
-        });
-        if self.style_ui {
-            Window::new("style")
-                .open(&mut self.style_ui)
-                .show(ctx, |ui| {
-                    ctx.style_ui(ui);
-                });
-        }
+    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         CentralPanel::default().show(ctx, |ui| {
             // ui.add(egui::Slider::new(&mut self.first, 0.0..=10.0).text("first"));
             // ui.add(egui::Slider::new(&mut self.second, 0.0..=10.0).text("second"));
@@ -180,11 +147,7 @@ impl eframe::App for HalflifesApp {
                     }
                 });
         });
-        TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
-            self.frame_history.ui(ui);
-        });
-        if self.full_speed {
-            ctx.request_repaint();
-        }
     }
 }
+
+impl ToolApp for HalflifesApp {}
