@@ -73,7 +73,7 @@ pub enum PageType {
     LeafTableBTree(LeafTable),
 }
 
-pub fn read_page<T: Read + Seek>(
+pub fn read_page<T: Bits + Seek>(
     buffer: &mut T,
     page_id: u32,
     db_header: &Header,

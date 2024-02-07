@@ -13,5 +13,4 @@ repository.workspace = true
 readme = "README.md"
 
 [dependencies]
-bytes = "*"
 irox-tools = {workspace = true}
