@@ -13,15 +13,11 @@ updates:
     @just logend
 
 check_install prereq:
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    if ! type "{{prereq}}" > /dev/null; then
-      cargo install {{prereq}}
-    fi
+   cargo install {{prereq}}
 
 deny +FLAGS='':
     @just logstart deny
-    just check_install cargo-deny
+    cargo install --locked cargo-deny 
     cargo deny check {{FLAGS}}
     @just logend
 
@@ -74,13 +70,13 @@ package:
 
 about:
     @just logstart about
-    just check_install cargo-about
+    cargo install --locked cargo-about
     cargo about generate about.hbs > about.html
     @just logend
 
 upgrade +FLAGS='':
     @just logstart upgrade
-    just check_install cargo-edit
+    cargo install --locked cargo-edit
     cargo upgrade --dry-run --pinned -i {{FLAGS}}
     @just logend
 
