@@ -242,7 +242,7 @@ impl<T> Eventual<T> {
             _ => {}
         }
         if let Ok(guard) = self.inner.guard.lock() {
-            let _ = self.inner.condvar.wait_while(guard, |_| self.is_pending());
+            let _ = self.inner.condvar.wait_while(guard, |()| self.is_pending());
         }
         self.get()
     }
@@ -256,7 +256,7 @@ impl<T> Future for Eventual<T> {
         if status.is_complete() {
             return Poll::Ready(status);
         }
-        cx.waker().clone().wake();
+        cx.waker().wake_by_ref();
         Poll::Pending
     }
 }

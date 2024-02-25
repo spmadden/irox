@@ -60,7 +60,7 @@ impl InfluxDBConnectionParams {
         Self::open_url(base_url)
     }
 
-    pub fn open_url(base_url_str: impl AsRef<str>) -> Result<InfluxDB, Error> {
+    pub fn open_url<T: AsRef<str>>(base_url_str: T) -> Result<InfluxDB, Error> {
         let base_url = Url::parse(base_url_str.as_ref())?;
         let agent = ureq::AgentBuilder::new()
             .max_idle_connections(100)
@@ -81,7 +81,7 @@ pub struct InfluxConnectionBuilder {
 
 impl InfluxConnectionBuilder {
     #[must_use]
-    pub fn with_host(mut self, host: impl Into<String>) -> Self {
+    pub fn with_host<T: Into<String>>(mut self, host: T) -> Self {
         self.host = Some(host.into());
         self
     }
@@ -92,7 +92,7 @@ impl InfluxConnectionBuilder {
     }
 
     #[must_use]
-    pub fn with_port(mut self, port: impl Into<u16>) -> Self {
+    pub fn with_port<T: Into<u16>>(mut self, port: T) -> Self {
         self.port = Some(port.into());
         self
     }
@@ -161,25 +161,25 @@ impl InfluxDB {
         }
     }
 
-    pub fn query_json(
+    pub fn query_json<T: AsRef<str>>(
         &self,
-        query: impl AsRef<str>,
+        query: T,
         db: Option<String>,
     ) -> Result<OwnedReader, Error> {
         self.query(query, EncodingType::JSON, db)
     }
 
-    pub fn query_csv(
+    pub fn query_csv<T: AsRef<str>>(
         &self,
-        query: impl AsRef<str>,
+        query: T,
         db: Option<String>,
     ) -> Result<OwnedReader, Error> {
         self.query(query, EncodingType::CSV, db)
     }
 
-    pub fn query_data(
+    pub fn query_data<T: AsRef<str>>(
         &self,
-        query: impl AsRef<str>,
+        query: T,
         encoding: EncodingType,
         db: Option<String>,
     ) -> Result<Vec<u8>, Error> {
@@ -189,9 +189,9 @@ impl InfluxDB {
         Ok(buf)
     }
 
-    pub fn query_string(
+    pub fn query_string<T: AsRef<str>>(
         &self,
-        query: impl AsRef<str>,
+        query: T,
         encoding: EncodingType,
         db: Option<String>,
     ) -> Result<String, Error> {
@@ -199,9 +199,9 @@ impl InfluxDB {
         Ok(String::from_utf8_lossy(&data).to_string())
     }
 
-    pub fn query(
+    pub fn query<T: AsRef<str>>(
         &self,
-        query: impl AsRef<str>,
+        query: T,
         encoding: EncodingType,
         db: Option<String>,
     ) -> Result<OwnedReader, Error> {

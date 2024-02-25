@@ -30,7 +30,7 @@ impl<'a> CurrentThreadExecutor<'a> {
     /// Submit a new task to this executor.  Note:  This does not immediately run the task, you
     /// still need to call either [`CurrentThreadExecutor::run_some`] or
     /// [`CurrentThreadExecutor::run_until_complete`]
-    pub fn submit<T: 'a>(&mut self, fut: impl Future<Output = T> + 'a) -> LocalTaskHandle<T> {
+    pub fn submit<T: 'a, F: Future<Output = T> + 'a>(&mut self, fut: F) -> LocalTaskHandle<T> {
         let task = LocalTask {
             future: Box::pin(fut),
             waker: Arc::new(LocalWaker::default()),

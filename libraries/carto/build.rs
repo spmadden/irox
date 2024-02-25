@@ -21,7 +21,7 @@ fn main() -> Result<(), irox_csv::CSVError> {
     let mut country_data = BTreeMap::new();
     let _first = reader.read_line()?;
     while let Some(row) = reader.read_line()? {
-        let Some(country) = row.get(0) else {
+        let Some(country) = row.first() else {
             return CSVError::err(
                 CSVErrorType::MissingHeaderError,
                 "Missing country".to_string(),

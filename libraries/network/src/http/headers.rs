@@ -37,7 +37,7 @@ impl HttpHeaders {
 
     pub fn get_header<K: AsRef<str>>(&self, key: K) -> Option<&String> {
         let key = key.as_ref().to_string();
-        self.headers.get(&key).maybe_map(|v| v.get(0))
+        self.headers.get(&key).maybe_map(|v| v.first())
     }
 
     pub fn get_headers<K: AsRef<str>>(&self, key: K) -> Option<&Vec<String>> {

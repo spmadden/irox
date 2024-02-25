@@ -181,9 +181,9 @@ impl MultiThreadedExecutor {
     ///
     /// This function returns a [`TaskHandle`] that can be used to retrieve any return
     /// result from the operation itself.
-    pub fn submit<T: Send + 'static>(
+    pub fn submit<T: Send + 'static, F: Future<Output = T> + Send + 'static>(
         &mut self,
-        fut: impl Future<Output = T> + Send + 'static,
+        fut: F,
     ) -> Result<TaskHandle<T>, TaskError> {
         let complete = Arc::new(CompletableTask::new());
         let task = TaskExchange {
