@@ -21,5 +21,5 @@ irox-git-tools = { workspace = true, optional = true }
 irox-time = { workspace = true, optional = true }
 
 [[example]]
-name = "example"
+name = "build-example"
 required-features = ["git"]
