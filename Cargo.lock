@@ -3290,36 +3290,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "irox"
-version = "0.6.0"
-dependencies = [
- "irox-build-rs",
- "irox-carto",
- "irox-csv",
- "irox-egui-extras",
- "irox-enums",
- "irox-enums_derive",
- "irox-git-tools",
- "irox-gpx",
- "irox-influxdb_v1",
- "irox-log",
- "irox-networking",
- "irox-nmea0183",
- "irox-progress",
- "irox-raymarine-sonar",
- "irox-sirf",
- "irox-stats",
- "irox-structs",
- "irox-structs_derive",
- "irox-threading",
- "irox-time",
- "irox-tools",
- "irox-types",
- "irox-units",
- "irox-winlocation-api",
-]
-
-[[package]]
 name = "irox-build-rs"
 version = "0.2.0"
 dependencies = [
