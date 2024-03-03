@@ -1,6 +1,57 @@
 
 
 
+## v0.6.0 (2024-03-03)
+
+### Chore
+
+ - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
+
+### New Features
+
+ - <csr-id-7902f54162a5f33d0e452ff3760ef3a7e91ab704/> recursive justfiles
+ - <csr-id-c771cbceee6789b445ec4ccf5c390601f857b52a/> new 'Readerator' to turn Read into an Iterator.
+
+### Bug Fixes
+
+ - <csr-id-d012d6459e4853ea48798b1b0d98196d0577f6ec/> tweak alloc imports in fs, fix readme in cargo.toml
+
+### Refactor (BREAKING)
+
+ - <csr-id-ca214f0f8b310c02e4009fcc37b51d04bda47368/> Refactor packetio traits to use Bits rather than std::io::*.  Is now no_std compliant.
+ - <csr-id-2c04083563c31f6f260cbc1b5d9bf9ecea0b99d1/> big refactor of (Mut)Bits.  Default impls for std::io::{Read,Write} removed.
+   Impls for most of the standard types provided.  New 'BitsWrapper' provided to wrap arbitrary impls of Read/Write.
+   
+   New Bits functions: 'read_exact_into', 'read_all_str_lossy', 'read_all_vec', 'read_all_into', 'read_some_into'.
+   
+   New MutBits function: 'write_some_bytes'
+   
+   Functions from 'read' have been moved into base Bits trait: consume_until, read_until
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 35 calendar days.
+ - 48 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Tweak alloc imports in fs, fix readme in cargo.toml ([`d012d64`](https://github.com/spmadden/irox/commit/d012d6459e4853ea48798b1b0d98196d0577f6ec))
+    - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
+    - Recursive justfiles ([`7902f54`](https://github.com/spmadden/irox/commit/7902f54162a5f33d0e452ff3760ef3a7e91ab704))
+    - Refactor packetio traits to use Bits rather than std::io::*.  Is now no_std compliant. ([`ca214f0`](https://github.com/spmadden/irox/commit/ca214f0f8b310c02e4009fcc37b51d04bda47368))
+    - New 'Readerator' to turn Read into an Iterator. ([`c771cbc`](https://github.com/spmadden/irox/commit/c771cbceee6789b445ec4ccf5c390601f857b52a))
+    - Big refactor of (Mut)Bits.  Default impls for std::io::{Read,Write} removed. ([`2c04083`](https://github.com/spmadden/irox/commit/2c04083563c31f6f260cbc1b5d9bf9ecea0b99d1))
+</details>
+
 ## v0.5.3 (2024-01-15)
 
 ### New Features
@@ -13,7 +64,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 1 day passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +76,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.5.3 ([`eb01ead`](https://github.com/spmadden/irox/commit/eb01ead38bd65ae52e5b1cfb534cbea16b3e13b7))
     - New fs mod for filename/filesystem utils ([`a3849cc`](https://github.com/spmadden/irox/commit/a3849cc09b4aec74df31d0e722cca2648bcc4bca))
     - New eventually complete ecosystem ([`464a2db`](https://github.com/spmadden/irox/commit/464a2db730a363e79190823a72339177009e510f))
     - New lazy static initialization macro ([`e599d63`](https://github.com/spmadden/irox/commit/e599d63fec9c05c8ebc2aaa7d5e4ad59fa43d73e))
