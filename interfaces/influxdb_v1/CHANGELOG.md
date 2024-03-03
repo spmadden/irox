@@ -1,7 +1,35 @@
 
 
 
+## v0.5.0 (2024-03-03)
+
+### Chore
+
+ - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 50 calendar days.
+ - 95 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
 ## v0.4.1 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -15,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 21 calendar days.
+ - 3 commits contributed to the release over the course of 21 calendar days.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-influxdb_v1 v0.4.1 ([`d73f542`](https://github.com/spmadden/irox/commit/d73f5428d7425ecc78769769f16f51503390a26e))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Move binary to new 'influx-cli' module in 'tools' ([`c26ec08`](https://github.com/spmadden/irox/commit/c26ec08a27749f485a32815f97c9046a7a84d382))
 </details>
