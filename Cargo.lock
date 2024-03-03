@@ -3321,7 +3321,7 @@ dependencies = [
 
 [[package]]
 name = "irox-build-rs"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "git2",
  "irox-git-tools",
