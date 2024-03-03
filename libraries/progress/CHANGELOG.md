@@ -1,5 +1,30 @@
 
 
+## v0.3.1 (2024-03-03)
+
+### New Features
+
+ - <csr-id-ec029d9d269566744649a7939a011887eae9c435/> impl MutBits for WriterTask
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 35 calendar days.
+ - 50 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Impl MutBits for WriterTask ([`ec029d9`](https://github.com/spmadden/irox/commit/ec029d9d269566744649a7939a011887eae9c435))
+</details>
+
 ## v0.3.0 (2024-01-12)
 
 ### New Features (BREAKING)
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 2 calendar days.
+ - 3 commits contributed to the release over the course of 2 calendar days.
  - 37 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.6, irox-progress v0.3.0 ([`f23a34b`](https://github.com/spmadden/irox/commit/f23a34bf76874bd6565db16606a68a4cd1056f18))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
     - Refactor random to have PRNG trait, impl new random algorithm ([`59aa3f6`](https://github.com/spmadden/irox/commit/59aa3f65a355740f793ea3db923629833fc0053c))
 </details>
