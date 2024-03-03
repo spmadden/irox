@@ -19,7 +19,7 @@ workspace = true
 default = []
 
 [dependencies]
-log = "0.4.20"
+log.workspace = true
 num_cpus = {workspace = true, optional = true}
 
 [dev-dependencies]
