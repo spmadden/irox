@@ -1,7 +1,35 @@
 
 
 
+## v0.3.5 (2024-03-03)
+
+### New Features
+
+ - <csr-id-ecb3e74d7485cc3a0e1d27c53a70c7bcaf72a5db/> now no_std and no_alloc!
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 50 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.6.0 ([`0560dc1`](https://github.com/spmadden/irox/commit/0560dc130599c7355e1f57cbadd88395381c0033))
+    - Now no_std and no_alloc! ([`ecb3e74`](https://github.com/spmadden/irox/commit/ecb3e74d7485cc3a0e1d27c53a70c7bcaf72a5db))
+</details>
+
 ## v0.3.4 (2024-01-12)
+
+<csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
 ### Chore
 
@@ -11,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.4 ([`f9d100d`](https://github.com/spmadden/irox/commit/f9d100d8aa111d789a1921ebec5ce7729c626d6d))
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
 </details>
 

@@ -3609,7 +3609,7 @@ dependencies = [
 
 [[package]]
 name = "irox-units"
-version = "0.3.4"
+version = "0.3.5"
 dependencies = [
  "irox-tools",
 ]
