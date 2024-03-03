@@ -3,13 +3,13 @@ name = "irox-tools"
 description = "Stuff that should have been in the Rust STL, but aren't"
 keywords = ["irox", "tools"]
 categories = ["algorithms", "data-structures", "mathematics", "encoding", "network-programming"]
-version= "0.5.3"
+version= "0.5.4"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
 license.workspace = true
 exclude.workspace = true
-readme.workspace = true
+readme = "README.md"
 repository.workspace = true
 
 [lints]
