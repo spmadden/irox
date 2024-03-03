@@ -3378,14 +3378,14 @@ dependencies = [
 
 [[package]]
 name = "irox-enums"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "irox-enums_derive",
 ]
 
 [[package]]
 name = "irox-enums_derive"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "quote",
  "syn 2.0.52",
