@@ -3,6 +3,10 @@
 
 ## v0.3.5 (2024-03-03)
 
+### Bug Fixes
+
+ - <csr-id-cdea90ac4b594c7ddb640a67753030bcf8e76240/> 6 keywords -> 5 keywords for publish
+
 ### New Features
 
  - <csr-id-ecb3e74d7485cc3a0e1d27c53a70c7bcaf72a5db/> now no_std and no_alloc!
@@ -11,9 +15,9 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 50 days passed between releases.
- - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -23,6 +27,8 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - 6 keywords -> 5 keywords for publish ([`cdea90a`](https://github.com/spmadden/irox/commit/cdea90ac4b594c7ddb640a67753030bcf8e76240))
+    - Release irox-units v0.3.5 ([`5b3a8e2`](https://github.com/spmadden/irox/commit/5b3a8e2196cc6e1dbf2b32ed2a88b0cbb6df7d54))
     - Release irox-tools v0.6.0 ([`0560dc1`](https://github.com/spmadden/irox/commit/0560dc130599c7355e1f57cbadd88395381c0033))
     - Now no_std and no_alloc! ([`ecb3e74`](https://github.com/spmadden/irox/commit/ecb3e74d7485cc3a0e1d27c53a70c7bcaf72a5db))
 </details>
