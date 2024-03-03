@@ -1,7 +1,40 @@
 
 
 
+## v0.3.7 (2024-03-03)
+
+### New Features
+
+ - <csr-id-49a1d9e676a22ec0d83e5cb98916ddfbd2158d4b/> bump egui to 0.26.0
+ - <csr-id-86f758445258f5942fb4b33fa75e2b7c0d64a17f/> updated readme and examples
+ - <csr-id-855a5d0b0c8b984536f45299197a0ddfa2adb217/> new serde debug serializer to display objects
+ - <csr-id-5ecf31f0f9d77e635569689ce35aab34e9cdadf0/> new toolframe components for easy tools
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 26 calendar days.
+ - 50 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump egui to 0.26.0 ([`49a1d9e`](https://github.com/spmadden/irox/commit/49a1d9e676a22ec0d83e5cb98916ddfbd2158d4b))
+    - Updated readme and examples ([`86f7584`](https://github.com/spmadden/irox/commit/86f758445258f5942fb4b33fa75e2b7c0d64a17f))
+    - New serde debug serializer to display objects ([`855a5d0`](https://github.com/spmadden/irox/commit/855a5d0b0c8b984536f45299197a0ddfa2adb217))
+    - New toolframe components for easy tools ([`5ecf31f`](https://github.com/spmadden/irox/commit/5ecf31f0f9d77e635569689ce35aab34e9cdadf0))
+</details>
+
 ## v0.3.6 (2024-01-12)
+
+<csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
 ### Chore
 
@@ -15,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 10 calendar days.
+ - 3 commits contributed to the release over the course of 10 calendar days.
  - 25 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.6, irox-progress v0.3.0 ([`f23a34b`](https://github.com/spmadden/irox/commit/f23a34bf76874bd6565db16606a68a4cd1056f18))
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
     - Playing with wasm, now can make webpages! ([`303aca0`](https://github.com/spmadden/irox/commit/303aca0c8fb37543c95ab4c14770e671db4d5b11))
 </details>
