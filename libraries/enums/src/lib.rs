@@ -6,7 +6,12 @@
 //! bit easier to use - more like Java enums
 //!
 
+#![no_std]
+
 pub use irox_enums_derive::*;
+extern crate alloc;
+
+pub type IntoIter<T> = alloc::vec::IntoIter<T>;
 
 ///
 /// This trait allows an enum to return it's own 'name' - its identifier.
@@ -21,5 +26,5 @@ pub trait EnumName {
 ///
 pub trait EnumIterItem {
     type Item;
-    fn iter_items() -> std::vec::IntoIter<Self::Item>;
+    fn iter_items() -> IntoIter<Self::Item>;
 }

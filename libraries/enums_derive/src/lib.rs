@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+#![no_std]
+
+extern crate alloc;
+
+use alloc::string::ToString;
 use proc_macro::TokenStream;
 
 use quote::{quote, quote_spanned};
@@ -19,13 +24,13 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
     };
     let enum_name = input.ident;
 
-    let mut match_elements = Vec::new();
-    let mut names = Vec::new();
+    let mut match_elements = alloc::vec::Vec::new();
+    let mut names = alloc::vec::Vec::new();
 
     for field in s.variants {
         // println!("{}: {:?}", field.ident, field);
         let field_ident = field.ident;
-        let field_name = format!("{field_ident}");
+        let field_name = field_ident.to_string();
 
         let inner_fields = match field.fields.len() {
             0 => quote! {},
@@ -51,7 +56,8 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
 
         impl #enum_name {
             pub fn iter_names() -> impl Iterator<Item=&'static str>{
-                let names = vec![#(#names),*];
+                extern crate alloc;
+                let names = alloc::vec![#(#names),*];
                 names.into_iter()
             }
         }
@@ -68,7 +74,7 @@ pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
     };
     let enum_name = input.ident;
 
-    let mut items = Vec::new();
+    let mut items = alloc::vec::Vec::new();
 
     for field in s.variants {
         if !field.fields.is_empty() {
@@ -83,8 +89,9 @@ pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
     let res = quote! {
         impl irox_enums::EnumIterItem for #enum_name {
             type Item = #enum_name;
-            fn iter_items() -> std::vec::IntoIter<Self::Item> {
-                let items = vec![#(#items),*];
+            fn iter_items() -> irox_enums::IntoIter<Self::Item> {
+                extern crate alloc;
+                let items = alloc::vec![#(#items),*];
                 items.into_iter()
             }
         }
@@ -101,7 +108,7 @@ pub fn tryfromstr_derive(input: TokenStream) -> TokenStream {
     };
     let enum_name = input.ident;
 
-    let mut match_elements = Vec::new();
+    let mut match_elements = alloc::vec::Vec::new();
 
     for field in s.variants {
         if !field.fields.is_empty() {
@@ -109,7 +116,7 @@ pub fn tryfromstr_derive(input: TokenStream) -> TokenStream {
         }
 
         let field_ident = field.ident;
-        let field_name = format!("{field_ident}");
+        let field_name = field_ident.to_string();
 
         match_elements.push(quote_spanned! {field_ident.span() =>
             #field_name => Self::#field_ident,
