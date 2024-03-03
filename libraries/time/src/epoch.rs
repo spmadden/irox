@@ -8,8 +8,8 @@
 //! A [`Timestamp`] is a [`Duration`], a physical amount of time measured against an [`Epoch`]
 //!
 
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use core::marker::PhantomData;
+use core::ops::{Add, AddAssign, Sub, SubAssign};
 
 use irox_units::units::duration::Duration;
 
@@ -212,6 +212,7 @@ impl UnixTimestamp {
     ///
     /// Returns the local system clock equivalent of the unix timestamp
     #[must_use]
+    #[cfg(feature = "std")]
     pub fn now() -> UnixTimestamp {
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(t) => UnixTimestamp::from_offset(t.into()),
@@ -225,6 +226,7 @@ impl UnixTimestamp {
     /// Returns the local system clock duration since the timestamp.  MAY BE NEGATIVE if the clock
     /// has changed since the last call.
     #[must_use]
+    #[cfg(feature = "std")]
     pub fn elapsed(&self) -> Duration {
         Self::now().offset - self.offset
     }

@@ -5,8 +5,8 @@
 //! Contains [`Date`] and associated elements to represent a Proleptic Gregorian Date.
 //!
 
-use std::fmt::{Display, Formatter};
-use std::ops::{Add, AddAssign, Sub};
+use core::fmt::{Display, Formatter};
+use core::ops::{Add, AddAssign, Sub};
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
@@ -17,6 +17,9 @@ use crate::format::iso8601::ExtendedDateFormat;
 use crate::format::{Format, FormatError, FormatParser};
 use crate::julian::{JulianDate, JulianDayNumber, PrimeDate, JULIAN_EPOCH};
 use crate::SECONDS_IN_DAY;
+
+extern crate alloc;
+pub use alloc::string::String;
 
 /// Days per 4 Year Window
 ///
@@ -55,7 +58,7 @@ pub enum Month {
 }
 
 impl Display for Month {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("{}", self.name()))
     }
 }
@@ -223,7 +226,7 @@ pub struct Date {
 }
 
 impl Display for Date {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", ExtendedDateFormat.format(self))
     }
 }

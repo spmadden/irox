@@ -6,9 +6,9 @@
 //! Julian [`Epoch`]
 //!
 
+use core::marker::PhantomData;
+use core::ops::{Add, AddAssign, Sub, SubAssign};
 use irox_units::units::duration::{Duration, DurationUnit};
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use crate::epoch::{PrimeEpoch, PRIME_EPOCH};
 use crate::{

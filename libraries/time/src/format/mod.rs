@@ -19,10 +19,10 @@
 //!
 //!
 
-use std::error::Error;
-use std::fmt::{Display, Formatter};
-use std::num::{ParseFloatError, ParseIntError};
+use core::fmt::{Display, Formatter};
+use core::num::{ParseFloatError, ParseIntError};
 
+pub use alloc::string::{String, ToString};
 use irox_units::bounds::GreaterThanEqualToValueError;
 
 pub mod iso8601;
@@ -33,7 +33,7 @@ pub mod rfc3339;
 pub trait Format<T> {
     ///
     /// Implementation-specific format of a date or time
-    fn format(&self, date: &T) -> String;
+    fn format(&self, date: &T) -> alloc::string::String;
 }
 
 ///
@@ -60,26 +60,27 @@ pub enum FormatErrorType {
 #[derive(Debug)]
 pub struct FormatError {
     error_type: FormatErrorType,
-    msg: String,
+    msg: alloc::string::String,
 }
 
 impl Display for FormatError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("{:?}{}", self.error_type, self.msg))
     }
 }
 
-impl Error for FormatError {}
+#[cfg(feature = "std_errors")]
+impl std::error::Error for FormatError {}
 
 impl FormatError {
     /// Creates a new format error
     #[must_use]
-    pub fn new(error_type: FormatErrorType, msg: String) -> FormatError {
+    pub fn new(error_type: FormatErrorType, msg: alloc::string::String) -> FormatError {
         FormatError { error_type, msg }
     }
 
     /// Helper for returning errors
-    pub fn err<T>(msg: String) -> Result<T, Self> {
+    pub fn err<T>(msg: alloc::string::String) -> Result<T, Self> {
         Err(Self::new(FormatErrorType::Other, msg))
     }
 
@@ -89,6 +90,7 @@ impl FormatError {
     }
 }
 
+#[cfg(feature = "std")]
 impl From<std::io::Error> for FormatError {
     fn from(value: std::io::Error) -> Self {
         FormatError {

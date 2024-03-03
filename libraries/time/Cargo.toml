@@ -19,3 +19,7 @@ workspace = true
 irox-units.workspace = true
 irox-tools.workspace = true
 irox-enums.workspace = true
+
+[features]
+default = []
+std = []

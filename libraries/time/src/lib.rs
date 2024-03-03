@@ -26,8 +26,11 @@
 //! * A [`Time128`] is a Q64.64 `Timestamp` where Seconds and Fractional Seconds are `u64`'s
 //!
 #![forbid(unsafe_code)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-use std::fmt::{Display, Formatter};
+extern crate alloc;
+use alloc::string::String;
+use core::fmt::{Display, Formatter};
 
 pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 pub use irox_units::units::duration::{Duration, DurationUnit};
@@ -257,7 +260,7 @@ impl Time {
 }
 
 impl Display for Time {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let (h, m, s) = self.as_hms();
         if f.alternate() {
             let s = s as f64 + self.get_secondsfrac();

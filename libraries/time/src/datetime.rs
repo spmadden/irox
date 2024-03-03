@@ -11,10 +11,12 @@ use crate::format::Format;
 use crate::gregorian::Date;
 use crate::julian::JulianDate;
 use crate::Time;
+use core::fmt::{Display, Formatter};
+use core::ops::{Add, AddAssign, Sub};
 use irox_units::bounds::GreaterThanEqualToValueError;
 use irox_units::units::duration::Duration;
-use std::fmt::{Display, Formatter};
-use std::ops::{Add, AddAssign, Sub};
+extern crate alloc;
+pub use alloc::string::String;
 
 ///
 /// Represents a Gregorian Date and Time in UTC
@@ -25,7 +27,7 @@ pub struct UTCDateTime {
 }
 
 impl Display for UTCDateTime {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("{}", self.format(&BASIC_DATE_TIME_OF_DAY)))
     }
 }
@@ -86,6 +88,7 @@ impl UTCDateTime {
     /// Returns the current instant in time as reported by the local system
     /// clock.
     #[must_use]
+    #[cfg(feature = "std")]
     pub fn now() -> UTCDateTime {
         UnixTimestamp::now().into()
     }

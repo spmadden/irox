@@ -29,3 +29,11 @@ Module Structure
   * [`iso8601`](src/format/iso8601.rs) - ISO8601 Date Formats
   * [`rfc3339`](src/format/rfc3339.rs) - RFC3339 Date Formats, a slight variation on ISO8601
 * [`gregorian`](src/gregorian.rs) - Contains `Date` and `Month`, that describe a gregorian calendar date.
+
+Features
+---------
+* `std` - adds 'std' support:
+  * `UnixTimestamp::now() -> UnixTimestamp`
+  * `UnixTimestamp::elapsed() -> Duration`
+  * `UTCDateTime::now() ->UTCDateTime`
+  * impls of `std::error::Error` on errors
