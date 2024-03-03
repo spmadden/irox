@@ -1,7 +1,42 @@
 
 
 
+## v0.4.2 (2024-03-03)
+
+### Chore
+
+ - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
+
+### Refactor
+
+ - <csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/> deconflict network/example and build-rs/example
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 6 calendar days.
+ - 50 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Deconflict network/example and build-rs/example ([`b95c39f`](https://github.com/spmadden/irox/commit/b95c39f94603a7c42353fe65114e95cf6a37a4bb))
+    - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
+</details>
+
 ## v0.4.1 (2024-01-13)
+
+<csr-id-902df4173eb9542972a3712c8cbcb5b99612613f/>
+<csr-id-e1a2beccad777886c8495d0d15a72d4d666bbc2f/>
+<csr-id-6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f/>
+<csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/>
 
 ### Chore
 
@@ -30,7 +65,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 13 commits contributed to the release.
+ - 14 commits contributed to the release.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -41,6 +76,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.4.1 ([`1236d8f`](https://github.com/spmadden/irox/commit/1236d8fd2b7b312a96202e27aa36069d95ed6d31))
     - Networking to 0.4.1 ([`902df41`](https://github.com/spmadden/irox/commit/902df4173eb9542972a3712c8cbcb5b99612613f))
     - Release irox-networking v0.4.0 ([`1560cb6`](https://github.com/spmadden/irox/commit/1560cb63a92efeb8701e17334d6b09c24614881f))
     - Release irox-tools v0.5.2 ([`89b01ec`](https://github.com/spmadden/irox/commit/89b01ec20e8637408a1497fa88a30452233efc97))
