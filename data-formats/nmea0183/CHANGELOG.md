@@ -1,7 +1,47 @@
 
 
 
+## v0.5.0 (2024-03-03)
+
+### Chore
+
+ - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
+
+### Bug Fixes
+
+ - <csr-id-6fdcc09292831e15053e44c5e01356b0375b1800/> fix import of tools::fmt
+
+### Refactor (BREAKING)
+
+ - <csr-id-aa699e9008f7c8e19e0faecbf9dea05eeb6df345/> update to use Bits rather than Read
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 59 calendar days.
+ - 95 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Update to use Bits rather than Read ([`aa699e9`](https://github.com/spmadden/irox/commit/aa699e9008f7c8e19e0faecbf9dea05eeb6df345))
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+    - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
+    - Fix import of tools::fmt ([`6fdcc09`](https://github.com/spmadden/irox/commit/6fdcc09292831e15053e44c5e01356b0375b1800))
+</details>
+
 ## v0.4.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
+<csr-id-38d709a5df3fd8d11784427952480ca04e6ef965/>
+<csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
 ### Chore
 
@@ -20,7 +60,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release over the course of 23 calendar days.
+ - 9 commits contributed to the release over the course of 23 calendar days.
  - 30 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -32,6 +72,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.4.0 ([`b3733da`](https://github.com/spmadden/irox/commit/b3733da106c80d87977311064747317e32e16b01))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - New partial impl of ZDA ([`b1614a3`](https://github.com/spmadden/irox/commit/b1614a35161bc14d45a7b8fb03a121e6683cc872))
     - GSA is now Copy+Clone+Default ([`e449164`](https://github.com/spmadden/irox/commit/e449164722df8fb8ef366cb41e2e23534ad24064))
