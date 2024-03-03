@@ -1,8 +1,8 @@
 [package]
 name = "irox-units"
 description = "Physical Quantities, Units, & Reference Frames Library"
-keywords = ["irox", "coordinate", "transforms", "epsg", "projections"]
-categories = ["aerospace", "data-structures", "science", "mathematics"]
+keywords = ["irox", "coordinate", "epsg", "projections", "no_std", "no_alloc"]
+categories = ["aerospace", "data-structures", "science", "mathematics", "no-std::no-alloc"]
 version= "0.3.4"
 edition.workspace = true
 authors.workspace = true
@@ -16,3 +16,8 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+irox-tools = {version = "^0", path = "../tools", default-features = false}
+
+[features]
+default = []
+std_errors = []

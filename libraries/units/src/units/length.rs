@@ -3,7 +3,7 @@
 
 //!
 //! This module contains the basic types and conversions for the SI "Length" quantity
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 use crate::units::{FromUnits, Unit};
 
@@ -117,7 +117,7 @@ impl Length {
 }
 
 impl Display for Length {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "{:02.3}{}",
             self.value,

@@ -6,8 +6,8 @@
 //! Ellipse.
 //!
 
-use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
+use core::fmt::{Display, Formatter};
+use core::marker::PhantomData;
 
 use crate::units::angle::Angle;
 use crate::units::FromUnits;
@@ -122,7 +122,7 @@ pub struct Compass<T> {
 }
 
 impl<T> Display for Compass<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
             "{} {:?} {:?}",
@@ -303,7 +303,7 @@ pub enum CompassDirection {
 }
 
 impl Display for CompassDirection {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             CompassDirection::Heading(h) => {
                 write!(f, "Heading({h})")

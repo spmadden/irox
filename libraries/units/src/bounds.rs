@@ -5,7 +5,7 @@
 //! Bounding Boxes and Range Checks
 //!
 
-use std::fmt::{Debug, Display, Formatter};
+use core::fmt::{Debug, Display, Formatter};
 
 ///
 /// Defines a basic four-corner bounding box
@@ -116,7 +116,7 @@ where
 }
 
 impl<T: Debug + Display + Clone + PartialOrd> Display for LessThanEqualToValueError<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "value {} is less than or equal to {}",
             self.value, self.valid_range.value
@@ -135,7 +135,7 @@ impl<T: Debug + Display + Clone + PartialOrd> LessThanEqualToValueError<T> {
         &self.valid_range
     }
 }
-
+#[cfg(feature = "std_errors")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for LessThanEqualToValueError<T> {}
 
 ///
@@ -191,13 +191,14 @@ where
     pub(crate) valid_range: LessThanValue<T>,
 }
 impl<T: Debug + Display + Clone + PartialOrd> Display for GreaterThanEqualToValueError<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "the value {} is greater than or equal to {}",
             self.value, self.valid_range.value
         ))
     }
 }
+#[cfg(feature = "std_errors")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error
     for GreaterThanEqualToValueError<T>
 {
@@ -377,13 +378,14 @@ impl<T: Debug + Display + Clone + PartialOrd> OutsideRangeError<T> {
 }
 
 impl<T: Debug + Display + Clone + PartialOrd> Display for OutsideRangeError<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "Value {} is outside valid range {} -> {}",
             self.value, self.valid_range.lower_bound.value, self.valid_range.upper_bound.value
         ))
     }
 }
+#[cfg(feature = "std_errors")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for OutsideRangeError<T> {}
 
 ///
@@ -407,11 +409,12 @@ impl<T: Debug + Display + Clone + PartialOrd> InsideRangeError<T> {
 }
 
 impl<T: Debug + Display + Clone + PartialOrd> Display for InsideRangeError<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "Value {} is inside invalid range {} -> {}",
             self.value, self.valid_range.lower_bound.value, self.valid_range.upper_bound.value
         ))
     }
 }
+#[cfg(feature = "std_errors")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for InsideRangeError<T> {}

@@ -6,9 +6,9 @@
 //! radius or diameter with appropriate length units.
 //!
 
-use std::cmp::Ordering;
-use std::fmt::{Display, Formatter};
-use std::ops::{Div, DivAssign, Mul, MulAssign};
+use core::cmp::Ordering;
+use core::fmt::{Display, Formatter};
+use core::ops::{Div, DivAssign, Mul, MulAssign};
 
 use crate::units::length::Length;
 
@@ -31,7 +31,7 @@ pub struct CircularDimension {
 }
 
 impl Display for CircularDimension {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "+/- {}m", self.as_radius().dimension.as_meters().value())
     }
 }

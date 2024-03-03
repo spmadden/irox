@@ -5,9 +5,8 @@
 //! Contains [`Duration`] and [`DurationUnit`], a Physical Quantity of amount of Time passed.
 //!
 
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
-use crate::basic_unit;
 use crate::units::{FromUnits, Unit};
 
 ///
@@ -208,18 +207,18 @@ impl Unit<DurationUnit> for Duration {
     }
 }
 
-impl From<std::time::Duration> for Duration {
-    fn from(value: std::time::Duration) -> Self {
+impl From<core::time::Duration> for Duration {
+    fn from(value: core::time::Duration) -> Self {
         Duration::new(value.as_secs_f64(), DurationUnit::Second)
     }
 }
 
-impl From<Duration> for std::time::Duration {
+impl From<Duration> for core::time::Duration {
     fn from(value: Duration) -> Self {
         let secs = value.as_seconds();
         let frac_sec = value.as_seconds_f64() - secs as f64;
         let nanos = DurationUnit::Second.as_nanos(frac_sec) as u32;
-        std::time::Duration::new(secs, nanos)
+        core::time::Duration::new(secs, nanos)
     }
 }
 
@@ -324,7 +323,7 @@ impl Duration {
     }
 }
 
-// Backwards compatibility for [`std::time::Duration`] drop-in creation
+// Backwards compatibility for [`core::time::Duration`] drop-in creation
 impl Duration {
     /// Creates a new `Duration` from the specified number of microseconds.
     ///
@@ -393,7 +392,7 @@ impl Duration {
 }
 
 impl Display for Duration {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("{} {:?}", self.value, self.units))
     }
 }

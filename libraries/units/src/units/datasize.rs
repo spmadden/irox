@@ -6,6 +6,7 @@
 //!
 
 use crate::units::Unit;
+use core::fmt::{Display, Formatter};
 
 use super::FromUnits;
 
@@ -126,59 +127,29 @@ impl DataSize {
             DataSizeUnits::Petabytes => (self.value * PB_TO_BYTES as f64) as u64,
         }
     }
-
-    #[must_use]
-    pub fn human(&self) -> String {
-        human_bytes(self.as_bytes())
-    }
-
-    #[must_use]
-    pub fn human_frac(&self) -> String {
-        human_bytes_frac(self.as_bytes())
-    }
 }
 
-#[must_use]
-pub fn human_bytes(bytes: u64) -> String {
-    if bytes < KB_TO_BYTES {
-        format!("{bytes} bytes")
-    } else if bytes < MB_TO_BYTES {
-        let val = bytes as f64 / KB_TO_BYTES as f64;
-        return format!("{val:.3} KB");
-    } else if bytes < GB_TO_BYTES {
-        let val = bytes as f64 / MB_TO_BYTES as f64;
-        return format!("{val:.3} MB");
-    } else if bytes < TB_TO_BYTES {
-        let val = bytes as f64 / GB_TO_BYTES as f64;
-        return format!("{val:.3} GB");
-    } else if bytes < PB_TO_BYTES {
-        let val = bytes as f64 / TB_TO_BYTES as f64;
-        return format!("{val:.3} TB");
-    } else {
+impl Display for DataSize {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        let bytes = self.as_bytes();
+        let frac = f.precision().unwrap_or(3);
+        if bytes < KB_TO_BYTES {
+            return write!(f, "{bytes} bytes");
+        } else if bytes < MB_TO_BYTES {
+            let val = bytes as f64 / KB_TO_BYTES as f64;
+            return write!(f, "{val:.frac$} KB");
+        } else if bytes < GB_TO_BYTES {
+            let val = bytes as f64 / MB_TO_BYTES as f64;
+            return write!(f, "{val:.frac$} MB");
+        } else if bytes < TB_TO_BYTES {
+            let val = bytes as f64 / GB_TO_BYTES as f64;
+            return write!(f, "{val:.frac$} GB");
+        } else if bytes < PB_TO_BYTES {
+            let val = bytes as f64 / TB_TO_BYTES as f64;
+            return write!(f, "{val:.frac$} TB");
+        }
         let val = bytes as f64 / PB_TO_BYTES as f64;
-        return format!("{val:.3} PB");
-    }
-}
-
-#[must_use]
-pub fn human_bytes_frac(bytes: u64) -> String {
-    if bytes < KB_TO_BYTES {
-        format!("{bytes} bytes")
-    } else if bytes < MB_TO_BYTES {
-        let val = bytes as f64 / KB_TO_BYTES as f64;
-        return format!("{val:.3} KB");
-    } else if bytes < GB_TO_BYTES {
-        let val = bytes as f64 / MB_TO_BYTES as f64;
-        return format!("{val:.3} MB");
-    } else if bytes < TB_TO_BYTES {
-        let val = bytes as f64 / GB_TO_BYTES as f64;
-        return format!("{val:.3} GB");
-    } else if bytes < PB_TO_BYTES {
-        let val = bytes as f64 / TB_TO_BYTES as f64;
-        return format!("{val:.3} TB");
-    } else {
-        let val = bytes as f64 / PB_TO_BYTES as f64;
-        return format!("{val:.3} PB");
+        write!(f, "{val:.frac$} PB")
     }
 }
 

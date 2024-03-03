@@ -3,7 +3,7 @@
 
 //!
 //! This module contains the basic types and conversions for the SI "Speed" quantity
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 use crate::units::{FromUnits, Unit};
 
@@ -71,7 +71,7 @@ impl Speed {
 }
 
 impl Display for Speed {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:0.3}m/s", self.as_meters_per_second().value)
     }
 }

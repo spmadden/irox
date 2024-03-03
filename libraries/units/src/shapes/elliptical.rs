@@ -6,7 +6,7 @@
 //! axes and an optional `CompassDirection` orientation of the first axis
 //!
 
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 use crate::shapes::CircularDimension;
 use crate::units::compass::CompassDirection;
@@ -24,19 +24,15 @@ pub struct Ellipse {
 }
 
 impl Display for Ellipse {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} / {}{}",
-            self.first_axis,
-            self.second_axis,
-            match self.orientation {
-                Some(o) => {
-                    format!(" {o}")
-                }
-                None => String::new(),
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self.orientation {
+            Some(o) => {
+                write!(f, "{} / {} {}", self.first_axis, self.second_axis, o)
             }
-        )
+            None => {
+                write!(f, "{} / {}", self.first_axis, self.second_axis)
+            }
+        }
     }
 }
 

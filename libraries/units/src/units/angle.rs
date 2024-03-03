@@ -4,7 +4,7 @@
 //!
 //! This module contains the basic types and conversions for the SI coherent derived "Planar Angle"
 //! quantity
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 use crate::units::{FromUnits, Unit};
 
@@ -128,7 +128,9 @@ impl Angle {
     }
 
     #[must_use]
+    #[allow(unused_imports)]
     pub fn as_deg_min(&self) -> (i16, f64) {
+        use irox_tools::f64::FloatExt;
         let val = self.as_degrees().value;
         let sign = val.signum() as i16;
         let val = val.abs();
@@ -140,7 +142,7 @@ impl Angle {
 }
 
 impl Display for Angle {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:03.3}\u{00B0}", self.as_degrees().value)
     }
 }
@@ -152,7 +154,7 @@ pub const RAD_2_DEG: f64 = 57.295_779_513_082_32;
 /// Revolutions to Degrees factor
 pub const REV_2_DEG: f64 = 360.;
 /// Revolutions to Radians factor
-pub const REV_2_RAD: f64 = std::f64::consts::TAU;
+pub const REV_2_RAD: f64 = core::f64::consts::TAU;
 /// Minutes to Seconds factor
 pub const MIN_2_SEC: f64 = 60.;
 /// Mils to Revolutions factor
