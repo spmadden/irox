@@ -1,6 +1,39 @@
 
 
+## v0.4.2 (2024-03-03)
+
+### New Features
+
+ - <csr-id-e7065245c7d62686aa617fa1306d5ab8d9bf1e0c/> now no_std!
+
+### Bug Fixes
+
+ - <csr-id-561aa29db8f2bffe2d094b80753e00b9f0de54a2/> fix omitted dep path
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 50 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix omitted dep path ([`561aa29`](https://github.com/spmadden/irox/commit/561aa29db8f2bffe2d094b80753e00b9f0de54a2))
+    - Now no_std! ([`e706524`](https://github.com/spmadden/irox/commit/e7065245c7d62686aa617fa1306d5ab8d9bf1e0c))
+</details>
+
 ## v0.4.1 (2024-01-13)
+
+<csr-id-701cfdabf93315d4ec035d67522e139917ee57fb/>
+<csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/>
 
 ### Chore
 
@@ -14,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -25,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.1 ([`0fdd826`](https://github.com/spmadden/irox/commit/0fdd8262853204142cdbd34d863c768df8d0a5d2))
     - Bump time to 0.4.1 ([`701cfda`](https://github.com/spmadden/irox/commit/701cfdabf93315d4ec035d67522e139917ee57fb))
     - Release irox-time v0.4.0 ([`da5300f`](https://github.com/spmadden/irox/commit/da5300f1bf2f3d97dbc27a05233628e901c2382f))
     - Some extra 8601 week tests ([`a5d9a40`](https://github.com/spmadden/irox/commit/a5d9a4055841d8207e3be50b09436b19508b6040))
