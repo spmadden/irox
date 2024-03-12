@@ -3,6 +3,7 @@
 //
 
 use irox_fixedmath::FixedU64;
+use irox_tools::random::Random;
 
 #[test]
 pub fn add() {
@@ -39,4 +40,10 @@ pub fn div() {
     let c = a / b;
     println!("{c}");
     assert_eq!(3. / 32., Into::<f64>::into(c))
+}
+
+#[test]
+pub fn long_add() {
+    let mut rand = Random::default();
+
 }

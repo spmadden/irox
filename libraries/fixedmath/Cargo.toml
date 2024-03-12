@@ -16,3 +16,6 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+
+[dev-dependencies]
+irox-tools.workspace = true

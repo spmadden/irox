@@ -2535,6 +2535,9 @@ dependencies = [
 [[package]]
 name = "irox-fixedmath"
 version = "0.1.0"
+dependencies = [
+ "irox-tools",
+]
 
 [[package]]
 name = "irox-gpsd"
