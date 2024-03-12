@@ -13,6 +13,7 @@ resolver = "2"
 members = [
     "irox",
     "data-formats/csv",
+    "data-formats/ext2",
     "data-formats/gpx",
     "data-formats/nmea0183",
     "data-formats/raymarine-sonar",

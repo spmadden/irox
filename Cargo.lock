@@ -3392,6 +3392,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-ext2"
+version = "0.1.0"
+dependencies = [
+ "irox-log",
+ "irox-structs",
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-git-tools"
 version = "0.2.0"
 dependencies = [

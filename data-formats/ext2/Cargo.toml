@@ -1,0 +1,21 @@
+[package]
+name = "irox-ext2"
+description = "Pure-native Rust implementation of the Ext2 Filesystem"
+keywords = ["irox"]
+categories = []
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = {path = "../../libraries/tools", version = "^0", default-features = false}
+irox-log.workspace = true
+irox-structs.workspace = true
