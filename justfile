@@ -2,9 +2,14 @@
 
 default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade package
+ci +FLAGS='': updates deny (build FLAGS) clean (build '--all-targets --all-features' FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade package
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
+
+clean:
+    @just logstart clean
+    cargo clean
+    @just logend
 
 updates:
     @just logstart updates
@@ -27,7 +32,7 @@ deny +FLAGS='':
 
 build +FLAGS='':
     @just logstart build
-    cargo build --all-targets --all-features {{FLAGS}}
+    cargo build {{FLAGS}}
     @just logend
 
 check TARGET +FLAGS='':

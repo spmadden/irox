@@ -1,0 +1,25 @@
+[package]
+name = "irox-"
+description = ""
+keywords = ["irox"]
+categories = []
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+git2.workspace = true
+log.workspace = true
+clap.workspace = true
+irox-log.workspace = true
+irox-progress.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
