@@ -1,0 +1,19 @@
+[package]
+name = "irox-tar"
+description = "Pure-native Rust reader/writer for the TAR (ustar) file format"
+keywords = ["irox", "tar", "ustar", "archive"]
+categories = ["encoding", "parser-implementations", "filesystem"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools.workspace = true

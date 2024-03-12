@@ -16,6 +16,7 @@ members = [
     "data-formats/nmea0183",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
+    "data-formats/tar",
     "eieio/api",
     "eieio/nmea0183",
     "interfaces/influxdb_v1",
@@ -78,6 +79,7 @@ irox-gpx = {version = "^0", path = "data-formats/gpx"}
 irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
 irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
 irox-sirf = {version = "^0", path = "data-formats/sirf"}
+irox-tar = {version = "^0", path = "data-formats/tar"}
 
 irox-eieio-api = {version="^0", path = "eieio/api"}
 irox-eieio-nmea0183 = {version="^0", path = "eieio/nmea0183"}

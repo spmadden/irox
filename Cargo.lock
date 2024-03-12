@@ -3544,6 +3544,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-tar"
+version = "0.1.0"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-threading"
 version = "0.2.2"
 dependencies = [
