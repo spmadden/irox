@@ -110,6 +110,11 @@ pub trait Bits {
         };
         Ok(ret)
     }
+    
+    /// Reads a single [`u16`] in little-endian order, 2 bytes, LSB first.
+    fn read_le_u16(&mut self)-> Result<u16, Error> {
+        Ok(self.read_be_u16()?.swap_bytes())
+    }
 
     /// Optionally reads a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn next_be_u16(&mut self) -> Result<Option<u16>, Error> {
@@ -122,6 +127,11 @@ pub trait Bits {
         let out = ((a as u16) << 8) | (b as u16);
         Ok(Some(out))
     }
+    
+    /// Optionally reads a single [`u16`] in little-endian order, 2 bytes, LSB first.
+    fn next_le_u16(&mut self) -> Result<Option<u16>, Error> {
+        Ok(self.next_be_u16()?.map(u16::swap_bytes))
+    }
 
     /// Reads a single [`u32`] in big-endian order, 4 bytes, MSB first.
     fn read_be_u32(&mut self) -> Result<u32, Error> {
@@ -129,6 +139,11 @@ pub trait Bits {
             return Err(Error::from(ErrorKind::UnexpectedEof));
         };
         Ok(ret)
+    }
+
+    /// Reads a single [`u32`] in little-endian order, 4 bytes, LSB first.
+    fn read_le_u32(&mut self) -> Result<u32, Error> {
+        Ok(self.read_be_u32()?.swap_bytes())
     }
 
     /// Optionally reads a single [`u32`] in big-endian order, 4 bytes, MSB first.
@@ -139,9 +154,13 @@ pub trait Bits {
         let mut out: u32 = ((a as u32) << 8) | maybe_next_u8!(self, a as u32) as u32;
         next_and_shift!(self, u32, out);
         next_and_shift!(self, u32, out);
-        next_and_shift!(self, u32, out);
 
         Ok(Some(out))
+    }
+
+    /// Optionally reads a single [`u32`] in little-endian order, 4 bytes, LSB first.
+    fn next_le_u32(&mut self) -> Result<Option<u32>, Error> {
+        Ok(self.next_be_u32()?.map(u32::swap_bytes))
     }
 
     /// Reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
@@ -150,6 +169,14 @@ pub trait Bits {
             return Err(Error::from(ErrorKind::UnexpectedEof));
         };
         Ok(ret)
+    }
+
+    /// Reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
+    fn read_le_u64(&mut self) -> Result<u64, Error> {
+        let Some(ret) = self.next_be_u64()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
+        Ok(ret.swap_bytes())
     }
 
     /// Optionally reads a single [`u64`] in big-endian order, 8 bytes, MSB first.
@@ -164,9 +191,13 @@ pub trait Bits {
         next_and_shift!(self, u64, out);
         next_and_shift!(self, u64, out);
         next_and_shift!(self, u64, out);
-        next_and_shift!(self, u64, out);
 
         Ok(Some(out))
+    }
+
+    /// Optionally reads a single [`u64`] in little-endian order, 4 bytes, LSB first.
+    fn next_le_u64(&mut self) -> Result<Option<u64>, Error> {
+        Ok(self.next_be_u64()?.map(u64::swap_bytes))
     }
 
     /// Reads a single [`u128`] in big-endian order, 16 bytes, MSB first.
@@ -183,7 +214,6 @@ pub trait Bits {
             return Ok(None);
         };
         let mut out: u128 = ((a as u128) << 8) | maybe_next_u8!(self, a as u128) as u128;
-        next_and_shift!(self, u128, out);
         next_and_shift!(self, u128, out);
         next_and_shift!(self, u128, out);
         next_and_shift!(self, u128, out);
@@ -227,9 +257,19 @@ pub trait Bits {
         Ok(self.read_be_u16()? as i16)
     }
 
+    /// Reads a single [`i16`] in little-endian order, 2 bytes, LSB first.
+    fn read_le_i16(&mut self) -> Result<i16, Error> {
+        Ok(self.read_be_u16()?.swap_bytes() as i16)
+    }
+
     /// Optionally reads a single [`i16`] in big-endian order, 2 bytes, MSB first.
     fn next_be_i16(&mut self) -> Result<Option<i16>, Error> {
         Ok(self.next_be_u16()?.map(|v| v as i16))
+    }
+
+    /// Optionally reads a single [`i16`] in little-endian order, 2 bytes, LSB first.
+    fn next_le_i16(&mut self) -> Result<Option<i16>, Error> {
+        Ok(self.next_be_u16()?.map(|v| v.swap_bytes() as i16))
     }
 
     /// Reads a single [`i32`] in big-endian order, 4 bytes, MSB first.
@@ -237,9 +277,19 @@ pub trait Bits {
         Ok(self.read_be_u32()? as i32)
     }
 
+    /// Reads a single [`i32`] in little-endian order, 4 bytes, LSB first.
+    fn read_le_i32(&mut self) -> Result<i32, Error> {
+        Ok(self.read_be_u32()?.swap_bytes() as i32)
+    }
+
     /// Optionally reads a single [`i32`] in big-endian order, 4 bytes, MSB first.
     fn next_be_i32(&mut self) -> Result<Option<i32>, Error> {
         Ok(self.next_be_u32()?.map(|v| v as i32))
+    }
+
+    /// Optionally reads a single [`i32`] in little-endian order, 4 bytes,LSB first.
+    fn next_le_i32(&mut self) -> Result<Option<i32>, Error> {
+        Ok(self.next_be_u32()?.map(|v| v.swap_bytes() as i32))
     }
 
     /// Reads a single [`i64`] in big-endian order, 8 bytes, MSB first.
@@ -247,9 +297,19 @@ pub trait Bits {
         Ok(self.read_be_u64()? as i64)
     }
 
+    /// Reads a single [`i64`] in little-endian order, 8 bytes, LSB first.
+    fn read_le_i64(&mut self) -> Result<i64, Error> {
+        Ok(self.read_be_u64()?.swap_bytes() as i64)
+    }
+
     /// Optionally reads a single [`i64`] in big-endian order, 8 bytes, MSB first.
     fn next_be_i64(&mut self) -> Result<Option<i64>, Error> {
         Ok(self.next_be_u64()?.map(|v| v as i64))
+    }
+
+    /// Optionally reads a single [`i64`] in little-endian order, 8 bytes, LSB first.
+    fn next_le_i64(&mut self) -> Result<Option<i64>, Error> {
+        Ok(self.next_be_u64()?.map(|v| v.swap_bytes() as i64))
     }
 
     /// Advances the stream by at most 'len' bytes.  The actual amount of bytes advanced may be
@@ -300,9 +360,14 @@ pub trait Bits {
         Ok(())
     }
 
-    /// Reads the entire stream into a UTF-8 String, dropping all other packets.
+    /// Reads the entire stream into a UTF-8 String, dropping all other bytes.
     fn read_all_str_lossy(&mut self) -> Result<String, Error> {
         Ok(String::from_utf8_lossy(&self.read_all_vec()?).to_string())
+    }
+    
+    /// Reads the specified amount of bytes into a UTF-8 String, dropping all other bytes.
+    fn read_str_sized_lossy(&mut self, len: usize) -> Result<String, Error> {
+        Ok(String::from_utf8_lossy(&self.read_exact_vec(len)?).to_string())
     }
 
     /// Reads to the end of the stream and returns the data as a [`Vec<u8>`]
@@ -488,17 +553,33 @@ pub trait MutBits {
     fn write_be_u16(&mut self, val: u16) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
+    /// Writes a single [`u16`] in little-endian order, 2 bytes, LSB first.
+    fn write_le_u16(&mut self, val: u16) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
+    }
     /// Writes a single [`u32`] in big-endian order, 4 bytes, MSB first.
     fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
+    }
+    /// Writes a single [`u32`] in little-endian order, 4 bytes, LSB first.
+    fn write_le_u32(&mut self, val: u32) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
     }
     /// Writes a single [`u64`] in big-endian order, 8 bytes, MSB first.
     fn write_be_u64(&mut self, val: u64) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
+    /// Writes a single [`u64`] in little-endian order, 8 bytes, LSB first.
+    fn write_le_u64(&mut self, val: u64) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
+    }
     /// Writes a single [`u128`] in big-endian order, 16 bytes, MSB first.
     fn write_be_u128(&mut self, val: u128) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
+    }
+    /// Writes a single [`u128`] in little-endian order, 16 bytes, LSB first.
+    fn write_le_u128(&mut self, val: u128) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
     }
 
     /// Writes a single [`f32`] in standard IEEE754 format, 4 bytes
@@ -514,17 +595,33 @@ pub trait MutBits {
     fn write_be_i16(&mut self, val: i16) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
+    /// Writes a single [`i16`] in little-endian order, 2 bytes, LSB first.
+    fn write_le_i16(&mut self, val: i16) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
+    }
     /// Writes a single [`i32`] in big-endian order, 4 bytes, MSB first.
     fn write_be_i32(&mut self, val: i32) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
+    }
+    /// Writes a single [`i32`] in little-endian order, 4 bytes, LSB first.
+    fn write_le_i32(&mut self, val: i32) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
     }
     /// Writes a single [`i64`] in big-endian order, 8 bytes, MSB first.
     fn write_be_i64(&mut self, val: i64) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
+    /// Writes a single [`i64`] in little-endian order, 8 bytes, LSB first.
+    fn write_le_i64(&mut self, val: i64) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
+    }
     /// Writes a single [`i128`] in big-endian order, 16 bytes, MSB first.
     fn write_be_i128(&mut self, val: i128) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
+    }
+    /// Writes a single [`i128`] in little-endian order, 16 bytes, LSB first.
+    fn write_le_i128(&mut self, val: i128) -> Result<(), Error> {
+        self.write_all_bytes(&val.swap_bytes().to_be_bytes())
     }
 
     /// Writes a sized blob, a series of bytes preceded by a [`u8`] declaring the size
