@@ -118,6 +118,22 @@ impl<T> SynchronizedOptional<T> {
         }
         Err(value)
     }
+
+    ///
+    /// If this structure has not been initialized, initializes it using the provided function,
+    /// then returns a shared copy of the resultant value.
+    #[must_use]
+    pub fn get_or_init<F: FnOnce()->T>(&self, func: F) -> Arc<T> {
+        if let Ok(mut write) = self.inner.write() {
+            let Some(write) = write.clone() else {
+                let arc = Arc::new(func());
+                *write = Some(arc.clone());
+                return arc;
+            };
+            return write;
+        }
+        Arc::new(func())
+    }
 }
 
 impl<T> Debug for SynchronizedOptional<T>
