@@ -110,9 +110,9 @@ pub trait Bits {
         };
         Ok(ret)
     }
-    
+
     /// Reads a single [`u16`] in little-endian order, 2 bytes, LSB first.
-    fn read_le_u16(&mut self)-> Result<u16, Error> {
+    fn read_le_u16(&mut self) -> Result<u16, Error> {
         Ok(self.read_be_u16()?.swap_bytes())
     }
 
@@ -127,7 +127,7 @@ pub trait Bits {
         let out = ((a as u16) << 8) | (b as u16);
         Ok(Some(out))
     }
-    
+
     /// Optionally reads a single [`u16`] in little-endian order, 2 bytes, LSB first.
     fn next_le_u16(&mut self) -> Result<Option<u16>, Error> {
         Ok(self.next_be_u16()?.map(u16::swap_bytes))
@@ -347,7 +347,7 @@ pub trait Bits {
 
     /// Reads the specified amount of bytes into a [`Vec<u8>`] and returns it
     fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
-        let mut buf: Vec<u8> = vec![0; size];
+        let mut buf: Vec<u8> = Vec::with_capacity(size);
         self.read_exact_into(size, &mut buf)?;
         Ok(buf)
     }
@@ -364,7 +364,7 @@ pub trait Bits {
     fn read_all_str_lossy(&mut self) -> Result<String, Error> {
         Ok(String::from_utf8_lossy(&self.read_all_vec()?).to_string())
     }
-    
+
     /// Reads the specified amount of bytes into a UTF-8 String, dropping all other bytes.
     fn read_str_sized_lossy(&mut self, len: usize) -> Result<String, Error> {
         Ok(String::from_utf8_lossy(&self.read_exact_vec(len)?).to_string())
