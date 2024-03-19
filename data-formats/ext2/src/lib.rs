@@ -15,13 +15,14 @@ use directory::*;
 use inode::*;
 use irox_log::log::{debug, trace};
 use irox_structs::Struct;
-pub use irox_tools::bits::{Bits, Error, MutBits};
 pub use irox_tools::bits::ErrorKind;
+pub use irox_tools::bits::{Bits, Error, MutBits};
 use superblock::*;
 
 pub mod blocks;
 pub mod directory;
 pub mod inode;
+mod ops;
 pub mod superblock;
 
 pub struct Filesystem<T> {
@@ -31,7 +32,7 @@ pub struct Filesystem<T> {
 impl<T> Clone for Filesystem<T> {
     fn clone(&self) -> Self {
         Self {
-            inner: self.inner.clone()
+            inner: self.inner.clone(),
         }
     }
 }
@@ -39,10 +40,13 @@ impl<T> Clone for Filesystem<T> {
 impl<T: Bits + Seek> Filesystem<T> {
     pub fn open(stream: T) -> Result<Filesystem<T>, Error> {
         Ok(Self {
-            inner: Arc::new(Mutex::new(FSInner::open_ro(stream)?))
+            inner: Arc::new(Mutex::new(FSInner::open_ro(stream)?)),
         })
     }
-    pub fn read_bg_descriptor_table_at(&self, mut block_id: u32) -> Result<Vec<BlockGroupDescriptor<T>>, Error> {
+    pub fn read_bg_descriptor_table_at(
+        &self,
+        mut block_id: u32,
+    ) -> Result<Vec<BlockGroupDescriptor<T>>, Error> {
         let Ok(mut inner) = self.inner.lock() else {
             return Err(ErrorKind::BrokenPipe.into());
         };
@@ -79,9 +83,7 @@ impl<T: Bits + Seek> Filesystem<T> {
     }
 
     pub fn get_cached_bg_table(&self) -> Result<Arc<Vec<BlockGroupDescriptor<T>>>, Error> {
-        let bgt = {
-            self.lock()?.block_group_table.clone()
-        };
+        let bgt = { self.lock()?.block_group_table.clone() };
         Ok(match bgt {
             Some(bgt) => bgt,
             None => {
@@ -89,11 +91,10 @@ impl<T: Bits + Seek> Filesystem<T> {
                 self.lock()?.block_group_table = Some(bgt.clone());
                 bgt
             }
-        }
-        )
+        })
     }
 
-    pub fn find_inode(&self, inode_idx: u32) -> Result<Inode<T>, Error> {
+    pub fn find_inode(&self, inode_idx: u32) -> Result<Arc<Inode<T>>, Error> {
         let sb = self.get_superblock()?;
         let bg_id = (inode_idx) / sb.s_inodes_per_group;
         let local_idx = (inode_idx) % sb.s_inodes_per_group;
@@ -116,14 +117,19 @@ impl<T: Bits + Seek> Filesystem<T> {
         let mut subset = block.split_at(inode_seek_offset as usize).1;
         let inode = RawInode::parse_from(&mut subset)?;
 
-        Ok(Inode {
+        Ok(Arc::new(Inode {
             raw_inode: inode,
             fs: self.clone(),
-        })
+        }))
     }
 
     pub fn lock(&self) -> Result<MutexGuard<FSInner<T>>, Error> {
         self.inner.lock().map_err(|_| ErrorKind::BrokenPipe.into())
+    }
+
+    pub fn read_raw_4k_block(&self, block_id: u32) -> Result<[u8; 4096], Error> {
+        let mut inner = self.lock()?;
+        inner.read_raw_4k_block(block_id)
     }
 }
 
@@ -174,7 +180,7 @@ impl<T: Bits + Seek> FSInner<T> {
     pub fn read_4k_bitmap_at(&mut self, block_id: u32) -> Result<Bitmap<4096>, Error> {
         debug!("Reading 4k bitmap table at: {block_id}");
         Ok(Bitmap {
-            block: self.read_raw_4k_block(block_id)?
+            block: self.read_raw_4k_block(block_id)?,
         })
     }
 }

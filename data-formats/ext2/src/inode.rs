@@ -2,114 +2,23 @@
 // Copyright 2024 IROX Contributors
 //
 
+use core::ops::Deref;
 use std::collections::VecDeque;
 use std::io::Seek;
-use std::path::Iter;
-use std::sync::Mutex;
+use std::marker::PhantomData;
+use std::sync::Arc;
 
+use crate::directory::DirectoryStream;
+use irox_log::log::debug;
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, Error, ErrorKind};
+use irox_tools::bits::{Bits, Error, ErrorKind, MutBits};
 
+use crate::ops::DirOps;
 use crate::Filesystem;
 
-pub mod special_ids {
-    /// Bad Blocks Inode ID
-    pub const EXT2_BAD_INO: u32 = 1;
-    /// Root directory Inode ID
-    pub const EXT2_ROOT_INO: u32 = 2;
-    /// ACL Index Inode ID (deprecated)
-    #[deprecated]
-    pub const EXT2_ACL_IDX_INO: u32 = 3;
-    /// ACL Data Inode ID (deprecated)
-    #[deprecated]
-    pub const EXT2_ACL_DATA_INO: u32 = 4;
-    /// Boot Loader Inode ID
-    pub const EXT2_BOOT_LOADER_INO: u32 = 5;
-    /// Undelete directory Inode ID
-    pub const EXT2_UNDEL_DIR_INO: u32 = 6;
-}
-
-pub mod modeflags {
-    /// Socket
-    pub const EXT2_S_IFSOCK: u16 = 0xC000;
-    /// Symbolic Link
-    pub const EXT2_S_IFLNK: u16 = 0xA000;
-    /// Regular File
-    pub const EXT2_S_IFREG: u16 = 0x8000;
-    /// Block Device
-    pub const EXT2_S_IFBLK: u16 = 0x6000;
-    /// Directory
-    pub const EXT2_S_IFDIR: u16 = 0x4000;
-    /// Character Device
-    pub const EXT2_S_IFCHR: u16 = 0x2000;
-    /// FIFO Queue
-    pub const EXT2_S_IFIFO: u16 = 0x1000;
-
-    /// Set process UID bit
-    pub const EXT2_S_ISUID: u16 = 0x0800;
-    /// Set process GID bit
-    pub const EXT2_S_ISGID: u16 = 0x0400;
-    /// Sticky bit
-    pub const EXT2_S_ISVTX: u16 = 0x0200;
-
-    /// User Read
-    pub const EXT2_S_IRUSR: u16 = 0x0100;
-    /// User Write
-    pub const EXT2_S_IWUSR: u16 = 0x0080;
-    /// User Execute
-    pub const EXT2_S_IXUSR: u16 = 0x0040;
-    /// Group Read
-    pub const EXT2_S_IRGRP: u16 = 0x0020;
-    /// Group Write
-    pub const EXT2_S_IWGRP: u16 = 0x0010;
-    /// Group Execute
-    pub const EXT2_S_IXGRP: u16 = 0x0008;
-    /// Other Read
-    pub const EXT2_S_IROTH: u16 = 0x0004;
-    /// Other WRite
-    pub const EXT2_S_IWOTH: u16 = 0x0002;
-    /// Other Execute
-    pub const EXT2_S_IXOTH: u16 = 0x0001;
-}
-
-pub mod flags {
-    /// Secure Deletion
-    pub const EXT2_SECRM_FL: u32 = 0x0000_0001;
-    /// Record for undelete
-    pub const EXT2_UNRM_FL: u32 = 0x0000_0002;
-    /// Compressed file
-    pub const EXT2_COMPR_FL: u32 = 0x0000_0004;
-    /// synchronous updates
-    pub const EXT2_SYNC_FL: u32 = 0x0000_0008;
-    /// immutable file
-    pub const EXT2_IMMUTABLE_FL: u32 = 0x0000_0010;
-    /// append only
-    pub const EXT2_APPEND_FL: u32 = 0x0000_0020;
-    /// do not dump/delete file
-    pub const EXT2_NODUMP_FL: u32 = 0x0000_0040;
-    /// do nut update `.i_atime`
-    pub const EXT2_NOATIME_FL: u32 = 0x0000_0080;
-
-    /// Dirty (modified)
-    pub const EXT2_DIRTY_FL: u32 = 0x0000_0100;
-    /// compressed blocks
-    pub const EXT2_COMPRBLK_FL: u32 = 0x0000_0200;
-    /// access raw compressed data
-    pub const EXT2_NOCOMPR_FL: u32 = 0x0000_0400;
-    /// compression error
-    pub const EXT2_ECOMPR_FL: u32 = 0x0000_0800;
-
-    /// b-tree format directory
-    pub const EXT2_BTREE_FL: u32 = 0x0000_1000;
-    /// hash indexed directory
-    pub const EXT2_INDEX_FL: u32 = 0x0000_1000;
-    /// AFS directory
-    pub const EXT2_IMAGIC_FL: u32 = 0x0000_2000;
-    /// journal file data
-    pub const EXT2_JOURNAL_DATA_FL: u32 = 0x0000_4000;
-    /// reserved for ext2 library
-    pub const EXT2_RESERVED_FL: u32 = 0x8000_0000;
-}
+pub mod flags;
+pub mod modeflags;
+pub mod special_ids;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum FileType {
@@ -119,7 +28,7 @@ pub enum FileType {
     BlockDev,
     RegularFile,
     SymbolicLink,
-    Socket
+    Socket,
 }
 
 impl TryFrom<u16> for FileType {
@@ -173,7 +82,7 @@ pub struct RawInode {
     /// total number of 512-byte blocks reserved for this inode's data.  Specific blocks are
     /// indicated in [`Inode.i_blocks`]
     pub i_blocks: u32,
-    /// Filesystem behavior flags, see [`flags`] for values
+    /// Filesystem behavior flags, see [`flags::flags`] for values
     pub i_flags: u32,
     /// OS-dependent value
     pub i_osd1: u32,
@@ -208,10 +117,9 @@ pub struct RawInode {
 }
 pub struct Inode<T> {
     pub raw_inode: RawInode,
-    pub fs: Filesystem<T>
+    pub fs: Filesystem<T>,
 }
-impl<T: Bits+Seek> Inode<T> {
-
+impl<T: Bits + Seek> Inode<T> {
     pub fn get_num_reserved_blocks(&self) -> Result<u32, Error> {
         let Ok(inner) = self.fs.lock() else {
             return Err(ErrorKind::BrokenPipe.into());
@@ -227,93 +135,281 @@ impl<T: Bits+Seek> Inode<T> {
         Ok(len)
     }
 
-    pub fn data_stream<'a>(&'a self) -> Result<DataStream<'a, T>, Error> {
-        todo!()
+    pub fn data_stream(self: Arc<Self>) -> Result<DataStream<T>, Error> {
+        Ok(DataStream {
+            position: 0,
+            length: self.get_data_length()?,
+            block_iter: self.block_stream()?,
+            data_buf: Default::default(),
+            inode: self,
+        })
+    }
+
+    pub fn block_stream(self: &Arc<Self>) -> Result<BlockIter<T>, Error> {
+        BlockIter::new(self)
     }
 }
 
-pub struct DataStream<'a, T> {
-    inode: &'a Inode<T>,
+impl<T> Inode<T> {
+    pub fn as_typed(self) -> Result<InodeType<T>, Self> {
+        let mode = self.raw_inode.i_mode;
+        let mode: FileType = match mode.try_into() {
+            Ok(e) => e,
+            Err(_e) => return Err(self),
+        };
+        Ok(match mode {
+            FileType::FIFO => InodeType::Fifo(TypedInode::<Fifo, T>::new(self)),
+            FileType::CharDev => InodeType::CharDevice(TypedInode::<CharDev, T>::new(self)),
+            FileType::Directory => InodeType::Directory(TypedInode::<Directory, T>::new(self)),
+            FileType::BlockDev => InodeType::BlockDevice(TypedInode::<BlockDev, T>::new(self)),
+            FileType::RegularFile => InodeType::RegularFile(TypedInode::<RegFile, T>::new(self)),
+            FileType::SymbolicLink => InodeType::SymLink(TypedInode::<SymLink, T>::new(self)),
+            FileType::Socket => InodeType::Socket(TypedInode::<Socket, T>::new(self)),
+        })
+    }
+    pub fn as_directory(self) -> Option<TypedInode<Directory, T>> {
+        if let InodeType::Directory(dir) = self.as_typed().ok()? {
+            return Some(dir);
+        }
+        None
+    }
+    pub fn as_regular_file(self) -> Option<TypedInode<RegFile, T>> {
+        if let InodeType::RegularFile(file) = self.as_typed().ok()? {
+            return Some(file);
+        }
+        None
+    }
+}
+
+pub struct DataStream<T> {
+    inode: Arc<Inode<T>>,
     position: u64,
     length: u64,
-    block_iter: BlockIter<'a, T>,
+    block_iter: BlockIter<T>,
+    data_buf: VecDeque<u8>,
 }
-impl<'a, T: Bits+Seek> DataStream<'a, T> {
-    pub fn new(inode: &'a Inode<T>) -> Result<Self, Error> {
+impl<T: Bits + Seek> DataStream<T> {
+    pub fn new(inode: &Arc<Inode<T>>) -> Result<Self, Error> {
         let total_blocks = inode.get_num_reserved_blocks()?;
         let length = inode.get_data_length()?;
         let block_iter = BlockIter::new(inode)?;
         let ds = DataStream {
-            inode,
+            inode: inode.clone(),
             position: 0,
             length,
-            block_iter
+            block_iter,
+            data_buf: VecDeque::new(),
         };
         Ok(ds)
     }
 }
-impl<'a, T: Bits+Seek> Iterator for DataStream<'a, T> {
-    type Item = u8;
 
-    fn next(&mut self) -> Option<Self::Item> {
+impl<T: Bits + Seek> Bits for DataStream<T> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         if self.position >= self.length {
-            return None;
+            debug!(
+                "Datastream bailing out because {} >= {}",
+                self.position, self.length
+            );
+            return Ok(None);
         }
-        
-        todo!()
+
+        if let Some(nxt) = self.data_buf.pop_front() {
+            self.position += 1;
+            return Ok(Some(nxt));
+        }
+        if let Some(nxt_block) = self.block_iter.next() {
+            let blk = self.inode.fs.read_raw_4k_block(nxt_block)?;
+            self.data_buf.write_all_bytes(blk.as_slice())?;
+            debug!("Datastream loaded next block {nxt_block}");
+            return self.next_u8();
+        }
+        Ok(None)
     }
 }
 
+impl<T: Bits + Seek> Iterator for DataStream<T> {
+    type Item = u8;
 
-pub struct BlockIter<'a, T> {
-    inode: &'a Inode<T>,
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next_u8().ok().flatten()
+    }
+}
+
+///
+/// Iterator that walks through the block IDs that an inode references for it's
+/// data set.  Keep calling next to exhaust the sequence
+pub struct BlockIter<T> {
+    inode: Arc<Inode<T>>,
     loaded_block_count: u32,
     total_block_count: u32,
     next_blocks: VecDeque<u32>,
     single_indirects: VecDeque<u32>,
     double_indirects: VecDeque<u32>,
+    triple_indirects: VecDeque<u32>,
 }
-impl<'a, T: Bits+Seek> BlockIter<'a, T> {
-    pub fn new(inode: &'a Inode<T>) -> Result<Self, Error> {
+impl<T: Bits + Seek> BlockIter<T> {
+    pub fn new(inode: &Arc<Inode<T>>) -> Result<Self, Error> {
         let total_blocks = inode.get_num_reserved_blocks()?;
         let mut out = BlockIter {
-            inode,
+            inode: inode.clone(),
             loaded_block_count: 0,
             total_block_count: 0,
             next_blocks: VecDeque::new(),
             single_indirects: VecDeque::new(),
             double_indirects: VecDeque::new(),
+            triple_indirects: VecDeque::new(),
         };
         for (idx, blk_id) in inode.raw_inode.i_block.iter().enumerate() {
+            if *blk_id == 0 {
+                break;
+            }
             let idx = idx as u32;
             if idx >= total_blocks {
                 break;
             }
             if idx < 12 {
-                
+                // direct block references
+                out.next_blocks.push_back(*blk_id);
+                out.loaded_block_count += 1;
+            } else if idx == 12 {
+                // single indirect references, each block ID is a block of direct references
+                out.single_indirects.push_back(*blk_id);
+            } else if idx == 13 {
+                // double indirect references, each block ID is a block of single indirect references
+                out.double_indirects.push_back(*blk_id);
+            } else if idx == 14 {
+                // triple indirect references, each block ID is a block of double indirect references
+                out.triple_indirects.push_back(*blk_id);
             }
         }
-        todo!()
+        Ok(out)
+    }
+
+    /// Tries to fill the directblock list by iteratively dereferencing the indirect lists.
+    /// If successful, returns how many elements were added.
+    pub(crate) fn try_fill_directblocks(&mut self) -> Result<usize, Error> {
+        if !self.next_blocks.is_empty() {
+            return Ok(0);
+        }
+        if self.loaded_block_count >= self.total_block_count {
+            return Ok(0);
+        }
+        let mut added = 0;
+        while added == 0 {
+            if let Some(single) = self.single_indirects.pop_front() {
+                let blk = self.inode.fs.read_raw_4k_block(single)?;
+                let mut blk_sli = blk.as_slice();
+                // loop through the entire 4k block, each u32 is a block id
+                for _ in 0..1024 {
+                    let blkid = blk_sli.read_le_u32()?;
+                    if blkid != 0 {
+                        // a zero block ID isn't necessarily the end of the list,
+                        // this could be a sparse file, so just skip it.
+                        self.next_blocks.push_back(blkid);
+                        added += 1;
+                        self.loaded_block_count += 1;
+                    }
+                    if self.loaded_block_count >= self.total_block_count {
+                        break;
+                    }
+                }
+                if added > 0 {
+                    break;
+                }
+            } else if let Some(double) = self.double_indirects.pop_front() {
+                let blk = self.inode.fs.read_raw_4k_block(double)?;
+                let mut blk_sli = blk.as_slice();
+                for _ in 0..1024 {
+                    let blkid = blk_sli.read_le_u32()?;
+                    if blkid != 0 {
+                        self.single_indirects.push_back(blkid);
+                    }
+                }
+            } else if let Some(triple) = self.triple_indirects.pop_front() {
+                let blk = self.inode.fs.read_raw_4k_block(triple)?;
+                let mut blk_sli = blk.as_slice();
+                for _ in 0..1024 {
+                    let blkid = blk_sli.read_le_u32()?;
+                    if blkid != 0 {
+                        self.double_indirects.push_back(blkid);
+                    }
+                }
+            }
+        }
+        Ok(added)
     }
 }
 
-impl<'a, T: Bits+Seek> Iterator for BlockIter<'a, T> {
+impl<T: Bits + Seek> Iterator for BlockIter<T> {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(next) = self.next_blocks.pop_front() {
             return Some(next);
         };
-        
+
         if self.loaded_block_count >= self.total_block_count {
             return None;
         }
-        
-        let sb = self.inode.fs.get_superblock().ok()?;
-        let block_size = sb.get_block_size();
-        let num_block_ids_per_indirect = block_size >> 2;
+        let added = self.try_fill_directblocks().ok()?;
+        if added == 0 {
+            return None;
+        }
+        self.next()
+    }
+}
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct GenericInode;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Directory;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct RegFile;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Socket;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct BlockDev;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct CharDev;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SymLink;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Fifo;
 
+pub struct TypedInode<T, I> {
+    inode: Inode<I>,
+    _ph: PhantomData<T>,
+}
+impl<T, I> TypedInode<T, I> {
+    pub fn new(inode: Inode<I>) -> Self {
+        TypedInode {
+            inode,
+            _ph: Default::default(),
+        }
+    }
+}
+
+impl<T, I> Deref for TypedInode<T, I> {
+    type Target = Inode<I>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inode
+    }
+}
+
+pub enum InodeType<T> {
+    Socket(TypedInode<Socket, T>),
+    SymLink(TypedInode<SymLink, T>),
+    RegularFile(TypedInode<RegFile, T>),
+    BlockDevice(TypedInode<BlockDev, T>),
+    Directory(TypedInode<Directory, T>),
+    CharDevice(TypedInode<CharDev, T>),
+    Fifo(TypedInode<Fifo, T>),
+}
+
+impl<T> DirOps<T> for TypedInode<Directory, T> {
+    fn list(&self) -> DirectoryStream<T> {
         todo!()
     }
 }

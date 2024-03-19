@@ -1,360 +1,3 @@
-The Second Extended File System
-
-Internal Layout
-
-Dave Poirier
-
-      <ekscrypto@gmail.com>
-     
-
-Copyright © 2001-2019 Dave Poirier
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
-Texts. A copy of the license can be acquired electronically from
-http://www.fsf.org/licenses/fdl.html or by writing to 59 Temple Place,
-Suite 330, Boston, MA 02111-1307 USA
-
-------------------------------------------------------------------------
-
-Table of Contents
-
-About this book
-
-1. Historical Background
-
-2. Definitions
-
-Blocks
-
-Block Groups
-
-Directories
-
-Inodes
-
-Superblocks
-
-Symbolic Links
-
-3. Disk Organization
-
-Superblock
-
-s_inodes_count
-
-s_blocks_count
-
-s_r_blocks_count
-
-s_free_blocks_count
-
-s_free_inodes_count
-
-s_first_data_block
-
-s_log_block_size
-
-s_log_frag_size
-
-s_blocks_per_group
-
-s_frags_per_group
-
-s_inodes_per_group
-
-s_mtime
-
-s_wtime
-
-s_mnt_count
-
-s_max_mnt_count
-
-s_magic
-
-s_state
-
-s_errors
-
-s_minor_rev_level
-
-s_lastcheck
-
-s_checkinterval
-
-s_creator_os
-
-s_rev_level
-
-s_def_resuid
-
-s_def_resgid
-
-s_first_ino
-
-s_inode_size
-
-s_block_group_nr
-
-s_feature_compat
-
-s_feature_incompat
-
-s_feature_ro_compat
-
-s_uuid
-
-s_volume_name
-
-s_last_mounted
-
-s_algo_bitmap
-
-s_prealloc_blocks
-
-s_prealloc_dir_blocks
-
-s_journal_uuid
-
-s_journal_inum
-
-s_journal_dev
-
-s_last_orphan
-
-s_hash_seed
-
-s_def_hash_version
-
-s_default_mount_options
-
-s_first_meta_bg
-
-Block Group Descriptor Table
-
-bg_block_bitmap
-
-bg_inode_bitmap
-
-bg_inode_table
-
-bg_free_blocks_count
-
-bg_free_inodes_count
-
-bg_used_dirs_count
-
-bg_pad
-
-bg_reserved
-
-Block Bitmap
-
-Inode Bitmap
-
-Inode Table
-
-i_mode
-
-i_uid
-
-i_size
-
-i_atime
-
-i_ctime
-
-i_mtime
-
-i_dtime
-
-i_gid
-
-i_links_count
-
-i_blocks
-
-i_flags
-
-i_osd1
-
-i_block
-
-i_generation
-
-i_file_acl
-
-i_dir_acl
-
-i_faddr
-
-Inode i_osd2 Structure
-
-Locating an Inode
-
-4. Directory Structure
-
-Linked List Directory
-
-inode
-
-rec_len
-
-name_len
-
-file_type
-
-name
-
-Sample Directory
-
-Indexed Directory Format
-
-Indexed Directory Root
-
-Indexed Directory Entry
-
-Lookup Algorithm
-
-Insert Algorithm
-
-Splitting
-
-Key Collisions
-
-Hash Function
-
-Performance
-
-5. File Attributes
-
-Standard Attributes
-
-SUID, SGID and -rwxrwxrwx
-
-File Size
-
-Owner and Group
-
-Extended Attributes
-
-Extended Attribute Block Layout
-
-Extended Attribute Block Header
-
-Attribute Entry Header
-
-Behaviour Control Flags
-
-EXT2_SECRM_FL - Secure Deletion
-
-EXT2_UNRM_FL - Record for Undelete
-
-EXT2_COMPR_FL - Compressed File
-
-EXT2_SYNC_FL - Synchronous Updates
-
-EXT2_IMMUTABLE_FL - Immutable File
-
-EXT2_APPEND_FL - Append Only
-
-EXT2_NODUMP_FL - Do No Dump/Delete
-
-EXT2_NOATIME_FL - Do Not Update .i_atime
-
-EXT2_DIRTY_FL - Dirty
-
-EXT2_COMPRBLK_FL - Compressed Blocks
-
-EXT2_NOCOMPR_FL - Access Raw Compressed Data
-
-EXT2_ECOMPR_FL - Compression Error
-
-EXT2_BTREE_FL - B-Tree Format Directory
-
-EXT2_INDEX_FL - Hash Indexed Directory
-
-EXT2_IMAGIC_FL -
-
-EXT2_JOURNAL_DATA_FL - Journal File Data
-
-EXT2_RESERVED_FL - Reserved
-
-A. Credits
-
-List of Figures
-
-4.1. Performance of Indexed Directories
-
-5.1. ext2_xattr_header structure
-
-List of Tables
-
-2.1. Impact of Block Sizes
-
-3.1. Sample Floppy Disk Layout, 1KiB blocks
-
-3.2. Sample 20mb Partition Layout
-
-3.3. Superblock Structure
-
-3.4. Defined s_state Values
-
-3.5. Defined s_errors Values
-
-3.6. Defined s_creator_os Values
-
-3.7. Defined s_rev_level Values
-
-3.8. Defined s_feature_compat Values
-
-3.9. Defined s_feature_incompat Values
-
-3.10. Defined s_feature_ro_compat Values
-
-3.11. Defined s_algo_bitmap Values
-
-3.12. Block Group Descriptor Structure
-
-3.13. Inode Structure
-
-3.14. Defined Reserved Inodes
-
-3.15. Defined i_mode Values
-
-3.16. Defined i_flags Values
-
-3.17. Inode i_osd2 Structure: Hurd
-
-3.18. Inode i_osd2 Structure: Linux
-
-3.19. Inode i_osd2 Structure: Masix
-
-3.20. Sample Inode Computations
-
-4.1. Linked Directory Entry Structure
-
-4.2. Defined Inode File Type Values
-
-4.3. Sample Linked Directory Data Layout, 4KiB blocks
-
-4.4. Indexed Directory Root Structure
-
-4.5. Defined Indexed Directory Hash Versions
-
-4.6. Indexed Directory Entry Structure (dx_entry)
-
-4.7. Indexed Directory Entry Count and Limit Structure
-
-5.1. Extended Attribute Block Layout
-
-5.2. ext2_xattr_header structure
-
-5.3. Behaviour Control Flags
-
 About this book
 
 The latest version of this document may be downloaded from
@@ -375,7 +18,7 @@ many of you as possible.
 Unless otherwise stated, all values are stored in little endian byte
 order.
 
-Chapter 1. Historical Background
+Historical Background
 
 Written by Remy Card, Theodore Ts'o and Stephen Tweedie as a major
 rewrite of the Extended Filesystem, it was first released to the public
@@ -397,21 +40,7 @@ options such as journaling, journal checksums, extents, online
 defragmentation, delayed allocations and larger directories to name but
 a few.
 
-Chapter 2. Definitions
-
-Table of Contents
-
-Blocks
-
-Block Groups
-
-Directories
-
-Inodes
-
-Superblocks
-
-Symbolic Links
+Definitions
 
 The Second Extended Filesystem uses blocks as the basic unit of storage,
 inodes as the mean of keeping track of files and system objects, block
@@ -444,68 +73,19 @@ which block sizes are supported. For example, a Linux 2.6 implementation
 on DEC Alpha uses blocks of 8KiB but the same implementation on a Intel
 386 processor will support a maximum block size of 4KiB.
 
-Table 2.1. Impact of Block Sizes
+  Upper Limits               1KiB                           2KiB                       4KiB                         8KiB
+  -------------------------- ------------------------------ -------------------------- ---------------------------- ----------------------------
+  file system blocks         2,147,483,647                  2,147,483,647              2,147,483,647                2,147,483,647
+  blocks per block group     8,192                          16,384                     32,768                       65,536
+  inodes per block group     8,192                          16,384                     32,768                       65,536
+  bytes per block group      8,388,608 (8MiB)               33,554,432 (32MiB)         134,217,728 (128MiB)         536,870,912 (512MiB)
+  file system size (real)    4,398,046,509,056 (4TiB)       8,796,093,018,112 (8TiB)   17,592,186,036,224 (16TiB)   35,184,372,080,640 (32TiB)
+  file system size (Linux)   2,199,023,254,528 (2TiB) [1]   8,796,093,018,112 (8TiB)   17,592,186,036,224 (16TiB)   35,184,372,080,640 (32TiB)
+  blocks per file            16,843,020                     134,217,728                1,074,791,436                8,594,130,956
+  file size (real)           17,247,252,480 (16GiB)         274,877,906,944 (256GiB)   2,199,023,255,552 (2TiB)     2,199,023,255,552 (2TiB)
+  file size (Linux 2.6.28)   17,247,252,480 (16GiB)         274,877,906,944 (256GiB)   2,199,023,255,552 (2TiB)     2,199,023,255,552 (2TiB)
 
-+-------------+-------------+-------------+-------------+-------------+
-| Upper       | 1KiB        | 2KiB        | 4KiB        | 8KiB        |
-| Limits      |             |             |             |             |
-+:============+:============+:============+:============+:============+
-| file system | 2,          | 2,          | 2,          | 2,          |
-| blocks      | 147,483,647 | 147,483,647 | 147,483,647 | 147,483,647 |
-+-------------+-------------+-------------+-------------+-------------+
-| blocks per  | 8,192       | 16,384      | 32,768      | 65,536      |
-| block group |             |             |             |             |
-+-------------+-------------+-------------+-------------+-------------+
-| inodes per  | 8,192       | 16,384      | 32,768      | 65,536      |
-| block group |             |             |             |             |
-+-------------+-------------+-------------+-------------+-------------+
-| bytes per   | 8,388,608   | 33,554,432  | 134,217,728 | 536,870,912 |
-| block group | (8MiB)      | (32MiB)     | (128MiB)    | (512MiB)    |
-+-------------+-------------+-------------+-------------+-------------+
-| file system | 4,398,      | 8,796,      | 17,592,     | 35,184,     |
-| size (real) | 046,509,056 | 093,018,112 | 186,036,224 | 372,080,640 |
-|             | (4TiB)      | (8TiB)      | (16TiB)     | (32TiB)     |
-+-------------+-------------+-------------+-------------+-------------+
-| file system | 2,199,      | 8,796,      | 17,592,     | 35,184,     |
-| size        | 023,254,528 | 093,018,112 | 186,036,224 | 372,080,640 |
-| (Linux)     | (2TiB)      | (8TiB)      | (16TiB)     | (32TiB)     |
-|             | ^([a])      |             |             |             |
-+-------------+-------------+-------------+-------------+-------------+
-| blocks per  | 16,843,020  | 134,217,728 | 1,          | 8,          |
-| file        |             |             | 074,791,436 | 594,130,956 |
-+-------------+-------------+-------------+-------------+-------------+
-| file size   | 17,         | 274,        | 2,199,      | 2,199,      |
-| (real)      | 247,252,480 | 877,906,944 | 023,255,552 | 023,255,552 |
-|             | (16GiB)     | (256GiB)    | (2TiB)      | (2TiB)      |
-+-------------+-------------+-------------+-------------+-------------+
-| file size   | 17,         | 274,        | 2,199,      | 2,199,      |
-| (Linux      | 247,252,480 | 877,906,944 | 023,255,552 | 023,255,552 |
-| 2.6.28)     | (16GiB)     | (256GiB)    | (2TiB)      | (2TiB)      |
-+-------------+-------------+-------------+-------------+-------------+
-| ^([a]) This |             |             |             |             |
-| limit comes |             |             |             |             |
-| from the    |             |             |             |             |
-| maximum     |             |             |             |             |
-| size of a   |             |             |             |             |
-| block       |             |             |             |             |
-| device in   |             |             |             |             |
-| Linux 2.4;  |             |             |             |             |
-| it is       |             |             |             |             |
-| unclear     |             |             |             |             |
-| whether a   |             |             |             |             |
-| Linux 2.6   |             |             |             |             |
-| kernel      |             |             |             |             |
-| using a     |             |             |             |             |
-| 1KiB block  |             |             |             |             |
-| size could  |             |             |             |             |
-| properly    |             |             |             |             |
-| format and  |             |             |             |             |
-| mount a     |             |             |             |             |
-| Ext2        |             |             |             |             |
-| partition   |             |             |             |             |
-| larger than |             |             |             |             |
-| 2TiB.       |             |             |             |             |
-+-------------+-------------+-------------+-------------+-------------+
+  : Impact of Block Sizes
 
 Note: the 2TiB file size is limited by the i_blocks value in the inode
 which indicates the number of 512-bytes sector rather than the actual
@@ -513,7 +93,7 @@ number of ext2 blocks allocated.
 
 Block Groups
 
-This definition comes from the Linux Kernel Documentation.
+  This definition comes from the Linux Kernel Documentation.
 
 Blocks are clustered into block groups in order to reduce fragmentation
 and minimise the amount of head seeking when reading a large amount of
@@ -532,8 +112,8 @@ in the same block group as the inode which contains them.
 
 Directories
 
-This definition comes from the Linux Kernel Documentation with some
-minor alterations.
+  This definition comes from the Linux Kernel Documentation with some
+  minor alterations.
 
 A directory is a filesystem object and has an inode just like a file. It
 is a specially formatted file containing records which associate each
@@ -554,8 +134,8 @@ implementations do not free these additional blocks.
 
 Inodes
 
-This definition comes from the Linux Kernel Documentation with some
-minor alterations.
+  This definition comes from the Linux Kernel Documentation with some
+  minor alterations.
 
 The inode (index node) is a fundamental concept in the ext2 filesystem.
 Each object in the filesystem is represented by an inode. The inode
@@ -600,8 +180,8 @@ block group.
 
 Superblocks
 
-This definition comes from the Linux Kernel Documentation with some
-minor alterations.
+  This definition comes from the Linux Kernel Documentation with some
+  minor alterations.
 
 The superblock contains all the information about the configuration of
 the filesystem. The information in the superblock contains fields such
@@ -633,7 +213,7 @@ between machines without having to know what machine it was created on.
 
 Symbolic Links
 
-This definition comes from Wikipedia.org with some minor alterations.
+  This definition comes from Wikipedia.org with some minor alterations.
 
 A symbolic link (also symlink or soft link) is a special type of file
 that contains a reference to another file or directory in the form of an
@@ -664,163 +244,7 @@ characters long.
 Symbolic links can also point to files or directories of other
 partitions and file systems.
 
-Chapter 3. Disk Organization
-
-Table of Contents
-
-Superblock
-
-s_inodes_count
-
-s_blocks_count
-
-s_r_blocks_count
-
-s_free_blocks_count
-
-s_free_inodes_count
-
-s_first_data_block
-
-s_log_block_size
-
-s_log_frag_size
-
-s_blocks_per_group
-
-s_frags_per_group
-
-s_inodes_per_group
-
-s_mtime
-
-s_wtime
-
-s_mnt_count
-
-s_max_mnt_count
-
-s_magic
-
-s_state
-
-s_errors
-
-s_minor_rev_level
-
-s_lastcheck
-
-s_checkinterval
-
-s_creator_os
-
-s_rev_level
-
-s_def_resuid
-
-s_def_resgid
-
-s_first_ino
-
-s_inode_size
-
-s_block_group_nr
-
-s_feature_compat
-
-s_feature_incompat
-
-s_feature_ro_compat
-
-s_uuid
-
-s_volume_name
-
-s_last_mounted
-
-s_algo_bitmap
-
-s_prealloc_blocks
-
-s_prealloc_dir_blocks
-
-s_journal_uuid
-
-s_journal_inum
-
-s_journal_dev
-
-s_last_orphan
-
-s_hash_seed
-
-s_def_hash_version
-
-s_default_mount_options
-
-s_first_meta_bg
-
-Block Group Descriptor Table
-
-bg_block_bitmap
-
-bg_inode_bitmap
-
-bg_inode_table
-
-bg_free_blocks_count
-
-bg_free_inodes_count
-
-bg_used_dirs_count
-
-bg_pad
-
-bg_reserved
-
-Block Bitmap
-
-Inode Bitmap
-
-Inode Table
-
-i_mode
-
-i_uid
-
-i_size
-
-i_atime
-
-i_ctime
-
-i_mtime
-
-i_dtime
-
-i_gid
-
-i_links_count
-
-i_blocks
-
-i_flags
-
-i_osd1
-
-i_block
-
-i_generation
-
-i_file_acl
-
-i_dir_acl
-
-i_faddr
-
-Inode i_osd2 Structure
-
-Locating an Inode
+Disk Organization
 
 An Ext2 file systems starts with a superblock located at byte offset
 1024 from the start of the volume. This is block 1 for a 1KiB block
@@ -852,19 +276,31 @@ Linux 2.6.28, support for fragment was still not implemented in the
 kernel; it is therefore suggested to ensure the fragment size is equal
 to the block size so as to maintain compatibility.
 
-Table 3.1. Sample Floppy Disk Layout, 1KiB blocks
+  ------------------------------------------------------------------------
+  Block Offset   Length         Description
+  -------------- -------------- ------------------------------------------
+  byte 0         512 bytes      boot record (if present)
 
-  Block Offset                            Length        Description
-  --------------------------------------- ------------- ------------------------------------------
-  byte 0                                  512 bytes     boot record (if present)
-  byte 512                                512 bytes     additional boot record data (if present)
-  -- block group 0, blocks 1 to 1439 --                 
-  byte 1024                               1024 bytes    superblock
-  block 2                                 1 block       block group descriptor table
-  block 3                                 1 block       block bitmap
-  block 4                                 1 block       inode bitmap
-  block 5                                 23 blocks     inode table
-  block 28                                1412 blocks   data blocks
+  byte 512       512 bytes      additional boot record data (if present)
+
+  -- block group                
+  0, blocks 1 to                
+  1439 --                       
+
+  byte 1024      1024 bytes     superblock
+
+  block 2        1 block        block group descriptor table
+
+  block 3        1 block        block bitmap
+
+  block 4        1 block        inode bitmap
+
+  block 5        23 blocks      inode table
+
+  block 28       1412 blocks    data blocks
+  ------------------------------------------------------------------------
+
+  : Sample Floppy Disk Layout, 1KiB blocks
 
 For the curious, block 0 always points to the first sector of the disk
 or partition and will always contain the boot record if one is present.
@@ -877,31 +313,60 @@ in larger block size file systems.
 And here's the organisation of a 20MB ext2 file system, using 1KiB
 blocks:
 
-Table 3.2. Sample 20mb Partition Layout
+  ------------------------------------------------------------------------
+  Block Offset   Length         Description
+  -------------- -------------- ------------------------------------------
+  byte 0         512 bytes      boot record (if present)
 
-  Block Offset                                 Length        Description
-  -------------------------------------------- ------------- ------------------------------------------
-  byte 0                                       512 bytes     boot record (if present)
-  byte 512                                     512 bytes     additional boot record data (if present)
-  -- block group 0, blocks 1 to 8192 --                      
-  byte 1024                                    1024 bytes    superblock
-  block 2                                      1 block       block group descriptor table
-  block 3                                      1 block       block bitmap
-  block 4                                      1 block       inode bitmap
-  block 5                                      214 blocks    inode table
-  block 219                                    7974 blocks   data blocks
-  -- block group 1, blocks 8193 to 16384 --                  
-  block 8193                                   1 block       superblock backup
-  block 8194                                   1 block       block group descriptor table backup
-  block 8195                                   1 block       block bitmap
-  block 8196                                   1 block       inode bitmap
-  block 8197                                   214 blocks    inode table
-  block 8408                                   7974 blocks   data blocks
-  -- block group 2, blocks 16385 to 24576 --                 
-  block 16385                                  1 block       block bitmap
-  block 16386                                  1 block       inode bitmap
-  block 16387                                  214 blocks    inode table
-  block 16601                                  3879 blocks   data blocks
+  byte 512       512 bytes      additional boot record data (if present)
+
+  -- block group                
+  0, blocks 1 to                
+  8192 --                       
+
+  byte 1024      1024 bytes     superblock
+
+  block 2        1 block        block group descriptor table
+
+  block 3        1 block        block bitmap
+
+  block 4        1 block        inode bitmap
+
+  block 5        214 blocks     inode table
+
+  block 219      7974 blocks    data blocks
+
+  -- block group                
+  1, blocks 8193                
+  to 16384 --                   
+
+  block 8193     1 block        superblock backup
+
+  block 8194     1 block        block group descriptor table backup
+
+  block 8195     1 block        block bitmap
+
+  block 8196     1 block        inode bitmap
+
+  block 8197     214 blocks     inode table
+
+  block 8408     7974 blocks    data blocks
+
+  -- block group                
+  2, blocks                     
+  16385 to 24576                
+  --                            
+
+  block 16385    1 block        block bitmap
+
+  block 16386    1 block        inode bitmap
+
+  block 16387    214 blocks     inode table
+
+  block 16601    3879 blocks    data blocks
+  ------------------------------------------------------------------------
+
+  : Sample 20mb Partition Layout
 
 The layout on disk is very predictable as long as you know a few basic
 information; block size, blocks per group, inodes per group. This
@@ -927,63 +392,124 @@ variants (Ext3, Ext4).
 Its structure is mostly constant from Ext2 to Ext3 and Ext4 with only
 some minor changes.
 
-Table 3.3. Superblock Structure
+  ----------------------------------------------------------------------------
+  Offset (bytes)     Size (bytes)   Description
+  ------------------ -------------- ------------------------------------------
+  0                  4              s_inodes_count
 
-  Offset (bytes)                     Size (bytes)   Description
-  ---------------------------------- -------------- -----------------------------------------
-  0                                  4              s_inodes_count
-  4                                  4              s_blocks_count
-  8                                  4              s_r_blocks_count
-  12                                 4              s_free_blocks_count
-  16                                 4              s_free_inodes_count
-  20                                 4              s_first_data_block
-  24                                 4              s_log_block_size
-  28                                 4              s_log_frag_size
-  32                                 4              s_blocks_per_group
-  36                                 4              s_frags_per_group
-  40                                 4              s_inodes_per_group
-  44                                 4              s_mtime
-  48                                 4              s_wtime
-  52                                 2              s_mnt_count
-  54                                 2              s_max_mnt_count
-  56                                 2              s_magic
-  58                                 2              s_state
-  60                                 2              s_errors
-  62                                 2              s_minor_rev_level
-  64                                 4              s_lastcheck
-  68                                 4              s_checkinterval
-  72                                 4              s_creator_os
-  76                                 4              s_rev_level
-  80                                 2              s_def_resuid
-  82                                 2              s_def_resgid
-  -- EXT2_DYNAMIC_REV Specific --                   
-  84                                 4              s_first_ino
-  88                                 2              s_inode_size
-  90                                 2              s_block_group_nr
-  92                                 4              s_feature_compat
-  96                                 4              s_feature_incompat
-  100                                4              s_feature_ro_compat
-  104                                16             s_uuid
-  120                                16             s_volume_name
-  136                                64             s_last_mounted
-  200                                4              s_algo_bitmap
-  -- Performance Hints --                           
-  204                                1              s_prealloc_blocks
-  205                                1              s_prealloc_dir_blocks
-  206                                2              (alignment)
-  -- Journaling Support --                          
-  208                                16             s_journal_uuid
-  224                                4              s_journal_inum
-  228                                4              s_journal_dev
-  232                                4              s_last_orphan
-  -- Directory Indexing Support --                  
-  236                                4 x 4          s_hash_seed
-  252                                1              s_def_hash_version
-  253                                3              padding - reserved for future expansion
-  -- Other options --                               
-  256                                4              s_default_mount_options
-  260                                4              s_first_meta_bg
-  264                                760            Unused - reserved for future revisions
+  4                  4              s_blocks_count
+
+  8                  4              s_r_blocks_count
+
+  12                 4              s_free_blocks_count
+
+  16                 4              s_free_inodes_count
+
+  20                 4              s_first_data_block
+
+  24                 4              s_log_block_size
+
+  28                 4              s_log_frag_size
+
+  32                 4              s_blocks_per_group
+
+  36                 4              s_frags_per_group
+
+  40                 4              s_inodes_per_group
+
+  44                 4              s_mtime
+
+  48                 4              s_wtime
+
+  52                 2              s_mnt_count
+
+  54                 2              s_max_mnt_count
+
+  56                 2              s_magic
+
+  58                 2              s_state
+
+  60                 2              s_errors
+
+  62                 2              s_minor_rev_level
+
+  64                 4              s_lastcheck
+
+  68                 4              s_checkinterval
+
+  72                 4              s_creator_os
+
+  76                 4              s_rev_level
+
+  80                 2              s_def_resuid
+
+  82                 2              s_def_resgid
+
+  --                                
+  EXT2_DYNAMIC_REV                  
+  Specific --                       
+
+  84                 4              s_first_ino
+
+  88                 2              s_inode_size
+
+  90                 2              s_block_group_nr
+
+  92                 4              s_feature_compat
+
+  96                 4              s_feature_incompat
+
+  100                4              s_feature_ro_compat
+
+  104                16             s_uuid
+
+  120                16             s_volume_name
+
+  136                64             s_last_mounted
+
+  200                4              s_algo_bitmap
+
+  -- Performance                    
+  Hints --                          
+
+  204                1              s_prealloc_blocks
+
+  205                1              s_prealloc_dir_blocks
+
+  206                2              (alignment)
+
+  -- Journaling                     
+  Support --                        
+
+  208                16             s_journal_uuid
+
+  224                4              s_journal_inum
+
+  228                4              s_journal_dev
+
+  232                4              s_last_orphan
+
+  -- Directory                      
+  Indexing Support                  
+  --                                
+
+  236                4 x 4          s_hash_seed
+
+  252                1              s_def_hash_version
+
+  253                3              padding - reserved for future expansion
+
+  -- Other options                  
+  --                                
+
+  256                4              s_default_mount_options
+
+  260                4              s_first_meta_bg
+
+  264                760            Unused - reserved for future revisions
+  ----------------------------------------------------------------------------
+
+  : Superblock Structure
 
 s_inodes_count
 
@@ -1041,8 +567,6 @@ to shift left the value 1024. This value may only be non-negative.
 Common block sizes include 1KiB, 2KiB, 4KiB and 8Kib. For information
 about the impact of selecting a block size, see Impact of Block Sizes.
 
-Note
-
 In Linux, at least up to 2.6.28, the block size must be at least as
 large as the sector size of the block device, and cannot be larger than
 the supported memory page of the architecture.
@@ -1058,8 +582,6 @@ shift the bit right rather than left.
     else
       framgnet size = 1024 >> -s_log_frag_size;
         
-
-Note
 
 As of Linux 2.6.28 no support exists for an Ext2 partition with fragment
 size smaller than the block size, as this feature seems to not be
@@ -1123,25 +645,33 @@ encountered it means the file system was not cleanly unmounted and most
 likely contain errors that will need to be fixed. Typically under Linux
 this means running fsck.
 
-Table 3.4. Defined s_state Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_VALID_FS                1              Unmounted cleanly
 
-  Constant Name   Value   Description
-  --------------- ------- -------------------
-  EXT2_VALID_FS   1       Unmounted cleanly
-  EXT2_ERROR_FS   2       Errors detected
+  EXT2_ERROR_FS                2              Errors detected
+  ------------------------------------------------------------------------
+
+  : Defined s_state Values
 
 s_errors
 
 16bit value indicating what the file system driver should do when an
 error is detected. The following values have been defined:
 
-Table 3.5. Defined s_errors Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_ERRORS_CONTINUE         1              continue as if nothing
+                                              happened
 
-  Constant Name          Value   Description
-  ---------------------- ------- ---------------------------------
-  EXT2_ERRORS_CONTINUE   1       continue as if nothing happened
-  EXT2_ERRORS_RO         2       remount read-only
-  EXT2_ERRORS_PANIC      3       cause a kernel panic
+  EXT2_ERRORS_RO               2              remount read-only
+
+  EXT2_ERRORS_PANIC            3              cause a kernel panic
+  ------------------------------------------------------------------------
+
+  : Defined s_errors Values
 
 s_minor_rev_level
 
@@ -1162,40 +692,47 @@ s_creator_os
 32bit identifier of the os that created the file system. Defined values
 are:
 
-Table 3.6. Defined s_creator_os Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_OS_LINUX                0              Linux
 
-  Constant Name     Value   Description
-  ----------------- ------- -------------
-  EXT2_OS_LINUX     0       Linux
-  EXT2_OS_HURD      1       GNU HURD
-  EXT2_OS_MASIX     2       MASIX
-  EXT2_OS_FREEBSD   3       FreeBSD
-  EXT2_OS_LITES     4       Lites
+  EXT2_OS_HURD                 1              GNU HURD
+
+  EXT2_OS_MASIX                2              MASIX
+
+  EXT2_OS_FREEBSD              3              FreeBSD
+
+  EXT2_OS_LITES                4              Lites
+  ------------------------------------------------------------------------
+
+  : Defined s_creator_os Values
 
 s_rev_level
 
 32bit revision level value.
 
-Table 3.7. Defined s_rev_level Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_GOOD_OLD_REV            0              Revision 0
 
-  Constant Name       Value   Description
-  ------------------- ------- -----------------------------------------------------------------
-  EXT2_GOOD_OLD_REV   0       Revision 0
-  EXT2_DYNAMIC_REV    1       Revision 1 with variable inode sizes, extended attributes, etc.
+  EXT2_DYNAMIC_REV             1              Revision 1 with variable
+                                              inode sizes, extended
+                                              attributes, etc.
+  ------------------------------------------------------------------------
+
+  : Defined s_rev_level Values
 
 s_def_resuid
 
 16bit value used as the default user id for reserved blocks.
-
-Note
 
 In Linux this defaults to EXT2_DEF_RESUID of 0.
 
 s_def_resgid
 
 16bit value used as the default group id for reserved blocks.
-
-Note
 
 In Linux this defaults to EXT2_DEF_RESGID of 0.
 
@@ -1224,22 +761,37 @@ s_feature_compat
 32bit bitmask of compatible features. The file system implementation is
 free to support them or not without risk of damaging the meta-data.
 
-Table 3.8. Defined s_feature_compat Values
+  -------------------------------------------------------------------------------
+  Constant Name                       Value          Description
+  ----------------------------------- -------------- ----------------------------
+  EXT2_FEATURE_COMPAT_DIR_PREALLOC                   
 
-  Constant Name                       Value    Description
-  ----------------------------------- -------- ------------------------------------------
-  EXT2_FEATURE_COMPAT_DIR_PREALLOC             
-                                      0x0001   Block pre-allocation for new directories
-  EXT2_FEATURE_COMPAT_IMAGIC_INODES            
-                                      0x0002    
-  EXT3_FEATURE_COMPAT_HAS_JOURNAL              
-                                      0x0004   An Ext3 journal exists
-  EXT2_FEATURE_COMPAT_EXT_ATTR                 
-                                      0x0008   Extended inode attributes are present
-  EXT2_FEATURE_COMPAT_RESIZE_INO               
-                                      0x0010   Non-standard inode size used
-  EXT2_FEATURE_COMPAT_DIR_INDEX                
-                                      0x0020   Directory indexing (HTree)
+                                      0x0001         Block pre-allocation for new
+                                                     directories
+
+  EXT2_FEATURE_COMPAT_IMAGIC_INODES                  
+
+                                      0x0002         
+
+  EXT3_FEATURE_COMPAT_HAS_JOURNAL                    
+
+                                      0x0004         An Ext3 journal exists
+
+  EXT2_FEATURE_COMPAT_EXT_ATTR                       
+
+                                      0x0008         Extended inode attributes
+                                                     are present
+
+  EXT2_FEATURE_COMPAT_RESIZE_INO                     
+
+                                      0x0010         Non-standard inode size used
+
+  EXT2_FEATURE_COMPAT_DIR_INDEX                      
+
+                                      0x0020         Directory indexing (HTree)
+  -------------------------------------------------------------------------------
+
+  : Defined s_feature_compat Values
 
 s_feature_incompat
 
@@ -1252,20 +804,32 @@ properly use the file system. For example, if compression is being used
 and an executable file would be unusable after being read from the disk
 if the system does not know how to uncompress it.
 
-Table 3.9. Defined s_feature_incompat Values
+  -------------------------------------------------------------------------------
+  Constant Name                       Value          Description
+  ----------------------------------- -------------- ----------------------------
+  EXT2_FEATURE_INCOMPAT_COMPRESSION                  
 
-  Constant Name                       Value    Description
-  ----------------------------------- -------- -------------------------------
-  EXT2_FEATURE_INCOMPAT_COMPRESSION            
-                                      0x0001   Disk/File compression is used
-  EXT2_FEATURE_INCOMPAT_FILETYPE               
-                                      0x0002    
-  EXT3_FEATURE_INCOMPAT_RECOVER                
-                                      0x0004    
-  EXT3_FEATURE_INCOMPAT_JOURNAL_DEV            
-                                      0x0008    
-  EXT2_FEATURE_INCOMPAT_META_BG                
-                                      0x0010    
+                                      0x0001         Disk/File compression is
+                                                     used
+
+  EXT2_FEATURE_INCOMPAT_FILETYPE                     
+
+                                      0x0002         
+
+  EXT3_FEATURE_INCOMPAT_RECOVER                      
+
+                                      0x0004         
+
+  EXT3_FEATURE_INCOMPAT_JOURNAL_DEV                  
+
+                                      0x0008         
+
+  EXT2_FEATURE_INCOMPAT_META_BG                      
+
+                                      0x0010         
+  -------------------------------------------------------------------------------
+
+  : Defined s_feature_incompat Values
 
 s_feature_ro_compat
 
@@ -1273,16 +837,25 @@ s_feature_ro_compat
 should mount as read-only if any of the indicated feature is
 unsupported.
 
-Table 3.10. Defined s_feature_ro_compat Values
+  ---------------------------------------------------------------------------------
+  Constant Name                         Value          Description
+  ------------------------------------- -------------- ----------------------------
+  EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER                  
 
-  Constant Name                         Value    Description
-  ------------------------------------- -------- --------------------------------------
-  EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER            
-                                        0x0001   Sparse Superblock
-  EXT2_FEATURE_RO_COMPAT_LARGE_FILE              
-                                        0x0002   Large file support, 64-bit file size
-  EXT2_FEATURE_RO_COMPAT_BTREE_DIR               
-                                        0x0004   Binary tree sorted directory files
+                                        0x0001         Sparse Superblock
+
+  EXT2_FEATURE_RO_COMPAT_LARGE_FILE                    
+
+                                        0x0002         Large file support, 64-bit
+                                                       file size
+
+  EXT2_FEATURE_RO_COMPAT_BTREE_DIR                     
+
+                                        0x0004         Binary tree sorted directory
+                                                       files
+  ---------------------------------------------------------------------------------
+
+  : Defined s_feature_ro_compat Values
 
 s_uuid
 
@@ -1307,20 +880,24 @@ s_algo_bitmap
 32bit value used by compression algorithms to determine the compression
 method(s) used.
 
-Note
-
 Compression is supported in Linux 2.4 and 2.6 via the e2compr patch. For
 more information, visit http://e2compr.sourceforge.net/
 
-Table 3.11. Defined s_algo_bitmap Values
+  ------------------------------------------------------------------------
+  Constant Name                Bit Number     Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_LZV1_ALG                0              Binary value of 0x00000001
 
-  Constant Name     Bit Number   Description
-  ----------------- ------------ ----------------------------
-  EXT2_LZV1_ALG     0            Binary value of 0x00000001
-  EXT2_LZRW3A_ALG   1            Binary value of 0x00000002
-  EXT2_GZIP_ALG     2            Binary value of 0x00000004
-  EXT2_BZIP2_ALG    3            Binary value of 0x00000008
-  EXT2_LZO_ALG      4            Binary value of 0x00000010
+  EXT2_LZRW3A_ALG              1              Binary value of 0x00000002
+
+  EXT2_GZIP_ALG                2              Binary value of 0x00000004
+
+  EXT2_BZIP2_ALG               3              Binary value of 0x00000008
+
+  EXT2_LZO_ALG                 4              Binary value of 0x00000010
+  ------------------------------------------------------------------------
+
+  : Defined s_algo_bitmap Values
 
 s_prealloc_blocks
 
@@ -1400,18 +977,27 @@ doubt.
 
 The layout of a block group descriptor is as follows:
 
-Table 3.12. Block Group Descriptor Structure
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              4              bg_block_bitmap
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- ----------------------
-  0                4              bg_block_bitmap
-  4                4              bg_inode_bitmap
-  8                4              bg_inode_table
-  12               2              bg_free_blocks_count
-  14               2              bg_free_inodes_count
-  16               2              bg_used_dirs_count
-  18               2              bg_pad
-  20               12             bg_reserved
+  4              4              bg_inode_bitmap
+
+  8              4              bg_inode_table
+
+  12             2              bg_free_blocks_count
+
+  14             2              bg_free_inodes_count
+
+  16             2              bg_used_dirs_count
+
+  18             2              bg_pad
+
+  20             12             bg_reserved
+  ------------------------------------------------------------------------
+
+  : Block Group Descriptor Structure
 
 For each block group in the file system, such a group_desc is created.
 Each represent a single block group within the file system and the
@@ -1507,28 +1093,47 @@ block device, symbolic link or a regular file. So an inode can be seen
 as a block of information related to an entity, describing its location
 on disk, its size and its owner. An inode looks like this:
 
-Table 3.13. Inode Structure
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              2              i_mode
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- ---------------
-  0                2              i_mode
-  2                2              i_uid
-  4                4              i_size
-  8                4              i_atime
-  12               4              i_ctime
-  16               4              i_mtime
-  20               4              i_dtime
-  24               2              i_gid
-  26               2              i_links_count
-  28               4              i_blocks
-  32               4              i_flags
-  36               4              i_osd1
-  40               15 x 4         i_block
-  100              4              i_generation
-  104              4              i_file_acl
-  108              4              i_dir_acl
-  112              4              i_faddr
-  116              12             i_osd2
+  2              2              i_uid
+
+  4              4              i_size
+
+  8              4              i_atime
+
+  12             4              i_ctime
+
+  16             4              i_mtime
+
+  20             4              i_dtime
+
+  24             2              i_gid
+
+  26             2              i_links_count
+
+  28             4              i_blocks
+
+  32             4              i_flags
+
+  36             4              i_osd1
+
+  40             15 x 4         i_block
+
+  100            4              i_generation
+
+  104            4              i_file_acl
+
+  108            4              i_dir_acl
+
+  112            4              i_faddr
+
+  116            12             i_osd2
+  ------------------------------------------------------------------------
+
+  : Inode Structure
 
 The first few entries of the inode tables are reserved. In revision 0
 there are 11 entries reserved while in revision 1 (EXT2_DYNAMIC_REV) and
@@ -1536,16 +1141,24 @@ later the number of reserved inodes entries is specified in the
 s_first_ino of the superblock structure. Here's a listing of the known
 reserved inode entries:
 
-Table 3.14. Defined Reserved Inodes
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_BAD_INO                 1              bad blocks inode
 
-  Constant Name          Value   Description
-  ---------------------- ------- -------------------------------
-  EXT2_BAD_INO           1       bad blocks inode
-  EXT2_ROOT_INO          2       root directory inode
-  EXT2_ACL_IDX_INO       3       ACL index inode (deprecated?)
-  EXT2_ACL_DATA_INO      4       ACL data inode (deprecated?)
-  EXT2_BOOT_LOADER_INO   5       boot loader inode
-  EXT2_UNDEL_DIR_INO     6       undelete directory inode
+  EXT2_ROOT_INO                2              root directory inode
+
+  EXT2_ACL_IDX_INO             3              ACL index inode
+                                              (deprecated?)
+
+  EXT2_ACL_DATA_INO            4              ACL data inode (deprecated?)
+
+  EXT2_BOOT_LOADER_INO         5              boot loader inode
+
+  EXT2_UNDEL_DIR_INO           6              undelete directory inode
+  ------------------------------------------------------------------------
+
+  : Defined Reserved Inodes
 
 i_mode
 
@@ -1553,32 +1166,56 @@ i_mode
 access rights. Here are the possible values, which can be combined in
 various ways:
 
-Table 3.15. Defined i_mode Values
+  ------------------------------------------------------------------------
+  Constant                     Value          Description
+  ---------------------------- -------------- ----------------------------
+  -- file format --                           
 
-  Constant                                      Value    Description
-  --------------------------------------------- -------- ----------------------
-  -- file format --                                      
-  EXT2_S_IFSOCK                                 0xC000   socket
-  EXT2_S_IFLNK                                  0xA000   symbolic link
-  EXT2_S_IFREG                                  0x8000   regular file
-  EXT2_S_IFBLK                                  0x6000   block device
-  EXT2_S_IFDIR                                  0x4000   directory
-  EXT2_S_IFCHR                                  0x2000   character device
-  EXT2_S_IFIFO                                  0x1000   fifo
-  -- process execution user/group override --            
-  EXT2_S_ISUID                                  0x0800   Set process User ID
-  EXT2_S_ISGID                                  0x0400   Set process Group ID
-  EXT2_S_ISVTX                                  0x0200   sticky bit
-  -- access rights --                                    
-  EXT2_S_IRUSR                                  0x0100   user read
-  EXT2_S_IWUSR                                  0x0080   user write
-  EXT2_S_IXUSR                                  0x0040   user execute
-  EXT2_S_IRGRP                                  0x0020   group read
-  EXT2_S_IWGRP                                  0x0010   group write
-  EXT2_S_IXGRP                                  0x0008   group execute
-  EXT2_S_IROTH                                  0x0004   others read
-  EXT2_S_IWOTH                                  0x0002   others write
-  EXT2_S_IXOTH                                  0x0001   others execute
+  EXT2_S_IFSOCK                0xC000         socket
+
+  EXT2_S_IFLNK                 0xA000         symbolic link
+
+  EXT2_S_IFREG                 0x8000         regular file
+
+  EXT2_S_IFBLK                 0x6000         block device
+
+  EXT2_S_IFDIR                 0x4000         directory
+
+  EXT2_S_IFCHR                 0x2000         character device
+
+  EXT2_S_IFIFO                 0x1000         fifo
+
+  -- process execution                        
+  user/group override --                      
+
+  EXT2_S_ISUID                 0x0800         Set process User ID
+
+  EXT2_S_ISGID                 0x0400         Set process Group ID
+
+  EXT2_S_ISVTX                 0x0200         sticky bit
+
+  -- access rights --                         
+
+  EXT2_S_IRUSR                 0x0100         user read
+
+  EXT2_S_IWUSR                 0x0080         user write
+
+  EXT2_S_IXUSR                 0x0040         user execute
+
+  EXT2_S_IRGRP                 0x0020         group read
+
+  EXT2_S_IWGRP                 0x0010         group write
+
+  EXT2_S_IXGRP                 0x0008         group execute
+
+  EXT2_S_IROTH                 0x0004         others read
+
+  EXT2_S_IWOTH                 0x0002         others write
+
+  EXT2_S_IXOTH                 0x0001         others execute
+  ------------------------------------------------------------------------
+
+  : Defined i_mode Values
 
 i_uid
 
@@ -1642,29 +1279,51 @@ i_flags
 32bit value indicating how the ext2 implementation should behave when
 accessing the data for this inode.
 
-Table 3.16. Defined i_flags Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_SECRM_FL                0x00000001     secure deletion
 
-  Constant Name                          Value        Description
-  -------------------------------------- ------------ ----------------------------
-  EXT2_SECRM_FL                          0x00000001   secure deletion
-  EXT2_UNRM_FL                           0x00000002   record for undelete
-  EXT2_COMPR_FL                          0x00000004   compressed file
-  EXT2_SYNC_FL                           0x00000008   synchronous updates
-  EXT2_IMMUTABLE_FL                      0x00000010   immutable file
-  EXT2_APPEND_FL                         0x00000020   append only
-  EXT2_NODUMP_FL                         0x00000040   do not dump/delete file
-  EXT2_NOATIME_FL                        0x00000080   do not update .i_atime
-  -- Reserved for compression usage --                
-  EXT2_DIRTY_FL                          0x00000100   Dirty (modified)
-  EXT2_COMPRBLK_FL                       0x00000200   compressed blocks
-  EXT2_NOCOMPR_FL                        0x00000400   access raw compressed data
-  EXT2_ECOMPR_FL                         0x00000800   compression error
-  -- End of compression flags --                      
-  EXT2_BTREE_FL                          0x00001000   b-tree format directory
-  EXT2_INDEX_FL                          0x00001000   hash indexed directory
-  EXT2_IMAGIC_FL                         0x00002000   AFS directory
-  EXT3_JOURNAL_DATA_FL                   0x00004000   journal file data
-  EXT2_RESERVED_FL                       0x80000000   reserved for ext2 library
+  EXT2_UNRM_FL                 0x00000002     record for undelete
+
+  EXT2_COMPR_FL                0x00000004     compressed file
+
+  EXT2_SYNC_FL                 0x00000008     synchronous updates
+
+  EXT2_IMMUTABLE_FL            0x00000010     immutable file
+
+  EXT2_APPEND_FL               0x00000020     append only
+
+  EXT2_NODUMP_FL               0x00000040     do not dump/delete file
+
+  EXT2_NOATIME_FL              0x00000080     do not update .i_atime
+
+  -- Reserved for compression                 
+  usage --                                    
+
+  EXT2_DIRTY_FL                0x00000100     Dirty (modified)
+
+  EXT2_COMPRBLK_FL             0x00000200     compressed blocks
+
+  EXT2_NOCOMPR_FL              0x00000400     access raw compressed data
+
+  EXT2_ECOMPR_FL               0x00000800     compression error
+
+  -- End of compression flags                 
+  --                                          
+
+  EXT2_BTREE_FL                0x00001000     b-tree format directory
+
+  EXT2_INDEX_FL                0x00001000     hash indexed directory
+
+  EXT2_IMAGIC_FL               0x00002000     AFS directory
+
+  EXT3_JOURNAL_DATA_FL         0x00004000     journal file data
+
+  EXT2_RESERVED_FL             0x80000000     reserved for ext2 library
+  ------------------------------------------------------------------------
+
+  : Defined i_flags Values
 
 i_osd1
 
@@ -1721,8 +1380,6 @@ i_file_acl
 32bit value indicating the block number containing the extended
 attributes. In revision 0 this value is always 0.
 
-Note
-
 Patches and implementation status of ACL under Linux can generally be
 found at http://acl.bestbits.at/
 
@@ -1730,8 +1387,6 @@ i_dir_acl
 
 In revision 0 this 32bit value is always 0. In revision 1, for regular
 files this 32bit value contains the high 32 bits of the 64bit file size.
-
-Note
 
 Linux sets this value to 0 if the file is not a regular file (i.e. block
 devices, directories, etc). In theory, this value could be set to point
@@ -1741,8 +1396,6 @@ file.
 i_faddr
 
 32bit value indicating the location of the file fragment.
-
-Note
 
 In Linux and GNU HURD, since fragments are unsupported this value is
 always 0. In Ext4 this value is now marked as obsolete.
@@ -1757,16 +1410,23 @@ Inode i_osd2 Structure
 
 Hurd
 
-Table 3.17. Inode i_osd2 Structure: Hurd
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              1              h_i_frag
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- ---------------
-  0                1              h_i_frag
-  1                1              h_i_fsize
-  2                2              h_i_mode_high
-  4                2              h_i_uid_high
-  6                2              h_i_gid_high
-  8                4              h_i_author
+  1              1              h_i_fsize
+
+  2              2              h_i_mode_high
+
+  4              2              h_i_uid_high
+
+  6              2              h_i_gid_high
+
+  8              4              h_i_author
+  ------------------------------------------------------------------------
+
+  : Inode i_osd2 Structure: Hurd
 
 h_i_frag
 
@@ -1797,26 +1457,29 @@ the POSIX user id will be used.
 
 Linux
 
-Table 3.18. Inode i_osd2 Structure: Linux
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              1              l_i_frag
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- --------------
-  0                1              l_i_frag
-  1                1              l_i_fsize
-  2                2              reserved
-  4                2              l_i_uid_high
-  6                2              l_i_gid_high
-  8                4              reserved
+  1              1              l_i_fsize
+
+  2              2              reserved
+
+  4              2              l_i_uid_high
+
+  6              2              l_i_gid_high
+
+  8              4              reserved
+  ------------------------------------------------------------------------
+
+  : Inode i_osd2 Structure: Linux
 
 l_i_frag
 
 8bit fragment number.
 
-Note
-
 Always 0 in Linux since fragments are not supported.
-
-Important
 
 A new implementation of Ext2 should completely disregard this field if
 the i_faddr value is 0; in Ext4 this field is combined with l_i_fsize to
@@ -1826,11 +1489,7 @@ l_i_fsize
 
 8bit fragment size.
 
-Note
-
 Always 0 in Linux since fragments are not supported.
-
-Important
 
 A new implementation of Ext2 should completely disregard this field if
 the i_faddr value is 0; in Ext4 this field is combined with l_i_frag to
@@ -1846,13 +1505,17 @@ High 16bit of group id.
 
 Masix
 
-Table 3.19. Inode i_osd2 Structure: Masix
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              1              m_i_frag
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- -------------
-  0                1              m_i_frag
-  1                1              m_i_fsize
-  2                10             reserved
+  1              1              m_i_fsize
+
+  2              10             reserved
+  ------------------------------------------------------------------------
+
+  : Inode i_osd2 Structure: Masix
 
 m_i_frag
 
@@ -1870,8 +1533,8 @@ Inodes are all numerically ordered. The “inode number” is an index in
 the inode table to an inode structure. The size of the inode table is
 fixed at format time; it is built to hold a maximum number of entries.
 Due to the large amount of entries created, the table is quite big and
-thus, it is split equally among all the block groups (see Chapter 3,
-Disk Organization for more information).
+thus, it is split equally among all the block groups (see Disk
+Organization for more information).
 
 The s_inodes_per_group field in the superblock structure tells us how
 many inodes are defined per group. Knowing that inode 1 is the first
@@ -1889,58 +1552,32 @@ table can be identified using:
 Here are a couple of sample values that could be used to test your
 implementation:
 
-Table 3.20. Sample Inode Computations
+  ------------------------------------------------------------------------
+  Inode Number                 Block Group Number    Local Inode Index
+  ---------------------------- --------------------- ---------------------
+  s_inodes_per_group = 1712                          
 
-  Inode Number                Block Group Number   Local Inode Index
-  --------------------------- -------------------- -------------------
-  s_inodes_per_group = 1712                        
-  1                           0                    0
-  963                         0                    962
-  1712                        0                    1711
-  1713                        1                    0
-  3424                        1                    1711
-  3425                        2                    0
+  1                            0                     0
+
+  963                          0                     962
+
+  1712                         0                     1711
+
+  1713                         1                     0
+
+  3424                         1                     1711
+
+  3425                         2                     0
+  ------------------------------------------------------------------------
+
+  : Sample Inode Computations
 
 As many of you are most likely already familiar with, an index of 0
 means the first entry. The reason behind using 0 rather than 1 is that
 it can more easily be multiplied by the structure size to find the final
 byte offset of its location in memory or on disk.
 
-Chapter 4. Directory Structure
-
-Table of Contents
-
-Linked List Directory
-
-inode
-
-rec_len
-
-name_len
-
-file_type
-
-name
-
-Sample Directory
-
-Indexed Directory Format
-
-Indexed Directory Root
-
-Indexed Directory Entry
-
-Lookup Algorithm
-
-Insert Algorithm
-
-Splitting
-
-Key Collisions
-
-Hash Function
-
-Performance
+Directory Structure
 
 Directories are used to hierarchically organize files. Each directory
 can contain other directories, regular files and special files.
@@ -1969,33 +1606,21 @@ In revision 0, the type of the entry (file, directory, special file,
 etc) has to be looked up in the inode of the file. In revision 0.5 and
 later, the file type is also contained in the directory entry structure.
 
-Table 4.1. Linked Directory Entry Structure
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              4              inode
 
-+-----------------------------------+--------------+-----------------+
-| Offset (bytes)                    | Size (bytes) | Description     |
-+===================================+==============+=================+
-| 0                                 | 4            | inode           |
-+-----------------------------------+--------------+-----------------+
-| 4                                 | 2            | rec_len         |
-+-----------------------------------+--------------+-----------------+
-| 6                                 | 1            | name_len^([a])  |
-+-----------------------------------+--------------+-----------------+
-| 7                                 | 1            | file_type^([b]) |
-+-----------------------------------+--------------+-----------------+
-| 8                                 | 0-255        | name            |
-+-----------------------------------+--------------+-----------------+
-| ^([a]) Revision 0 of Ext2 used a  |              |                 |
-| 16bit name_len; since most        |              |                 |
-| implementations restricted        |              |                 |
-| filenames to a maximum of 255     |              |                 |
-| characters this value was         |              |                 |
-| truncated to 8bit with the upper  |              |                 |
-| 8bit recycled as file_type.       |              |                 |
-|                                   |              |                 |
-| ^([b]) Not available in revision  |              |                 |
-| 0; this field was part of the     |              |                 |
-| 16bit name_len field.             |              |                 |
-+-----------------------------------+--------------+-----------------+
+  4              2              rec_len
+
+  6              1              name_len[2]
+
+  7              1              file_type[3]
+
+  8              0-255          name
+  ------------------------------------------------------------------------
+
+  : Linked Directory Entry Structure
 
 inode
 
@@ -2013,8 +1638,6 @@ cannot be any directory entry spanning multiple data blocks. If an entry
 cannot completely fit in one block, it must be pushed to the next data
 block and the rec_len of the previous entry properly adjusted.
 
-Note
-
 Since this value cannot be negative, when a file is removed the previous
 record within the block has to be modified to point to the next valid
 record within the block or to the end of the block when no other
@@ -2029,8 +1652,6 @@ name_len
 8bit unsigned value indicating how many bytes of character data are
 contained in the name.
 
-Note
-
 This value must never be larger than rec_len - 8. If the directory entry
 name is updated and cannot fit in the existing directory entry, the
 entry may have to be relocated in a new directory entry of sufficient
@@ -2040,26 +1661,33 @@ file_type
 
 8bit unsigned value used to indicate file type.
 
-Note
-
 In revision 0, this field was the upper 8-bit of the then 16-bit
 name_len. Since all implementations still limited the file names to 255
 characters this 8-bit value was always 0.
 
 This value must match the inode type defined in the related inode entry.
 
-Table 4.2. Defined Inode File Type Values
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  EXT2_FT_UNKNOWN              0              Unknown File Type
 
-  Constant Name      Value   Description
-  ------------------ ------- -------------------
-  EXT2_FT_UNKNOWN    0       Unknown File Type
-  EXT2_FT_REG_FILE   1       Regular File
-  EXT2_FT_DIR        2       Directory File
-  EXT2_FT_CHRDEV     3       Character Device
-  EXT2_FT_BLKDEV     4       Block Device
-  EXT2_FT_FIFO       5       Buffer File
-  EXT2_FT_SOCK       6       Socket File
-  EXT2_FT_SYMLINK    7       Symbolic Link
+  EXT2_FT_REG_FILE             1              Regular File
+
+  EXT2_FT_DIR                  2              Directory File
+
+  EXT2_FT_CHRDEV               3              Character Device
+
+  EXT2_FT_BLKDEV               4              Block Device
+
+  EXT2_FT_FIFO                 5              Buffer File
+
+  EXT2_FT_SOCK                 6              Socket File
+
+  EXT2_FT_SYMLINK              7              Symbolic Link
+  ------------------------------------------------------------------------
+
+  : Defined Inode File Type Values
 
 name
 
@@ -2083,65 +1711,129 @@ Here's a sample of the home directory of one user on my system:
 For which the following data representation can be found on the storage
 device:
 
-Table 4.3. Sample Linked Directory Data Layout, 4KiB blocks
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  Directory                     
+  Entry 0                       
 
-  Offset (bytes)      Size (bytes)   Description
-  ------------------- -------------- -----------------------------
-  Directory Entry 0                  
-  0                   4              inode number: 783362
-  4                   2              record length: 12
-  6                   1              name length: 1
-  7                   1              file type: EXT2_FT_DIR=2
-  8                   1              name: .
-  9                   3              padding
-  Directory Entry 1                  
-  12                  4              inode number: 1109761
-  16                  2              record length: 12
-  18                  1              name length: 2
-  19                  1              file type: EXT2_FT_DIR=2
-  20                  2              name: ..
-  22                  2              padding
-  Directory Entry 2                  
-  24                  4              inode number: 783364
-  28                  2              record length: 24
-  30                  1              name length: 13
-  31                  1              file type: EXT2_FT_REG_FILE
-  32                  13             name: .bash_profile
-  45                  3              padding
-  Directory Entry 3                  
-  48                  4              inode number: 783363
-  52                  2              record length: 16
-  54                  1              name length: 7
-  55                  1              file type: EXT2_FT_REG_FILE
-  56                  7              name: .bashrc
-  63                  1              padding
-  Directory Entry 4                  
-  64                  4              inode number: 783377
-  68                  2              record length: 12
-  70                  1              name length: 4
-  71                  1              file type: EXT2_FT_REG_FILE
-  72                  4              name: mbox
-  Directory Entry 5                  
-  76                  4              inode number: 783545
-  80                  2              record length: 20
-  82                  1              name length: 11
-  83                  1              file type: EXT2_FT_DIR=2
-  84                  11             name: public_html
-  95                  1              padding
-  Directory Entry 6                  
-  96                  4              inode number: 669354
-  100                 2              record length: 12
-  102                 1              name length: 3
-  103                 1              file type: EXT2_FT_DIR=2
-  104                 3              name: tmp
-  107                 1              padding
-  Directory Entry 7                  
-  108                 4              inode number: 0
-  112                 2              record length: 3988
-  114                 1              name length: 0
-  115                 1              file type: EXT2_FT_UNKNOWN
-  116                 0              name:
-  116                 3980           padding
+  0              4              inode number: 783362
+
+  4              2              record length: 12
+
+  6              1              name length: 1
+
+  7              1              file type: EXT2_FT_DIR=2
+
+  8              1              name: .
+
+  9              3              padding
+
+  Directory                     
+  Entry 1                       
+
+  12             4              inode number: 1109761
+
+  16             2              record length: 12
+
+  18             1              name length: 2
+
+  19             1              file type: EXT2_FT_DIR=2
+
+  20             2              name: ..
+
+  22             2              padding
+
+  Directory                     
+  Entry 2                       
+
+  24             4              inode number: 783364
+
+  28             2              record length: 24
+
+  30             1              name length: 13
+
+  31             1              file type: EXT2_FT_REG_FILE
+
+  32             13             name: .bash_profile
+
+  45             3              padding
+
+  Directory                     
+  Entry 3                       
+
+  48             4              inode number: 783363
+
+  52             2              record length: 16
+
+  54             1              name length: 7
+
+  55             1              file type: EXT2_FT_REG_FILE
+
+  56             7              name: .bashrc
+
+  63             1              padding
+
+  Directory                     
+  Entry 4                       
+
+  64             4              inode number: 783377
+
+  68             2              record length: 12
+
+  70             1              name length: 4
+
+  71             1              file type: EXT2_FT_REG_FILE
+
+  72             4              name: mbox
+
+  Directory                     
+  Entry 5                       
+
+  76             4              inode number: 783545
+
+  80             2              record length: 20
+
+  82             1              name length: 11
+
+  83             1              file type: EXT2_FT_DIR=2
+
+  84             11             name: public_html
+
+  95             1              padding
+
+  Directory                     
+  Entry 6                       
+
+  96             4              inode number: 669354
+
+  100            2              record length: 12
+
+  102            1              name length: 3
+
+  103            1              file type: EXT2_FT_DIR=2
+
+  104            3              name: tmp
+
+  107            1              padding
+
+  Directory                     
+  Entry 7                       
+
+  108            4              inode number: 0
+
+  112            2              record length: 3988
+
+  114            1              name length: 0
+
+  115            1              file type: EXT2_FT_UNKNOWN
+
+  116            0              name:
+
+  116            3980           padding
+  ------------------------------------------------------------------------
+
+  : Sample Linked Directory Data Layout, 4KiB blocks
 
 Indexed Directory Format
 
@@ -2163,54 +1855,86 @@ entries at the beginning of block 0 of the indexed directory data
 blocks. These fake entries are part of the dx_root structure and host
 the linked directory information for the "." and ".." folder entries.
 
-Immediately following the the section called “Indexed Directory Root”
-structure is an array of the section called “Indexed Directory Entry” up
-to the end of the data block or until all files have been indexed.
+Immediately following the Indexed Directory Root structure is an array
+of Indexed Directory Entry up to the end of the data block or until all
+files have been indexed.
 
-When the number of files to be indexed exceeds the number of the section
-called “Indexed Directory Entry” that can fit in a block (the section
-called “limit”), a level of indirect indexes is created. An indirect
-index is another data block allocated to the directory inode that
-contains directory entries.
+When the number of files to be indexed exceeds the number of Indexed
+Directory Entry that can fit in a block (limit), a level of indirect
+indexes is created. An indirect index is another data block allocated to
+the directory inode that contains directory entries.
 
 Indexed Directory Root
 
-Table 4.4. Indexed Directory Root Structure
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  -- Linked                     
+  Directory                     
+  Entry: . --                   
 
-  Offset (bytes)                                       Size (bytes)   Description
-  ---------------------------------------------------- -------------- ------------------------------------------------
-  -- Linked Directory Entry: . --                                     
-  0                                                    4              inode: this directory
-  4                                                    2              rec_len: 12
-  6                                                    1              name_len: 1
-  7                                                    1              file_type: EXT2_FT_DIR=2
-  8                                                    1              name: .
-  9                                                    3              padding
-  -- Linked Directory Entry: .. --                                    
-  12                                                   4              inode: parent directory
-  16                                                   2              rec_len: (blocksize - this entry's length(12))
-  18                                                   1              name_len: 2
-  19                                                   1              file_type: EXT2_FT_DIR=2
-  20                                                   2              name: ..
-  22                                                   2              padding
-  -- Indexed Directory Root Information Structure --                  
-  24                                                   4              reserved, zero
-  28                                                   1              hash_version
-  29                                                   1              info_length
-  30                                                   1              indirect_levels
-  31                                                   1              reserved - unused flags
+  0              4              inode: this directory
+
+  4              2              rec_len: 12
+
+  6              1              name_len: 1
+
+  7              1              file_type: EXT2_FT_DIR=2
+
+  8              1              name: .
+
+  9              3              padding
+
+  -- Linked                     
+  Directory                     
+  Entry: .. --                  
+
+  12             4              inode: parent directory
+
+  16             2              rec_len: (blocksize - this entry's
+                                length(12))
+
+  18             1              name_len: 2
+
+  19             1              file_type: EXT2_FT_DIR=2
+
+  20             2              name: ..
+
+  22             2              padding
+
+  -- Indexed                    
+  Directory Root                
+  Information                   
+  Structure --                  
+
+  24             4              reserved, zero
+
+  28             1              hash_version
+
+  29             1              info_length
+
+  30             1              indirect_levels
+
+  31             1              reserved - unused flags
+  ------------------------------------------------------------------------
+
+  : Indexed Directory Root Structure
 
 hash_version
 
 8bit value representing the hash version used in this indexed directory.
 
-Table 4.5. Defined Indexed Directory Hash Versions
+  ------------------------------------------------------------------------
+  Constant Name                Value          Description
+  ---------------------------- -------------- ----------------------------
+  DX_HASH_LEGACY               0              TODO: link to section
 
-  Constant Name      Value   Description
-  ------------------ ------- -----------------------
-  DX_HASH_LEGACY     0       TODO: link to section
-  DX_HASH_HALF_MD4   1       TODO: link to section
-  DX_HASH_TEA        2       TODO: link to section
+  DX_HASH_HALF_MD4             1              TODO: link to section
+
+  DX_HASH_TEA                  2              TODO: link to section
+  ------------------------------------------------------------------------
+
+  : Defined Indexed Directory Hash Versions
 
 info_length
 
@@ -2222,8 +1946,6 @@ indirect_levels
 8bit value indicating how many indirect levels of indexing are present
 in this hash.
 
-Note
-
 In Linux, as of 2.6.28, the maximum indirect levels value supported is
 1.
 
@@ -2232,32 +1954,36 @@ Indexed Directory Entry
 The indexed directory entries are used to quickly lookup the inode
 number associated with the hash of a filename. These entries are located
 immediately following the fake linked directory entry of the directory
-data blocks, or immediately following the the section called “Indexed
-Directory Root”.
+data blocks, or immediately following the Indexed Directory Root.
 
 The first indexed directory entry, rather than containing an actual hash
 and block number, contains the maximum number of indexed directory
 entries that can fit in the block and the actual number of indexed
 directory entries stored in the block. The format of this special entry
-is detailed in Table 4.7, “Indexed Directory Entry Count and Limit
-Structure”.
+is detailed in table_title.
 
 The other directory entries are sorted by hash value starting from the
 smallest to the largest numerical value.
 
-Table 4.6. Indexed Directory Entry Structure (dx_entry)
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              4              hash
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- -------------
-  0                4              hash
-  4                4              block
+  4              4              block
+  ------------------------------------------------------------------------
 
-Table 4.7. Indexed Directory Entry Count and Limit Structure
+  : Indexed Directory Entry Structure (dx_entry)
 
-  Offset (bytes)   Size (bytes)   Description
-  ---------------- -------------- -------------
-  0                2              limit
-  2                2              count
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytes)   Description
+  -------------- -------------- ------------------------------------------
+  0              2              limit
+
+  2              2              count
+  ------------------------------------------------------------------------
+
+  : Indexed Directory Entry Count and Limit Structure
 
 hash
 
@@ -2403,9 +2129,7 @@ quadratic increase with normal Ext2.
 
 Time to create:
 
-Figure 4.1. Performance of Indexed Directories
-
-          Indexed     Normal
+            Indexed     Normal
             =======     ======
     10000 Files:    0m1.350s    0m23.670s
     20000 Files:    0m2.720s    1m20.470s
@@ -2454,61 +2178,7 @@ and that number increases to 4-5 with really huge directories. But this
 is really nothing compared to normal Ext2, which traverses several
 hundred blocks in the same situation.
 
-Chapter 5. File Attributes
-
-Table of Contents
-
-Standard Attributes
-
-SUID, SGID and -rwxrwxrwx
-
-File Size
-
-Owner and Group
-
-Extended Attributes
-
-Extended Attribute Block Layout
-
-Extended Attribute Block Header
-
-Attribute Entry Header
-
-Behaviour Control Flags
-
-EXT2_SECRM_FL - Secure Deletion
-
-EXT2_UNRM_FL - Record for Undelete
-
-EXT2_COMPR_FL - Compressed File
-
-EXT2_SYNC_FL - Synchronous Updates
-
-EXT2_IMMUTABLE_FL - Immutable File
-
-EXT2_APPEND_FL - Append Only
-
-EXT2_NODUMP_FL - Do No Dump/Delete
-
-EXT2_NOATIME_FL - Do Not Update .i_atime
-
-EXT2_DIRTY_FL - Dirty
-
-EXT2_COMPRBLK_FL - Compressed Blocks
-
-EXT2_NOCOMPR_FL - Access Raw Compressed Data
-
-EXT2_ECOMPR_FL - Compression Error
-
-EXT2_BTREE_FL - B-Tree Format Directory
-
-EXT2_INDEX_FL - Hash Indexed Directory
-
-EXT2_IMAGIC_FL -
-
-EXT2_JOURNAL_DATA_FL - Journal File Data
-
-EXT2_RESERVED_FL - Reserved
+File Attributes
 
 Most of the file (also directory, symlink, device...) attributes are
 located in the inode associated with the file. Some other attributes are
@@ -2565,8 +2235,6 @@ inode. The i_file_acl field (for regular files) or the i_dir_acl field
 (for directories) fields contain the block number of the allocated data
 block used to store the extended attributes.
 
-Note
-
 Inodes which have all identical extended attributes may share the same
 extended attribute block.
 
@@ -2586,31 +2254,45 @@ Attribute values are aligned to the end of the block, stored in no
 specific order. They are also padded to EXT2_XATTR_PAD (4) byte
 boundaries. No additional gaps are left between them.
 
-Table 5.1. Extended Attribute Block Layout
+  ---------------------------- --- ---------------------------------------
+  Attribute Block Header           
 
-  ------------------------ --- -------------------
-  Attribute Block Header        
-  Attribute Entry 1        |    
-  Attribute Entry 2        |   growing downwards
-  Attribute Entry 3        V    
-  4 null bytes                  
-  unused space...               
-  Attribute Value 1        ^    
-  Attribute Value 3        |   growing upwards
-  Attribute Value 2        |    
-  ------------------------ --- -------------------
+  Attribute Entry 1             |  
+
+  Attribute Entry 2             |  growing downwards
+
+  Attribute Entry 3             V  
+
+  4 null bytes                     
+
+  unused space...                  
+
+  Attribute Value 1             ^  
+
+  Attribute Value 3             |  growing upwards
+
+  Attribute Value 2             |  
+  ---------------------------- --- ---------------------------------------
+
+  : Extended Attribute Block Layout
 
 Extended Attribute Block Header
 
-Table 5.2. ext2_xattr_header structure
+  ------------------------------------------------------------------------
+  Offset (bytes) Size (bytse)   Description
+  -------------- -------------- ------------------------------------------
+  0              4              h_magic
 
-  Offset (bytes)   Size (bytse)   Description
-  ---------------- -------------- -------------
-  0                4              h_magic
-  4                4              h_refcount
-  8                4              h_blocks
-  12               4              h_hash
-  16               16             reserved
+  4              4              h_refcount
+
+  8              4              h_blocks
+
+  12             4              h_hash
+
+  16             16             reserved
+  ------------------------------------------------------------------------
+
+  : ext2_xattr_header structure
 
 h_magic
 
@@ -2628,8 +2310,6 @@ h_blocks
 32bit value indicating how many blocks are currently used by the
 extended attributes.
 
-Note
-
 In Linux a value of h_blocks higher than 1 is considered invalid. This
 effectively restrict the amount of extended attributes to what can be
 fit in a single block.
@@ -2641,26 +2321,20 @@ h_hash
 
 32bit hash value of all attribute entry header hashes.
 
-Procedure 5.1. Procedure to compute Extended Attribute Header Hash
+-   Initialize the 32bit hash to 0
 
-1.  Initialize the 32bit hash to 0
-
-2.  
-
-    Check if there are any extended attribute entry to process, if not
+-   Check if there are any extended attribute entry to process, if not
     we are done.
 
-3.  Do a cyclic bit shift of 16 bits to the left of the 32bits hash
+-   Do a cyclic bit shift of 16 bits to the left of the 32bits hash
     value, effectively swapping the upper and lower 16bits of the hash
 
-4.  Perform a bitwise OR between the extended attribute entry hash and
+-   Perform a bitwise OR between the extended attribute entry hash and
     the header hash being computed.
 
-5.  Go back to Step 2.
+-   Go back to step_title.
 
 Attribute Entry Header
-
-Figure 5.1. ext2_xattr_header structure
 
     offset  size    description
     ------- ------- -----------
@@ -2710,27 +2384,44 @@ The i_flags value in the inode structure allows to specify how the file
 system should behave in regard to the file. The following bits are
 currently defined:
 
-Table 5.3. Behaviour Control Flags
+  ---------------------------- -------------- ----------------------------
+  EXT2_SECRM_FL                0x00000001     secure deletion
 
-  ---------------------- ------------ ----------------------------------
-  EXT2_SECRM_FL          0x00000001   secure deletion
-  EXT2_UNRM_FL           0x00000002   record for undelete
-  EXT2_COMPR_FL          0x00000004   compressed file
-  EXT2_SYNC_FL           0x00000008   synchronous updates
-  EXT2_IMMUTABLE_FL      0x00000010   immutable file
-  EXT2_APPEND_FL         0x00000020   append only
-  EXT2_NODUMP_FL         0x00000040   do not dump/delete file
-  EXT2_NOATIME_FL        0x00000080   do not update .i_atime
-  EXT2_DIRTY_FL          0x00000100   dirty (file is in use?)
-  EXT2_COMPRBLK_FL       0x00000200   compressed blocks
-  EXT2_NOCOMPR_FL        0x00000400   access raw compressed data
-  EXT2_ECOMPR_FL         0x00000800   compression error
-  EXT2_BTREE_FL          0x00001000   b-tree format directory
-  EXT2_INDEX_FL          0x00001000   Hash indexed directory
-  EXT2_IMAGIC_FL         0x00002000   ?
-  EXT3_JOURNAL_DATA_FL   0x00004000   journal file data
-  EXT2_RESERVED_FL       0x80000000   reserved for ext2 implementation
-  ---------------------- ------------ ----------------------------------
+  EXT2_UNRM_FL                 0x00000002     record for undelete
+
+  EXT2_COMPR_FL                0x00000004     compressed file
+
+  EXT2_SYNC_FL                 0x00000008     synchronous updates
+
+  EXT2_IMMUTABLE_FL            0x00000010     immutable file
+
+  EXT2_APPEND_FL               0x00000020     append only
+
+  EXT2_NODUMP_FL               0x00000040     do not dump/delete file
+
+  EXT2_NOATIME_FL              0x00000080     do not update .i_atime
+
+  EXT2_DIRTY_FL                0x00000100     dirty (file is in use?)
+
+  EXT2_COMPRBLK_FL             0x00000200     compressed blocks
+
+  EXT2_NOCOMPR_FL              0x00000400     access raw compressed data
+
+  EXT2_ECOMPR_FL               0x00000800     compression error
+
+  EXT2_BTREE_FL                0x00001000     b-tree format directory
+
+  EXT2_INDEX_FL                0x00001000     Hash indexed directory
+
+  EXT2_IMAGIC_FL               0x00002000     ?
+
+  EXT3_JOURNAL_DATA_FL         0x00004000     journal file data
+
+  EXT2_RESERVED_FL             0x80000000     reserved for ext2
+                                              implementation
+  ---------------------------- -------------- ----------------------------
+
+  : Behaviour Control Flags
 
 EXT2_SECRM_FL - Secure Deletion
 
@@ -2811,8 +2502,7 @@ EXT2_BTREE_FL - B-Tree Format Directory
 EXT2_INDEX_FL - Hash Indexed Directory
 
 When this bit is set, the format of the directory file is hash indexed.
-This is covered in details in the section called “Indexed Directory
-Format”.
+This is covered in details in Indexed Directory Format.
 
 EXT2_IMAGIC_FL -
 
@@ -2820,7 +2510,7 @@ EXT2_JOURNAL_DATA_FL - Journal File Data
 
 EXT2_RESERVED_FL - Reserved
 
-Appendix A. Credits
+Credits
 
 I would like to personally thank everybody who contributed to this
 document, you are numerous and in many cases I haven't kept track of all
@@ -2829,38 +2519,49 @@ not hesitate to contact me, it will be a pleasure to add your name to
 the list.
 
     Peter Rottengatter (Peter.Rottengatter@bakerhughes.com)
-      Corrections to the section called “s_inodes_per_group”
-      Corrections to Table 3.1, “Sample Floppy Disk Layout, 1KiB blocks” and Table 3.2, “Sample 20mb Partition Layout”
-      Corrections to the section called “Block Group Descriptor Table”
+      Corrections to 
+      Corrections to  and 
+      Corrections to 
 
     Ryan Cuthbertson (ryan.cuthbertson@adelaide.edu.au)
-      Corrections to the section called “i_blocks”
-      Corrections to Chapter 3, Disk Organization
+      Corrections to 
+      Corrections to 
 
     Andreas Gruenbacher (a.gruenbacher@bestbits.at)
-      the section called “Extended Attributes”
+      
 
     Daniel Phillips (phillips@innominate.de)
-      the section called “Lookup Algorithm”
-      the section called “Insert Algorithm”
-      the section called “Splitting”
-      the section called “Key Collisions”
-      the section called “Hash Function”
-      the section called “Performance”
+      
+      
+      
+      
+      
+      
 
     Jeremy Stanley of Access Data Inc.
       Pointed out the inversed values for EXT2_S_IFSOCK and EXT2_S_IFLNK
 
     Ahmed S. Darwish (darwish.07@gmail.com)
-      Clarification on the section called “Inode Bitmap”
+      Clarification on 
 
     Sami Besalel (sami.besalel@software.dell.com)
-      Typography correction in the section called “EXT2_SECRM_FL - Secure Deletion”.
+      Typography correction in .
 
     Kwan Fong (kwanlapfong@gmail.com)
-      Improvement to wording in the section called “s_log_block_size”
+      Improvement to wording in 
 
     Jonatan Schroeder (jonatan@cs.ubc.ca)
-      Corrections to the section called “i_block” with sparse files.
+      Corrections to  with sparse files.
 
       
+
+[1] This limit comes from the maximum size of a block device in Linux
+2.4; it is unclear whether a Linux 2.6 kernel using a 1KiB block size
+could properly format and mount a Ext2 partition larger than 2TiB.
+
+[2] Revision 0 of Ext2 used a 16bit name_len; since most implementations
+restricted filenames to a maximum of 255 characters this value was
+truncated to 8bit with the upper 8bit recycled as file_type.
+
+[3] Not available in revision 0; this field was part of the 16bit
+name_len field.
