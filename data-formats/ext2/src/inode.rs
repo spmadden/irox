@@ -2,19 +2,15 @@
 // Copyright 2024 IROX Contributors
 //
 
-use core::ops::Deref;
 use std::collections::VecDeque;
-use std::io::Seek;
-use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::directory::DirectoryStream;
-use irox_log::log::debug;
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, Error, ErrorKind, MutBits};
+use irox_tools::bits::{Bits, Error, ErrorKind};
+use crate::data::DataStream;
 
-use crate::ops::DirOps;
 use crate::Filesystem;
+use crate::typed_inode::{BlockDev, CharDev, Directory, Fifo, InodeType, RegFile, Socket, SymLink, TypedInode};
 
 pub mod flags;
 pub mod modeflags;
@@ -35,19 +31,19 @@ impl TryFrom<u16> for FileType {
     type Error = Error;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
-        if value & modeflags::EXT2_S_IFSOCK > 0 {
+        if value & modeflags::EXT2_S_IFSOCK == modeflags::EXT2_S_IFSOCK {
             Ok(FileType::Socket)
-        } else if value & modeflags::EXT2_S_IFLNK > 0 {
+        } else if value & modeflags::EXT2_S_IFLNK == modeflags::EXT2_S_IFLNK {
             Ok(FileType::SymbolicLink)
-        } else if value & modeflags::EXT2_S_IFREG > 0 {
+        } else if value & modeflags::EXT2_S_IFREG == modeflags::EXT2_S_IFREG {
             Ok(FileType::RegularFile)
-        } else if value & modeflags::EXT2_S_IFBLK > 0 {
+        } else if value & modeflags::EXT2_S_IFBLK == modeflags::EXT2_S_IFBLK {
             Ok(FileType::BlockDev)
-        } else if value & modeflags::EXT2_S_IFDIR > 0 {
+        } else if value & modeflags::EXT2_S_IFDIR == modeflags::EXT2_S_IFDIR {
             Ok(FileType::Directory)
-        } else if value & modeflags::EXT2_S_IFCHR > 0 {
+        } else if value & modeflags::EXT2_S_IFCHR == modeflags::EXT2_S_IFCHR {
             Ok(FileType::CharDev)
-        } else if value & modeflags::EXT2_S_IFIFO > 0 {
+        } else if value & modeflags::EXT2_S_IFIFO == modeflags::EXT2_S_IFIFO {
             Ok(FileType::FIFO)
         } else {
             Err(ErrorKind::InvalidData.into())
@@ -58,7 +54,7 @@ impl TryFrom<u16> for FileType {
 ///
 /// "Index Node" - each object in the filesystem is represented by an inode.  The inode contains all
 /// the metadata for the file except for the name.
-#[derive(Struct, Debug, PartialEq, Eq)]
+#[derive(Struct, Debug, Copy, Clone, PartialEq, Eq)]
 #[little_endian]
 pub struct RawInode {
     /// Mode flags, see [`modeflags`] for values
@@ -115,11 +111,11 @@ pub struct RawInode {
     /// OS-Dependent data
     pub i_osd2: [u8; 12],
 }
-pub struct Inode<T> {
+pub struct Inode {
     pub raw_inode: RawInode,
-    pub fs: Filesystem<T>,
+    pub fs: Filesystem,
 }
-impl<T: Bits + Seek> Inode<T> {
+impl Inode {
     pub fn get_num_reserved_blocks(&self) -> Result<u32, Error> {
         let Ok(inner) = self.fs.lock() else {
             return Err(ErrorKind::BrokenPipe.into());
@@ -135,112 +131,49 @@ impl<T: Bits + Seek> Inode<T> {
         Ok(len)
     }
 
-    pub fn data_stream(self: Arc<Self>) -> Result<DataStream<T>, Error> {
-        Ok(DataStream {
-            position: 0,
-            length: self.get_data_length()?,
-            block_iter: self.block_stream()?,
-            data_buf: Default::default(),
-            inode: self,
-        })
+    pub fn data_stream(self: &Arc<Self>) -> Result<DataStream, Error> {
+        DataStream::new(self)
     }
 
-    pub fn block_stream(self: &Arc<Self>) -> Result<BlockIter<T>, Error> {
+    pub fn block_stream(self: &Arc<Self>) -> Result<BlockIter, Error> {
         BlockIter::new(self)
     }
-}
 
-impl<T> Inode<T> {
-    pub fn as_typed(self) -> Result<InodeType<T>, Self> {
+    pub fn as_typed(self: Arc<Self>) -> Result<InodeType, Error> {
         let mode = self.raw_inode.i_mode;
         let mode: FileType = match mode.try_into() {
             Ok(e) => e,
-            Err(_e) => return Err(self),
+            Err(_e) => return Err(ErrorKind::InvalidData.into()),
         };
         Ok(match mode {
-            FileType::FIFO => InodeType::Fifo(TypedInode::<Fifo, T>::new(self)),
-            FileType::CharDev => InodeType::CharDevice(TypedInode::<CharDev, T>::new(self)),
-            FileType::Directory => InodeType::Directory(TypedInode::<Directory, T>::new(self)),
-            FileType::BlockDev => InodeType::BlockDevice(TypedInode::<BlockDev, T>::new(self)),
-            FileType::RegularFile => InodeType::RegularFile(TypedInode::<RegFile, T>::new(self)),
-            FileType::SymbolicLink => InodeType::SymLink(TypedInode::<SymLink, T>::new(self)),
-            FileType::Socket => InodeType::Socket(TypedInode::<Socket, T>::new(self)),
+            FileType::FIFO => InodeType::Fifo(TypedInode::<Fifo>::new(self)),
+            FileType::CharDev => InodeType::CharDevice(TypedInode::<CharDev>::new(self)),
+            FileType::Directory => InodeType::Directory(TypedInode::<Directory>::new(self)),
+            FileType::BlockDev => InodeType::BlockDevice(TypedInode::<BlockDev>::new(self)),
+            FileType::RegularFile => InodeType::RegularFile(TypedInode::<RegFile>::new(self)),
+            FileType::SymbolicLink => InodeType::SymLink(TypedInode::<SymLink>::new(self)),
+            FileType::Socket => InodeType::Socket(TypedInode::<Socket>::new(self)),
         })
     }
-    pub fn as_directory(self) -> Option<TypedInode<Directory, T>> {
+    pub fn as_directory(self: Arc<Self>) -> Option<Arc<TypedInode<Directory>>> {
         if let InodeType::Directory(dir) = self.as_typed().ok()? {
-            return Some(dir);
+            return Some(Arc::new(dir));
         }
         None
     }
-    pub fn as_regular_file(self) -> Option<TypedInode<RegFile, T>> {
+    pub fn as_regular_file(self: Arc<Self>) -> Option<Arc<TypedInode<RegFile>>> {
         if let InodeType::RegularFile(file) = self.as_typed().ok()? {
-            return Some(file);
+            return Some(Arc::new(file));
         }
         None
-    }
-}
-
-pub struct DataStream<T> {
-    inode: Arc<Inode<T>>,
-    position: u64,
-    length: u64,
-    block_iter: BlockIter<T>,
-    data_buf: VecDeque<u8>,
-}
-impl<T: Bits + Seek> DataStream<T> {
-    pub fn new(inode: &Arc<Inode<T>>) -> Result<Self, Error> {
-        let total_blocks = inode.get_num_reserved_blocks()?;
-        let length = inode.get_data_length()?;
-        let block_iter = BlockIter::new(inode)?;
-        let ds = DataStream {
-            inode: inode.clone(),
-            position: 0,
-            length,
-            block_iter,
-            data_buf: VecDeque::new(),
-        };
-        Ok(ds)
-    }
-}
-
-impl<T: Bits + Seek> Bits for DataStream<T> {
-    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        if self.position >= self.length {
-            debug!(
-                "Datastream bailing out because {} >= {}",
-                self.position, self.length
-            );
-            return Ok(None);
-        }
-
-        if let Some(nxt) = self.data_buf.pop_front() {
-            self.position += 1;
-            return Ok(Some(nxt));
-        }
-        if let Some(nxt_block) = self.block_iter.next() {
-            let blk = self.inode.fs.read_raw_4k_block(nxt_block)?;
-            self.data_buf.write_all_bytes(blk.as_slice())?;
-            debug!("Datastream loaded next block {nxt_block}");
-            return self.next_u8();
-        }
-        Ok(None)
-    }
-}
-
-impl<T: Bits + Seek> Iterator for DataStream<T> {
-    type Item = u8;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next_u8().ok().flatten()
     }
 }
 
 ///
 /// Iterator that walks through the block IDs that an inode references for it's
 /// data set.  Keep calling next to exhaust the sequence
-pub struct BlockIter<T> {
-    inode: Arc<Inode<T>>,
+pub struct BlockIter {
+    inode: Arc<Inode>,
     loaded_block_count: u32,
     total_block_count: u32,
     next_blocks: VecDeque<u32>,
@@ -248,8 +181,8 @@ pub struct BlockIter<T> {
     double_indirects: VecDeque<u32>,
     triple_indirects: VecDeque<u32>,
 }
-impl<T: Bits + Seek> BlockIter<T> {
-    pub fn new(inode: &Arc<Inode<T>>) -> Result<Self, Error> {
+impl BlockIter {
+    pub fn new(inode: &Arc<Inode>) -> Result<Self, Error> {
         let total_blocks = inode.get_num_reserved_blocks()?;
         let mut out = BlockIter {
             inode: inode.clone(),
@@ -341,7 +274,7 @@ impl<T: Bits + Seek> BlockIter<T> {
     }
 }
 
-impl<T: Bits + Seek> Iterator for BlockIter<T> {
+impl Iterator for BlockIter {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -357,59 +290,5 @@ impl<T: Bits + Seek> Iterator for BlockIter<T> {
             return None;
         }
         self.next()
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct GenericInode;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Directory;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct RegFile;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Socket;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct BlockDev;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct CharDev;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct SymLink;
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Fifo;
-
-pub struct TypedInode<T, I> {
-    inode: Inode<I>,
-    _ph: PhantomData<T>,
-}
-impl<T, I> TypedInode<T, I> {
-    pub fn new(inode: Inode<I>) -> Self {
-        TypedInode {
-            inode,
-            _ph: Default::default(),
-        }
-    }
-}
-
-impl<T, I> Deref for TypedInode<T, I> {
-    type Target = Inode<I>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inode
-    }
-}
-
-pub enum InodeType<T> {
-    Socket(TypedInode<Socket, T>),
-    SymLink(TypedInode<SymLink, T>),
-    RegularFile(TypedInode<RegFile, T>),
-    BlockDevice(TypedInode<BlockDev, T>),
-    Directory(TypedInode<Directory, T>),
-    CharDevice(TypedInode<CharDev, T>),
-    Fifo(TypedInode<Fifo, T>),
-}
-
-impl<T> DirOps<T> for TypedInode<Directory, T> {
-    fn list(&self) -> DirectoryStream<T> {
-        todo!()
     }
 }

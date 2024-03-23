@@ -2,9 +2,10 @@
 // Copyright 2024 IROX Contributors
 //
 
-use crate::inode::{BlockIter, DataStream};
-use irox_tools::bits::{Bits, Error};
-use std::io::Seek;
+
+use irox_tools::bits::{Bits};
+
+use crate::data::DataStream;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct DirEnt {
@@ -46,13 +47,13 @@ impl DirEnt {
     }
 }
 
-pub struct DirectoryStream<T> {
-    data_stream: DataStream<T>,
+pub struct DirectoryStream {
+    data_stream: DataStream,
     done: bool,
 }
 
-impl<T> DirectoryStream<T> {
-    pub fn new(data_stream: DataStream<T>) -> Self {
+impl DirectoryStream {
+    pub fn new(data_stream: DataStream) -> Self {
         DirectoryStream {
             data_stream,
             done: false,
@@ -60,7 +61,7 @@ impl<T> DirectoryStream<T> {
     }
 }
 
-impl<T: Bits + Seek> Iterator for DirectoryStream<T> {
+impl Iterator for DirectoryStream {
     type Item = DirEnt;
 
     fn next(&mut self) -> Option<Self::Item> {

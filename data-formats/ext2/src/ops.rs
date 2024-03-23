@@ -3,13 +3,16 @@
 //
 
 use crate::directory::DirectoryStream;
-use crate::{Error, Inode};
+use crate::typed_inode::{RegFile, TypedInode, Directory};
+use crate::{Error};
+use std::sync::Arc;
 
-pub trait DirOps<T> {
-    fn list(&self) -> DirectoryStream<T>;
+pub trait DirOps {
+    fn list(self: &Arc<Self>) -> Result<DirectoryStream, Error>;
 }
 
-pub trait MutDirOps<T> {
-    fn new_file(&self, filename: &str) -> Result<Inode<T>, Error>;
-    fn new_directory(&self, dirname: &str) -> Result<Inode<T>, Error>;
+pub trait MutDirOps{
+    fn new_file(&self, filename: &str) -> Result<TypedInode<RegFile>, Error>;
+    fn new_directory(&self, dirname: &str) -> Result<TypedInode<Directory>, Error>;
 }
+

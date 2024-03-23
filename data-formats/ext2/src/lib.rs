@@ -7,11 +7,14 @@
 
 #![forbid(unsafe_code)]
 
+use std::cell::RefCell;
+use std::collections::BTreeSet;
+use std::fs::File;
 use std::io::{Seek, SeekFrom};
+use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use blocks::*;
-use directory::*;
 use inode::*;
 use irox_log::log::{debug, trace};
 use irox_structs::Struct;
@@ -20,16 +23,19 @@ pub use irox_tools::bits::{Bits, Error, MutBits};
 use superblock::*;
 
 pub mod blocks;
+pub mod data;
 pub mod directory;
 pub mod inode;
-mod ops;
+pub mod inode_cache;
+pub mod ops;
 pub mod superblock;
+pub mod typed_inode;
 
-pub struct Filesystem<T> {
-    inner: Arc<Mutex<FSInner<T>>>,
+pub struct Filesystem {
+    inner: Arc<Mutex<FSInner>>,
 }
 
-impl<T> Clone for Filesystem<T> {
+impl Clone for Filesystem {
     fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
@@ -37,42 +43,12 @@ impl<T> Clone for Filesystem<T> {
     }
 }
 
-impl<T: Bits + Seek> Filesystem<T> {
-    pub fn open(stream: T) -> Result<Filesystem<T>, Error> {
+impl Filesystem {
+    pub fn open(stream: File) -> Result<Filesystem, Error> {
+        let mut inner = FSInner::new(stream)?;  
         Ok(Self {
-            inner: Arc::new(Mutex::new(FSInner::open_ro(stream)?)),
+            inner: Arc::new(Mutex::new(inner)),
         })
-    }
-    pub fn read_bg_descriptor_table_at(
-        &self,
-        mut block_id: u32,
-    ) -> Result<Vec<BlockGroupDescriptor<T>>, Error> {
-        let Ok(mut inner) = self.inner.lock() else {
-            return Err(ErrorKind::BrokenPipe.into());
-        };
-
-        let num_groups = inner.superblock.get_num_block_groups();
-        debug!("Reading {num_groups} BGT entries at block {block_id}");
-        let mut out = Vec::new();
-        let bgts_per_block = inner.superblock.get_block_size() >> 5;
-
-        let mut block = inner.read_raw_4k_block(block_id)?;
-        let mut block_ref = block.as_mut_slice();
-        for i in 0..num_groups {
-            if i > 0 && i & 0x1F == 0 {
-                block_id += 1;
-                block = inner.read_raw_4k_block(block_id)?;
-                block_ref = block.as_mut_slice();
-            }
-            let bgt = RawBlockGroupDescriptor::parse_from(&mut block_ref)?;
-            debug!("Read BGT {i}: {bgt:?}");
-            out.push(BlockGroupDescriptor {
-                raw_bgd: bgt,
-                fs: self.clone(),
-            });
-        }
-
-        Ok(out)
     }
 
     pub fn get_superblock(&self) -> Result<Superblock, Error> {
@@ -82,40 +58,29 @@ impl<T: Bits + Seek> Filesystem<T> {
         Ok(inner.superblock)
     }
 
-    pub fn get_cached_bg_table(&self) -> Result<Arc<Vec<BlockGroupDescriptor<T>>>, Error> {
-        let bgt = { self.lock()?.block_group_table.clone() };
-        Ok(match bgt {
-            Some(bgt) => bgt,
-            None => {
-                let bgt = Arc::new(self.read_bg_descriptor_table_at(1)?);
-                self.lock()?.block_group_table = Some(bgt.clone());
-                bgt
-            }
-        })
-    }
-
-    pub fn find_inode(&self, inode_idx: u32) -> Result<Arc<Inode<T>>, Error> {
+    pub fn find_inode(&self, inode_idx: u32) -> Result<Arc<Inode>, Error> {
         let sb = self.get_superblock()?;
         let bg_id = (inode_idx) / sb.s_inodes_per_group;
         let local_idx = (inode_idx) % sb.s_inodes_per_group;
+        let inode = {
+            let mut inner = self.lock()?;
+            let Some(bg) = inner.block_group_table.get(bg_id as usize) else {
+                return Err(ErrorKind::BrokenPipe.into());
+            };
+            if !bg.is_4k_inode_valid(local_idx)? {
+                return Err(ErrorKind::PermissionDenied.into());
+            }
+            let inodes_per_block = sb.get_block_size() >> 7;
+            let inode_block_id = (local_idx / inodes_per_block) + bg.raw_bgd.bg_inode_table;
+            let inode_block_idx = local_idx % inodes_per_block;
+            let inode_seek_offset = inode_block_idx << 7;
 
-        let bgt = self.get_cached_bg_table()?;
-        let Some(bg) = bgt.get(bg_id as usize) else {
-            return Err(ErrorKind::BrokenPipe.into());
+            debug!("Found inode {inode_idx} in block {inode_block_id} at table index {inode_block_idx} and blk offset {inode_seek_offset}");
+
+            let block = inner.read_raw_4k_block(inode_block_id)?;
+            let mut subset = block.split_at(inode_seek_offset as usize).1;
+            RawInode::parse_from(&mut subset)?
         };
-        if !bg.is_4k_inode_valid(local_idx)? {
-            return Err(ErrorKind::PermissionDenied.into());
-        }
-        let inodes_per_block = sb.get_block_size() >> 7;
-        let inode_block_id = (local_idx / inodes_per_block) + bg.raw_bgd.bg_inode_table;
-        let inode_block_idx = local_idx % inodes_per_block;
-        let inode_seek_offset = inode_block_idx << 7;
-
-        debug!("Found inode {inode_idx} in block {inode_block_id} at table index {inode_block_idx} and blk offset {inode_seek_offset}");
-
-        let block = self.lock()?.read_raw_4k_block(inode_block_id)?;
-        let mut subset = block.split_at(inode_seek_offset as usize).1;
-        let inode = RawInode::parse_from(&mut subset)?;
 
         Ok(Arc::new(Inode {
             raw_inode: inode,
@@ -123,7 +88,7 @@ impl<T: Bits + Seek> Filesystem<T> {
         }))
     }
 
-    pub fn lock(&self) -> Result<MutexGuard<FSInner<T>>, Error> {
+    pub fn lock(&self) -> Result<MutexGuard<FSInner>, Error> {
         self.inner.lock().map_err(|_| ErrorKind::BrokenPipe.into())
     }
 
@@ -131,36 +96,87 @@ impl<T: Bits + Seek> Filesystem<T> {
         let mut inner = self.lock()?;
         inner.read_raw_4k_block(block_id)
     }
-}
 
-pub struct FSInner<T> {
-    disk: Box<T>,
-    superblock: Superblock,
-    block_group_table: Option<Arc<Vec<BlockGroupDescriptor<T>>>>,
-}
-
-impl<T> FSInner<T> {
-    pub fn get_superblock(&self) -> Superblock {
-        self.superblock
+    pub fn read_4k_bitmap_at(&self, block_id: u32) -> Result<Bitmap<4096>, Error> {
+        let mut inner = self.lock()?;
+        inner.read_4k_bitmap_at(block_id)
+    }
+    pub fn write_raw_4k_block(&self, block_id: u32, blk: &[u8; 4096]) -> Result<(), Error> {
+        let mut inner = self.lock()?;
+        inner.write_raw_4k_block(block_id, blk)
     }
 }
 
-impl<T: Bits + Seek> FSInner<T> {
-    pub fn open_ro(mut stream: T) -> Result<FSInner<T>, Error> {
-        debug!("Reading superblock at 0x400");
-        stream.seek(SeekFrom::Start(0x400))?;
-        let superblock = Superblock::parse_from(&mut stream)?;
-        trace!("Found superblock: {superblock:#?}");
-        Ok(Self {
-            disk: Box::new(stream),
+pub struct FSInner {
+    disk: File,
+    superblock: Superblock,
+    block_group_table: Vec<BlockGroupDescriptor>,
+    block_locks: Rc<RefCell<BTreeSet<u32>>>,
+}
+
+impl FSInner {
+    pub fn new(mut disk: File) -> Result<Self, Error> {
+        disk.seek(SeekFrom::Start(0x400))?;
+        let superblock = Superblock::parse_from(&mut disk)?;
+        let out = Self {
+            disk,
             superblock,
-            block_group_table: None,
+            block_group_table: Vec::new(),
+            block_locks: Rc::new(RefCell::new(BTreeSet::new())),
+        };
+        Ok(out)
+    }
+
+    pub fn update_block_group_table(
+        &mut self,
+        mut block_id: u32,
+        filesystem: &Filesystem,
+    ) -> Result<(), Error> {
+        let superblock = &self.superblock;
+        let num_groups = superblock.get_num_block_groups();
+        debug!("Reading {num_groups} BGT entries at block {block_id}");
+        let mut out = Vec::new();
+        let _bgts_per_block = superblock.get_block_size() >> 5;
+
+        let mut block = self.read_raw_4k_block(block_id)?;
+        let mut block_ref = block.as_mut_slice();
+        for i in 0..num_groups {
+            if i > 0 && i & 0x1F == 0 {
+                block_id += 1;
+                block = self.read_raw_4k_block(block_id)?;
+                block_ref = block.as_mut_slice();
+            }
+            let bgt = RawBlockGroupDescriptor::parse_from(&mut block_ref)?;
+            debug!("Read BGT {i}: {bgt:?}");
+            out.push(BlockGroupDescriptor::new(bgt, i, filesystem.clone())?);
+        }
+        self.block_group_table = out;
+        Ok(())
+    }
+
+    pub fn get_superblock(&self) -> Superblock {
+        self.superblock
+    }
+
+    pub fn lock_block(&mut self, block_id: u32) -> Result<BlockLock, Error> {
+        {
+            let Ok(mut locks) = self.block_locks.try_borrow_mut() else {
+                return Err(ErrorKind::AddrInUse.into());
+            };
+
+            if !locks.insert(block_id) {
+                return Err(ErrorKind::PermissionDenied.into());
+            }
+        }
+        Ok(BlockLock {
+            locked_id: block_id,
+            locks: self.block_locks.clone(),
         })
     }
 
     pub fn read_raw_4k_block(&mut self, block_id: u32) -> Result<[u8; 4096], Error> {
         let offset = block_id * self.superblock.get_block_size();
-        debug!("seeking to offset {offset} for block id {block_id}");
+        debug!("seeking to offset {offset} for block id read {block_id}");
         self.disk.seek(SeekFrom::Start(offset as u64))?;
         let mut block: [u8; 4096] = [0; 4096];
         self.disk.read_exact_into(4096, &mut block.as_mut_slice())?;
@@ -183,16 +199,23 @@ impl<T: Bits + Seek> FSInner<T> {
             block: self.read_raw_4k_block(block_id)?,
         })
     }
-}
 
-impl<T: Bits + MutBits + Seek> FSInner<T> {
-    pub fn open_rw(mut stream: T) -> Result<FSInner<T>, Error> {
-        stream.seek(SeekFrom::Start(0x400))?;
-        let superblock = Superblock::parse_from(&mut stream)?;
-        Ok(Self {
-            disk: Box::new(stream),
-            superblock,
-            block_group_table: None,
-        })
+    pub fn write_raw_4k_block(&mut self, block_id: u32, blk: &[u8; 4096]) -> Result<(), Error> {
+        let offset = block_id * self.superblock.get_block_size();
+        debug!("seeking to offset {offset} for block id write {block_id}");
+        self.disk.seek(SeekFrom::Start(offset as u64))?;
+        self.disk.write_all_bytes(blk)?;
+        Ok(())
+    }
+}
+pub struct BlockLock {
+    locked_id: u32,
+    locks: Rc<RefCell<BTreeSet<u32>>>,
+}
+impl Drop for BlockLock {
+    fn drop(&mut self) {
+        if let Ok(mut locks) = self.locks.try_borrow_mut() {
+            locks.remove(&self.locked_id);
+        }
     }
 }
