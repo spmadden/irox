@@ -1,0 +1,317 @@
+===Control code chart<span class="anchor" id="ASCII control code chart"></span>===
+{| class="wikitable sortable" style="text-align: center"
+|-
+! rowspan="2" | [[Binary numeral system|Binary]] !! rowspan="2" | [[Octal|Oct]] !! rowspan="2" | [[Decimal|Dec]] !! rowspan="2" class=unsortable | [[Hexadecimal|Hex]] !! colspan="3" | Abbreviation !! rowspan="2" class=unsortable | Unicode [[Control Pictures]]{{Efn|The Unicode characters from the "Control Pictures" area U+2400 to U+2421 reserved for representing control characters when it is necessary to print or display them rather than have them perform their intended function. Some browsers may not display these properly.}} !! rowspan="2" | [[Caret notation]]{{Efn|Caret notation is often used to represent control characters on a terminal. On most text terminals, holding down the {{key press|[[Control key|Ctrl]]}} key while typing the second character will type the control character. Sometimes the shift key is not needed, for instance <code>^@</code> may be typable with just Ctrl+2 or Ctrl+Space.}} !! rowspan="2" | [[Escape sequences in C|C escape sequence]]{{Efn|Character escape sequences in C programming language and many other languages influenced by it, such as [[Java (programming language)|Java]] and [[Perl]] (though not all implementations necessarily support all escape sequences).}} !! rowspan="2" | Name (1967)
+|-
+! 1963 !! 1965 !! 1967
+|-
+| 000 0000 || style="background:lightblue;" | 000 || style="background:#CFF;" | 0 || style="background:lightblue;" | 00
+|NULL||colspan=2|NUL|| style="font-size:large;" | ␀ || {{tt|^@}} || {{tt|\0}} {{Efn| Entering any Single-Byte character is supported by escaping its octal value. However, because of the role of NULL in [[Null-terminated string|C-strings]], this case see particular use.}} || style="text-align:left;" | [[Null character|Null]]
+|-
+| 000 0001 || style="background:lightblue;" | 001 || style="background:#CFF;" | 1 || style="background:lightblue;" | 01
+|SOM||colspan=2|SOH|| style="font-size:large;" | ␁ || {{tt|^A}} || || style="text-align:left;" | [[Start of Heading]]
+|-
+| 000 0010 || style="background:lightblue;" | 002 || style="background:#CFF;" | 2 || style="background:lightblue;" | 02
+|EOA||colspan=2|STX|| style="font-size:large;" | ␂ || {{tt|^B}} || || style="text-align:left;" | [[Start of Text]]
+|-
+| 000 0011 || style="background:lightblue;" | 003 || style="background:#CFF;" | 3 || style="background:lightblue;" | 03
+|EOM||colspan=2|ETX|| style="font-size:large;" | ␃ || {{tt|^C}} || || style="text-align:left;" | [[End-of-Text character|End of Text]]
+|-
+| 000 0100 || style="background:lightblue;" | 004 || style="background:#CFF;" | 4 || style="background:lightblue;" | 04
+<!-- Please note that the character below, U+2404, is correct. If you are seeing it as "ENQ", please upgrade your fonts as the one you have is buggy. -->
+|colspan=3|EOT|| style="font-size:large;" | ␄ || {{tt|^D}} || || style="text-align:left;" | [[End-of-Transmission character|End of Transmission]]
+|-
+| 000 0101 || style="background:lightblue;" | 005 || style="background:#CFF;" | 5 || style="background:lightblue;" | 05
+<!-- Please note that the character below, U+2405, is correct. If you are seeing it as "EOT", please upgrade your fonts as the one you have is buggy. -->
+|WRU||colspan=2|ENQ|| style="font-size:large;" | ␅ || {{tt|^E}} || || style="text-align:left;" | [[Enquiry character|Enquiry]]
+|-
+| 000 0110 || style="background:lightblue;" | 006 || style="background:#CFF;" | 6 || style="background:lightblue;" | 06
+|RU||colspan=2|ACK|| style="font-size:large;" | ␆ || {{tt|^F}} || || style="text-align:left;" | [[Acknowledge character|Acknowledgement]]
+|-
+| 000 0111 || style="background:lightblue;" | 007 || style="background:#CFF;" | 7 || style="background:lightblue;" | 07
+|BELL||colspan=2|BEL|| style="font-size:large;" | ␇ || {{tt|^G}} || {{tt|\a}} || style="text-align:left;" | [[Bell character|Bell]]
+|-
+| 000 1000 || style="background:lightblue;" | 010 || style="background:#CFF;" | 8 || style="background:lightblue;" | 08
+|FE0||colspan=2|BS|| style="font-size:large;" | ␈ || {{tt|^H}} || {{tt|\b}} || style="text-align:left;" | [[Backspace]]{{Efn|The [[Backspace]] character can also be entered by pressing the {{key press|Backspace}} key on some systems.}}{{Efn|name="bsp del mismatch"}}
+|-
+| 000 1001 || style="background:lightblue;" | 011 || style="background:#CFF;" | 9 || style="background:lightblue;" | 09
+|HT/SK||colspan=2|HT|| style="font-size:large;" | ␉ || {{tt|^I}} || {{tt|\t}} || style="text-align:left;" | [[Horizontal Tab]]{{Efn|The [[Tab character]] can also be entered by pressing the {{key press|Tab}} key on most systems.}}
+|-
+| 000 1010 || style="background:lightblue;" | 012 || style="background:#CFF;" | 10 || style="background:lightblue;" | 0A
+|colspan=3|LF|| style="font-size:large;" | ␊ || {{tt|^J}} || {{tt|\n}} || style="text-align:left;" | [[Line Feed]]
+|-
+| 000 1011 || style="background:lightblue;" | 013 || style="background:#CFF;" | 11 || style="background:lightblue;" | 0B
+|VTAB||colspan=2|VT|| style="font-size:large;" | ␋ || {{tt|^K}} || {{tt|\v}} || style="text-align:left;" | [[Vertical Tab]]
+|-
+| 000 1100 || style="background:lightblue;" | 014 || style="background:#CFF;" | 12 || style="background:lightblue;" | 0C
+|colspan=3|FF|| style="font-size:large;" | ␌ || {{tt|^L}} || {{tt|\f}} || style="text-align:left;" | [[Form Feed]]
+|-
+| 000 1101 || style="background:lightblue;" | 015 || style="background:#CFF;" | 13 || style="background:lightblue;" | 0D
+|colspan=3|CR|| style="font-size:large;" | ␍ || {{tt|^M}} || {{tt|\r}} || style="text-align:left;" | [[Carriage Return]]{{Efn|The [[Carriage Return]] character can also be entered by pressing the {{key press|Enter}} or {{key press|Return}} key on most systems.}}
+|-
+| 000 1110 || style="background:lightblue;" | 016 || style="background:#CFF;" | 14 || style="background:lightblue;" | 0E
+|colspan=3|SO|| style="font-size:large;" | ␎ || {{tt|^N}} || || style="text-align:left;" | [[Shift Out]]
+|-
+| 000 1111 || style="background:lightblue;" | 017 || style="background:#CFF;" | 15 || style="background:lightblue;" | 0F
+|colspan=3|SI|| style="font-size:large;" | ␏ || {{tt|^O}} || || style="text-align:left;" | [[Shift In]]
+|-
+| 001 0000 || style="background:lightblue;" | 020 || style="background:#CFF;" | 16 || style="background:lightblue;" | 10
+|DC0||colspan=2|DLE|| style="font-size:large;" | ␐ || {{tt|^P}} || || style="text-align:left;" | [[Data Link Escape]]
+|-
+| 001 0001 || style="background:lightblue;" | 021 || style="background:#CFF;" | 17 || style="background:lightblue;" | 11
+|colspan=3|DC1|| style="font-size:large;" | ␑ || {{tt|^Q}} || || style="text-align:left;" | [[Device Control 1]] (often [[XON]])
+|-
+| 001 0010 || style="background:lightblue;" | 022 || style="background:#CFF;" | 18 || style="background:lightblue;" | 12
+|colspan=3|DC2|| style="font-size:large;" | ␒ || {{tt|^R}} || || style="text-align:left;" | [[Device Control 2]]
+|-
+| 001 0011 || style="background:lightblue;" | 023 || style="background:#CFF;" | 19 || style="background:lightblue;" | 13
+|colspan=3|DC3|| style="font-size:large;" | ␓ || {{tt|^S}} || || style="text-align:left;" | [[Device Control 3]] (often [[XOFF]])
+|-
+| 001 0100 || style="background:lightblue;" | 024 || style="background:#CFF;" | 20 || style="background:lightblue;" | 14
+|colspan=3|DC4|| style="font-size:large;" | ␔ || {{tt|^T}} || || style="text-align:left;" | [[Device Control 4]]
+|-
+| 001 0101 || style="background:lightblue;" | 025 || style="background:#CFF;" | 21 || style="background:lightblue;" | 15
+|ERR||colspan=2|NAK|| style="font-size:large;" | ␕ || {{tt|^U}} || || style="text-align:left;" | [[Negative-acknowledge character|Negative Acknowledgement]]
+|-
+| 001 0110 || style="background:lightblue;" | 026 || style="background:#CFF;" | 22 || style="background:lightblue;" | 16
+|SYNC||colspan=2|SYN|| style="font-size:large;" | ␖ || {{tt|^V}} || || style="text-align:left;" | [[Synchronous Idle]]
+|-
+| 001 0111 || style="background:lightblue;" | 027 || style="background:#CFF;" | 23 || style="background:lightblue;" | 17
+|LEM||colspan=2|ETB|| style="font-size:large;" | ␗ || {{tt|^W}} || || style="text-align:left;" | [[End-of-Transmission-Block character|End of Transmission Block]]
+|-
+| 001 1000 || style="background:lightblue;" | 030 || style="background:#CFF;" | 24 || style="background:lightblue;" | 18
+|S0||colspan=2|CAN|| style="font-size:large;" | ␘ || {{tt|^X}} || || style="text-align:left;" | [[Cancel character|Cancel]]
+|-
+| 001 1001 || style="background:lightblue;" | 031 || style="background:#CFF;" | 25 || style="background:lightblue;" | 19
+|S1||colspan=2|EM|| style="font-size:large;" | ␙ || {{tt|^Y}} || || style="text-align:left;" | [[End of Medium]]
+|-
+| 001 1010 || style="background:lightblue;" | 032 || style="background:#CFF;" | 26 || style="background:lightblue;" | 1A
+|S2||SS||SUB|| style="font-size:large;" | ␚ || {{tt|^Z}} || || style="text-align:left;" | [[Substitute character|Substitute]]
+|-
+| 001 1011 || style="background:lightblue;" | 033 || style="background:#CFF;" | 27 || style="background:lightblue;" | 1B
+|S3||colspan=2|ESC|| style="font-size:large;" | ␛ || {{tt|^<nowiki>[</nowiki>}} || {{tt|\e}}{{Efn|The {{tt|\e}} [[escape sequence]] is not part of [[ISO C]] and many other language specifications. However, it is understood by several compilers, including [[GCC (software)|GCC]].}} || style="text-align:left;" | [[Escape character|Escape]]{{Efn|The [[Escape character]] can also be entered by pressing the {{key press|Esc}} key on some systems.}}
+|-
+| 001 1100 || style="background:lightblue;" | 034 || style="background:#CFF;" | 28 || style="background:lightblue;" | 1C
+|S4||colspan=2|FS|| style="font-size:large;" | ␜ || {{tt|^\}} || || style="text-align:left;" | [[File Separator]]
+|-
+| 001 1101 || style="background:lightblue;" | 035 || style="background:#CFF;" | 29 || style="background:lightblue;" | 1D
+|S5||colspan=2|GS|| style="font-size:large;" | ␝ || {{tt|^<nowiki>]</nowiki>}} || || style="text-align:left;" | [[Group Separator]]
+|-
+| 001 1110 || style="background:lightblue;" | 036 || style="background:#CFF;" | 30 || style="background:lightblue;" | 1E
+|S6||colspan=2|RS|| style="font-size:large;" | ␞ || {{tt|^^}}{{Efn|^^ means {{key press|Ctrl|^}} (pressing the "Ctrl" and [[caret (computing)|caret]] keys).}} || || style="text-align:left;" | [[Record Separator]]
+|-
+| 001 1111 || style="background:lightblue;" | 037 || style="background:#CFF;" | 31 || style="background:lightblue;" | 1F
+|S7||colspan=2|US|| style="font-size:large;" | ␟ || {{tt|^_}} || || style="text-align:left;" | [[Unit Separator]]
+|-
+| 111 1111 || style="background:lightblue;" | 177 || style="background:#CFF;" | 127 || style="background:lightblue;" | 7F
+|colspan=3|DEL|| style="font-size:large;" | ␡ || {{tt|^?}} || || style="text-align:left;" | [[Delete character|Delete]]{{Efn|The [[Delete character]] can sometimes be entered by pressing the {{key press|Backspace}} key on some systems.}}{{Efn|name="bsp del mismatch"|The ambiguity of [[Backspace]] is due to early terminals designed assuming the main use of the keyboard would be to manually punch paper tape while not connected to a computer. To delete the previous character, one had to back up the paper tape punch, which for mechanical and simplicity reasons was a button on the punch itself and not the keyboard, then type the rubout character. They therefore placed a key producing rubout at the location used on typewriters for backspace. When systems used these terminals and provided command-line editing, they had to use the "rubout" code to perform a backspace, and often did not interpret the backspace character (they might echo "{{tt|^H}}" for backspace). Other terminals not designed for paper tape made the key at this location produce Backspace, and systems designed for these used that character to back up. Since the delete code often produced a backspace effect, this also forced terminal manufacturers to make any {{key press|Delete}} key produce something other than the Delete character.}}
+|}
+
+Other representations might be used by specialist equipment, for example [[ISO 2047]] graphics or [[hexadecimal]] numbers.
+
+===<span class="anchor" id="ASCII-printable-characters"></span>Printable characters===
+<!-- Anchor linked to from redirects -->
+Codes 20<sub>hex</sub> to 7E<sub>hex</sub>, known as the printable characters, represent letters, digits, [[punctuation mark]]s, and a few miscellaneous symbols. There are 95 printable characters in total.{{efn|Printed out, the characters are: {{Pre|<nowiki> !"#$%&'()*+,-./0123456789:;<=>?</nowiki>&ZeroWidthSpace;<nowiki>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_</nowiki>&ZeroWidthSpace;<nowiki>`abcdefghijklmnopqrstuvwxyz{|}~</nowiki>}}}}
+
+Code 20<sub>hex</sub>, the "space" character, denotes the space between words, as produced by the space bar of a keyboard. Since the space character is considered an invisible graphic (rather than a control character)<ref name="Mackenzie_1980"/>{{rp|223}}<ref name="RFC-20_1968" /> it is listed in the table below instead of in the previous section.
+
+Code 7F<sub>hex</sub> corresponds to the non-printable "delete" (DEL) control character and is therefore omitted from this chart; it is covered in the previous section's chart.  Earlier versions of ASCII used the up arrow instead of the [[caret (computing)|caret]] (5E<sub>hex</sub>) and the left arrow instead of the underscore (5F<sub>hex</sub>).<ref name="ASCII-1963"/><ref name="Haynes_2015">{{cite web|title=First-Hand: Chad is Our Most Important Product: An Engineer's Memory of Teletype Corporation |author-first=Jim |publisher=Engineering and Technology History Wiki (ETHW) |date=2015-01-13 |author-last=Haynes |url=https://ethw.org/First-Hand:Chad_is_Our_Most_Important_Product:_An_Engineer's_Memory_of_Teletype_Corporation |access-date=2023-02-14 |quote=There was the change from 1961 ASCII to 1968 ASCII. Some computer languages used characters in 1961 ASCII such as up arrow and left arrow. These characters disappeared from 1968 ASCII. We worked with Fred Mocking, who by now was in Sales at [[Teletype Corporation|Teletype]], on a type cylinder that would compromise the changing characters so that the meanings of 1961 ASCII were not totally lost. The underscore character was made rather wedge-shaped so it could also serve as a left arrow.}}</ref>
+
+<!-- To be more useful this list should be expanded to include the character names and reflect the various revisions of the ASCII standard -->
+{| class="wikitable sortable" style="text-align: center;"
+|-
+! rowspan="2" | [[Binary numeral system|Binary]] !! rowspan="2" | [[Octal|Oct]] !! rowspan="2" | [[Decimal|Dec]] !! rowspan="2" class=unsortable | [[Hexadecimal|Hex]] !! colspan="3"|Glyph
+|-
+! 1963 !! 1965 !! 1967
+|-
+|010 0000 ||style="background:lightblue;"| 040 || style="background:#cff;"| 32 ||style="background:lightblue;"| 20 ||colspan=3|&nbsp;[[space (punctuation)|space]]
+|-
+|010 0001 ||style="background:lightblue;"| 041 || style="background:#cff;"| 33 ||style="background:lightblue;"| 21 ||colspan=3|<span class="nounderlines">[[Exclamation mark|!]]</span>
+|-
+|010 0010 ||style="background:lightblue;"| 042 || style="background:#cff;"| 34 ||style="background:lightblue;"| 22 ||colspan=3|<span class="nounderlines">[[Quotation mark|"]]</span>
+|-
+|010 0011 ||style="background:lightblue;"| 043 || style="background:#cff;"| 35 ||style="background:lightblue;"| 23 ||colspan=3|<span class="nounderlines">[[Number sign|#]]</span>
+|-
+|010 0100 ||style="background:lightblue;"| 044 || style="background:#cff;"| 36 ||style="background:lightblue;"| 24 ||colspan=3|<span class="nounderlines">[[Dollar sign|$]]</span>
+|-
+|010 0101 ||style="background:lightblue;"| 045 || style="background:#cff;"| 37 ||style="background:lightblue;"| 25 ||colspan=3|<span class="nounderlines">[[Percent sign|%]]</span>
+|-
+|010 0110 ||style="background:lightblue;"| 046 || style="background:#cff;"| 38 ||style="background:lightblue;"| 26 ||colspan=3|<span class="nounderlines">[[Ampersand|&]]</span>
+|-
+|010 0111 ||style="background:lightblue;"| 047 || style="background:#cff;"| 39 ||style="background:lightblue;"| 27 ||colspan=3|<span class="nounderlines">[[Apostrophe|']]</span>
+|-
+|010 1000 ||style="background:lightblue;"| 050 || style="background:#cff;"| 40 ||style="background:lightblue;"| 28 ||colspan=3|<span class="nounderlines">[[Left parenthesis|(]]</span>
+|-
+|010 1001 ||style="background:lightblue;"| 051 || style="background:#cff;"| 41 ||style="background:lightblue;"| 29 ||colspan=3|<span class="nounderlines">[[Right parenthesis|)]]</span>
+|-
+|010 1010 ||style="background:lightblue;"| 052 || style="background:#cff;"| 42 ||style="background:lightblue;"| 2A ||colspan=3|<span class="nounderlines">[[Asterisk|*]]</span>
+|-
+|010 1011 ||style="background:lightblue;"| 053 || style="background:#cff;"| 43 ||style="background:lightblue;"| 2B ||colspan=3|<span class="nounderlines">[[Plus sign|+]]</span>
+|-
+|010 1100 ||style="background:lightblue;"| 054 || style="background:#cff;"| 44 ||style="background:lightblue;"| 2C ||colspan=3|<span class="nounderlines">[[Comma|,]]</span>
+|-
+|010 1101 ||style="background:lightblue;"| 055 || style="background:#cff;"| 45 ||style="background:lightblue;"| 2D ||colspan=3|<span class="nounderlines">[[Hyphen-minus|-]]</span>
+|-
+|010 1110 ||style="background:lightblue;"| 056 || style="background:#cff;"| 46 ||style="background:lightblue;"| 2E ||colspan=3|<span class="nounderlines">[[Full stop|.]]</span>
+|-
+|010 1111 ||style="background:lightblue;"| 057 || style="background:#cff;"| 47 ||style="background:lightblue;"| 2F ||colspan=3|<span class="nounderlines">[[Slash (punctuation)|/]]</span>
+|-
+|011 0000 ||style="background:lightblue;"| 060 || style="background:#cff;"| 48 ||style="background:lightblue;"| 30 ||colspan=3|<span class="nounderlines">[[0 (number)|0]]</span>
+|-
+|011 0001 ||style="background:lightblue;"| 061 || style="background:#cff;"| 49 ||style="background:lightblue;"| 31 ||colspan=3|<span class="nounderlines">[[1 (number)|1]]</span>
+|-
+|011 0010 ||style="background:lightblue;"| 062 || style="background:#cff;"| 50 ||style="background:lightblue;"| 32 ||colspan=3|<span class="nounderlines">[[2 (number)|2]]</span>
+|-
+|011 0011 ||style="background:lightblue;"| 063 || style="background:#cff;"| 51 ||style="background:lightblue;"| 33 ||colspan=3|<span class="nounderlines">[[3 (number)|3]]</span>
+|-
+|011 0100 ||style="background:lightblue;"| 064 || style="background:#cff;"| 52 ||style="background:lightblue;"| 34 ||colspan=3|<span class="nounderlines">[[4 (number)|4]]</span>
+|-
+|011 0101 ||style="background:lightblue;"| 065 || style="background:#cff;"| 53 ||style="background:lightblue;"| 35 ||colspan=3|<span class="nounderlines">[[5 (number)|5]]</span>
+|-
+|011 0110 ||style="background:lightblue;"| 066 || style="background:#cff;"| 54 ||style="background:lightblue;"| 36 ||colspan=3|<span class="nounderlines">[[6 (number)|6]]</span>
+|-
+|011 0111 ||style="background:lightblue;"| 067 || style="background:#cff;"| 55 ||style="background:lightblue;"| 37 ||colspan=3|<span class="nounderlines">[[7 (number)|7]]</span>
+|-
+|011 1000 ||style="background:lightblue;"| 070 || style="background:#cff;"| 56 ||style="background:lightblue;"| 38 ||colspan=3|<span class="nounderlines">[[8 (number)|8]]</span>
+|-
+|011 1001 ||style="background:lightblue;"| 071 || style="background:#cff;"| 57 ||style="background:lightblue;"| 39 ||colspan=3|<span class="nounderlines">[[9 (number)|9]]</span>
+|-
+|011 1010 ||style="background:lightblue;"| 072 || style="background:#cff;"| 58 ||style="background:lightblue;"| 3A ||colspan=3|<span class="nounderlines">[[Colon (punctuation)|:]]</span>
+|-
+|011 1011 ||style="background:lightblue;"| 073 || style="background:#cff;"| 59 ||style="background:lightblue;"| 3B ||colspan=3|<span class="nounderlines">[[Semicolon|;]]</span>
+|-
+|011 1100 ||style="background:lightblue;"| 074 || style="background:#cff;"| 60 ||style="background:lightblue;"| 3C ||colspan=3|<span class="nounderlines">[[Less-than sign|<]]</span>
+|-
+|011 1101 ||style="background:lightblue;"| 075 || style="background:#cff;"| 61 ||style="background:lightblue;"| 3D ||colspan=3|<span class="nounderlines">[[Equals sign|=]]</span>
+|-
+|011 1110 ||style="background:lightblue;"| 076 || style="background:#cff;"| 62 ||style="background:lightblue;"| 3E ||colspan=3|<span class="nounderlines">[[Greater-than sign|>]]</span>
+|-
+|011 1111 ||style="background:lightblue;"| 077 || style="background:#cff;"| 63 ||style="background:lightblue;"| 3F ||colspan=3|<span class="nounderlines">[[Question mark|?]]</span>
+|-
+|100 0000 ||style="background:lightblue;"| 100 || style="background:#cff;"| 64 ||style="background:lightblue;"| 40 || <span class="nounderlines">[[At sign|@]]</span> || <span class="nounderlines">[[`]]</span> || <span class="nounderlines">[[At sign|@]]</span>
+|-
+|100 0001 ||style="background:lightblue;"| 101 || style="background:#cff;"| 65 ||style="background:lightblue;"| 41 ||colspan=3|<span class="nounderlines">[[A]]</span>
+|-
+|100 0010 ||style="background:lightblue;"| 102 || style="background:#cff;"| 66 ||style="background:lightblue;"| 42 ||colspan=3|<span class="nounderlines">[[B]]</span>
+|-
+|100 0011 ||style="background:lightblue;"| 103 || style="background:#cff;"| 67 ||style="background:lightblue;"| 43 ||colspan=3|<span class="nounderlines">[[C]]</span>
+|-
+|100 0100 ||style="background:lightblue;"| 104 || style="background:#cff;"| 68 ||style="background:lightblue;"| 44 ||colspan=3|<span class="nounderlines">[[D]]</span>
+|-
+|100 0101 ||style="background:lightblue;"| 105 || style="background:#cff;"| 69 ||style="background:lightblue;"| 45 ||colspan=3|<span class="nounderlines">[[E]]</span>
+|-
+|100 0110 ||style="background:lightblue;"| 106 || style="background:#cff;"| 70 ||style="background:lightblue;"| 46 ||colspan=3|<span class="nounderlines">[[F]]</span>
+|-
+|100 0111 ||style="background:lightblue;"| 107 || style="background:#cff;"| 71 ||style="background:lightblue;"| 47 ||colspan=3|<span class="nounderlines">[[G]]</span>
+|-
+|100 1000 ||style="background:lightblue;"| 110 || style="background:#cff;"| 72 ||style="background:lightblue;"| 48 ||colspan=3|<span class="nounderlines">[[H]]</span>
+|-
+|100 1001 ||style="background:lightblue;"| 111 || style="background:#cff;"| 73 ||style="background:lightblue;"| 49 ||colspan=3|<span class="nounderlines">[[I]]</span>
+|-
+|100 1010 ||style="background:lightblue;"| 112 || style="background:#cff;"| 74 ||style="background:lightblue;"| 4A ||colspan=3|<span class="nounderlines">[[J]]</span>
+|-
+|100 1011 ||style="background:lightblue;"| 113 || style="background:#cff;"| 75 ||style="background:lightblue;"| 4B ||colspan=3|<span class="nounderlines">[[K]]</span>
+|-
+|100 1100 ||style="background:lightblue;"| 114 || style="background:#cff;"| 76 ||style="background:lightblue;"| 4C ||colspan=3|<span class="nounderlines">[[L]]</span>
+|-
+|100 1101 ||style="background:lightblue;"| 115 || style="background:#cff;"| 77 ||style="background:lightblue;"| 4D ||colspan=3|<span class="nounderlines">[[M]]</span>
+|-
+|100 1110 ||style="background:lightblue;"| 116 || style="background:#cff;"| 78 ||style="background:lightblue;"| 4E ||colspan=3|<span class="nounderlines">[[N]]</span>
+|-
+|100 1111 ||style="background:lightblue;"| 117 || style="background:#cff;"| 79 ||style="background:lightblue;"| 4F ||colspan=3|<span class="nounderlines">[[O]]</span>
+|-
+|101 0000 ||style="background:lightblue;"| 120 || style="background:#cff;"| 80 ||style="background:lightblue;"| 50 ||colspan=3|<span class="nounderlines">[[P]]</span>
+|-
+|101 0001 ||style="background:lightblue;"| 121 || style="background:#cff;"| 81 ||style="background:lightblue;"| 51 ||colspan=3|<span class="nounderlines">[[Q]]</span>
+|-
+|101 0010 ||style="background:lightblue;"| 122 || style="background:#cff;"| 82 ||style="background:lightblue;"| 52 ||colspan=3|<span class="nounderlines">[[R]]</span>
+|-
+|101 0011 ||style="background:lightblue;"| 123 || style="background:#cff;"| 83 ||style="background:lightblue;"| 53 ||colspan=3|<span class="nounderlines">[[S]]</span>
+|-
+|101 0100 ||style="background:lightblue;"| 124 || style="background:#cff;"| 84 ||style="background:lightblue;"| 54 ||colspan=3|<span class="nounderlines">[[T]]</span>
+|-
+|101 0101 ||style="background:lightblue;"| 125 || style="background:#cff;"| 85 ||style="background:lightblue;"| 55 ||colspan=3|<span class="nounderlines">[[U]]</span>
+|-
+|101 0110 ||style="background:lightblue;"| 126 || style="background:#cff;"| 86 ||style="background:lightblue;"| 56 ||colspan=3|<span class="nounderlines">[[V]]</span>
+|-
+|101 0111 ||style="background:lightblue;"| 127 || style="background:#cff;"| 87 ||style="background:lightblue;"| 57 ||colspan=3|<span class="nounderlines">[[W]]</span>
+|-
+|101 1000 ||style="background:lightblue;"| 130 || style="background:#cff;"| 88 ||style="background:lightblue;"| 58 ||colspan=3|<span class="nounderlines">[[X]]</span>
+|-
+|101 1001 ||style="background:lightblue;"| 131 || style="background:#cff;"| 89 ||style="background:lightblue;"| 59 ||colspan=3|<span class="nounderlines">[[Y]]</span>
+|-
+|101 1010 ||style="background:lightblue;"| 132 || style="background:#cff;"| 90 ||style="background:lightblue;"| 5A ||colspan=3|<span class="nounderlines">[[Z]]</span>
+|-
+|101 1011 ||style="background:lightblue;"| 133 || style="background:#cff;"| 91 ||style="background:lightblue;"| 5B ||colspan=3|<span class="nounderlines">[[Left square bracket|<nowiki>[</nowiki>]]</span>
+|-
+|101 1100 ||style="background:lightblue;"| 134 || style="background:#cff;"| 92 ||style="background:lightblue;"| 5C || <span class="nounderlines">[[Backslash|\]]</span> || <span class="nounderlines">[[Tilde|~]]</span> || <span class="nounderlines">[[Backslash|\]]</span>
+|-
+|101 1101 ||style="background:lightblue;"| 135 || style="background:#cff;"| 93 ||style="background:lightblue;"| 5D ||colspan=3|<span class="nounderlines">[[Right square bracket|<nowiki>]</nowiki>]]</span>
+|-
+|101 1110 ||style="background:lightblue;"| 136 || style="background:#cff;"| 94 ||style="background:lightblue;"| 5E || <span class="nounderlines">[[Up arrow (symbol)|↑]]</span> ||colspan=2|<span class="nounderlines">[[Caret (computing)|^]]</span>
+|-
+|101 1111 ||style="background:lightblue;"| 137 || style="background:#cff;"| 95 ||style="background:lightblue;"| 5F || <span class="nounderlines">[[Left arrow (symbol)|←]]</span> ||colspan=2|<span class="nounderlines">[[Underscore|_]]</span>
+|-
+|110 0000 ||style="background:lightblue;"| 140 || style="background:#cff;"| 96 ||style="background:lightblue;"| 60 || || <span class="nounderlines">[[At sign|@]]</span> || <span class="nounderlines">[[`]]</span>
+|-
+|110 0001 ||style="background:lightblue;"| 141 || style="background:#cff;"| 97 ||style="background:lightblue;"| 61 || ||colspan=2|<span class="nounderlines">[[a]]</span>
+|-
+|110 0010 ||style="background:lightblue;"| 142 || style="background:#cff;"| 98 ||style="background:lightblue;"| 62 || ||colspan=2|<span class="nounderlines">[[b]]</span>
+|-
+|110 0011 ||style="background:lightblue;"| 143 || style="background:#cff;"| 99 ||style="background:lightblue;"| 63 || ||colspan=2|<span class="nounderlines">[[c]]</span>
+|-
+|110 0100 ||style="background:lightblue;"| 144 || style="background:#cff;"| 100 ||style="background:lightblue;"| 64 || ||colspan=2|<span class="nounderlines">[[d]]</span>
+|-
+|110 0101 ||style="background:lightblue;"| 145 || style="background:#cff;"| 101 ||style="background:lightblue;"| 65 || ||colspan=2|<span class="nounderlines">[[e]]</span>
+|-
+|110 0110 ||style="background:lightblue;"| 146 || style="background:#cff;"| 102 ||style="background:lightblue;"| 66 || ||colspan=2|<span class="nounderlines">[[f]]</span>
+|-
+|110 0111 ||style="background:lightblue;"| 147 || style="background:#cff;"| 103 ||style="background:lightblue;"| 67 || ||colspan=2|<span class="nounderlines">[[g]]</span>
+|-
+|110 1000 ||style="background:lightblue;"| 150 || style="background:#cff;"| 104 ||style="background:lightblue;"| 68 || ||colspan=2|<span class="nounderlines">[[h]]</span>
+|-
+|110 1001 ||style="background:lightblue;"| 151 || style="background:#cff;"| 105 ||style="background:lightblue;"| 69 || ||colspan=2|<span class="nounderlines">[[i]]</span>
+|-
+|110 1010 ||style="background:lightblue;"| 152 || style="background:#cff;"| 106 ||style="background:lightblue;"| 6A || ||colspan=2|<span class="nounderlines">[[j]]</span>
+|-
+|110 1011 ||style="background:lightblue;"| 153 || style="background:#cff;"| 107 ||style="background:lightblue;"| 6B || ||colspan=2|<span class="nounderlines">[[k]]</span>
+|-
+|110 1100 ||style="background:lightblue;"| 154 || style="background:#cff;"| 108 ||style="background:lightblue;"| 6C || ||colspan=2|<span class="nounderlines">[[l]]</span>
+|-
+|110 1101 ||style="background:lightblue;"| 155 || style="background:#cff;"| 109 ||style="background:lightblue;"| 6D || ||colspan=2|<span class="nounderlines">[[m]]</span>
+|-
+|110 1110 ||style="background:lightblue;"| 156 || style="background:#cff;"| 110 ||style="background:lightblue;"| 6E || ||colspan=2|<span class="nounderlines">[[n]]</span>
+|-
+|110 1111 ||style="background:lightblue;"| 157 || style="background:#cff;"| 111 ||style="background:lightblue;"| 6F || ||colspan=2|<span class="nounderlines">[[o]]</span>
+|-
+|111 0000 ||style="background:lightblue;"| 160 || style="background:#cff;"| 112 ||style="background:lightblue;"| 70 || ||colspan=2|<span class="nounderlines">[[p]]</span>
+|-
+|111 0001 ||style="background:lightblue;"| 161 || style="background:#cff;"| 113 ||style="background:lightblue;"| 71 || ||colspan=2|<span class="nounderlines">[[q]]</span>
+|-
+|111 0010 ||style="background:lightblue;"| 162 || style="background:#cff;"| 114 ||style="background:lightblue;"| 72 || ||colspan=2|<span class="nounderlines">[[r]]</span>
+|-
+|111 0011 ||style="background:lightblue;"| 163 || style="background:#cff;"| 115 ||style="background:lightblue;"| 73 || ||colspan=2|<span class="nounderlines">[[s]]</span>
+|-
+|111 0100 ||style="background:lightblue;"| 164 || style="background:#cff;"| 116 ||style="background:lightblue;"| 74 || ||colspan=2|<span class="nounderlines">[[t]]</span>
+|-
+|111 0101 ||style="background:lightblue;"| 165 || style="background:#cff;"| 117 ||style="background:lightblue;"| 75 || ||colspan=2|<span class="nounderlines">[[u]]</span>
+|-
+|111 0110 ||style="background:lightblue;"| 166 || style="background:#cff;"| 118 ||style="background:lightblue;"| 76 || ||colspan=2|<span class="nounderlines">[[v]]</span>
+|-
+|111 0111 ||style="background:lightblue;"| 167 || style="background:#cff;"| 119 ||style="background:lightblue;"| 77 || ||colspan=2|<span class="nounderlines">[[w]]</span>
+|-
+|111 1000 ||style="background:lightblue;"| 170 || style="background:#cff;"| 120 ||style="background:lightblue;"| 78 || ||colspan=2|<span class="nounderlines">[[x]]</span>
+|-
+|111 1001 ||style="background:lightblue;"| 171 || style="background:#cff;"| 121 ||style="background:lightblue;"| 79 || ||colspan=2|<span class="nounderlines">[[y]]</span>
+|-
+|111 1010 ||style="background:lightblue;"| 172 || style="background:#cff;"| 122 ||style="background:lightblue;"| 7A || ||colspan=2|<span class="nounderlines">[[z]]</span>
+|-
+|111 1011 ||style="background:lightblue;"| 173 || style="background:#cff;"| 123 ||style="background:lightblue;"| 7B || ||colspan=2|<span class="nounderlines">[[Left curly bracket|{]]</span>
+|-
+|111 1100 ||style="background:lightblue;"| 174 || style="background:#cff;"| 124 ||style="background:lightblue;"| 7C || [[Acknowledge character|ACK]] || <span class="nounderlines">[[Not sign|¬]]</span> || <span class="nounderlines">[[Vertical bar|<nowiki>|</nowiki>]]</span>
+|-
+|111 1101 ||style="background:lightblue;"| 175 || style="background:#cff;"| 125 ||style="background:lightblue;"| 7D || ||colspan=2|<span class="nounderlines">[[Right curly bracket|}]]</span>
+|-
+|111 1110 ||style="background:lightblue;"| 176 || style="background:#cff;"| 126 ||style="background:lightblue;"| 7E || [[Escape character|ESC]] || <span class="nounderlines">[[Vertical bar|<nowiki>|</nowiki>]]</span> || <span class="nounderlines">[[Tilde|~]]</span>
+|}
+
