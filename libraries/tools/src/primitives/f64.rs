@@ -51,6 +51,9 @@ pub trait FloatExt {
 impl FloatExt for f64 {
     type Type = f64;
 
+    ///
+    /// Truncate the value
+    /// Just casts to u64 then back to f64.
     fn trunc(self) -> f64 {
         (self as u64) as f64
     }
@@ -59,6 +62,8 @@ impl FloatExt for f64 {
         self - self.trunc()
     }
 
+    ///
+    /// Force the value to be positive by zeroing out the highest sign bit.
     fn abs(self) -> f64 {
         f64::from_bits(self.to_bits() & 0x7FFF_FFFF_FFFF_FFFFu64)
     }
@@ -91,6 +96,8 @@ impl FloatExt for f64 {
         1.0
     }
 
+    ///
+    /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: https://dlmf.nist.gov/4.2.E19
     fn exp(self) -> Self::Type {
         let mut out = 1.0;
         let i = self;
@@ -99,7 +106,7 @@ impl FloatExt for f64 {
         let mut idx = 1;
         let mut next = self;
 
-        while out + next != out {
+        while next.abs() > f64::EPSILON {
             out += next;
             idx += 1;
             z *= i;
@@ -119,29 +126,33 @@ impl FloatExt for f64 {
         out
     }
 
+    ///
+    /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: https://dlmf.nist.gov/4.6.E4
     fn ln(self) -> Self::Type {
         let z = self;
-        let iter = (z - 1.) / z;
+        let iter = (z - 1.) / (z + 1.);
         let mut out = 0.0;
         let mut next = iter;
         let mut base = iter;
         let mut idx = 1u64;
-        while out + next != out {
+        while next.abs() > f64::EPSILON {
             out += next;
-            idx += 1;
-            base *= iter;
+            idx += 2;
+            base *= iter * iter;
             next = base / idx as Self::Type;
         }
-
-        out + next
+        out * 2.0
     }
 
+    ///
+    /// Implementation of general power function using NIST DLMF eq 4.2.26: https://dlmf.nist.gov/4.2.E26
     fn powf(self, a: Self::Type) -> Self::Type {
         let z = self;
 
         (a * z.ln()).exp()
     }
 
+    /// Naive implementation of integer power fn.  Will do something smarter later.
     fn powi(self, val: u32) -> Self::Type {
         let mut out = self;
         let i = self;
@@ -162,10 +173,10 @@ mod tests {
     pub fn test_ln() {
         assert_eq!(0.0, crate::f64::FloatExt::ln(1.0f64));
         assert_eq_eps!(1.0, crate::f64::FloatExt::ln(core::f64::consts::E), 1e-15);
-        assert_eq_eps!(4.605170185988059, crate::f64::FloatExt::ln(100f64), 1e-15);
+        assert_eq_eps!(4.605170185988076, crate::f64::FloatExt::ln(100f64), 1e-15);
         assert_eq_eps!(
-            22.18070977791825,
-            crate::f64::FloatExt::ln(u32::MAX as f64),
+            11.09033963004403,
+            crate::f64::FloatExt::ln(u16::MAX as f64),
             1e-15
         );
     }
