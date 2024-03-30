@@ -74,7 +74,7 @@ Version Status
 | `irox-progress`        | ![std]         | ![alloc]    | [![progress-vsn-shield]][progress-crate] [![progress-doc-shield]][progress-doc]                             |
 | `irox-raymarine-sonar` | ![std]         | ![alloc]    | [![raymarine-sonar-vsn-shield]][raymarine-sonar-crate] [![raymarine-sonar-doc-shield]][raymarine-sonar-doc] |
 | `irox-sirf`            | ![std]         | ![alloc]    | [![sirf-vsn-shield]][sirf-crate] [![sirf-doc-shield]][sirf-doc]                                             |
-| `irox-stats`           | ![std]         | ![alloc]    | [![stats-vsn-shield]][stats-crate] [![stats-doc-shield]][stats-doc]                                         |
+| `irox-stats`           | ![no_std]      | ![alloc]    | [![stats-vsn-shield]][stats-crate] [![stats-doc-shield]][stats-doc]                                         |
 | `irox-structs`         | ![std]         | ![alloc]    | [![structs-vsn-shield]][structs-crate] [![structs-doc-shield]][structs-doc]                                 |
 | `irox-structs_derive`  | ![std]         | ![alloc]    | [![structs_derive-vsn-shield]][structs_derive-crate] [![structs_derive-doc-shield]][structs_derive-doc]     |
 | `irox-threading`       | ![std]         | ![alloc]    | [![threading-vsn-shield]][threading-crate] [![threading-doc-shield]][threading-doc]                         |

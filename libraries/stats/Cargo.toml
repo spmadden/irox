@@ -16,3 +16,4 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+irox-tools = {path = "../tools", default-features = false}

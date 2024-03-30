@@ -2,6 +2,11 @@
 // Copyright 2023 IROX Contributors
 
 #![forbid(unsafe_code)]
+#![no_std]
+
+extern crate alloc;
+
+use alloc::vec::Vec;
 
 pub use gaussian as standard;
 

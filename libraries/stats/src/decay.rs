@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::time::Duration;
+use core::f64::consts::LN_2;
+use core::time::Duration;
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct HalfLife(Duration);
@@ -42,17 +45,15 @@ impl From<DecayConstant> for MeanLifetime {
 
 impl From<DecayConstant> for HalfLife {
     fn from(value: DecayConstant) -> Self {
-        let ln2 = std::f64::consts::LN_2;
         let var = value.0.as_secs_f64();
-        HalfLife(Duration::from_secs_f64(ln2 / var))
+        HalfLife(Duration::from_secs_f64(LN_2 / var))
     }
 }
 
 impl From<MeanLifetime> for HalfLife {
     fn from(value: MeanLifetime) -> Self {
-        let ln2 = std::f64::consts::LN_2;
         let var = value.0.as_secs_f64();
-        HalfLife(Duration::from_secs_f64(var * ln2))
+        HalfLife(Duration::from_secs_f64(var * LN_2))
     }
 }
 

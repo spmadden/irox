@@ -3554,6 +3554,9 @@ dependencies = [
 [[package]]
 name = "irox-stats"
 version = "0.2.3"
+dependencies = [
+ "irox-tools",
+]
 
 [[package]]
 name = "irox-structs"

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::f64::consts::TAU;
+extern crate alloc;
+
+use alloc::vec;
+use alloc::vec::Vec;
+use core::f64::consts::TAU;
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
 
 use super::{Distribution, DistributionParams};
 

@@ -7,8 +7,12 @@
 //! Many algorithms sourced from the wonderful [DSPGuide](https://www.dspguide.com)
 //!
 
-use std::collections::vec_deque::Drain;
-use std::collections::VecDeque;
+extern crate alloc;
+
+use alloc::collections::vec_deque::Drain;
+use alloc::collections::VecDeque;
+use alloc::vec;
+use alloc::vec::Vec;
 
 ///
 /// Represents a convolving operation with streaming input data against the provided kernel.
