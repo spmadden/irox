@@ -37,6 +37,14 @@ pub trait FloatExt {
     fn floor(self) -> Self::Type;
     fn ceil(self) -> Self::Type;
     fn signum(self) -> Self::Type;
+
+    fn exp(self) -> Self::Type;
+    fn ln(self) -> Self::Type;
+
+    fn powi(self, val: u32) -> Self::Type;
+    fn powf(self, val: Self::Type) -> Self::Type;
+
+    fn sqrt(self) -> Self::Type;
 }
 
 #[cfg(not(feature = "std"))]
@@ -81,5 +89,100 @@ impl FloatExt for f64 {
             return -1.0;
         }
         1.0
+    }
+
+    fn exp(self) -> Self::Type {
+        let mut out = 1.0;
+        let i = self;
+        let mut z = self;
+        let mut exp = 1.0;
+        let mut idx = 1;
+        let mut next = self;
+
+        while out + next != out {
+            out += next;
+            idx += 1;
+            z *= i;
+            if z.is_infinite() {
+                break;
+            }
+            exp *= idx as Self::Type;
+            if exp.is_infinite() {
+                break;
+            }
+            next = z / exp;
+            if next.is_infinite() {
+                break;
+            }
+        }
+
+        out
+    }
+
+    fn ln(self) -> Self::Type {
+        let z = self;
+        let iter = (z - 1.) / z;
+        let mut out = 0.0;
+        let mut next = iter;
+        let mut base = iter;
+        let mut idx = 1u64;
+        while out + next != out {
+            out += next;
+            idx += 1;
+            base *= iter;
+            next = base / idx as Self::Type;
+        }
+
+        out + next
+    }
+
+    fn powf(self, a: Self::Type) -> Self::Type {
+        let z = self;
+
+        (a * z.ln()).exp()
+    }
+
+    fn powi(self, val: u32) -> Self::Type {
+        let mut out = self;
+        let i = self;
+        for _ in 0..val {
+            out *= i;
+        }
+        out
+    }
+
+    fn sqrt(self) -> Self::Type {
+        self.powf(0.5)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    pub fn test_ln() {
+        assert_eq!(0.0, crate::f64::FloatExt::ln(1.0f64));
+        assert_eq_eps!(1.0, crate::f64::FloatExt::ln(core::f64::consts::E), 1e-15);
+        assert_eq_eps!(4.605170185988059, crate::f64::FloatExt::ln(100f64), 1e-15);
+        assert_eq_eps!(
+            22.18070977791825,
+            crate::f64::FloatExt::ln(u32::MAX as f64),
+            1e-15
+        );
+    }
+
+    #[test]
+    pub fn test_exp() {
+        assert_eq_eps!(1.0, crate::f64::FloatExt::exp(0.0f64), 1e-15);
+        assert_eq_eps!(
+            core::f64::consts::E,
+            crate::f64::FloatExt::exp(1.0f64),
+            1e-15
+        );
+        assert_eq_eps!(7.389056098930649, crate::f64::FloatExt::exp(2.0f64), 1e-15);
+        assert_eq_eps!(
+            15.154262241479262,
+            crate::f64::FloatExt::exp(core::f64::consts::E),
+            1e-15
+        );
     }
 }
