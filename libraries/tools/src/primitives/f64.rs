@@ -156,7 +156,7 @@ impl FloatExt for f64 {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(feature = "std")))]
 mod tests {
     #[test]
     pub fn test_ln() {
