@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
 //!
 //! Iterators adds the [`Itertools`] Trait, which adds a number of additional
 //! helper methods to the [`Iterator`] Trait.
 //!
 
+use self::join::Joining;
 use self::looping_forever::LoopingForever;
+
 extern crate alloc;
+
+use crate::iterators::join::MultiJoining;
 use alloc::vec::Vec;
 
+mod join;
 pub mod looping_forever;
 
 ///
@@ -94,6 +100,32 @@ pub trait Itertools: Iterator {
             }
         }
         out
+    }
+
+    ///
+    /// Returns the elements in this iterator interspersed with the joining delimiter.
+    /// For example, if this iterator contains `[A, B, C, D]` and the delimiter is `z`, then the
+    /// final iteration sequence will be `[A, z, B, z, C, z, D]`
+    #[must_use]
+    fn joining(self, delim: Self::Item) -> Joining<Self, Self::Item>
+    where
+        Self: Sized,
+        Self::Item: Clone,
+    {
+        Joining::new(self, delim)
+    }
+
+    ///
+    /// Returns the elements in this iterator interspersed with the elements in the joining delimeter.
+    /// For example, if this iterator contains `[A, B, C, D]` and the delimiters are `[1, 2]`, then
+    /// the final iteration sequence will be `[A, 1, 2, B, 1, 2, C, 1, 2, D]`
+    #[must_use]
+    fn joining_multi(self, delim: &[Self::Item]) -> MultiJoining<Self, Self::Item>
+    where
+        Self: Sized,
+        Self::Item: Clone,
+    {
+        MultiJoining::new(self, delim)
     }
 }
 
