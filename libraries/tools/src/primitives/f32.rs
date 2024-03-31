@@ -6,7 +6,6 @@
 //! A collection of utilities for the f32 built-in
 //!
 
-#[cfg(not(feature = "std"))]
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
 

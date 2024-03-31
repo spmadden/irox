@@ -47,7 +47,6 @@ pub trait FloatExt {
     fn sqrt(self) -> Self::Type;
 }
 
-#[cfg(not(feature = "std"))]
 impl FloatExt for f64 {
     type Type = f64;
 
