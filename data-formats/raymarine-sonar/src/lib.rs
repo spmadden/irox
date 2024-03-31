@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
 #![forbid(unsafe_code)]
 
@@ -11,7 +12,7 @@ use log::{debug, error, trace};
 use rusqlite::types::ValueRef;
 use rusqlite::{Connection, OpenFlags};
 
-use irox_types::PrimitiveValue;
+use irox_types::{DynamicallySizedValue, PrimitiveValue, VariableValue};
 
 use crate::error::Error;
 use crate::tracks::{Track, TrackData};
@@ -20,7 +21,7 @@ pub mod error;
 pub mod schema;
 pub mod tracks;
 
-pub type Entry = BTreeMap<String, PrimitiveValue>;
+pub type Entry = BTreeMap<String, VariableValue>;
 pub type Entries = Vec<Entry>;
 
 trait Accesses {
@@ -30,6 +31,7 @@ trait Accesses {
     fn get_i64(&self, key: &'static str) -> Option<i64>;
     fn get_blob(&self, key: &'static str) -> Option<Vec<u8>>;
 }
+
 impl Accesses for Entry {
     fn get_str(&self, key: &'static str) -> Option<String> {
         self.get(key).map(ToString::to_string)
@@ -37,8 +39,11 @@ impl Accesses for Entry {
 
     fn get_bool(&self, key: &'static str) -> Option<bool> {
         self.get(key).map(|v| match v {
-            PrimitiveValue::bool(v) => *v,
-            PrimitiveValue::i64(i) => *i == 1,
+            VariableValue::Primitive(p) => match p {
+                PrimitiveValue::bool(v) => *v,
+                PrimitiveValue::i64(i) => *i == 1,
+                _ => false,
+            },
             _ => false,
         })
     }
@@ -50,14 +55,14 @@ impl Accesses for Entry {
 
     fn get_i64(&self, key: &'static str) -> Option<i64> {
         self.get(key).map(|v| match v {
-            PrimitiveValue::i64(i) => *i,
+            VariableValue::Primitive(PrimitiveValue::i64(i)) => *i,
             _ => 0,
         })
     }
 
     fn get_blob(&self, key: &'static str) -> Option<Vec<u8>> {
         self.get(key).map(|v| match v {
-            PrimitiveValue::u32_blob(b) => b.clone(),
+            VariableValue::DynamicallySized(DynamicallySizedValue::u32_blob(b)) => b.clone(),
             _ => Vec::new(),
         })
     }
@@ -79,7 +84,7 @@ impl SDFConnection {
 
     pub(crate) fn run_sql(&self, sql: &'static str) -> Result<Entries, Error> {
         trace!("Running sql: {sql}");
-        let mut out: Vec<BTreeMap<String, PrimitiveValue>> = Vec::new();
+        let mut out: Vec<BTreeMap<String, VariableValue>> = Vec::new();
 
         let mut stmt = self.conn.prepare(sql)?;
         let col_cnt = stmt.column_count();
@@ -98,17 +103,17 @@ impl SDFConnection {
                     continue;
                 };
                 let val = row.get_ref(idx)?;
-                let val: PrimitiveValue = match val {
+                let val: VariableValue = match val {
                     ValueRef::Null => {
                         debug!("Row returned null for {idx}/{col}, skipping output");
                         continue;
                     }
-                    ValueRef::Integer(i) => PrimitiveValue::i64(i),
-                    ValueRef::Real(r) => PrimitiveValue::f64(r),
+                    ValueRef::Integer(i) => PrimitiveValue::i64(i).into(),
+                    ValueRef::Real(r) => PrimitiveValue::f64(r).into(),
                     ValueRef::Text(t) => {
-                        PrimitiveValue::str(String::from_utf8_lossy(t).to_string())
+                        DynamicallySizedValue::str(String::from_utf8_lossy(t).to_string()).into()
                     }
-                    ValueRef::Blob(b) => PrimitiveValue::u32_blob(b.into()),
+                    ValueRef::Blob(b) => DynamicallySizedValue::u32_blob(b.into()).into(),
                 };
                 debug!("Row returned {val:?} for {idx}/{col}");
                 map.insert(col.clone(), val);
