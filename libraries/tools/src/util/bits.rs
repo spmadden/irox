@@ -448,6 +448,14 @@ pub trait Bits {
             ringbuf.push_back(val);
         }
     }
+
+    ///
+    /// Reads a specific sized string from the stream, a string prefixed by a
+    /// 4-byte big-endian length.
+    fn read_str_u32_blob(&mut self) -> Result<String, Error> {
+        let len = self.read_be_u32()?;
+        self.read_str_sized_lossy(len as usize)
+    }
 }
 
 #[allow(unused_macros)]
@@ -690,6 +698,16 @@ pub trait MutBits {
             wrote += 1;
         }
         wrote
+    }
+    ///
+    /// Writes a specific sized string from the stream, a string prefixed by a
+    /// 4-byte big-endian length.
+    fn write_str_u32_blob(&mut self, val: &str) -> Result<usize, Error> {
+        let len = val.len() as u32;
+        self.write_be_u32(len)?;
+        self.write_all_bytes(val.as_bytes())?;
+
+        Ok((len + 4) as usize)
     }
 }
 
