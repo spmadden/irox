@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
 //!
 //!
@@ -175,7 +176,7 @@ fn show_descriptors(db: &InfluxDB, param: &OptionalDB) -> ExitCode {
             println!("\ttag {tag}");
         }
         for field in meas.fields() {
-            println!("\tfield {} : {:?}", field.name(), field.primitive());
+            println!("\tfield {} : {:?}", field.name(), field.variable_type());
         }
         println!("}}");
     }
