@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
 use std::fmt::{Display, Formatter};
 
 use syn::{Expr, Field, GenericArgument, Lit, PathArguments, Type, TypeArray, TypePath};
 
-use crate::{NamedPrimitive, PrimitiveType, Primitives};
+use crate::{NamedVariable, PrimitiveType, Primitives, VariableType};
 
 #[derive(Debug, Copy, Clone)]
 pub enum ErrorType {
@@ -50,8 +51,28 @@ impl Error {
         Err(Error::new_str(ErrorType::BadType, typ))
     }
 }
-
 impl TryFrom<&TypePath> for Primitives {
+    type Error = Error;
+
+    fn try_from(value: &TypePath) -> Result<Self, Self::Error> {
+        let len = value.path.segments.len();
+        if len != 1 {
+            return Error::path_elements(len);
+        }
+        let Some(elem) = value.path.segments.first() else {
+            return Error::path_elements(0);
+        };
+        let ident = format!("{}", elem.ident);
+        let PathArguments::None = &elem.arguments else {
+            return Error::path_elements(1);
+        };
+
+        Primitives::try_from(ident.as_str())
+            .map_err(|()| Error::new_str(ErrorType::BadType, format!("Bad type: {ident}")))
+    }
+}
+
+impl TryFrom<&TypePath> for PrimitiveType {
     type Error = Error;
 
     fn try_from(value: &TypePath) -> Result<Self, Self::Error> {
@@ -74,23 +95,24 @@ impl TryFrom<&TypePath> for Primitives {
 
         if "Vec<u8>" == ident {
             // assume a u32?  need some better indicator
-            return Ok(Primitives::u32_blob);
+            return Ok(PrimitiveType::DynamicallySized(VariableType::u32_blob));
         }
 
         Primitives::try_from(ident.as_str())
             .map_err(|()| Error::new_str(ErrorType::BadType, format!("Bad type: {ident}")))
+            .map(Into::into)
     }
 }
 
-impl TryFrom<TypePath> for Primitives {
+impl TryFrom<TypePath> for PrimitiveType {
     type Error = Error;
 
     fn try_from(value: TypePath) -> Result<Self, Self::Error> {
-        Primitives::try_from(&value)
+        PrimitiveType::try_from(&value)
     }
 }
 
-impl TryFrom<&Field> for NamedPrimitive {
+impl TryFrom<&Field> for NamedVariable {
     type Error = Error;
 
     fn try_from(value: &Field) -> Result<Self, Self::Error> {
@@ -101,52 +123,16 @@ impl TryFrom<&Field> for NamedPrimitive {
         let Type::Path(path) = &value.ty else {
             return Error::bad_type(format!("Not a TypePath: {ident}"));
         };
-        let primitive: Primitives = path.try_into()?;
-        Ok(NamedPrimitive {
-            name: ident,
-            primitive,
-        })
+        let ty: PrimitiveType = path.try_into()?;
+        Ok(NamedVariable { name: ident, ty })
     }
 }
 
-impl TryFrom<Field> for NamedPrimitive {
+impl TryFrom<Field> for NamedVariable {
     type Error = Error;
 
     fn try_from(value: Field) -> Result<Self, Self::Error> {
-        NamedPrimitive::try_from(&value)
-    }
-}
-
-impl TryFrom<&Field> for Primitives {
-    type Error = Error;
-
-    fn try_from(value: &Field) -> Result<Self, Self::Error> {
-        let Some(ident) = &value.ident else {
-            return Error::missing_ident();
-        };
-        let ident = format!("{ident}");
-        match &value.ty {
-            Type::Path(path) => {
-                let prim: Primitives = path.try_into()?;
-                Ok(prim)
-            }
-            Type::Array(ref arr) => match &arr.elem.as_ref() {
-                Type::Path(path) => {
-                    let prim: Primitives = path.try_into()?;
-                    Ok(prim)
-                }
-                _ => Error::bad_type(format!("ARRAY: {arr:?}")),
-            },
-            _ => Error::bad_type(format!("Not a TypePath: {ident}")),
-        }
-    }
-}
-
-impl TryFrom<Field> for Primitives {
-    type Error = Error;
-
-    fn try_from(value: Field) -> Result<Self, Self::Error> {
-        Primitives::try_from(&value)
+        NamedVariable::try_from(&value)
     }
 }
 
@@ -174,8 +160,8 @@ impl TryFrom<&Field> for PrimitiveType {
         let ident = format!("{ident}");
         match &value.ty {
             Type::Path(path) => {
-                let prim: Primitives = path.try_into()?;
-                Ok(PrimitiveType::Primitive(prim))
+                let prim: PrimitiveType = path.try_into()?;
+                Ok(prim)
             }
             Type::Array(ref arr) => {
                 let size = try_get_array_size(arr)?;
