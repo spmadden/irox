@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Gaussian Distribution Functions
+
 extern crate alloc;
 
 use alloc::vec;
@@ -11,6 +14,9 @@ use irox_tools::f64::FloatExt;
 
 use super::{Distribution, DistributionParams};
 
+///
+/// The Gaussian Distribution
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct GaussianDistribution {
     mean_mu: f64,
     standard_deviation_sigma: f64,
@@ -18,6 +24,8 @@ pub struct GaussianDistribution {
 }
 
 impl GaussianDistribution {
+    ///
+    /// Creates a new distribution with the specified mean and standard deviation
     pub fn new(mean: f64, standard_deviation: f64) -> GaussianDistribution {
         GaussianDistribution {
             mean_mu: mean,
@@ -26,6 +34,8 @@ impl GaussianDistribution {
         }
     }
 }
+///
+/// The Standard Distribution
 pub type StandardDistribution = GaussianDistribution;
 
 impl Default for GaussianDistribution {

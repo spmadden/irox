@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Exponential Half-lifes and Decays
+
 use core::f64::consts::LN_2;
 use core::time::Duration;
 #[allow(unused_imports)]
 use irox_tools::f64::FloatExt;
 
+///
+/// The half-life is defined as the duration required for a particular quantity to drop to 50% of the
+/// original value.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct HalfLife(Duration);
+
+///
+/// Average length of time that a particular item remains in the set.  (Tau)
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct MeanLifetime(Duration);
+
+///
+/// Exponential Decay Rate Constant (1/Tau)
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct DecayConstant(Duration);
 

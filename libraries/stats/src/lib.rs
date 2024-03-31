@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! A collection of digital signals processing and statistics functions
+
 #![forbid(unsafe_code)]
 #![no_std]
 
@@ -14,6 +17,7 @@ pub mod decay;
 pub mod filter;
 pub mod gaussian;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DistributionParams {
     Mean(f64),
     StandardDeviation(f64),
