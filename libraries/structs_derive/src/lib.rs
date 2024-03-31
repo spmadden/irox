@@ -44,7 +44,7 @@ fn do_single_primitive(
                 writers.push(quote! {
                     out.write_be_u16(self.#ident)?;
                 });
-                    readers.push(quote! {
+                readers.push(quote! {
                     #ident: input.read_be_u16()?,
                 });
             } else {
@@ -518,7 +518,7 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
     let mut big_endian = true;
     for attr in &input.attrs {
         let Ok(ident) = attr.meta.path().require_ident() else {
-            return compile_error(&attr, format!("This attribute is unnamed."));
+            return compile_error(&attr, "This attribute is unnamed.".to_string());
         };
         if ident.eq("little_endian") {
             big_endian = false;
@@ -550,7 +550,9 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
         };
         match field {
             PrimitiveType::Primitive(input) => {
-                if let Err(e) = do_single_primitive(input, &mut writers, &mut readers, &ident, big_endian) {
+                if let Err(e) =
+                    do_single_primitive(input, &mut writers, &mut readers, &ident, big_endian)
+                {
                     return e.into_compile_error().into();
                 }
             }
