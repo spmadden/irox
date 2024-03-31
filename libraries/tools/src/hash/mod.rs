@@ -4,3 +4,4 @@
 
 pub mod md5;
 pub mod murmur3;
+pub mod sha1;
