@@ -370,24 +370,94 @@ impl Duration {
         Duration::new(nanos as f64, DurationUnit::Nanosecond)
     }
 
+    /// Creates a new `Duration` from the specified number of minutes.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_minutes(1);
+    ///
+    /// assert_eq!(60, duration.as_seconds());
+    /// ```
     pub const fn from_minutes(minutes: u64) -> Duration {
         Duration::new(minutes as f64, DurationUnit::Minute)
     }
 
+    /// Creates a new `Duration` from the specified number of hours.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_hours(1);
+    ///
+    /// assert_eq!(3600, duration.as_seconds());
+    /// ```
     pub const fn from_hours(hours: u64) -> Duration {
         Duration::new(hours as f64, DurationUnit::Hour)
     }
 
+    /// Creates a new `Duration` from the specified number of NIST 811 Days where 1 Day = 86400 Seconds
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_days(1);
+    ///
+    /// assert_eq!(86400, duration.as_seconds());
+    /// ```
     pub const fn from_days(days: u64) -> Duration {
         Duration::new(days as f64, DurationUnit::Day)
     }
 
+    /// Creates a new `Duration` from the specified number of NIST 811 Years where 1 Year = 365 Days.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_years(1);
+    ///
+    /// assert_eq!(31_536_000, duration.as_seconds());
+    /// ```
     pub const fn from_years(years: u64) -> Duration {
         Duration::new(years as f64, DurationUnit::Year)
     }
 
+    /// Creates a new `Duration` from the specified number of seconds.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_seconds(100);
+    ///
+    /// assert_eq!(100, duration.as_seconds());
+    /// ```
     pub const fn from_seconds(seconds: u64) -> Duration {
         Duration::new(seconds as f64, DurationUnit::Second)
+    }
+
+    /// Creates a new `Duration` from the specified number of f64 seconds.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use irox_units::units::duration::Duration;
+    ///
+    /// let duration = Duration::from_seconds_f64(25.5);
+    ///
+    /// assert_eq!(25.5, duration.as_seconds_f64());
+    /// ```
+    pub const fn from_seconds_f64(seconds: f64) -> Duration {
+        Duration::new(seconds, DurationUnit::Second)
     }
 }
 
