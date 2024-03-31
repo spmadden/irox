@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
 use std::collections::BTreeMap;
 
-use irox_types::{NamedPrimitive, Primitives};
+use irox_types::{NamedVariable, Primitives, VariableType};
 
 use crate::error::{self, Error, ErrorType};
 
@@ -52,7 +53,7 @@ impl TryFrom<BTreeMap<String, String>> for RetentionPolicy {
 #[derive(Debug, Clone, Default)]
 pub struct MeasurementDescriptor {
     pub(crate) name: String,
-    pub(crate) fields: Vec<NamedPrimitive>,
+    pub(crate) fields: Vec<NamedVariable>,
     pub(crate) tags: Vec<String>,
 }
 
@@ -70,7 +71,7 @@ impl MeasurementDescriptor {
     }
 
     #[must_use]
-    pub fn fields(&self) -> &Vec<NamedPrimitive> {
+    pub fn fields(&self) -> &Vec<NamedVariable> {
         &self.fields
     }
 
@@ -108,9 +109,11 @@ impl MeasurementDescriptor {
             );
         };
         let field = match field_type.as_str() {
-            "float" => NamedPrimitive::new(field_key.to_string(), Primitives::f64),
-            "integer" | "timestamp" => NamedPrimitive::new(field_key.to_string(), Primitives::i64),
-            "string" => NamedPrimitive::new(field_key.to_string(), Primitives::str),
+            "float" => NamedVariable::new(field_key.to_string(), Primitives::f64.into()),
+            "integer" | "timestamp" => {
+                NamedVariable::new(field_key.to_string(), Primitives::i64.into())
+            }
+            "string" => NamedVariable::new(field_key.to_string(), VariableType::str.into()),
             missing => {
                 return Error::err_str(
                     ErrorType::UnsupportedType(missing.to_string()),
