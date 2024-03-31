@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
 //
 
 //!
@@ -328,20 +328,36 @@ pub trait Bits {
     }
 
     /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
-    fn read_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
+    fn read_be_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
         let size = self.read_be_u16()?;
         self.read_exact_vec(size as usize)
     }
 
+    /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
+    fn read_le_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_le_u16()?;
+        self.read_exact_vec(size as usize)
+    }
+
     /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
-    fn read_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
+    fn read_be_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
         let size = self.read_be_u32()?;
+        self.read_exact_vec(size as usize)
+    }
+    /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
+    fn read_le_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_le_u32()?;
         self.read_exact_vec(size as usize)
     }
 
     /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
-    fn read_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
+    fn read_be_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
         let size = self.read_be_u64()?;
+        self.read_exact_vec(size as usize)
+    }
+    /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
+    fn read_le_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
+        let size = self.read_le_u64()?;
         self.read_exact_vec(size as usize)
     }
 
@@ -644,7 +660,7 @@ pub trait MutBits {
         self.write_all_bytes(val)
     }
     /// Writes a sized blob, a series of bytes preceded by a [`u16`] declaring the size
-    fn write_u16_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+    fn write_be_u16_blob(&mut self, val: &[u8]) -> Result<(), Error> {
         if val.len() > u16::MAX as usize {
             return Err(Error::new(
                 ErrorKind::InvalidData,
@@ -654,8 +670,19 @@ pub trait MutBits {
         self.write_be_u16(val.len() as u16)?;
         self.write_all_bytes(val)
     }
+    /// Writes a sized blob, a series of bytes preceded by a [`u16`] declaring the size
+    fn write_le_u16_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u16::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u16",
+            ));
+        }
+        self.write_le_u16(val.len() as u16)?;
+        self.write_all_bytes(val)
+    }
     /// Writes a sized blob, a series of bytes preceded by a [`u32`] declaring the size
-    fn write_u32_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+    fn write_be_u32_blob(&mut self, val: &[u8]) -> Result<(), Error> {
         if val.len() > u32::MAX as usize {
             return Err(Error::new(
                 ErrorKind::InvalidData,
@@ -665,8 +692,19 @@ pub trait MutBits {
         self.write_be_u32(val.len() as u32)?;
         self.write_all_bytes(val)
     }
+    /// Writes a sized blob, a series of bytes preceded by a [`u32`] declaring the size
+    fn write_le_u32_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u32::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u32",
+            ));
+        }
+        self.write_le_u32(val.len() as u32)?;
+        self.write_all_bytes(val)
+    }
     /// Writes a sized blob, a series of bytes preceded by a [`u64`] declaring the size
-    fn write_u64_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+    fn write_be_u64_blob(&mut self, val: &[u8]) -> Result<(), Error> {
         if val.len() > u64::MAX as usize {
             return Err(Error::new(
                 ErrorKind::InvalidData,
@@ -674,6 +712,17 @@ pub trait MutBits {
             ));
         }
         self.write_be_u64(val.len() as u64)?;
+        self.write_all_bytes(val)
+    }
+    /// Writes a sized blob, a series of bytes preceded by a [`u64`] declaring the size
+    fn write_le_u64_blob(&mut self, val: &[u8]) -> Result<(), Error> {
+        if val.len() > u64::MAX as usize {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "value is too long to fit into a u64",
+            ));
+        }
+        self.write_le_u64(val.len() as u64)?;
         self.write_all_bytes(val)
     }
 
