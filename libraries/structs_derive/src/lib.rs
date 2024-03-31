@@ -1,529 +1,394 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2024 IROX Contributors
+//
 
-use proc_macro::TokenStream;
+use proc_macro::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
 use std::fmt::Display;
 
-use quote::quote;
-use syn::__private::Span;
+use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Data, DeriveInput, Error, Fields};
+use syn::{parse_macro_input, Data, DeriveInput, Error, Fields, FieldsNamed};
 
-use irox_types::{PrimitiveType, Primitives};
+use irox_tools::iterators::Itertools;
+use irox_types::{PrimitiveType, Primitives, VariableType};
+
+trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
+    fn add_ident(&mut self, name: &str) {
+        self.extend(Self::create_ident(name))
+    }
+    fn create_ident(name: &str) -> TokenStream {
+        TokenStream::from_iter([TokenTree::Ident(Ident::new(name, Span::call_site()))])
+    }
+    fn add_punc(&mut self, ch: char) {
+        self.extend([TokenTree::Punct(Punct::new(ch, Spacing::Alone))])
+    }
+    fn add_punc2(&mut self, ch: char, ch2: char) {
+        self.extend([
+            TokenTree::Punct(Punct::new(ch, Spacing::Joint)),
+            TokenTree::Punct(Punct::new(ch2, Spacing::Alone)),
+        ])
+    }
+    fn add_comma(&mut self) {
+        self.add_punc(',')
+    }
+    fn wrap_generics(&mut self, inner: TokenStream) {
+        self.add_punc('<');
+        self.extend([inner]);
+        self.add_punc('>');
+    }
+
+    fn add_fn(&mut self, name: &str) {
+        self.add_ident("fn");
+        self.add_ident(name);
+    }
+    fn add_generics(&mut self, id: &str, generics: TokenStream) {
+        self.add_punc('<');
+        self.add_ident(id);
+        self.add_punc(':');
+        self.extend(generics);
+        self.add_punc('>');
+    }
+    fn create_path(elems: &[&str]) -> TokenStream {
+        elems
+            .iter()
+            .map(|e| TokenTree::Ident(Ident::new(e, Span::call_site())))
+            .joining_multi(&[
+                TokenTree::Punct(Punct::new(':', Spacing::Joint)),
+                TokenTree::Punct(Punct::new(':', Spacing::Alone)),
+            ])
+            .collect()
+    }
+    fn add_path(&mut self, elems: &[&str]) {
+        self.extend(Self::create_path(elems))
+    }
+    fn add_parens(&mut self, inside_parens: TokenStream) {
+        self.extend([TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            inside_parens,
+        ))]);
+    }
+    fn add_single_arrow(&mut self) {
+        self.add_punc2('-', '>')
+    }
+    fn return_result(&mut self, ok: TokenStream, err: TokenStream) {
+        self.add_single_arrow();
+        self.add_ident("Result");
+        self.add_punc('<');
+        self.extend(ok);
+        self.add_punc(',');
+        self.extend(err);
+        self.add_punc('>');
+    }
+
+    fn create_empty_type() -> TokenStream {
+        TokenStream::from_iter([TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            TokenStream::new(),
+        ))])
+    }
+
+    fn wrap_braces(&mut self, inner: TokenStream) {
+        self.extend([TokenTree::Group(Group::new(Delimiter::Brace, inner))])
+    }
+
+    fn wrap_brackets(&mut self, inner: TokenStream) {
+        self.extend([TokenTree::Group(Group::new(Delimiter::Bracket, inner))])
+    }
+
+    fn add_literal(&mut self, literal: Literal) {
+        self.extend([TokenTree::Literal(literal)])
+    }
+}
+
+impl DeriveMethods for TokenStream {}
+
+const TYPES_STRICT_SIZING_INCOMPATIBLE: [Primitives; 1] = [Primitives::null];
+
+struct Config {
+    strict_sizing: bool,
+    big_endian: bool,
+}
 
 fn compile_error<T: Spanned, D: Display>(span: &T, msg: D) -> TokenStream {
     Error::new(span.span(), msg).into_compile_error().into()
 }
 
-fn do_single_primitive(
-    input: Primitives,
-    writers: &mut Vec<proc_macro2::TokenStream>,
-    readers: &mut Vec<proc_macro2::TokenStream>,
-    ident: &proc_macro2::Ident,
-    big_endian: bool,
-) -> Result<(), Error> {
-    match input {
-        Primitives::u8 => {
-            writers.push(quote! {
-                out.write_u8(self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u8()?,
-            })
-        }
-        Primitives::i8 => {
-            writers.push(quote! {
-                out.write_i8(self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_i8()?,
-            });
-        }
-        Primitives::u16 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_u16(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_u16()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_u16(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_u16()?,
-                });
-            }
-        }
-        Primitives::i16 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_i16(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_i16()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_i16(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_i16()?,
-                });
-            }
-        }
-        Primitives::u32 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_u32(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_u32()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_u32(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_u32()?,
-                });
-            }
-        }
-        Primitives::i32 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_i32(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_i32()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_i32(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_i32()?,
-                });
-            }
-        }
-        Primitives::f32 => {
-            writers.push(quote! {
-                out.write_f32(self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_f32()?,
-            });
-        }
-        Primitives::u64 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_u64(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_u64()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_u64(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_u64()?,
-                });
-            }
-        }
-        Primitives::i64 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_i64(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_i64()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_i64(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_i64()?,
-                });
-            }
-        }
-        Primitives::f64 => {
-            writers.push(quote! {
-                out.write_f64(self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_f64()?,
-            });
-        }
-        Primitives::u128 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_u128(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_u128()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_u128(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_u128()?,
-                });
-            }
-        }
-        Primitives::i128 => {
-            if big_endian {
-                writers.push(quote! {
-                    out.write_be_i128(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_be_i128()?,
-                });
-            } else {
-                writers.push(quote! {
-                    out.write_le_i128(self.#ident)?;
-                });
-                readers.push(quote! {
-                    #ident: input.read_le_i128()?,
-                });
-            }
-        }
-        Primitives::bool => {
-            writers.push(quote! {
-                out.write_u8(self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u8()?,
-            });
-        }
-        Primitives::u8_blob => {
-            writers.push(quote! {
-                out.write_u8_blob(&@dself.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u8_blob()?,
-            });
-        }
-        Primitives::u16_blob => {
-            writers.push(quote! {
-                out.write_u16_blob(&self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u16_blob()?,
-            });
-        }
-        Primitives::u32_blob => {
-            writers.push(quote! {
-                out.write_u32_blob(&self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u32_blob()?,
-            });
-        }
-        Primitives::u64_blob => {
-            writers.push(quote! {
-                out.write_u64_blob(&self.#ident)?;
-            });
-            readers.push(quote! {
-                #ident: input.read_u64_blob()?,
-            });
-        }
-        t => {
-            return Err(Error::new(
-                Span::call_site(),
-                format!("Unsupported type: {t:?}"),
-            ));
+fn get_endian_method_for_prim(ty: Primitives, read: bool, big_endian: bool) -> String {
+    let rw = if read { "read" } else { "write" };
+    let be = if big_endian { "be" } else { "le" };
+    let base = match ty {
+        Primitives::u8 | Primitives::bool | Primitives::char => "u8".to_string(),
+        Primitives::i8 => "i8".to_string(),
+        Primitives::f32 => "f32".to_string(),
+        Primitives::f64 => "f64".to_string(),
+
+        _ => {
+            format!("{be}_{ty:?}")
         }
     };
-    Ok(())
+    format!("{rw}_{base}")
 }
 
-fn arr_writer_function_be(input: Primitives) -> Result<proc_macro2::TokenStream, Error> {
-    Ok(match input {
-        Primitives::u8 => {
-            quote! {
-                out.write_u8(elem)?;
-            }
-        }
-        Primitives::i8 => {
-            quote! {
-                out.write_i8(elem)?;
-            }
-        }
-        Primitives::u16 => {
-            quote! {
-                out.write_be_u16(elem)?;
-            }
-        }
-        Primitives::i16 => {
-            quote! {
-                out.write_be_i16(elem)?;
-            }
-        }
-        Primitives::u32 => {
-            quote! {
-                out.write_be_u32(elem)?;
-            }
-        }
-        Primitives::i32 => {
-            quote! {
-                out.write_be_i32(elem)?;
-            }
-        }
-        Primitives::f32 => {
-            quote! {
-                out.write_f32(elem)?;
-            }
-        }
-        Primitives::u64 => {
-            quote! {
-                out.write_be_u64(elem)?;
-            }
-        }
-        Primitives::i64 => {
-            quote! {
-                out.write_be_i64(elem)?;
-            }
-        }
-        Primitives::f64 => {
-            quote! {
-                out.write_f64(elem)?;
-            }
-        }
-        Primitives::u128 => {
-            quote! {
-                out.write_be_u128(elem)?;
-            }
-        }
-        Primitives::i128 => {
-            quote! {
-                out.write_be_i128(elem)?;
-            }
-        }
+fn get_endian_method_for_varbl(ty: VariableType, read: bool, big_endian: bool) -> String {
+    let rw = if read { "read" } else { "write" };
+    let be = if big_endian { "be" } else { "le" };
+    let base = match ty {
+        VariableType::str => "str_u32_blob".to_string(),
         _ => {
-            return Err(Error::new(Span::call_site(), "Unsupported"));
+            format!("{be}_{ty:?}")
         }
-    })
+    };
+    format!("{rw}_{base}")
 }
 
-fn arr_writer_function_le(input: Primitives) -> Result<proc_macro2::TokenStream, Error> {
-    Ok(match input {
-        Primitives::u8 => {
-            quote! {
-                out.write_u8(elem)?;
+fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizing) -> TokenStream {
+    let mut ts = TokenStream::new();
+    ts.extend::<TokenStream>(quote!(
+        fn write_to<T: irox_tools::bits::MutBits>(&self, out: &mut T) -> Result<(), irox_tools::bits::Error>
+    ).into());
+
+    let mut method = TokenStream::new();
+
+    for x in &n.named {
+        let Some(ident) = &x.ident else {
+            return compile_error(&x, "No ident");
+        };
+        match PrimitiveType::try_from(x) {
+            Ok(field) => {
+                if let Some(size) = field.bytes_length() {
+                    sizing.size += size;
+                }
+                match field {
+                    PrimitiveType::Primitive(input) => {
+                        if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input)
+                        {
+                            return compile_error(&x, "Type is not compatible with strict sizing");
+                        };
+                        method.add_ident("out");
+                        method.add_punc('.');
+                        method.add_ident(&get_endian_method_for_prim(
+                            input,
+                            false,
+                            config.big_endian,
+                        ));
+                        method.add_parens({
+                            let mut ts = TokenStream::new();
+                            ts.add_ident("self");
+                            ts.add_punc('.');
+                            ts.add_ident(&ident.to_string());
+                            ts
+                        });
+                        method.add_punc('?');
+                        method.add_punc(';');
+                    }
+                    PrimitiveType::Array(input, len) => {
+                        if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input)
+                        {
+                            return compile_error(&x, "Type is not compatible with strict sizing");
+                        };
+                        method.add_ident("for");
+                        method.add_ident("elem");
+                        method.add_ident("in");
+                        method.add_ident("self");
+                        method.add_punc('.');
+                        method.add_ident(&ident.to_string());
+                        method.wrap_braces({
+                            let mut ts = TokenStream::new();
+                            for _ in 0..len {
+                                ts.add_ident("out");
+                                ts.add_punc('.');
+                                ts.add_ident(&get_endian_method_for_prim(
+                                    input,
+                                    false,
+                                    config.big_endian,
+                                ));
+                                ts.add_parens(TokenStream::create_ident("elem"));
+                                ts.add_punc('?');
+                                ts.add_punc(';');
+                            }
+                            ts
+                        })
+                    }
+                    PrimitiveType::DynamicallySized(dy) => {
+                        if config.strict_sizing {
+                            return compile_error(&x, "Type is not compatible with strict sizing");
+                        };
+                        method.add_ident("out");
+                        method.add_punc('.');
+                        method.add_ident(&get_endian_method_for_varbl(
+                            dy,
+                            false,
+                            config.big_endian,
+                        ));
+                        method.add_parens({
+                            let mut ts = TokenStream::new();
+                            ts.add_punc('&');
+                            ts.add_ident("self");
+                            ts.add_punc('.');
+                            ts.add_ident(&ident.to_string());
+                            ts
+                        });
+                        method.add_punc('?');
+                        method.add_punc(';');
+                    }
+                }
+            }
+            Err(_e) => {
+                // <ty as irox_structs::Struct>::write_to(&self.varbl, out)?;
+                let mut ts = TokenStream::new();
+                ts.wrap_generics({
+                    let mut ts = TokenStream::new();
+                    ts.extend::<TokenStream>(x.ty.to_token_stream().into());
+                    ts.add_ident("as");
+                    ts.add_ident("irox_structs");
+                    ts.add_punc2(':', ':');
+                    ts.add_ident("Struct");
+                    ts
+                });
+                ts.add_punc2(':', ':');
+                ts.add_ident("write_to");
+                ts.add_parens({
+                    let mut ts = TokenStream::new();
+                    ts.add_punc('&');
+                    ts.add_ident("self");
+                    ts.add_punc('.');
+                    ts.add_ident(&ident.to_string());
+                    ts.add_punc(',');
+                    ts.add_ident("out");
+                    ts
+                });
+                ts.add_punc('?');
+                ts.add_punc(';');
+                method.extend(ts);
             }
         }
-        Primitives::i8 => {
-            quote! {
-                out.write_i8(elem)?;
-            }
-        }
-        Primitives::u16 => {
-            quote! {
-                out.write_le_u16(elem)?;
-            }
-        }
-        Primitives::i16 => {
-            quote! {
-                out.write_le_i16(elem)?;
-            }
-        }
-        Primitives::u32 => {
-            quote! {
-                out.write_le_u32(elem)?;
-            }
-        }
-        Primitives::i32 => {
-            quote! {
-                out.write_le_i32(elem)?;
-            }
-        }
-        Primitives::f32 => {
-            quote! {
-                out.write_f32(elem)?;
-            }
-        }
-        Primitives::u64 => {
-            quote! {
-                out.write_le_u64(elem)?;
-            }
-        }
-        Primitives::i64 => {
-            quote! {
-                out.write_le_i64(elem)?;
-            }
-        }
-        Primitives::f64 => {
-            quote! {
-                out.write_f64(elem)?;
-            }
-        }
-        Primitives::u128 => {
-            quote! {
-                out.write_le_u128(elem)?;
-            }
-        }
-        Primitives::i128 => {
-            quote! {
-                out.write_le_i128(elem)?;
-            }
-        }
-        _ => {
-            return Err(Error::new(Span::call_site(), "Unsupported"));
-        }
-    })
+    }
+    method.add_ident("Ok");
+    method.add_parens(TokenStream::create_empty_type());
+    ts.wrap_braces(method);
+    ts
 }
 
-fn arr_reader_fn_be(input: Primitives) -> Result<proc_macro2::TokenStream, Error> {
-    Ok(match input {
-        Primitives::u8 => {
-            quote! {
-                input.read_u8()?,
+fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
+    let mut ts = TokenStream::new();
+    ts.extend::<TokenStream>(quote!(
+        fn parse_from<T: irox_tools::bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_tools::bits::Error>
+    ).into());
+
+    let mut inits = TokenStream::new();
+
+    for x in &n.named {
+        let Some(ident) = &x.ident else {
+            return compile_error(&x, "No ident");
+        };
+
+        match PrimitiveType::try_from(x) {
+            Ok(field) => match field {
+                PrimitiveType::Primitive(input) => {
+                    if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input) {
+                        return compile_error(&x, "Type is not compatible with strict sizing");
+                    };
+                    inits.add_ident(&ident.to_string());
+                    inits.add_punc(':');
+                    inits.add_ident("input");
+                    inits.add_punc('.');
+                    inits.add_ident(&get_endian_method_for_prim(input, true, config.big_endian));
+                    inits.add_parens(TokenStream::new());
+                    inits.add_punc('?');
+                    inits.add_punc(',');
+                }
+                PrimitiveType::Array(input, len) => {
+                    if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input) {
+                        return compile_error(&x, "Type is not compatible with strict sizing");
+                    };
+                    inits.add_ident(&ident.to_string());
+                    inits.add_punc(':');
+                    inits.wrap_brackets({
+                        let mut ts = TokenStream::new();
+                        for _ in 0..len {
+                            ts.add_ident("input");
+                            ts.add_punc('.');
+                            ts.add_ident(&get_endian_method_for_prim(
+                                input,
+                                true,
+                                config.big_endian,
+                            ));
+                            ts.add_parens(TokenStream::new());
+                            ts.add_punc('?');
+                            ts.add_punc(',');
+                        }
+                        ts
+                    });
+                    inits.add_punc('.');
+                    inits.add_ident("into");
+                    inits.add_parens(TokenStream::new());
+                    inits.add_punc(',');
+                }
+                PrimitiveType::DynamicallySized(ds) => {
+                    if config.strict_sizing {
+                        return compile_error(&x, "Type is not compatible with strict sizing");
+                    };
+
+                    inits.add_ident(&ident.to_string());
+                    inits.add_punc(':');
+                    inits.add_ident("input");
+                    inits.add_punc('.');
+                    inits.add_ident(&get_endian_method_for_varbl(ds, true, config.big_endian));
+                    inits.add_parens(TokenStream::new());
+                    inits.add_punc('?');
+                    inits.add_punc(',');
+                }
+            },
+            Err(_e) => {
+                // <ty as irox_structs::Struct>::parse_from(input)?;
+                let ty = x.ty.to_token_stream();
+                inits.add_ident(&ident.to_string());
+                inits.add_punc(':');
+                inits.extend::<TokenStream>(
+                    quote! {
+                        <#ty as irox_structs::Struct>::parse_from(input)?,
+                    }
+                    .into(),
+                );
             }
         }
-        Primitives::i8 => {
-            quote! {
-                input.read_i8()?,
-            }
-        }
-        Primitives::u16 => {
-            quote! {
-                input.read_be_u16()?,
-            }
-        }
-        Primitives::i16 => {
-            quote! {
-                input.read_be_i16()?,
-            }
-        }
-        Primitives::u32 => {
-            quote! {
-                input.read_be_u32()?,
-            }
-        }
-        Primitives::i32 => {
-            quote! {
-                input.read_be_i32()?,
-            }
-        }
-        Primitives::f32 => {
-            quote! {
-                input.read_f32()?,
-            }
-        }
-        Primitives::u64 => {
-            quote! {
-                input.read_be_u64()?,
-            }
-        }
-        Primitives::i64 => {
-            quote! {
-                input.read_be_i64()?,
-            }
-        }
-        Primitives::f64 => {
-            quote! {
-                input.read_f64()?,
-            }
-        }
-        Primitives::u128 => {
-            quote! {
-                input.read_be_u128()?,
-            }
-        }
-        Primitives::i128 => {
-            quote! {
-                input.read_be_i128()?,
-            }
-        }
-        _ => {
-            return Err(Error::new(Span::call_site(), "Unsupported"));
-        }
-    })
-}
-fn arr_reader_fn_le(input: Primitives) -> Result<proc_macro2::TokenStream, Error> {
-    Ok(match input {
-        Primitives::u8 => {
-            quote! {
-                input.read_u8()?,
-            }
-        }
-        Primitives::i8 => {
-            quote! {
-                input.read_i8()?,
-            }
-        }
-        Primitives::u16 => {
-            quote! {
-                input.read_le_u16()?,
-            }
-        }
-        Primitives::i16 => {
-            quote! {
-                input.read_le_i16()?,
-            }
-        }
-        Primitives::u32 => {
-            quote! {
-                input.read_le_u32()?,
-            }
-        }
-        Primitives::i32 => {
-            quote! {
-                input.read_le_i32()?,
-            }
-        }
-        Primitives::f32 => {
-            quote! {
-                input.read_f32()?,
-            }
-        }
-        Primitives::u64 => {
-            quote! {
-                input.read_le_u64()?,
-            }
-        }
-        Primitives::i64 => {
-            quote! {
-                input.read_le_i64()?,
-            }
-        }
-        Primitives::f64 => {
-            quote! {
-                input.read_f64()?,
-            }
-        }
-        Primitives::u128 => {
-            quote! {
-                input.read_le_u128()?,
-            }
-        }
-        Primitives::i128 => {
-            quote! {
-                input.read_le_i128()?,
-            }
-        }
-        _ => {
-            return Err(Error::new(Span::call_site(), "Unsupported"));
-        }
-    })
+    }
+
+    let mut method = TokenStream::new();
+    method.add_ident("Ok");
+    method.add_parens({
+        let mut ts = TokenStream::new();
+        ts.add_ident("Self");
+        ts.wrap_braces(inits);
+        ts
+    });
+    ts.wrap_braces(method);
+    ts
 }
 
-#[proc_macro_derive(Struct, attributes(little_endian, big_endian))]
+#[derive(Default)]
+struct StructSizing {
+    size: usize,
+}
+
+#[proc_macro_derive(Struct, attributes(little_endian, big_endian, strict_sizing))]
 pub fn struct_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    let mut big_endian = true;
+    let mut config = Config {
+        big_endian: true,
+        strict_sizing: false,
+    };
+
     for attr in &input.attrs {
         let Ok(ident) = attr.meta.path().require_ident() else {
             return compile_error(&attr, "This attribute is unnamed.".to_string());
         };
         if ident.eq("little_endian") {
-            big_endian = false;
+            config.big_endian = false;
         } else if ident.eq("big_endian") {
-            big_endian = true;
+            config.big_endian = true;
+        } else if ident.eq("strict_sizing") {
+            config.strict_sizing = true;
         }
     }
 
@@ -535,80 +400,40 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
     let Fields::Named(n) = s.fields else {
         return compile_error(&s.fields, "Can only derive on named fields.");
     };
-    let mut writers = Vec::new();
-    let mut readers = Vec::new();
-    for x in n.named {
-        let field = match PrimitiveType::try_from(&x) {
-            Ok(f) => f,
-            Err(e) => {
-                return compile_error(&x, format!("Unable to name this field: {e}"));
-            }
-        };
 
-        let Some(ident) = x.ident else {
-            return compile_error(&x, "No ident");
-        };
-        match field {
-            PrimitiveType::Primitive(input) => {
-                if let Err(e) =
-                    do_single_primitive(input, &mut writers, &mut readers, &ident, big_endian)
-                {
-                    return e.into_compile_error().into();
-                }
-            }
-            PrimitiveType::Array(input, size) => {
-                let wrfn = if big_endian {
-                    arr_writer_function_be(input)
-                } else {
-                    arr_writer_function_le(input)
-                };
-                let wrfn = match wrfn {
-                    Ok(e) => e,
-                    Err(e) => return e.into_compile_error().into(),
-                };
-                writers.push(quote! {
-                    for elem in self.#ident {
-                        #wrfn
-                    }
-                });
-                let mut arr_readers = Vec::new();
-                let refn = if big_endian {
-                    arr_reader_fn_be(input)
-                } else {
-                    arr_reader_fn_le(input)
-                };
-                let refn = match refn {
-                    Ok(e) => e,
-                    Err(e) => return e.into_compile_error().into(),
-                };
-                for _ in 0..size {
-                    arr_readers.push(quote! {
-                        #refn
-                    })
-                }
-                let rdr = quote! {
-                    #ident: [
-                        #(#arr_readers)*
-                    ],
-                };
-                readers.push(rdr);
-            }
-        }
+    let mut ts = TokenStream::new();
+    let mut sizing = StructSizing::default();
+    ts.add_ident("impl");
+    ts.add_path(&["irox_structs", "Struct"]);
+    ts.add_ident("for");
+    ts.add_ident(&struct_name.to_string());
+    ts.wrap_braces({
+        let mut ts = TokenStream::new();
+        ts.add_ident("type");
+        ts.add_ident("ImplType");
+        ts.add_punc('=');
+        ts.add_ident(&struct_name.to_string());
+        ts.add_punc(';');
+
+        ts.extend(create_write_to_fn(&n, &config, &mut sizing));
+        ts.extend(create_parse_from_fn(&n, &config));
+        ts
+    });
+    if config.strict_sizing {
+        ts.add_ident("impl");
+        ts.add_ident(&struct_name.to_string());
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("pub");
+            ts.add_ident("const");
+            ts.add_ident("STRUCT_SIZE");
+            ts.add_punc(':');
+            ts.add_ident("usize");
+            ts.add_punc('=');
+            ts.add_literal(Literal::usize_suffixed(sizing.size));
+            ts.add_punc(';');
+            ts
+        });
     }
-    TokenStream::from(quote! {
-        impl irox_structs::Struct for #struct_name {
-            type ImplType = #struct_name;
-
-            fn write_to<T: irox_tools::bits::MutBits>(&self, out: &mut T) -> Result<(), irox_tools::bits::Error> {
-                #(#writers)*
-                Ok(())
-            }
-
-            fn parse_from<T: irox_tools::bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_tools::bits::Error> {
-                Ok(#struct_name {
-                    #(#readers)*
-                })
-            }
-        }
-    })
+    ts
 }

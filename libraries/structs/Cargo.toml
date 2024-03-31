@@ -1,8 +1,8 @@
 [package]
 name = "irox-structs"
-description = "Traits for Struct Types - linearly serialized big endian bytes"
+description = "Traits for Struct Types - linearly serialized big/little endian bytes"
 keywords = ["irox", "reflection", "metaprogramming"]
-categories = ["development-tools", "rust-patterns"]
+categories = ["development-tools", "rust-patterns", "no-std"]
 version= "0.4.0"
 edition.workspace = true
 authors.workspace = true
@@ -18,5 +18,5 @@ workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-irox-tools.workspace = true
+irox-tools = {version = "0", default-features = false, path = "../tools"}
 irox-structs_derive.workspace = true

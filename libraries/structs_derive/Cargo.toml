@@ -23,3 +23,4 @@ syn.workspace = true
 quote.workspace = true
 proc-macro2.workspace = true
 irox-types = {version = "^0", features = ["syn"], path = "../types"}
+irox-tools = {version = "^0", default-features = false, path = "../tools"}

@@ -3572,6 +3572,7 @@ dependencies = [
 name = "irox-structs_derive"
 version = "0.2.3"
 dependencies = [
+ "irox-tools",
  "irox-types",
  "proc-macro2",
  "quote",
