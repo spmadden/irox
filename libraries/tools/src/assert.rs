@@ -21,3 +21,19 @@ macro_rules! assert_eq_eps {
         }
     };
 }
+
+#[macro_export]
+macro_rules! assert_eq_hex {
+    ($left:expr, $right:expr) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if *left_val != *right_val {
+                    panic!(
+                        "Assertion failed, 0x{:0X} != 0x{:0X}",
+                        &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    };
+}
