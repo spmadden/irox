@@ -417,8 +417,12 @@ mod test {
             let _ = pop_stddev.add_sample(val as f64);
         }
         assert_eq!(5.0, samp_stddev.get_mean());
-        assert_eq!(4.571428571428571, samp_stddev.get_unbiased_variance());
-        assert_eq!(2.1380899352993947, samp_stddev.get_unbiased_stdev());
+        assert_eq_eps!(
+            4.571428571428571,
+            samp_stddev.get_unbiased_variance(),
+            1e-15
+        );
+        assert_eq_eps!(2.1380899352993947, samp_stddev.get_unbiased_stdev(), 1e-15);
 
         assert_eq!(5.0, pop_stddev.get_mean());
         assert_eq_eps!(4., pop_stddev.get_biased_variance(), 1e-15);
