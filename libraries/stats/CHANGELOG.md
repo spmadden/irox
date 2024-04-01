@@ -1,7 +1,49 @@
 
 
 
+## v0.2.4 (2024-04-01)
+
+### New Features
+
+ - <csr-id-96c41ef90232cf89154a0fddb71af0f265daed84/> new streaming statistics features
+ - <csr-id-3bae95bd404f99819a47ab95a7af3f97c2764f9b/> stats is now no_std
+
+### Bug Fixes
+
+ - <csr-id-b2f572d459b23fb761eff24daafda319ac8ecc7a/> add eps value to tests
+ - <csr-id-2a25738da0f48bc7436054295dadaba15da6b64a/> add version to stats dep to quiet warning
+
+### Other
+
+ - <csr-id-46dc6bfb95b3860eba5f9eb47394c92acd5ac502/> updating docs for stats
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 2 calendar days.
+ - 28 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.6.1 ([`091c8ac`](https://github.com/spmadden/irox/commit/091c8ac155297f942d1a46462e3d2d782d71993e))
+    - Add eps value to tests ([`b2f572d`](https://github.com/spmadden/irox/commit/b2f572d459b23fb761eff24daafda319ac8ecc7a))
+    - New streaming statistics features ([`96c41ef`](https://github.com/spmadden/irox/commit/96c41ef90232cf89154a0fddb71af0f265daed84))
+    - Updating docs for stats ([`46dc6bf`](https://github.com/spmadden/irox/commit/46dc6bfb95b3860eba5f9eb47394c92acd5ac502))
+    - Add version to stats dep to quiet warning ([`2a25738`](https://github.com/spmadden/irox/commit/2a25738da0f48bc7436054295dadaba15da6b64a))
+    - Stats is now no_std ([`3bae95b`](https://github.com/spmadden/irox/commit/3bae95bd404f99819a47ab95a7af3f97c2764f9b))
+</details>
+
 ## v0.2.3 (2024-03-03)
+
+<csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
 ### Chore
 
@@ -11,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 50 calendar days.
+ - 2 commits contributed to the release over the course of 50 calendar days.
  - 95 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +65,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.3 ([`ef99183`](https://github.com/spmadden/irox/commit/ef991830c2d652c26cb368f8ae3cb6ce414f1e7d))
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
 </details>
 
