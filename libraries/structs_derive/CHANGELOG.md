@@ -1,7 +1,44 @@
 
 
 
+## v0.3.0 (2024-04-01)
+
+### Chore
+
+ - <csr-id-56ab68398e06e2df370cf615665988ee62346999/> lints and fmt
+
+### New Features
+
+ - <csr-id-00590ab1f9749f74bf3a2cc54dea8635328555d1/> add little-endian support for derived structs
+
+### Refactor (BREAKING)
+
+ - <csr-id-9427c1392d00725f7ee3cc73ffb23e25a9dd72a1/> pretty much a full rewrite of the derive code to use less proc_macro2
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 1 calendar day.
+ - 123 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pretty much a full rewrite of the derive code to use less proc_macro2 ([`9427c13`](https://github.com/spmadden/irox/commit/9427c1392d00725f7ee3cc73ffb23e25a9dd72a1))
+    - Lints and fmt ([`56ab683`](https://github.com/spmadden/irox/commit/56ab68398e06e2df370cf615665988ee62346999))
+    - Add little-endian support for derived structs ([`00590ab`](https://github.com/spmadden/irox/commit/00590ab1f9749f74bf3a2cc54dea8635328555d1))
+</details>
+
 ## v0.2.3 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -15,7 +52,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 9 calendar days.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.2.3 ([`7cf3f82`](https://github.com/spmadden/irox/commit/7cf3f823cdac76b71f6aece013deecab4bd39e5a))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Derive the new Primitive blob types ([`29987c2`](https://github.com/spmadden/irox/commit/29987c2492e82336d874a5f0cc2082d565faa5bf))
 </details>

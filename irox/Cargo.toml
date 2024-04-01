@@ -63,7 +63,7 @@ irox-networking = { version = "^0.4.1", optional = true, path = "../libraries/ne
 irox-progress = { version = "^0.3.0", optional = true, path = "../libraries/progress" }
 irox-stats = { version = "^0.2.2", optional = true, path = "../libraries/stats" }
 irox-structs = { version = "^0.4.0", optional = true, path = "../libraries/structs" }
-irox-structs_derive = { version = "^0.2.3", optional = true, path = "../libraries/structs_derive" }
+irox-structs_derive = { version = "^0.3.0", optional = true, path = "../libraries/structs_derive" }
 irox-threading = { version = "^0.2.2", optional = true, path = "../libraries/threading" }
 irox-time = { version = "^0.4.1", optional = true, path = "../libraries/time" }
 irox-tools = { version = "^0.7.0", optional = true, path = "../libraries/tools" }
