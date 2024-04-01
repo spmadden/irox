@@ -1,6 +1,37 @@
 
 
 
+## v0.7.0 (2024-04-01)
+
+### New Features
+
+ - <csr-id-66cb1ad87755b5dc2ccca9b0f856a43a13365096/> new joining and joining_multi itertools methods
+ - <csr-id-e8864e656383096d6b3c4c3316b6d78d3746ab70/> new read/write length-prefixed strings functions
+
+### New Features (BREAKING)
+
+ - <csr-id-fbd6a72ac2ee6c6081bcfff0bab6e496b4d41ab2/> rename write_*_blob methods to have 'be' and 'le' variants
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New joining and joining_multi itertools methods ([`66cb1ad`](https://github.com/spmadden/irox/commit/66cb1ad87755b5dc2ccca9b0f856a43a13365096))
+    - Rename write_*_blob methods to have 'be' and 'le' variants ([`fbd6a72`](https://github.com/spmadden/irox/commit/fbd6a72ac2ee6c6081bcfff0bab6e496b4d41ab2))
+    - New read/write length-prefixed strings functions ([`e8864e6`](https://github.com/spmadden/irox/commit/e8864e656383096d6b3c4c3316b6d78d3746ab70))
+</details>
+
 ## v0.6.1 (2024-04-01)
 
 ### New Features
@@ -24,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release over the course of 2 calendar days.
+ - 12 commits contributed to the release over the course of 2 calendar days.
  - 28 days passed between releases.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -36,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.6.1 ([`091c8ac`](https://github.com/spmadden/irox/commit/091c8ac155297f942d1a46462e3d2d782d71993e))
     - Accuracy of no_std FloatExt funcs ([`915cd9d`](https://github.com/spmadden/irox/commit/915cd9d6a24111a16edf3e546d6e79a783ee6146))
     - Impl FloatExt on feature 'std' as well ([`be13dba`](https://github.com/spmadden/irox/commit/be13dba6a728c32453fda64049ee1011dfe61c14))
     - Adding impl of SHA1 ([`efd9775`](https://github.com/spmadden/irox/commit/efd9775d64703aa24ef68b86ccdbd84c090acaa0))
