@@ -1,6 +1,35 @@
 
 
+## v0.5.0 (2024-04-01)
+
+### Bug Fixes
+
+ - <csr-id-401f028c7aeb952515d38b9b3df5d1b11a5b9a96/> fixing to use updated irox_types types
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 79 calendar days.
+ - 123 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixing to use updated irox_types types ([`401f028`](https://github.com/spmadden/irox/commit/401f028c7aeb952515d38b9b3df5d1b11a5b9a96))
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
 ## v0.4.0 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
+<csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
 ### Chore
 
@@ -16,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 23 calendar days.
+ - 6 commits contributed to the release over the course of 23 calendar days.
  - 30 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.4.0 ([`6715217`](https://github.com/spmadden/irox/commit/6715217edd52577630485a4e389cf8bfa9bb6c35))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Pivot 'Box<[u8]>' into 'Vec<u8>' to support new Primitive blob types ([`934f860`](https://github.com/spmadden/irox/commit/934f860fc30602a8f94d12ae1c4763bf0123ea9a))
     - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
