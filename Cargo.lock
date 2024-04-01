@@ -3598,7 +3598,7 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "criterion",
 ]

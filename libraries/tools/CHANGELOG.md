@@ -1,7 +1,59 @@
 
 
 
+## v0.6.1 (2024-04-01)
+
+### New Features
+
+ - <csr-id-be13dba6a728c32453fda64049ee1011dfe61c14/> impl FloatExt on feature 'std' as well
+ - <csr-id-efd9775d64703aa24ef68b86ccdbd84c090acaa0/> adding impl of SHA1
+ - <csr-id-40d00a68dd70dc52ee358f293168bce0c5f85f45/> more support for little-endian in bits
+ - <csr-id-a606b9a21dc5ab1e96c588567a7b76efcc466d44/> adding impl of MD5
+ - <csr-id-9711bc3cc3c9c6e88ef373c486e7382cdb5cd996/> adding assert_eq_hex! macro for hex printing assertions
+ - <csr-id-2da79217703b5a33d9c7c086c412d7afbb75ef7f/> adding u32 primitive FromArray and ToArray traits
+ - <csr-id-dbdc371dd862231c3a1a3c97fd54dd0d2c3e98ca/> impl exp() ln() powi(), powf() and sqrt() for f64, f32 in no_std
+
+### Bug Fixes
+
+ - <csr-id-915cd9d6a24111a16edf3e546d6e79a783ee6146/> accuracy of no_std FloatExt funcs
+ - <csr-id-3b2c7a237dfa62486596ee1e54069605a1d3c7a3/> fixed issue where Bits::read_exact_vec was not sized correctly
+ - <csr-id-403f9288190d88b2fa97891d715de1cb8a993202/> switch to different (better) alg for ln, imp loop perf
+ - <csr-id-1baab6123103aabd1e1d9669887af7049a3272f9/> only run no_std tests on no_std build
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release over the course of 2 calendar days.
+ - 28 days passed between releases.
+ - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Accuracy of no_std FloatExt funcs ([`915cd9d`](https://github.com/spmadden/irox/commit/915cd9d6a24111a16edf3e546d6e79a783ee6146))
+    - Impl FloatExt on feature 'std' as well ([`be13dba`](https://github.com/spmadden/irox/commit/be13dba6a728c32453fda64049ee1011dfe61c14))
+    - Adding impl of SHA1 ([`efd9775`](https://github.com/spmadden/irox/commit/efd9775d64703aa24ef68b86ccdbd84c090acaa0))
+    - Fixed issue where Bits::read_exact_vec was not sized correctly ([`3b2c7a2`](https://github.com/spmadden/irox/commit/3b2c7a237dfa62486596ee1e54069605a1d3c7a3))
+    - More support for little-endian in bits ([`40d00a6`](https://github.com/spmadden/irox/commit/40d00a68dd70dc52ee358f293168bce0c5f85f45))
+    - Adding impl of MD5 ([`a606b9a`](https://github.com/spmadden/irox/commit/a606b9a21dc5ab1e96c588567a7b76efcc466d44))
+    - Adding assert_eq_hex! macro for hex printing assertions ([`9711bc3`](https://github.com/spmadden/irox/commit/9711bc3cc3c9c6e88ef373c486e7382cdb5cd996))
+    - Adding u32 primitive FromArray and ToArray traits ([`2da7921`](https://github.com/spmadden/irox/commit/2da79217703b5a33d9c7c086c412d7afbb75ef7f))
+    - Switch to different (better) alg for ln, imp loop perf ([`403f928`](https://github.com/spmadden/irox/commit/403f9288190d88b2fa97891d715de1cb8a993202))
+    - Only run no_std tests on no_std build ([`1baab61`](https://github.com/spmadden/irox/commit/1baab6123103aabd1e1d9669887af7049a3272f9))
+    - Impl exp() ln() powi(), powf() and sqrt() for f64, f32 in no_std ([`dbdc371`](https://github.com/spmadden/irox/commit/dbdc371dd862231c3a1a3c97fd54dd0d2c3e98ca))
+</details>
+
 ## v0.6.0 (2024-03-03)
+
+<csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
+<csr-id-ca214f0f8b310c02e4009fcc37b51d04bda47368/>
+<csr-id-2c04083563c31f6f260cbc1b5d9bf9ecea0b99d1/>
 
 ### Chore
 
@@ -32,7 +84,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 35 calendar days.
+ - 7 commits contributed to the release over the course of 35 calendar days.
  - 48 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -44,6 +96,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.6.0 ([`0560dc1`](https://github.com/spmadden/irox/commit/0560dc130599c7355e1f57cbadd88395381c0033))
     - Tweak alloc imports in fs, fix readme in cargo.toml ([`d012d64`](https://github.com/spmadden/irox/commit/d012d6459e4853ea48798b1b0d98196d0577f6ec))
     - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
     - Recursive justfiles ([`7902f54`](https://github.com/spmadden/irox/commit/7902f54162a5f33d0e452ff3760ef3a7e91ab704))
