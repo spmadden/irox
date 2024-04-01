@@ -2,7 +2,7 @@
 name = "irox-stats"
 description = "Various mathematical and statistics utilities"
 keywords = ["irox", "mathematics", "statistics", "library", "distributions"]
-categories = ["mathematics"]
+categories = ["mathematics", "no-std"]
 version= "0.2.3"
 edition.workspace = true
 authors.workspace = true
@@ -17,3 +17,6 @@ workspace = true
 
 [dependencies]
 irox-tools = {path = "../tools", default-features = false, version = "0"}
+
+[dev-dependencies]
+irox-units = {workspace = true}
