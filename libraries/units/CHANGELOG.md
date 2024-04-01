@@ -1,6 +1,31 @@
 
 
 
+## v0.3.6 (2024-04-01)
+
+### New Features
+
+ - <csr-id-5c59f70540f178aa0f5ddc5e941942f601206513/> add new Duration::from_seconds_f64 method
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 28 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new Duration::from_seconds_f64 method ([`5c59f70`](https://github.com/spmadden/irox/commit/5c59f70540f178aa0f5ddc5e941942f601206513))
+</details>
+
 ## v0.3.5 (2024-03-03)
 
 ### Bug Fixes
@@ -15,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 50 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.5 ([`a2e8f48`](https://github.com/spmadden/irox/commit/a2e8f48713e6ed2855fbe6e80fdb85767491e978))
     - 6 keywords -> 5 keywords for publish ([`cdea90a`](https://github.com/spmadden/irox/commit/cdea90ac4b594c7ddb640a67753030bcf8e76240))
     - Release irox-units v0.3.5 ([`5b3a8e2`](https://github.com/spmadden/irox/commit/5b3a8e2196cc6e1dbf2b32ed2a88b0cbb6df7d54))
     - Release irox-tools v0.6.0 ([`0560dc1`](https://github.com/spmadden/irox/commit/0560dc130599c7355e1f57cbadd88395381c0033))
