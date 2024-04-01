@@ -104,10 +104,10 @@ impl crate::f64::FloatExt for f32 {
     }
 
     /// Naive implementation of integer power fn.  Will do something smarter later.
-    fn powi(self, val: u32) -> Self::Type {
+    fn powi(self, val: i32) -> Self::Type {
         let mut out = self;
         let i = self;
-        for _ in 0..val {
+        for _ in 0..val.abs() {
             out *= i;
         }
         out
