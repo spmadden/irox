@@ -1,7 +1,34 @@
 
 
 
+## 0.5.0 (2024-04-01)
+
+### Refactor (BREAKING)
+
+ - <csr-id-9427c1392d00725f7ee3cc73ffb23e25a9dd72a1/> pretty much a full rewrite of the derive code to use less proc_macro2
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 78 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pretty much a full rewrite of the derive code to use less proc_macro2 ([`9427c13`](https://github.com/spmadden/irox/commit/9427c1392d00725f7ee3cc73ffb23e25a9dd72a1))
+</details>
+
 ## 0.3.1 (2023-11-29)
+
+<csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
 ### Chore
 
@@ -15,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 9 calendar days.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,8 +54,30 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs v0.3.1 ([`934c196`](https://github.com/spmadden/irox/commit/934c196d87c63b830d1311d57b9606390acb5b1f))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Expose Bits,MutBits to consumers ([`097319c`](https://github.com/spmadden/irox/commit/097319c31680f79ab5c5ef3850822764adf3d4ae))
+</details>
+
+## 0.4.0 (2024-01-13)
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 45 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
 
 ## 0.3.0 (2023-10-30)
