@@ -1,0 +1,23 @@
+[package]
+name = "irox-bits"
+description = "Bits & Bobs.  No-std/No-alloc bit/byte manipulation of streams"
+keywords = ["irox"]
+categories = ["no-std::no-alloc", "encoding", "parsing", "embedded"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+
+[features]
+std = []
+alloc = []
+default = []

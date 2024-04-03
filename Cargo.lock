@@ -3321,6 +3321,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-bits"
+version = "0.1.0"
+
+[[package]]
 name = "irox-build-rs"
 version = "0.2.1"
 dependencies = [
