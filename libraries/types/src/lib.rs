@@ -238,7 +238,7 @@ pub enum VariableType {
 ///
 /// An enumeration to store the value of a dynamic/variable sized element
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, PartialEq, EnumName)]
+#[derive(Debug, Clone, Eq, PartialEq, EnumName)]
 #[non_exhaustive]
 pub enum DynamicallySizedValue {
     /// A string
@@ -292,7 +292,7 @@ impl From<PrimitiveValue> for VariableValue {
 }
 ///
 /// A value type that can be either statically sized (primitive) or variably sized (dynamic)
-#[derive(Debug, Clone, EnumName)]
+#[derive(Debug, Clone, PartialEq, EnumName)]
 pub enum VariableValue {
     Primitive(PrimitiveValue),
     DynamicallySized(DynamicallySizedValue),
@@ -308,7 +308,7 @@ impl ToString for VariableValue {
 }
 
 /// An element that has both a Name and a Type
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct NamedVariable {
     name: String,
     ty: PrimitiveType,
@@ -330,6 +330,39 @@ impl NamedVariable {
     #[must_use]
     pub fn variable_type(&self) -> PrimitiveType {
         self.ty
+    }
+}
+
+/// An element that has both a Name and a Type
+#[derive(Debug, Clone, PartialEq)]
+pub struct NamedVariableValue {
+    name: String,
+    value: VariableValue,
+}
+impl NamedVariableValue {
+    #[must_use]
+    pub fn new(name: String, value: VariableValue) -> NamedVariableValue {
+        NamedVariableValue { name, value }
+    }
+
+    /// Returns the name of this field
+    #[must_use]
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    /// Returns the stored value of the field
+    #[must_use]
+    pub fn value(&self) -> &VariableValue {
+        &self.value
+    }
+}
+impl From<NamedPrimitiveValue> for NamedVariableValue {
+    fn from(value: NamedPrimitiveValue) -> Self {
+        NamedVariableValue {
+            name: value.name,
+            value: VariableValue::Primitive(value.value),
+        }
     }
 }
 
