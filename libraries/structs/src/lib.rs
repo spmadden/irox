@@ -21,7 +21,7 @@
 //! ### Example Big Endian:
 //! ```
 //! use irox_structs::Struct;
-//! use irox_tools::bits::Error;
+//! use irox_bits::Error;
 //!
 //! #[derive(Default, Debug, Copy, Clone, Eq, PartialEq, Struct)]
 //! #[strict_sizing]
@@ -56,7 +56,7 @@
 //! ### Example Little Endian:
 //! ```
 //! use irox_structs::Struct;
-//! use irox_tools::bits::Error;
+//! use irox_bits::Error;
 //!
 //! #[derive(Default, Debug, Copy, Clone, Eq, PartialEq, Struct)]
 //! #[little_endian]
@@ -89,8 +89,8 @@
 //! }
 //! ```
 
+pub use irox_bits::{Bits, Error, MutBits};
 pub use irox_structs_derive::*;
-pub use irox_tools::bits::{Bits, Error, MutBits};
 
 ///
 /// A struct is a series of bytes in memory, serialized in the order that the

@@ -18,5 +18,5 @@ workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-irox-tools = {version = "0", default-features = false, path = "../tools"}
+irox-bits.workspace = true
 irox-structs_derive.workspace = true

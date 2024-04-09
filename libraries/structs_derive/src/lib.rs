@@ -143,9 +143,12 @@ fn get_endian_method_for_varbl(ty: VariableType, read: bool, big_endian: bool) -
 
 fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizing) -> TokenStream {
     let mut ts = TokenStream::new();
-    ts.extend::<TokenStream>(quote!(
-        fn write_to<T: irox_tools::bits::MutBits>(&self, out: &mut T) -> Result<(), irox_tools::bits::Error>
-    ).into());
+    ts.extend::<TokenStream>(
+        quote!(
+            fn write_to<T: irox_bits::MutBits>(&self, out: &mut T) -> Result<(), irox_bits::Error>
+        )
+        .into(),
+    );
 
     let mut method = TokenStream::new();
 
@@ -272,7 +275,7 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
 fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
     let mut ts = TokenStream::new();
     ts.extend::<TokenStream>(quote!(
-        fn parse_from<T: irox_tools::bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_tools::bits::Error>
+        fn parse_from<T: irox_bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_bits::Error>
     ).into());
 
     let mut inits = TokenStream::new();
