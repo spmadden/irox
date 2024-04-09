@@ -16,13 +16,15 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+irox-bits.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
 
 [features]
-default = ["std"]
-std = []
+default = []
+std = ["irox-bits/std", "alloc"]
+alloc = ["irox-bits/alloc"]
 
 [lib]
 bench = false

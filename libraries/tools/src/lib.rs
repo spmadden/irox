@@ -10,6 +10,11 @@
 extern crate alloc;
 extern crate core;
 
+pub use buf::*;
+pub use hash::*;
+pub use primitives::*;
+pub use util::*;
+
 #[macro_use]
 pub mod ansi_colors;
 pub mod arrays;
@@ -29,11 +34,10 @@ pub mod read;
 pub mod sync;
 pub mod vec;
 
-pub use primitives::*;
-mod primitives;
-pub use util::*;
 pub mod errors;
 pub mod fs;
 mod hash;
+mod primitives;
+
+mod buf;
 mod util;
-pub use hash::*;
