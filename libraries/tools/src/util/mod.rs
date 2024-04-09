@@ -6,7 +6,6 @@
 //! Various utilities and helpers
 
 pub mod base64;
-pub mod bits;
 pub mod identifier;
 #[cfg(feature = "std")]
 pub mod scanner;

@@ -8,7 +8,7 @@
 
 use core::fmt::{Display, Formatter};
 
-use crate::bits::{Bits, Error, MutBits};
+use irox_bits::{Bits, Error, MutBits};
 
 ///
 /// A basic UUID structure.

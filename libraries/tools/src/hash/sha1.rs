@@ -7,10 +7,11 @@
 //!
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
-use crate::bits::{Bits, Error, MutBits};
-use alloc::collections::VecDeque;
-use alloc::vec::Vec;
+#![allow(clippy::indexing_slicing)]
+
+use crate::{Buffer, FixedBuf, RoundBuffer};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
+use irox_bits::{Bits, Error, MutBits};
 
 ///
 /// Implementation of [RFC 3174](https://datatracker.ietf.org/doc/html/rfc3174) based on the [Wikipedia](https://en.wikipedia.org/wiki/SHA-1#Examples_and_pseudocode) algorithm
@@ -19,7 +20,7 @@ use core::ops::{BitAnd, BitOr, BitXor, Not};
 /// **THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED**
 pub struct SHA1 {
     written_length: u64,
-    buf: VecDeque<u8>,
+    buf: RoundBuffer<64, u8>,
 
     h0: u32,
     h1: u32,
@@ -37,7 +38,7 @@ impl Default for SHA1 {
             h3: 0x10325476,
             h4: 0xC3D2E1F0,
             written_length: 0,
-            buf: VecDeque::with_capacity(64),
+            buf: RoundBuffer::default(),
         }
     }
 }
@@ -47,16 +48,16 @@ impl SHA1 {
         if self.buf.len() < 64 {
             return;
         }
-        let mut words: Vec<u32> = Vec::with_capacity(80);
-        for _ in 0..16 {
-            words.push(self.buf.read_be_u32().unwrap_or_default());
+        let mut words: FixedBuf<80, u32> = FixedBuf::default();
+        for i in 0..16 {
+            words[i] = self.buf.read_be_u32().unwrap_or_default();
         }
         for i in 16..=79 {
             let w1 = words.get(i - 3).copied().unwrap_or_default();
             let w2 = words.get(i - 8).copied().unwrap_or_default();
             let w3 = words.get(i - 14).copied().unwrap_or_default();
             let w4 = words.get(i - 16).copied().unwrap_or_default();
-            words.push(w1.bitxor(w2).bitxor(w3).bitxor(w4).rotate_left(1));
+            words[i] = w1.bitxor(w2).bitxor(w3).bitxor(w4).rotate_left(1);
         }
 
         let mut a = self.h0;
@@ -119,13 +120,13 @@ impl SHA1 {
             modlen64 = 0;
         }
         pad += 56 - modlen64;
-        self.buf.push_back(0x80);
+        let _ = self.buf.push_back(0x80);
         pad -= 1;
         for _ in 0..pad {
-            self.buf.push_back(0);
+            self.try_chomp();
+            let _ = self.buf.push_back(0);
         }
         let _ = self.buf.write_be_u64(self.written_length << 3);
-        self.try_chomp();
         self.try_chomp();
         let mut out: [u8; 20] = [0; 20];
         let mut v = out.as_mut_slice();
@@ -141,7 +142,7 @@ impl SHA1 {
     /// Appends the bytes to the internal buffer.  NOTE: You must call 'finish' to get the final result.
     pub fn write(&mut self, bytes: &[u8]) {
         for b in bytes {
-            self.buf.push_back(*b);
+            let _ = self.buf.push_back(*b);
             self.written_length += 1;
             self.try_chomp();
         }
@@ -164,9 +165,9 @@ impl MutBits for SHA1 {
 
 #[cfg(test)]
 mod test {
-    use crate::bits::Error;
-    use crate::hex::from_hex_str;
+    use crate::hex::from_hex_into;
     use crate::sha1::SHA1;
+    use irox_bits::Error;
 
     #[test]
     pub fn test_sha1() -> Result<(), Error> {
@@ -212,10 +213,11 @@ mod test {
             ),
         ];
         for (hash, st) in tests {
-            assert_eq!(
-                from_hex_str(hash)?.as_ref(),
-                SHA1::default().hash(st.as_bytes()).as_ref()
-            );
+            let mut bbuf: [u8; 1024] = [0; 1024];
+            let mut buf = bbuf.as_mut_slice();
+            let wrote = from_hex_into(hash, &mut buf)?;
+            let hash = SHA1::default().hash(st.as_bytes());
+            assert_eq!(&bbuf[0..wrote], &hash);
         }
 
         Ok(())

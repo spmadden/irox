@@ -5,17 +5,31 @@ default +FLAGS='': (build FLAGS) (test FLAGS) (lints FLAGS)
 
 ci +FLAGS='': build test lints_deny
 
+features := "std alloc std,alloc"
+
 build +FLAGS='':
-    @just logstart irox-tools::build-nostd
-    cargo build --no-default-features {{FLAGS}}
-    @just logend
-    @just logstart irox-tools::build-std
+    #!/bin/bash
+    set -euo pipefail
+    just logstart irox-tools::build-base
     cargo build {{FLAGS}}
-    @just logend
+    just logend
+    for feature in {{features}}; do
+        just logstart irox-tools::build-$feature
+        cargo build --features $feature {{FLAGS}}
+        just logend
+    done
 
 test +FLAGS='':
-    cargo test --no-default-features {{FLAGS}}
+    #!/bin/bash
+    set -euo pipefail
+    just logstart irox-tools::test-base
     cargo test {{FLAGS}}
+    just logend
+    for feature in {{features}}; do
+        just logstart irox-tools::test-$feature
+        cargo test --features $feature {{FLAGS}}
+        just logend
+    done
 
 lints +FLAGS='':
     @just logstart lints

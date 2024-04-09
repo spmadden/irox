@@ -6,6 +6,7 @@
 //!
 
 use core::ops::BitXorAssign;
+use irox_bits::Bits;
 
 const C1: u64 = 0x87c3_7b91_1142_53d5;
 const C2: u64 = 0x4cf5_ad43_2745_937f;
@@ -38,11 +39,11 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
 
     let mut chunks = data.chunks_exact(16);
     for chunk_16 in chunks.by_ref() {
-        let (a, b) = chunk_16.split_at(8);
-        let Ok(k1) = crate::bits::read_be_u64(a) else {
+        let (mut a, mut b) = chunk_16.split_at(8);
+        let Ok(k1) = a.read_be_u64() else {
             return 0;
         };
-        let Ok(k2) = crate::bits::read_be_u64(b) else {
+        let Ok(k2) = b.read_be_u64() else {
             return 0;
         };
         let k1 = k1.swap_bytes();

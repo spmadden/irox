@@ -4,12 +4,11 @@
 
 //!
 //! Hexdump & Hex manipulation
-
+#[cfg(feature = "alloc")]
 extern crate alloc;
-use crate::bits::{Error, ErrorKind, MutBits};
-use alloc::boxed::Box;
-use alloc::string::String;
-use alloc::vec::Vec;
+use crate::buf::StrBuf;
+use core::fmt::Write;
+use irox_bits::{Error, ErrorKind, FormatBits, MutBits};
 
 /// 0-9, A-F
 pub static HEX_UPPER_CHARS: [char; 16] = [
@@ -35,29 +34,23 @@ pub trait HexDump {
 impl<S: AsRef<[u8]>> HexDump for S {
     #[cfg(feature = "std")]
     fn hexdump(&self) {
-        let _ = self.hexdump_to(&mut crate::bits::BitsWrapper(&mut std::io::stdout().lock()));
+        let _ = self.hexdump_to(&mut irox_bits::BitsWrapper(&mut std::io::stdout().lock()));
     }
 
     fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error> {
         let mut idx = 0;
-        let val = self.as_ref();
-        loop {
+        let chunks = self.as_ref().chunks(16);
+        let mut out: FormatBits<T> = out.into();
+        for chunk in chunks {
             write!(out, "{idx:08X}  ")?;
-            let mut buf = Vec::new();
-            for sidx in 0..16 {
-                let Some(v) = val.get(idx + sidx) else {
-                    break;
-                };
-                buf.push(*v);
-            }
-            for v in &buf {
+            for v in chunk {
                 write!(out, "{v:02X} ")?;
             }
-            for _i in 0..(16 - buf.len()) {
+            for _i in 0..(16 - chunk.len()) {
                 write!(out, "   ")?;
             }
             write!(out, " |")?;
-            for v in &buf {
+            for v in chunk {
                 match *v {
                     0..=0x1F | 0x7F..=0xA0 | 0xFF => {
                         // nonprintables
@@ -69,14 +62,11 @@ impl<S: AsRef<[u8]>> HexDump for S {
                     }
                 }
             }
-            for _i in 0..(16 - buf.len()) {
+            for _i in 0..(16 - chunk.len()) {
                 write!(out, " ")?;
             }
             writeln!(out, "|")?;
             idx += 16;
-            if buf.len() != 16 {
-                break;
-            }
         }
         Ok(())
     }
@@ -107,9 +97,10 @@ pub fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
 ///
 /// Parses the provided string, a series of hex characters [a-fA-F0-9] and converts them to the
 /// associated byte format.
-pub fn from_hex_str(hex: &str) -> Result<Box<[u8]>, Error> {
+#[cfg(feature = "allocs")]
+pub fn from_hex_str(hex: &str) -> Result<alloc::boxed::Box<[u8]>, Error> {
     let len = hex.len();
-    let mut out: Vec<u8> = Vec::with_capacity(len * 2);
+    let mut out = alloc::vec::Vec::with_capacity(len * 2);
 
     let mut val = 0u8;
     let mut idx = 0;
@@ -132,10 +123,37 @@ pub fn from_hex_str(hex: &str) -> Result<Box<[u8]>, Error> {
 }
 
 ///
+/// Parses the provided string, a series of hex characters [a-fA-F0-9] and converts them to the
+/// associated byte format.  Returns the number of bytes written.
+pub fn from_hex_into<T: MutBits>(hex: &str, out: &mut T) -> Result<usize, Error> {
+    let mut val = 0u8;
+    let mut idx = 0;
+    let mut wrote = 0;
+    for ch in hex.chars() {
+        if ch == ' ' {
+            continue;
+        }
+        let ch = hex_char_to_nibble(ch)?;
+        if idx & 0x1 == 0 {
+            val |= (ch << 4) & 0xF0;
+        } else {
+            val |= ch & 0xF;
+            out.write_u8(val)?;
+            wrote += 1;
+            val = 0;
+        }
+        idx += 1;
+    }
+
+    Ok(wrote)
+}
+
+///
 /// Prints the value to a uppercase hex string
-pub fn to_hex_str_upper(val: &[u8]) -> String {
+#[cfg(feature = "alloc")]
+pub fn to_hex_str_upper(val: &[u8]) -> alloc::string::String {
     let len = val.len() * 2;
-    let mut out = String::with_capacity(len);
+    let mut out = alloc::string::String::with_capacity(len);
 
     for v in val {
         let _ = write!(&mut out, "{v:02X}");
@@ -145,16 +163,47 @@ pub fn to_hex_str_upper(val: &[u8]) -> String {
 }
 
 ///
-/// Prints the value to a uppercase hex string
-pub fn to_hex_str_lower(val: &[u8]) -> String {
+/// Prints the value to a lowercase hex string
+#[cfg(feature = "alloc")]
+pub fn to_hex_str_lower(val: &[u8]) -> alloc::string::String {
     let len = val.len() * 2;
-    let mut out = String::with_capacity(len);
+    let mut out = alloc::string::String::with_capacity(len);
 
     for v in val {
         let _ = write!(&mut out, "{v:02x}");
     }
 
     out
+}
+
+///
+/// Prints the value to a lowercase hex string and stores it in the provided
+/// [`StrBuf`].  The size of the StrBuf must be `>= 2x val.len()`
+pub fn to_hex_strbuf_lower<const N: usize>(val: &[u8], buf: &mut StrBuf<N>) -> Result<(), Error> {
+    let len = val.len() * 2;
+    if N < len {
+        return Err(ErrorKind::UnexpectedEof.into());
+    }
+    for v in val {
+        write!(buf, "{v:02x}")?;
+    }
+
+    Ok(())
+}
+
+///
+/// Prints the value to a uppercase hex string and stores it in the provided
+/// [`StrBuf`].  The size of the StrBuf must be `>= 2x val.len()`
+pub fn to_hex_strbuf_upper<const N: usize>(val: &[u8], buf: &mut StrBuf<N>) -> Result<(), Error> {
+    let len = val.len() * 2;
+    if N < len {
+        return Err(ErrorKind::UnexpectedEof.into());
+    }
+    for v in val {
+        write!(buf, "{v:02X}")?;
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -164,7 +213,7 @@ mod tests {
     use alloc::vec::Vec;
 
     #[test]
-    pub fn test() -> Result<(), crate::bits::Error> {
+    pub fn test() -> Result<(), irox_bits::Error> {
         let mut buf: Vec<u8> = Vec::new();
         for v in u8::MIN..=u8::MAX {
             buf.push(v);

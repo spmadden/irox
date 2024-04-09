@@ -4,9 +4,9 @@
 //!
 //! Traits for packetization of data and movement of packets of data
 
-use crate::bits::{Bits, Error, ErrorKind, MutBits};
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;
+use irox_bits::{Bits, Error, ErrorKind, MutBits};
 
 /// A packet is a series of bytes
 pub type PacketData = Vec<u8>;
@@ -64,7 +64,7 @@ where
     R: Bits,
     P: Packetization<R>,
 {
-    type Error = crate::bits::Error;
+    type Error = irox_bits::Error;
 
     /// Polls the next packet from the underlying transport
     fn poll_next_packet(&mut self) -> Result<PacketData, Self::Error> {

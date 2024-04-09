@@ -6,10 +6,9 @@
 //! RFC-4648 Compliant Base64, Base32, and Base16 encoders and decoders
 //!
 extern crate alloc;
-use crate::bits::{Bits, Error, ErrorKind, MutBits};
 use crate::codec::Codec;
 use alloc::collections::BTreeMap;
-use alloc::string::String;
+use irox_bits::{Bits, Error, ErrorKind, MutBits};
 
 /// `A-Z,a-z,0-9,+,/` - not filesystem or URL-safe
 pub static BASE64_ALPHABET: [u8; 64] = [
@@ -205,12 +204,14 @@ pub fn base64_decode<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<us
     new_base64_codec().decode(input, output)
 }
 /// Encodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`]
-pub fn base64_encode_to_str<I: Bits>(input: I) -> Result<String, Error> {
+#[cfg(feature = "alloc")]
+pub fn base64_encode_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
     new_base64_codec().encode_to_str(input)
 }
 /// Decodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`], dropping
 /// any characters that aren't UTF-8.
-pub fn base64_decode_to_str_lossy<I: Bits>(input: I) -> Result<String, Error> {
+#[cfg(feature = "alloc")]
+pub fn base64_decode_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
     new_base64_codec().decode_to_str_lossy(input)
 }
 
@@ -226,12 +227,14 @@ pub fn base64_decode_safe<I: Bits, O: MutBits>(input: I, output: &mut O) -> Resu
 }
 /// Encodes the provided input to a string, using the using the filesystem and
 /// URL-safe RFC-4648 [`BASE64URL_ALPHABET`]
-pub fn base64_encode_safe_to_str<I: Bits>(input: I) -> Result<String, Error> {
+#[cfg(feature = "alloc")]
+pub fn base64_encode_safe_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
     new_base64_safe_codec().encode_to_str(input)
 }
 /// Decodes the provided the input, to a string, using the filesystem and URL-safe RFC-4648
 /// [`BASE64URL_ALPHABET`], any characters not valid UTF-8 are dropped.
-pub fn base64_decode_safe_to_str_lossy<I: Bits>(input: I) -> Result<String, Error> {
+#[cfg(feature = "alloc")]
+pub fn base64_decode_safe_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
     new_base64_safe_codec().decode_to_str_lossy(input)
 }
 

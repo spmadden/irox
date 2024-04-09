@@ -7,10 +7,10 @@
 //!
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
-use crate::bits::{Bits, Error, MutBits};
 use crate::u32::{FromU32Array, ToU32Array};
-use alloc::collections::VecDeque;
+use crate::{Buffer, RoundBuffer};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
+use irox_bits::{Bits, Error, MutBits};
 
 static SHIFT_AMOUNTS: [u32; 64] = [
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
@@ -40,14 +40,14 @@ pub struct MD5 {
     b0: u32,
     c0: u32,
     d0: u32,
-    buf: VecDeque<u8>,
+    buf: RoundBuffer<64, u8>,
 }
 
 impl Default for MD5 {
     fn default() -> Self {
         Self {
             written_length: 0,
-            buf: VecDeque::with_capacity(64),
+            buf: RoundBuffer::default(),
             a0: 0x67452301,
             b0: 0xefcdab89,
             c0: 0x98badcfe,
@@ -136,15 +136,15 @@ impl MD5 {
             modlen64 = 0;
         }
         pad += 56 - modlen64;
-        self.buf.push_back(0x80);
+        let _ = self.buf.push_back(0x80);
         pad -= 1;
         for _ in 0..pad {
-            self.buf.push_back(0);
+            self.try_chomp();
+            let _ = self.buf.push_back(0);
         }
         let [a, b] = (self.written_length << 3).to_u32_array();
         let _ = self.buf.write_be_u32(b.swap_bytes());
         let _ = self.buf.write_be_u32(a.swap_bytes());
-        self.try_chomp();
         self.try_chomp();
         // assert_eq!(0, self.buf.len(), "Buffer length wasn't zeroed!");
         u128::from_u32_array(&[
@@ -159,7 +159,7 @@ impl MD5 {
     /// Appends the bytes to the internal buffer.  NOTE: You must call 'finish' to get the final result.
     pub fn write(&mut self, bytes: &[u8]) {
         for b in bytes {
-            self.buf.push_back(*b);
+            let _ = self.buf.push_back(*b);
             self.written_length += 1;
             self.try_chomp();
         }
