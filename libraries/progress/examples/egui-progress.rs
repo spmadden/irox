@@ -10,10 +10,10 @@ use eframe::{App, CreationContext, Frame, NativeOptions};
 use egui::{CentralPanel, Context, Window};
 use log::error;
 
+use irox_bits::MutBits;
 use irox_progress::egui::EguiProgressWindow;
 use irox_progress::write::WriterTask;
 use irox_progress::{ProgressPrinter, Task};
-use irox_tools::bits::MutBits;
 use irox_tools::random::{Random, PRNG};
 
 struct ProgressApp {

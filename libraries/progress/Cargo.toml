@@ -22,6 +22,7 @@ egui = ["dep:egui", "dep:irox-egui-extras"]
 [dependencies]
 irox-time.workspace = true
 irox-tools.workspace = true
+irox-bits.workspace = true
 log.workspace = true
 egui = {workspace = true, optional = true}
 irox-egui-extras = {workspace = true, optional = true}

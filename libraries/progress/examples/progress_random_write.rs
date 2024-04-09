@@ -5,11 +5,11 @@
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Error};
 
+use irox_bits::MutBits;
 use irox_progress::console::ConsoleProgressPrinter;
 use irox_progress::write::WriterTask;
 use irox_progress::{ProgressPrinter, Task};
 use irox_time::Duration;
-use irox_tools::bits::MutBits;
 use irox_tools::random::{Random, PRNG};
 
 pub fn main() -> Result<(), Error> {

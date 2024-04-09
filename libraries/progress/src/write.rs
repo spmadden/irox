@@ -3,7 +3,7 @@
 //
 
 use crate::Task;
-use irox_tools::bits::{Error, MutBits};
+use irox_bits::{Error, MutBits};
 use std::io::Write;
 
 ///
