@@ -18,6 +18,6 @@ workspace = true
 [dependencies]
 
 [features]
-std = []
+std = ["alloc"]
 alloc = []
 default = []
