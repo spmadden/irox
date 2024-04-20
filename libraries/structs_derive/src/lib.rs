@@ -145,7 +145,7 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
     let mut ts = TokenStream::new();
     ts.extend::<TokenStream>(
         quote!(
-            fn write_to<T: irox_bits::MutBits>(&self, out: &mut T) -> Result<(), irox_bits::Error>
+            fn write_to<T: irox_structs::MutBits>(&self, out: &mut T) -> Result<(), irox_structs::Error>
         )
         .into(),
     );
@@ -275,7 +275,7 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
 fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
     let mut ts = TokenStream::new();
     ts.extend::<TokenStream>(quote!(
-        fn parse_from<T: irox_bits::Bits>(input: &mut T) -> Result<Self::ImplType, irox_bits::Error>
+        fn parse_from<T: irox_structs::Bits>(input: &mut T) -> Result<Self::ImplType, irox_structs::Error>
     ).into());
 
     let mut inits = TokenStream::new();
