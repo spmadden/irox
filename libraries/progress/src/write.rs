@@ -41,6 +41,6 @@ impl<T: Write> Write for WriterTask<T> {
 
 impl<T: Write> MutBits for WriterTask<T> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        self.writer.write_all(&[val])
+        Ok(self.writer.write_all(&[val])?)
     }
 }
