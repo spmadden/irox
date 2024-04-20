@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Error, ErrorKind};
 use irox_tools::packetio::Packet;
 
 use crate::MessageType;
@@ -103,7 +104,7 @@ impl RateControlRF103 {
 impl Packet for RateControlRF103 {
     type PacketType = MessageType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         let msg = match self.msg {
             MessageType::GGA => 0,
             MessageType::GLL => 1,
@@ -113,7 +114,7 @@ impl Packet for RateControlRF103 {
             MessageType::VTG => 5,
             MessageType::MSS => 6,
             MessageType::ZDA => 8,
-            _ => return Err(std::io::ErrorKind::InvalidInput.into()),
+            _ => return Err(ErrorKind::InvalidInput.into()),
         };
         let cmd = match self.command {
             ControlCommand::SetRate => 0,

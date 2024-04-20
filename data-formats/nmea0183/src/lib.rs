@@ -5,9 +5,9 @@ use std::fmt::{Display, Formatter};
 use log::trace;
 
 pub use error::*;
+use irox_bits::{Bits, ErrorKind};
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
-use irox_tools::bits::{Bits, ErrorKind};
 use irox_tools::options::MaybeInto;
 pub use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
 use irox_units::units::angle::Angle;
@@ -70,7 +70,7 @@ impl Display for FramePayload {
 impl Packet for Frame {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, irox_tools::bits::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, irox_bits::Error> {
         if let Some(raw) = &self.raw {
             return Ok(Vec::from(raw.as_bytes()));
         }
@@ -122,7 +122,7 @@ impl NMEAPacketizer {
     }
 }
 impl<T: Bits> Packetization<T> for NMEAPacketizer {
-    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, irox_tools::bits::Error> {
+    fn read_next_packet(&mut self, source: &mut T) -> Result<PacketData, irox_bits::Error> {
         loop {
             let val = source.read_u8()?;
             // search for SOF

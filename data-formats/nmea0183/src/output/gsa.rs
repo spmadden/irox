@@ -4,8 +4,8 @@
 use std::fmt::{Display, Formatter};
 use std::io::Write;
 
+use irox_bits::{Bits, BitsError};
 use irox_carto::gps::{DOPs, GPSFixType};
-use irox_tools::bits::Bits;
 use irox_tools::iterators::Itertools;
 use irox_tools::options::MaybeInto;
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -58,7 +58,7 @@ impl Display for GSA {
 impl Packet for GSA {
     type PacketType = MessageType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, BitsError> {
         let mut buf: Vec<u8> = Vec::new();
 
         let mode1 = match self.selection_mode {

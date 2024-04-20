@@ -2,7 +2,8 @@
 // Copyright 2023 IROX Contributors
 //
 
-use crate::{calculate_checksum, Error, MessageType};
+use crate::{calculate_checksum, MessageType};
+use irox_bits::Error;
 use irox_time::datetime::UTCDateTime;
 use irox_time::gregorian::Date;
 use irox_time::Time;
@@ -22,7 +23,7 @@ pub struct ZDA {
 impl Packet for ZDA {
     type PacketType = MessageType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         use std::io::Write;
         let mut buf: Vec<u8> = Vec::new();
 
@@ -138,9 +139,10 @@ impl From<UTCDateTime> for ZDA {
 }
 
 impl TryFrom<ZDA> for UTCDateTime {
-    type Error = Error;
+    type Error = crate::error::Error;
 
     fn try_from(value: ZDA) -> Result<Self, Self::Error> {
+        use crate::error::Error;
         let Some(time) = value.utc_time else {
             return Error::missing_err("time");
         };

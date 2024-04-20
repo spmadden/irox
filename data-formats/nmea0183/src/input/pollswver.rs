@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::Error;
-
-use irox_tools::packetio::Packet;
-
-use crate::MessageType;
+use crate::{MessageType, Packet};
+use irox_bits::Error;
 
 pub struct PollSWVersion;
 

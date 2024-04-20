@@ -17,7 +17,8 @@ workspace = true
 
 [dependencies]
 irox-enums.workspace = true
-irox-tools.workspace = true
+irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true, features = ["std"]}
 irox-carto.workspace = true
 irox-units.workspace = true
 irox-time.workspace = true

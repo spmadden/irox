@@ -4,11 +4,11 @@
 use std::fmt::{Display, Formatter};
 use std::time::Duration;
 
+use irox_bits::{Bits, BitsError};
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
 use irox_enums::EnumName;
 use irox_time::Time;
-use irox_tools::bits::Bits;
 use irox_tools::fmt::DecimalFormatF64;
 use irox_tools::options::{MaybeInto, MaybeMap};
 use irox_tools::packetio::{Packet, PacketBuilder};
@@ -156,34 +156,34 @@ impl Display for GGA {
         use std::fmt::Write;
         let mut buf = String::new();
         if let Some(timestamp) = self.timestamp {
-            buf.write_fmt(format_args!("Duration: {timestamp:?} "))?;
+            write!(buf, "Duration: {timestamp:?} ")?;
         }
         if let Some(lat) = self.latitude {
-            buf.write_fmt(format_args!("{lat} "))?;
+            write!(buf, "{lat} ")?;
         }
         if let Some(lon) = self.longitude {
-            buf.write_fmt(format_args!("{lon} "))?;
+            write!(buf, "{lon} ")?;
         }
         if let Some(quality) = self.quality {
-            buf.write_fmt(format_args!("FixType: {quality:?} "))?;
+            write!(buf, "FixType: {quality:?} ")?;
         }
         if let Some(num_sats) = self.num_sats {
-            buf.write_fmt(format_args!("NumSats: {num_sats} "))?;
+            write!(buf, "NumSats: {num_sats} ")?;
         }
         if let Some(hdop) = self.hdop {
-            buf.write_fmt(format_args!("HDOP: {hdop} "))?;
+            write!(buf, "HDOP: {hdop} ")?;
         }
         if let Some(ant_alt) = self.ant_alt {
-            buf.write_fmt(format_args!("Ant: {ant_alt} "))?;
+            write!(buf, "Ant: {ant_alt} ")?;
         }
         if let Some(geoid_sep) = self.geoid_sep {
-            buf.write_fmt(format_args!("Undulation: {geoid_sep} "))?;
+            write!(buf, "Undulation: {geoid_sep} ")?;
         }
         if let Some(dgps_age) = self.dgps_age {
-            buf.write_fmt(format_args!("DGPSAge: {dgps_age:?} "))?;
+            write!(buf, "DGPSAge: {dgps_age:?} ")?;
         }
         if let Some(stn) = self.stn_id {
-            buf.write_fmt(format_args!("Station: {stn}"))?;
+            write!(buf, "Station: {stn}")?;
         }
 
         f.write_str(buf.as_str())
@@ -193,9 +193,9 @@ impl Display for GGA {
 impl Packet for GGA {
     type PacketType = MessageType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
-        use std::io::Write;
-        let mut buf: Vec<u8> = Vec::new();
+    fn get_bytes(&self) -> Result<Vec<u8>, BitsError> {
+        use std::fmt::Write;
+        let mut buf = String::new();
 
         let utctime = self
             .timestamp
@@ -260,14 +260,12 @@ impl Packet for GGA {
             .map(|f| format!("{}", f.as_secs()))
             .unwrap_or_default();
         let ref_id = self.stn_id.map(|f| format!("{f}")).unwrap_or_default();
-        buf.write_fmt(format_args!(
-            "$GPGGA,{utctime},{latitude},{longitude},{fix},{sats_used},{hdop},{msl_alt},{geoid_sep},{dgps_age},{ref_id}*"
-        ))?;
+        write!(buf, "$GPGGA,{utctime},{latitude},{longitude},{fix},{sats_used},{hdop},{msl_alt},{geoid_sep},{dgps_age},{ref_id}*")?;
 
         let csh = calculate_checksum(&buf);
-        buf.write_fmt(format_args!("{csh:02X}\r\n"))?;
+        write!(buf, "{csh:02X}\r\n")?;
 
-        Ok(buf)
+        Ok(Vec::from(buf.as_str()))
     }
 
     fn get_type(&self) -> Self::PacketType {
