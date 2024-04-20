@@ -17,5 +17,6 @@ workspace = true
 
 [dependencies]
 irox-structs.workspace = true
+irox-bits.workspace = true
 irox-tools.workspace = true
 log.workspace = true

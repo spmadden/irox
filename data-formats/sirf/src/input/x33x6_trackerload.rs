@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error};
 use irox_structs::Struct;
-use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Default, Debug, Copy, Clone, Struct)]
@@ -16,7 +16,7 @@ pub struct TrackerLoadStatus {
 impl Packet for TrackerLoadStatus {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         Struct::as_bytes(self)
     }
 
@@ -28,7 +28,7 @@ impl Packet for TrackerLoadStatus {
 pub struct TrackerLoadBuilder;
 pub static BUILDER: TrackerLoadBuilder = TrackerLoadBuilder;
 impl PacketBuilder<TrackerLoadStatus> for TrackerLoadBuilder {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<TrackerLoadStatus, Self::Error> {
         TrackerLoadStatus::parse_from(input)

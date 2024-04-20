@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error};
 use irox_structs::Struct;
-use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::packet::PacketType;
@@ -30,7 +30,7 @@ pub struct ClockStatus {
 impl Packet for ClockStatus {
     type PacketType = PacketType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         Struct::as_bytes(self)
     }
 
@@ -42,7 +42,7 @@ impl Packet for ClockStatus {
 pub struct ClockStatusBuilder;
 pub static BUILDER: ClockStatusBuilder = ClockStatusBuilder;
 impl PacketBuilder<ClockStatus> for ClockStatusBuilder {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<ClockStatus, Self::Error> {
         ClockStatus::parse_from(input)

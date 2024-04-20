@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error, MutBits};
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Copy, Clone, Debug, Default, Struct)]
@@ -34,7 +34,7 @@ pub struct MeasuredTrackData {
 impl Packet for MeasuredTrackData {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         let mut buf: Vec<u8> = Vec::new();
         buf.write_be_u16(self.gps_week)?;
         buf.write_be_u32(self.gps_tow)?;
@@ -53,7 +53,7 @@ impl Packet for MeasuredTrackData {
 pub struct MeasuredTrackDataBuilder;
 pub static BUILDER: MeasuredTrackDataBuilder = MeasuredTrackDataBuilder;
 impl PacketBuilder<MeasuredTrackData> for MeasuredTrackDataBuilder {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredTrackData, Self::Error> {
         let gps_week = input.read_be_u16()?;
@@ -84,6 +84,6 @@ impl PacketBuilder<MeasuredTrackData> for MeasuredTrackDataBuilder {
     }
 }
 
-fn read_channel<T: Bits>(input: &mut T) -> Result<MeasuredTrackChannel, std::io::Error> {
+fn read_channel<T: Bits>(input: &mut T) -> Result<MeasuredTrackChannel, Error> {
     MeasuredTrackChannel::parse_from(input)
 }

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error};
 use irox_structs::Struct;
-use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Default, Debug, Copy, Clone, Struct)]
@@ -16,7 +16,7 @@ pub struct CPUThroughput {
 impl Packet for CPUThroughput {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         Struct::as_bytes(self)
     }
 
@@ -28,7 +28,7 @@ impl Packet for CPUThroughput {
 pub struct CPUThroughputBuilder;
 pub static BUILDER: CPUThroughputBuilder = CPUThroughputBuilder;
 impl PacketBuilder<CPUThroughput> for CPUThroughputBuilder {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<CPUThroughput, Self::Error> {
         CPUThroughput::parse_from(input)

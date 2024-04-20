@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error};
 use irox_structs::Struct;
-use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 #[derive(Copy, Clone, Debug, Default, Struct)]
@@ -15,7 +15,7 @@ pub struct FiftyBPSData {
 impl Packet for FiftyBPSData {
     type PacketType = ();
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         Struct::as_bytes(self)
     }
 
@@ -27,8 +27,7 @@ impl Packet for FiftyBPSData {
 pub struct FiftyBPSBuilder;
 pub static BUILDER: FiftyBPSBuilder = FiftyBPSBuilder;
 impl PacketBuilder<FiftyBPSData> for FiftyBPSBuilder {
-    type Error = std::io::Error;
-
+    type Error = Error;
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<FiftyBPSData, Self::Error> {
         FiftyBPSData::parse_from(input)
     }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
-use std::io::{ErrorKind, Write};
+use std::io::Write;
 
-use irox_tools::bits::{Bits, MutBits};
+use irox_bits::{Bits, BitsError, BitsErrorKind, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
 
 use crate::error::{Error, ErrorType};
@@ -89,7 +89,7 @@ pub enum PacketType {
 impl Packet for PacketType {
     type PacketType = PacketType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, BitsError> {
         let mut buf: Vec<u8> = Vec::new();
         self.write_to(&mut buf)?;
         Ok(buf)
@@ -108,10 +108,10 @@ impl Packetizer {
     }
 }
 impl<T: Bits> Packetization<T> for Packetizer {
-    fn read_next_packet(&mut self, input: &mut T) -> Result<PacketData, std::io::Error> {
+    fn read_next_packet(&mut self, input: &mut T) -> Result<PacketData, BitsError> {
         loop {
             if let Err(e) = read_start(input) {
-                if e.kind() != ErrorKind::InvalidData {
+                if e.kind() != BitsErrorKind::InvalidData {
                     return Err(e);
                 }
                 input.consume_until(&END_SEQ)?;
@@ -126,16 +126,10 @@ impl<T: Bits> Packetization<T> for Packetizer {
         let end = input.read_be_u16()?;
 
         if !check_checksum(payload.as_slice(), checksum) {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                Error::new(ErrorType::InvalidData, "Invalid checksum"),
-            ));
+            return Err(BitsErrorKind::InvalidData.into());
         }
         if end != END_VAL {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                Error::new(ErrorType::InvalidData, "Invalid packet, missing end bytes"),
-            ));
+            return Err(BitsErrorKind::InvalidData.into());
         }
         let mut out: Vec<u8> = Vec::new();
         out.write_be_u16(payload_len)?;
@@ -149,15 +143,15 @@ impl<T: Bits> Packetization<T> for Packetizer {
 pub struct PacketParser;
 
 impl PacketBuilder<PacketType> for PacketParser {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<PacketType, Self::Error> {
         let payload = Packetizer::new().read_next_packet(input)?;
 
         let (_pld_len, payload) = payload.split_at(2);
         let Some((msg_type, mut payload)) = payload.split_first() else {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
+            return Err(Error::new(
+                ErrorType::InvalidData,
                 "Payload length is insufficient",
             ));
         };
@@ -210,14 +204,14 @@ impl PacketBuilder<PacketType> for PacketParser {
     }
 }
 
-fn read_start<T: Bits>(input: &mut T) -> Result<(), std::io::Error> {
+fn read_start<T: Bits>(input: &mut T) -> Result<(), BitsError> {
     let buf = input.read_exact_vec(START_LEN)?;
 
     if buf.eq(&START_SEQ) {
         return Ok(());
     }
 
-    Err(std::io::Error::from(ErrorKind::InvalidData))
+    Err(BitsErrorKind::InvalidData.into())
 }
 
 fn check_checksum(payload: &[u8], checksum: u16) -> bool {

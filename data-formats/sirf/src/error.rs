@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::BitsError;
 use std::fmt::{Display, Formatter};
+use std::io::ErrorKind;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ErrorType {
     IOError,
     InvalidData,
@@ -25,6 +27,9 @@ impl Display for Error {
 impl std::error::Error for Error {}
 
 impl Error {
+    pub fn kind(&self) -> ErrorType {
+        self.error_type
+    }
     pub(crate) fn new(error_type: ErrorType, error: &'static str) -> Error {
         Error::new_str(error_type, String::from(error))
     }
@@ -39,5 +44,22 @@ impl Error {
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Error::new_str(ErrorType::IOError, format!("{value:?}"))
+    }
+}
+
+impl From<BitsError> for Error {
+    fn from(value: BitsError) -> Self {
+        Error::new_str(ErrorType::IOError, format!("{value:?}"))
+    }
+}
+
+impl From<std::io::ErrorKind> for Error {
+    fn from(value: ErrorKind) -> Self {
+        Error::new_str(ErrorType::IOError, format!("{value:?}"))
+    }
+}
+impl From<ErrorType> for Error {
+    fn from(value: ErrorType) -> Self {
+        Error::new_str(value, format!("{value:?}"))
     }
 }

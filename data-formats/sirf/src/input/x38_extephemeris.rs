@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error, ErrorKind};
 use irox_structs::Struct;
-use irox_tools::bits::Bits;
 use irox_tools::packetio::{Packet, PacketBuilder};
 use log::warn;
-
-use crate::error::Error;
 
 #[derive(Default, Debug, Copy, Clone, Struct)]
 pub struct GPSDataEphemerisMask {
@@ -37,22 +35,20 @@ impl Packet for ExtendedEphemerisData {
     type PacketType = ();
 
     #[allow(clippy::match_same_arms)]
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         Ok(match self {
             ExtendedEphemerisData::GPSDataEphemerisMask(g) => g.as_bytes()?,
             ExtendedEphemerisData::ExtendedEphemeris2(e) => e.as_bytes()?,
             ExtendedEphemerisData::ExtendedEphemeris3() => {
-                return Err(std::io::ErrorKind::Unsupported.into())
+                return Err(ErrorKind::Unsupported.into())
             }
             ExtendedEphemerisData::ClockBiasAdjustment() => {
-                return Err(std::io::ErrorKind::Unsupported.into())
+                return Err(ErrorKind::Unsupported.into())
             }
             ExtendedEphemerisData::EphemerisExtension() => {
-                return Err(std::io::ErrorKind::Unsupported.into())
+                return Err(ErrorKind::Unsupported.into())
             }
-            ExtendedEphemerisData::EphemerisAck() => {
-                return Err(std::io::ErrorKind::Unsupported.into())
-            }
+            ExtendedEphemerisData::EphemerisAck() => return Err(ErrorKind::Unsupported.into()),
         })
     }
 
@@ -68,6 +64,7 @@ impl PacketBuilder<ExtendedEphemerisData> for ExtendedEphemerisDataBuilder {
 
     #[allow(clippy::match_same_arms)]
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<ExtendedEphemerisData, Self::Error> {
+        use crate::error::Error as CE;
         let submsg = input.read_u8()?;
         match submsg {
             0x01 => {
@@ -93,9 +90,9 @@ impl PacketBuilder<ExtendedEphemerisData> for ExtendedEphemerisDataBuilder {
                 warn!("Encountered unimplemented case: x38xFF")
             }
             _e => {
-                return Error::unsupported("Unsupported operation");
+                return CE::unsupported("Unsupported operation");
             }
         }
-        Error::unsupported("Unsupported operation")
+        CE::unsupported("Unsupported operation")
     }
 }

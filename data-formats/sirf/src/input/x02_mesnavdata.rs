@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use irox_bits::{Bits, Error, MutBits};
 use irox_structs::Struct;
-use irox_tools::bits::{Bits, MutBits};
 use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::input::util;
@@ -48,7 +48,7 @@ pub struct MeasuredNavigationData {
 impl Packet for MeasuredNavigationData {
     type PacketType = PacketType;
 
-    fn get_bytes(&self) -> Result<Vec<u8>, std::io::Error> {
+    fn get_bytes(&self) -> Result<Vec<u8>, Error> {
         let mut out: Vec<u8> = Vec::with_capacity(PAYLOAD_SIZE);
         out.write_be_i32(self.x_position)?;
         out.write_be_i32(self.y_position)?;
@@ -92,7 +92,7 @@ pub struct MeasuredNavDataBuilder;
 pub static BUILDER: MeasuredNavDataBuilder = MeasuredNavDataBuilder;
 
 impl PacketBuilder<MeasuredNavigationData> for MeasuredNavDataBuilder {
-    type Error = std::io::Error;
+    type Error = Error;
 
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<MeasuredNavigationData, Self::Error> {
         let x_position = input.read_be_i32()?;
@@ -149,22 +149,22 @@ impl PacketBuilder<MeasuredNavigationData> for MeasuredNavDataBuilder {
     }
 }
 
-fn write_velocity<T: MutBits>(out: &mut T, val: f32) -> Result<(), std::io::Error> {
+fn write_velocity<T: MutBits>(out: &mut T, val: f32) -> Result<(), Error> {
     let enc = (val * VELOCITY_SCALE).round() as i16;
     out.write_be_i16(enc)
 }
 
-fn read_velocity<T: Bits>(out: &mut T) -> Result<f32, std::io::Error> {
+fn read_velocity<T: Bits>(out: &mut T) -> Result<f32, Error> {
     let read = out.read_be_i16()?;
     Ok(f32::from(read) / VELOCITY_SCALE)
 }
 
-fn write_hdop<T: MutBits>(out: &mut T, val: f32) -> Result<(), std::io::Error> {
+fn write_hdop<T: MutBits>(out: &mut T, val: f32) -> Result<(), Error> {
     let enc = (val * HDOP_SCALE).round() as u8;
     out.write_u8(enc)
 }
 
-fn read_hdop<T: Bits>(out: &mut T) -> Result<f32, std::io::Error> {
+fn read_hdop<T: Bits>(out: &mut T) -> Result<f32, Error> {
     let read = out.read_u8()?;
     Ok(f32::from(read) / HDOP_SCALE)
 }
