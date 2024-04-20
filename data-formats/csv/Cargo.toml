@@ -16,4 +16,4 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-irox-tools.workspace = true
+irox-tools = {workspace = true, features = ["std"]}
