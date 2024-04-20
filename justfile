@@ -100,7 +100,9 @@ release +FLAGS='':
     cargo smart-release --no-conservative-pre-release-version-handling --no-isolate-dependencies-from-breaking-changes -u {{FLAGS}}
 
 recurse +FLAGS='':
-    @for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
+    #!/usr/bin/bash
+    set -euo pipefail
+    for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
         just logstart module-$module; \
         just $module/default {{FLAGS}}; \
         just logend; \
