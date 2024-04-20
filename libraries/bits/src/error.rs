@@ -15,6 +15,14 @@ impl BitsError {
     pub fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
         BitsError { kind, msg }
     }
+
+    pub fn kind(&self) -> BitsErrorKind {
+        self.kind
+    }
+
+    pub fn msg(&self) -> &'static str {
+        self.msg
+    }
 }
 
 impl From<BitsErrorKind> for BitsError {
@@ -159,4 +167,13 @@ pub enum BitsErrorKind {
     NotConnected,
     Unsupported,
     Other,
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for BitsError {}
+
+impl core::fmt::Display for BitsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BitsError({:?}): {}", self.kind, self.msg)
+    }
 }
