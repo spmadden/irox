@@ -51,7 +51,7 @@ egui = { version = "^0.26", default-features = false }
 eframe = { version = "^0.26", default-features = false }
 egui_plot = { version = "^0.26", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.197", features = ["derive"] }
+serde = { version = "^1.0.198", features = ["derive"] }
 serde_json = {version = "^1.0", features = []}
 ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2.5", features = []}
@@ -62,16 +62,16 @@ env_logger = {version = "^0.11", features = []}
 syn = {version = "^2.0", features = ["extra-traits"]}
 quote = {version = "^1.0", features = []}
 signal-hook = {version = "^0.3", features = []}
-windows = {version = "^0.53", features = [ "Devices_Geolocation", "Foundation" ]}
+windows = {version = "^0.56", features = [ "Devices_Geolocation", "Foundation" ]}
 rusqlite = {version = "^0.30", features = ["bundled", "bundled-windows"]}
 miniz_oxide = {version = "^0.7", features = []}
 xml = {version = "^0.8", features = []}
 serial = {version = "^0.4", features = []}
-human-panic = {version = "^1.2", features = []}
+human-panic = {version = "^2.0", features = []}
 proc-macro2 = {version = "^1.0", features = []}
 num_cpus = {version = "1.16.0", features = []}
-git2 = {version = "0.18.2", features = ["vendored-openssl", "vendored-libgit2"]}
-cargo = {version = "0.77.0", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
+git2 = {version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"]}
+cargo = {version = "0.78.1", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
 
