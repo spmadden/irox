@@ -1,15 +1,14 @@
-use std::io::ErrorKind;
-
 use log::{debug, warn};
 use serde::ser::SerializeMap;
 use serde::Serializer;
 
 pub use att::*;
 pub use gst::*;
+use irox_bits::{Bits, MutBits};
 use irox_nmea0183::input::pollswver::PollSWVersion;
 use irox_nmea0183::input::ratectrl::RateControlRF103;
 use irox_nmea0183::MessageType;
-use irox_tools::bits::{Bits, MutBits};
+use irox_sirf::error::ErrorType;
 use irox_tools::options::MaybeInto;
 use irox_tools::packetio::{Packet, PacketBuilder};
 pub use sky::*;
@@ -135,7 +134,7 @@ impl<'a, T: Bits + MutBits> FrameGenerator<'a, T> {
             let frame = match irox_sirf::packet::PacketParser.build_from(self.source) {
                 Ok(frame) => frame,
                 Err(e) => {
-                    if e.kind() == ErrorKind::InvalidData {
+                    if e.kind() == ErrorType::InvalidData {
                         warn!("Received invalid packet: {e}");
                         continue;
                     }

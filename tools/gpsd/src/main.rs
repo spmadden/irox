@@ -8,7 +8,7 @@ use log::{error, info};
 
 use config::{GPSdConfig, Transport};
 use error::GPSdError;
-use irox_tools::bits::{Bits, BitsWrapper};
+use irox_bits::{Bits, BitsWrapper};
 use output::FrameGenerator;
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};

@@ -29,6 +29,7 @@ signal-hook.workspace = true
 irox-sirf.workspace = true
 irox-nmea0183.workspace = true
 irox-tools.workspace = true
+irox-bits = {workspace = true, features = ["std"]}
 irox-time.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true
