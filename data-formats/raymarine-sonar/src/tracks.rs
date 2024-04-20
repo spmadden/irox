@@ -9,13 +9,13 @@ use log::{debug, error, info, warn};
 use rusqlite::named_params;
 use rusqlite::types::ValueRef;
 
+use irox_bits::Bits;
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{
     CartesianCoordinateBuilder, CoordinateType, EllipticalCoordinateBuilder, Latitude, Longitude,
 };
 use irox_carto::geo::standards::StandardShapes;
 use irox_time::epoch::UnixTimestamp;
-use irox_tools::bits::Bits;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::Length;
 
