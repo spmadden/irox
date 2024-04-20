@@ -15,3 +15,4 @@ readme = "README.md"
 [dependencies]
 irox-carto.workspace = true
 irox-time.workspace = true
+irox-bits = {workspace = true, features = ["std"]}

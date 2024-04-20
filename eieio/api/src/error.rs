@@ -138,3 +138,13 @@ impl From<std::string::FromUtf8Error> for Error {
         }
     }
 }
+
+impl From<irox_bits::Error> for Error {
+    fn from(value: irox_bits::Error) -> Self {
+        Error {
+            error_type: ErrorType::IOError(value.kind().into()),
+            message: None,
+            source: Some(Box::new(value)),
+        }
+    }
+}
