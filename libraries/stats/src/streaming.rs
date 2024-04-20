@@ -76,6 +76,7 @@ where
     }
 }
 
+/// Streaming maximum function
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Max<T> {
     max_val: T,
@@ -103,6 +104,41 @@ where
 
     fn get_last_result(&self) -> Self::Type {
         self.max_val
+    }
+
+    fn get_num_samples(&self) -> u64 {
+        self.num_samples
+    }
+}
+
+/// Streaming minimum function
+#[derive(Default, Debug, Clone, Copy)]
+pub struct Min<T> {
+    min_val: T,
+    last_sample: T,
+    num_samples: u64,
+}
+
+impl<T> StreamingStatistic for Min<T>
+where
+    T: PartialOrd + Copy,
+{
+    type Type = T;
+
+    fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
+        self.num_samples += 1;
+        if sample.le(&self.min_val) {
+            self.min_val = sample;
+        }
+        self.min_val
+    }
+
+    fn get_last_sample(&self) -> Self::Type {
+        self.last_sample
+    }
+
+    fn get_last_result(&self) -> Self::Type {
+        self.min_val
     }
 
     fn get_num_samples(&self) -> u64 {
