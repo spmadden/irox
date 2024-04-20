@@ -31,3 +31,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: devskim-results.sarif
+          # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
+          exclude_rules: DS126858,DS109733,DS173237
