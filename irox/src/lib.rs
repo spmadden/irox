@@ -3,6 +3,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "bits")]
+pub use irox_bits;
 #[cfg(feature = "build-rs")]
 pub use irox_build_rs;
 #[cfg(feature = "carto")]

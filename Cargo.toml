@@ -87,6 +87,7 @@ irox-eieio-nmea0183 = {version="^0", path = "eieio/nmea0183"}
 irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
 irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}
 
+irox-bits = {version = "^0", path = "libraries/bits"}
 irox-build-rs = {version = "^0", path = "libraries/build-rs", features = ["git"]}
 irox-carto = {version = "^0", path = "libraries/carto"}
 irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}

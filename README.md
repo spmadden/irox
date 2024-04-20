@@ -32,6 +32,7 @@ Current Modules & Organization:
 * [`irox`](https://github.com/spmadden/irox/blob/master/irox) - Aggregator module
 * [`libraries`](https://github.com/spmadden/irox/blob/master/libraries) - Rust 'library' crates, usually without
   binaries
+    * [`bits`] - Bits & Bobs. No-std/No-alloc bit/byte manipulation of streams
     * [`build-rs`] - Compile-time build metadata injection inspired by shadow-rs
     * [`carto`] - Cartographic & Geospatial tools
     * [`egui-extras`] - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
@@ -59,6 +60,7 @@ Version Status
 
 | Crate                  | no_std?        | no_alloc?   | Status                                                                                                      |
 |------------------------|----------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| `irox-bits`            | ![no_std]      | ![no_alloc] | [![bits-vsn-shield]][bits-crate] [![bits-doc-shield]][bits-doc]                                             |
 | `irox-build-rs`        | ![std]         | ![alloc]    | [![build-rs-vsn-shield]][build-rs-crate] [![build-rs-doc-shield]][build-rs-doc]                             |
 | `irox-carto`           | ![std]         | ![alloc]    | [![carto-vsn-shield]][carto-crate] [![carto-doc-shield]][carto-doc]                                         |
 | `irox-csv`             | ![std]         | ![alloc]    | [![csv-vsn-shield]][csv-crate] [![csv-doc-shield]][csv-doc]                                                 |
@@ -85,163 +87,273 @@ Version Status
 | `irox-winlocation-api` | ![std]         | ![alloc]    | [![winloc-api-vsn-shield]][winloc-api-crate] [![winloc-api-doc-shield]][winloc-api-doc]                     |
 | `cargo-describe`       | ![std]         | ![alloc]    | [![cargo-describe-vsn-shield]][cargo-describe-crate]                                                        |
 
-[no_std]: https://img.shields.io/badge/no__std-yes-green "Library does not require std"
+[no_std]: https://img.shields.io/badge/no__std-yes-green "Library does not require std but may have features gated by 'std'"
 
-[no_alloc]: https://img.shields.io/badge/no__alloc-yes-green "Library does not require alloc"
+[no_alloc]: https://img.shields.io/badge/no__alloc-yes-green "Library does not require alloc but may have features gated by 'alloc'"
 
-[feature_std]: https://img.shields.io/badge/std-feature-blue "std is required by default, no_std available with default-features=true" 
+[feature_std]: https://img.shields.io/badge/std-feature-blue "std is required by default, no_std available with default-features=false"
+
+[feature_alloc]: https://img.shields.io/badge/alloc-feature-blue "alloc is required by default, no_std available with default-features=false"
 
 [std]: https://img.shields.io/badge/std-required-lightgrey
 
 [alloc]: https://img.shields.io/badge/alloc-required-lightgrey
 
+[`bits`]: https://github.com/spmadden/irox/blob/master/libraries/bits
+
+[bits-vsn-shield]: https://img.shields.io/crates/v/irox-bits.svg
+
+[bits-doc-shield]: https://docs.rs/irox-bits/badge.svg
+
+[bits-crate]: https://crates.io/crates/irox-bits
+
+[bits-doc]: https://docs.rs/irox-bits
 
 [`build-rs`]: https://github.com/spmadden/irox/blob/master/libraries/build-rs
+
 [build-rs-vsn-shield]: https://img.shields.io/crates/v/irox-build-rs.svg
+
 [build-rs-doc-shield]: https://docs.rs/irox-build-rs/badge.svg
+
 [build-rs-crate]: https://crates.io/crates/irox-build-rs
+
 [build-rs-doc]: https://docs.rs/irox-build-rs
 
 
 [`carto`]: https://github.com/spmadden/irox/blob/master/libraries/carto
+
 [carto-vsn-shield]: https://img.shields.io/crates/v/irox-carto.svg
+
 [carto-doc-shield]: https://docs.rs/irox-carto/badge.svg
+
 [carto-crate]: https://crates.io/crates/irox-carto
+
 [carto-doc]: https://docs.rs/irox-carto
 
 [`csv`]: https://github.com/spmadden/irox/blob/master/libraries/csv
+
 [csv-vsn-shield]: https://img.shields.io/crates/v/irox-csv.svg
+
 [csv-doc-shield]: https://docs.rs/irox-csv/badge.svg
+
 [csv-crate]: https://crates.io/crates/irox-csv
+
 [csv-doc]: https://docs.rs/irox-csv
 
 [`egui-extras`]: https://github.com/spmadden/irox/blob/master/libraries/egui-extras
+
 [egui-extras-vsn-shield]: https://img.shields.io/crates/v/irox-egui-extras.svg
+
 [egui-extras-doc-shield]: https://docs.rs/irox-egui-extras/badge.svg
+
 [egui-extras-crate]: https://crates.io/crates/irox-egui-extras
+
 [egui-extras-doc]: https://docs.rs/irox-egui-extras
 
 [`enums`]: https://github.com/spmadden/irox/blob/master/libraries/enums
+
 [enums-vsn-shield]: https://img.shields.io/crates/v/irox-enums.svg
+
 [enums-doc-shield]: https://docs.rs/irox-enums/badge.svg
+
 [enums-crate]: https://crates.io/crates/irox-enums
+
 [enums-doc]: https://docs.rs/irox-enums
 
 [`enums_derive`]: https://github.com/spmadden/irox/blob/master/libraries/enums_derive
+
 [enums_derive-vsn-shield]: https://img.shields.io/crates/v/irox-enums_derive.svg
+
 [enums_derive-doc-shield]: https://docs.rs/irox-enums_derive/badge.svg
+
 [enums_derive-crate]: https://crates.io/crates/irox-enums_derive
+
 [enums_derive-doc]: https://docs.rs/irox-enums_derive
 
 [`git-tools`]: https://github.com/spmadden/irox/blob/master/libraries/git-tools
+
 [git-tools-vsn-shield]: https://img.shields.io/crates/v/irox-git-tools.svg
+
 [git-tools-doc-shield]: https://docs.rs/irox-git-tools/badge.svg
+
 [git-tools-crate]: https://crates.io/crates/irox-git-tools
+
 [git-tools-doc]: https://docs.rs/irox-git-tools
 
 [`gpx`]: https://github.com/spmadden/irox/blob/master/libraries/gpx
+
 [gpx-vsn-shield]: https://img.shields.io/crates/v/irox-gpx.svg
+
 [gpx-doc-shield]: https://docs.rs/irox-gpx/badge.svg
+
 [gpx-crate]: https://crates.io/crates/irox-gpx
+
 [gpx-doc]: https://docs.rs/irox-gpx
 
 [`influxdb_v1`]: https://github.com/spmadden/irox/blob/master/libraries/influxdb_v1
+
 [influxdb_v1-vsn-shield]: https://img.shields.io/crates/v/irox-influxdb_v1.svg
+
 [influxdb_v1-doc-shield]: https://docs.rs/irox-influxdb_v1/badge.svg
+
 [influxdb_v1-crate]: https://crates.io/crates/irox-influxdb_v1
+
 [influxdb_v1-doc]: https://docs.rs/irox-influxdb_v1
 
 [`log`]: https://github.com/spmadden/irox/blob/master/libraries/log
+
 [log-vsn-shield]: https://img.shields.io/crates/v/irox-log.svg
+
 [log-doc-shield]: https://docs.rs/irox-log/badge.svg
+
 [log-crate]: https://crates.io/crates/irox-log
+
 [log-doc]: https://docs.rs/irox-log
 
 [`networking`]: https://github.com/spmadden/irox/blob/master/libraries/networking
+
 [networking-vsn-shield]: https://img.shields.io/crates/v/irox-networking.svg
+
 [networking-doc-shield]: https://docs.rs/irox-networking/badge.svg
+
 [networking-crate]: https://crates.io/crates/irox-networking
+
 [networking-doc]: https://docs.rs/irox-networking
 
 [`nmea0183`]: https://github.com/spmadden/irox/blob/master/libraries/nmea0183
+
 [nmea0183-vsn-shield]: https://img.shields.io/crates/v/irox-nmea0183.svg
+
 [nmea0183-doc-shield]: https://docs.rs/irox-nmea0183/badge.svg
+
 [nmea0183-crate]: https://crates.io/crates/irox-nmea0183
+
 [nmea0183-doc]: https://docs.rs/irox-nmea0183
 
 [`progress`]: https://github.com/spmadden/irox/blob/master/libraries/progress
+
 [progress-vsn-shield]: https://img.shields.io/crates/v/irox-progress.svg
+
 [progress-doc-shield]: https://docs.rs/irox-progress/badge.svg
+
 [progress-crate]: https://crates.io/crates/irox-progress
+
 [progress-doc]: https://docs.rs/irox-progress
 
 [`raymarine-sonar`]: https://github.com/spmadden/irox/blob/master/libraries/raymarine-sonar
+
 [raymarine-sonar-vsn-shield]: https://img.shields.io/crates/v/irox-raymarine-sonar.svg
+
 [raymarine-sonar-doc-shield]: https://docs.rs/irox-raymarine-sonar/badge.svg
+
 [raymarine-sonar-crate]: https://crates.io/crates/irox-raymarine-sonar
+
 [raymarine-sonar-doc]: https://docs.rs/irox-raymarine-sonar
 
 [`sirf`]: https://github.com/spmadden/irox/blob/master/libraries/sirf
+
 [sirf-vsn-shield]: https://img.shields.io/crates/v/irox-sirf.svg
+
 [sirf-doc-shield]: https://docs.rs/irox-sirf/badge.svg
+
 [sirf-crate]: https://crates.io/crates/irox-sirf
+
 [sirf-doc]: https://docs.rs/irox-sirf
 
 [`stats`]: https://github.com/spmadden/irox/blob/master/libraries/stats
+
 [stats-vsn-shield]: https://img.shields.io/crates/v/irox-stats.svg
+
 [stats-doc-shield]: https://docs.rs/irox-stats/badge.svg
+
 [stats-crate]: https://crates.io/crates/irox-stats
+
 [stats-doc]: https://docs.rs/irox-stats
 
 [`structs`]: https://github.com/spmadden/irox/blob/master/libraries/structs
+
 [structs-vsn-shield]: https://img.shields.io/crates/v/irox-structs.svg
+
 [structs-doc-shield]: https://docs.rs/irox-structs/badge.svg
+
 [structs-crate]: https://crates.io/crates/irox-structs
+
 [structs-doc]: https://docs.rs/irox-structs
 
 [`structs_derive`]: https://github.com/spmadden/irox/blob/master/libraries/threading
+
 [structs_derive-vsn-shield]: https://img.shields.io/crates/v/irox-threading.svg
+
 [structs_derive-doc-shield]: https://docs.rs/irox-threading/badge.svg
+
 [structs_derive-crate]: https://crates.io/crates/irox-threading
+
 [structs_derive-doc]: https://docs.rs/irox-threading
 
 [`threading`]: https://github.com/spmadden/irox/blob/master/libraries/threading
+
 [threading-vsn-shield]: https://img.shields.io/crates/v/irox-threading.svg
+
 [threading-doc-shield]: https://docs.rs/irox-threading/badge.svg
+
 [threading-crate]: https://crates.io/crates/irox-threading
+
 [threading-doc]: https://docs.rs/irox-threading
 
 [`time`]: https://github.com/spmadden/irox/blob/master/libraries/time
+
 [time-vsn-shield]: https://img.shields.io/crates/v/irox-time.svg
+
 [time-doc-shield]: https://docs.rs/irox-time/badge.svg
+
 [time-crate]: https://crates.io/crates/irox-time
+
 [time-doc]: https://docs.rs/irox-time
 
 [`tools`]: https://github.com/spmadden/irox/blob/master/libraries/tools
+
 [tools-vsn-shield]: https://img.shields.io/crates/v/irox-tools.svg
+
 [tools-doc-shield]: https://docs.rs/irox-tools/badge.svg
+
 [tools-crate]: https://crates.io/crates/irox-tools
+
 [tools-doc]: https://docs.rs/irox-tools
 
 [`types`]: https://github.com/spmadden/irox/blob/master/libraries/types
+
 [types-vsn-shield]: https://img.shields.io/crates/v/irox-types.svg
+
 [types-doc-shield]: https://docs.rs/irox-types/badge.svg
+
 [types-crate]: https://crates.io/crates/irox-types
+
 [types-doc]: https://docs.rs/irox-types
 
 [`units`]: https://github.com/spmadden/irox/blob/master/libraries/units
+
 [units-vsn-shield]: https://img.shields.io/crates/v/irox-units.svg
+
 [units-doc-shield]: https://docs.rs/irox-units/badge.svg
+
 [units-crate]: https://crates.io/crates/irox-units
+
 [units-doc]: https://docs.rs/irox-units
 
 [`winlocation-api`]: https://github.com/spmadden/irox/blob/master/interfaces/win-location-api
+
 [winloc-api-vsn-shield]: https://img.shields.io/crates/v/irox-winlocation-api.svg
+
 [winloc-api-doc-shield]: https://docs.rs/irox-winlocation-api/badge.svg
+
 [winloc-api-crate]: https://crates.io/crates/irox-winlocation-api
+
 [winloc-api-doc]: https://docs.rs/irox-winlocation-api
 
 [`gpsd`]: https://github.com/spmadden/irox/blob/master/tools/gpsd
+
 [`cargo-describe`]: https://github.com/spmadden/irox/blob/master/tools/cargo-describe
+
 [cargo-describe-vsn-shield]: https://img.shields.io/crates/v/cargo-describe.svg
+
 [cargo-describe-crate]: https://crates.io/crates/cargo-describe
