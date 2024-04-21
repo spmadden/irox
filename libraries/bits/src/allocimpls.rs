@@ -14,7 +14,10 @@ macro_rules! impl_bits_pop {
     ($($ty:tt)+) => {
         impl Bits for $($ty)+ {
             fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-                Ok(self.pop().map(|v| v as u8))
+                if self.is_empty() {
+                    return Ok(None)
+                }
+                Ok(Some(self.remove(0) as u8))
             }
 
             fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
