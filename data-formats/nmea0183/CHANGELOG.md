@@ -1,7 +1,35 @@
 
 
 
+## v0.5.1 (2024-04-21)
+
+### Bug Fixes
+
+ - <csr-id-9af46dbd390cd5b45d45b65ec46561c7c9a2238a/> convert to using bits error
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 1 calendar day.
+ - 48 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Convert to using bits error ([`9af46db`](https://github.com/spmadden/irox/commit/9af46dbd390cd5b45d45b65ec46561c7c9a2238a))
+</details>
+
 ## v0.5.0 (2024-03-03)
+
+<csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
+<csr-id-aa699e9008f7c8e19e0faecbf9dea05eeb6df345/>
 
 ### Chore
 
@@ -19,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 59 calendar days.
+ - 5 commits contributed to the release over the course of 59 calendar days.
  - 95 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.5.0 ([`d38d7b1`](https://github.com/spmadden/irox/commit/d38d7b1e412c704fdd08fbac9297fea5382b4364))
     - Update to use Bits rather than Read ([`aa699e9`](https://github.com/spmadden/irox/commit/aa699e9008f7c8e19e0faecbf9dea05eeb6df345))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
