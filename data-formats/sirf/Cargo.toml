@@ -16,7 +16,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-irox-structs.workspace = true
+irox-structs = {workspace = true, features = ["alloc"] }
 irox-bits.workspace = true
 irox-tools.workspace = true
 log.workspace = true
