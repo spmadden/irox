@@ -3,17 +3,27 @@
 
 ## 0.5.1 (2024-04-21)
 
+<csr-id-206ec2a2390f69081af79ca6bf069db1c13a647e/>
+
 ### Refactor
 
  - <csr-id-206ec2a2390f69081af79ca6bf069db1c13a647e/> fix structs to use new bits module
+
+### Other
+
+ - <csr-id-b15112657cf1ac9f77f12b2a4ffd70a777331910/> fix Cargo.toml to include local readme
+
+### New Features
+
+ - <csr-id-69e1a20649e8f78cebe54ae516c47697224eee41/> put 'as_bytes' method behind new 'alloc' feature
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 20 days passed between releases.
- - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -23,6 +33,9 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Fix Cargo.toml to include local readme ([`b151126`](https://github.com/spmadden/irox/commit/b15112657cf1ac9f77f12b2a4ffd70a777331910))
+    - Put 'as_bytes' method behind new 'alloc' feature ([`69e1a20`](https://github.com/spmadden/irox/commit/69e1a20649e8f78cebe54ae516c47697224eee41))
+    - Release irox-structs v0.5.1 ([`15bf0fd`](https://github.com/spmadden/irox/commit/15bf0fd3b6dd16c4433782983c76fb76d9bbb619))
     - Fix structs to use new bits module ([`206ec2a`](https://github.com/spmadden/irox/commit/206ec2a2390f69081af79ca6bf069db1c13a647e))
 </details>
 
