@@ -1,7 +1,40 @@
 
 
 
+## v0.3.1 (2024-04-21)
+
+### Bug Fixes
+
+ - <csr-id-f0e7ae115ce7529c398c0731d8928b12d6d90cae/> change derive to export structs rather than irox_bits directly
+
+### Refactor
+
+ - <csr-id-206ec2a2390f69081af79ca6bf069db1c13a647e/> fix structs to use new bits module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 20 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Change derive to export structs rather than irox_bits directly ([`f0e7ae1`](https://github.com/spmadden/irox/commit/f0e7ae115ce7529c398c0731d8928b12d6d90cae))
+    - Fix structs to use new bits module ([`206ec2a`](https://github.com/spmadden/irox/commit/206ec2a2390f69081af79ca6bf069db1c13a647e))
+</details>
+
 ## v0.3.0 (2024-04-01)
+
+<csr-id-56ab68398e06e2df370cf615665988ee62346999/>
+<csr-id-9427c1392d00725f7ee3cc73ffb23e25a9dd72a1/>
 
 ### Chore
 
@@ -19,7 +52,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 1 calendar day.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 123 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.3.0 ([`c590e04`](https://github.com/spmadden/irox/commit/c590e0406b0f1551d774bf48ba24306597121811))
     - Pretty much a full rewrite of the derive code to use less proc_macro2 ([`9427c13`](https://github.com/spmadden/irox/commit/9427c1392d00725f7ee3cc73ffb23e25a9dd72a1))
     - Lints and fmt ([`56ab683`](https://github.com/spmadden/irox/commit/56ab68398e06e2df370cf615665988ee62346999))
     - Add little-endian support for derived structs ([`00590ab`](https://github.com/spmadden/irox/commit/00590ab1f9749f74bf3a2cc54dea8635328555d1))
