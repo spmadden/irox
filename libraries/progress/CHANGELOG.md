@@ -2,18 +2,25 @@
 
 ## v0.3.2 (2024-04-21)
 
+<csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/>
+<csr-id-9ceb75cbf96dcbe8808bccfed147810dd9795401/>
+
 ### Refactor
 
  - <csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/> convert new bits error
  - <csr-id-9ceb75cbf96dcbe8808bccfed147810dd9795401/> fix structs to use new bits module
 
+### Bug Fixes
+
+ - <csr-id-225a01c29e9bf66d2054c3c2ae88ce94e42626ae/> pull in irox_tools::std
+
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 1 calendar day.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 48 days passed between releases.
- - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -23,6 +30,8 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Pull in irox_tools::std ([`225a01c`](https://github.com/spmadden/irox/commit/225a01c29e9bf66d2054c3c2ae88ce94e42626ae))
+    - Release irox-progress v0.3.2 ([`bdcc93f`](https://github.com/spmadden/irox/commit/bdcc93fd8bd4f677663ee42733332b1b91176e40))
     - Convert new bits error ([`9716722`](https://github.com/spmadden/irox/commit/9716722093a4c5ccccf1894111ca95d356d79fa6))
     - Fix structs to use new bits module ([`9ceb75c`](https://github.com/spmadden/irox/commit/9ceb75cbf96dcbe8808bccfed147810dd9795401))
 </details>
