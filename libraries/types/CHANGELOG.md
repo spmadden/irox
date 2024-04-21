@@ -1,7 +1,34 @@
 
 
 
+## v0.4.1 (2024-04-21)
+
+### New Features
+
+ - <csr-id-198a9e727016b05d6f6d3537035d8af80ac2073e/> new variable value type
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 17 calendar days.
+ - 20 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New variable value type ([`198a9e7`](https://github.com/spmadden/irox/commit/198a9e727016b05d6f6d3537035d8af80ac2073e))
+</details>
+
 ## v0.4.0 (2024-04-01)
+
+<csr-id-4e8bd7e566d5eb0eda3e7a4e0992abcc05da389c/>
 
 ### Refactor (BREAKING)
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 123 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.4.0 ([`d81a518`](https://github.com/spmadden/irox/commit/d81a518812f731224867d9409c8140be47ec95ac))
     - Moved the variably sized elements from Primitives into new enum ([`4e8bd7e`](https://github.com/spmadden/irox/commit/4e8bd7e566d5eb0eda3e7a4e0992abcc05da389c))
 </details>
 
