@@ -1,6 +1,38 @@
 
 
 
+## v0.8.0 (2024-04-21)
+
+### New Features
+
+ - <csr-id-bb44251a3eb5917a0b270880e4956700773da32f/> new feature: alloc, change default features to be nil rather than everything
+ - <csr-id-2537e8c15422cee078684d2e01f0e0e4f7053316/> new no-std/no-alloc fixed-size stack impls FixedBuf and RoundBuf
+
+### Refactor (BREAKING)
+
+ - <csr-id-05c5b84578474138d78211db2763e11a7bb3a925/> pull out tools/bits into own module, no-std, no-alloc
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 20 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New feature: alloc, change default features to be nil rather than everything ([`bb44251`](https://github.com/spmadden/irox/commit/bb44251a3eb5917a0b270880e4956700773da32f))
+    - New no-std/no-alloc fixed-size stack impls FixedBuf and RoundBuf ([`2537e8c`](https://github.com/spmadden/irox/commit/2537e8c15422cee078684d2e01f0e0e4f7053316))
+    - Pull out tools/bits into own module, no-std, no-alloc ([`05c5b84`](https://github.com/spmadden/irox/commit/05c5b84578474138d78211db2763e11a7bb3a925))
+</details>
+
 ## v0.7.0 (2024-04-01)
 
 ### New Features
@@ -16,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -27,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.7.0 ([`a6a3ae3`](https://github.com/spmadden/irox/commit/a6a3ae33fa0cae813ea214e58f60fea85c9f0479))
     - New joining and joining_multi itertools methods ([`66cb1ad`](https://github.com/spmadden/irox/commit/66cb1ad87755b5dc2ccca9b0f856a43a13365096))
     - Rename write_*_blob methods to have 'be' and 'le' variants ([`fbd6a72`](https://github.com/spmadden/irox/commit/fbd6a72ac2ee6c6081bcfff0bab6e496b4d41ab2))
     - New read/write length-prefixed strings functions ([`e8864e6`](https://github.com/spmadden/irox/commit/e8864e656383096d6b3c4c3316b6d78d3746ab70))
