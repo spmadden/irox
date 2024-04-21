@@ -1,5 +1,30 @@
 
 
+## v0.5.1 (2024-04-21)
+
+### Bug Fixes
+
+ - <csr-id-425a8bc6dcb9263c694d326f1e4ad122d10dcd24/> convert to using bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 1 calendar day.
+ - 20 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Convert to using bits ([`425a8bc`](https://github.com/spmadden/irox/commit/425a8bc6dcb9263c694d326f1e4ad122d10dcd24))
+</details>
+
 ## v0.5.0 (2024-04-01)
 
 ### Bug Fixes
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 79 calendar days.
+ - 3 commits contributed to the release over the course of 79 calendar days.
  - 123 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.5.0 ([`93846d6`](https://github.com/spmadden/irox/commit/93846d6f3433970808647b548c3bd2bff4c2222c))
     - Fixing to use updated irox_types types ([`401f028`](https://github.com/spmadden/irox/commit/401f028c7aeb952515d38b9b3df5d1b11a5b9a96))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
