@@ -1,5 +1,32 @@
 
 
+## v0.3.2 (2024-04-21)
+
+### Refactor
+
+ - <csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/> convert new bits error
+ - <csr-id-9ceb75cbf96dcbe8808bccfed147810dd9795401/> fix structs to use new bits module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 1 calendar day.
+ - 48 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Convert new bits error ([`9716722`](https://github.com/spmadden/irox/commit/9716722093a4c5ccccf1894111ca95d356d79fa6))
+    - Fix structs to use new bits module ([`9ceb75c`](https://github.com/spmadden/irox/commit/9ceb75cbf96dcbe8808bccfed147810dd9795401))
+</details>
+
 ## v0.3.1 (2024-03-03)
 
 ### New Features
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 35 calendar days.
+ - 2 commits contributed to the release over the course of 35 calendar days.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.3.1 ([`79a6759`](https://github.com/spmadden/irox/commit/79a675964b36a040ae4076a8e88b25cdcbc0bff9))
     - Impl MutBits for WriterTask ([`ec029d9`](https://github.com/spmadden/irox/commit/ec029d9d269566744649a7939a011887eae9c435))
 </details>
 
