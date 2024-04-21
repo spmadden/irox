@@ -1,0 +1,47 @@
+#!/usr/bin/env -S just --justfile
+set fallback
+
+default +FLAGS='': (build_test FLAGS) (lints FLAGS)
+
+ci +FLAGS='': build_test lints_deny
+
+features := "alloc"
+
+build_test +FLAGS='':
+    #!/bin/bash
+    set -euo pipefail
+    just logstart irox-tools::build-default
+    cargo check {{FLAGS}}
+    cargo test {{FLAGS}}
+    cargo clean
+    just logend
+
+    just logstart irox-tools::build-base
+    cargo check --no-default-features {{FLAGS}}
+    cargo test --no-default-features {{FLAGS}}
+    cargo clean
+    just logend
+    
+    for feature in {{features}}; do
+        just logstart irox-tools::build-$feature
+        cargo check --features $feature {{FLAGS}}
+        cargo test --features $feature {{FLAGS}}
+        cargo clean
+        just logend
+    done
+
+lints +FLAGS='':
+    #!/bin/bash
+    set -euo pipefail
+    just logstart lints
+    for feature in {{features}}; do
+        cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} --
+        cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
+    done
+    just logend
+
+lints_deny +FLAGS='':
+    @just logstart lints
+    cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} -- -Dwarnings
+    cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
+    @just logend

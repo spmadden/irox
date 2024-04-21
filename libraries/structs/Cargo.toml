@@ -20,3 +20,10 @@ workspace = true
 [dependencies]
 irox-bits.workspace = true
 irox-structs_derive.workspace = true
+
+[features]
+default = []
+alloc = ["irox-bits/alloc"]
+
+[dev-dependencies]
+irox-bits = {workspace = true, features = ["alloc"]}

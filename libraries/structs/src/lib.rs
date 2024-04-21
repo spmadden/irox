@@ -91,6 +91,8 @@
 
 pub use irox_bits::{Bits, Error, MutBits};
 pub use irox_structs_derive::*;
+#[cfg(feature = "alloc")]
+extern crate alloc;
 
 ///
 /// A struct is a series of bytes in memory, serialized in the order that the
@@ -108,7 +110,8 @@ pub trait Struct {
 
     ///
     /// Returns the encoded bytes as a vector
-    fn as_bytes(&self) -> Result<Vec<u8>, Error> {
+    #[cfg(feature = "alloc")]
+    fn as_bytes(&self) -> Result<alloc::vec::Vec<u8>, Error> {
         let mut buf: Vec<u8> = Vec::new();
         self.write_to(&mut buf)?;
         Ok(buf)
