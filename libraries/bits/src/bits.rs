@@ -316,6 +316,13 @@ pub trait Bits {
         Ok(buf)
     }
 
+    /// Reads the specified amount of bytes into a stack-allocated array.
+    fn read_exact<const N: usize>(&mut self) -> Result<[u8; N], Error> {
+        let mut buf = [0u8; N];
+        self.read_exact_into(N, &mut buf.as_mut())?;
+        Ok(buf)
+    }
+
     /// Reads the specified amount of bytes into the specified target.
     fn read_exact_into<T: MutBits>(&mut self, size: usize, into: &mut T) -> Result<(), Error> {
         for _i in 0..size {
