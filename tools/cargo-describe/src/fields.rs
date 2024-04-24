@@ -29,6 +29,9 @@ pub enum Fields {
     /// Absolute path on disk to the module's Cargo.toml
     ModuleAbsoluteManifestPath,
 
+    /// A list of all the features a module has.
+    ModuleFeatures,
+
     /// Prints everything
     All,
 }
@@ -46,6 +49,7 @@ impl Display for Fields {
                 Fields::ModuleAbsolutePath => "Module Absolute Path",
                 Fields::ModuleRelativeManifestPath => "Manifest Relative Path",
                 Fields::ModuleAbsoluteManifestPath => "Manifest Absolute Path",
+                Fields::ModuleFeatures => "Module Features",
                 Fields::All => "All", // but it's not likely to be used!
             }
         )

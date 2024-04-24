@@ -83,6 +83,14 @@ pub fn main() {
                 .strip_prefix(&wksp_root)
                 .map(String::from)
                 .unwrap_or_default();
+            let features = mem
+                .summary()
+                .features()
+                .keys()
+                .map(|v| v.as_str().to_string())
+                .filter(|v| v != "default")
+                .collect::<Vec<String>>();
+            let feature_sep = features.join(" ");
             // let relmod = relmanifest.strip_suffix("Cargo.toml").map(String::from).unwrap_or_default();
             for field in &mut krate.fields {
                 field.value = Some(match field.field {
@@ -95,6 +103,7 @@ pub fn main() {
                     Fields::ModuleAbsolutePath => modpath.clone(),
                     Fields::ModuleRelativeManifestPath => relmanifest.clone(),
                     Fields::ModuleAbsoluteManifestPath => manifestpath.clone(),
+                    Fields::ModuleFeatures => feature_sep.clone(),
                     Fields::All => String::new(),
                 });
             }
