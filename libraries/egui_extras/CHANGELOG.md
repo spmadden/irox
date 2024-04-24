@@ -1,6 +1,31 @@
 
 
 
+## v0.3.8 (2024-04-24)
+
+### Chore
+
+ - <csr-id-169d25bed38e36f5ae87e69a2bac055290ea0ff6/> bump version of egui-extras for deps
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 51 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version of egui-extras for deps ([`169d25b`](https://github.com/spmadden/irox/commit/169d25bed38e36f5ae87e69a2bac055290ea0ff6))
+</details>
+
 ## v0.3.7 (2024-03-03)
 
 ### New Features
@@ -14,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 26 calendar days.
+ - 5 commits contributed to the release over the course of 26 calendar days.
  - 50 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -26,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.7 ([`ea99a3f`](https://github.com/spmadden/irox/commit/ea99a3f39286e7670997f794dc67a0d7cebd8faa))
     - Bump egui to 0.26.0 ([`49a1d9e`](https://github.com/spmadden/irox/commit/49a1d9e676a22ec0d83e5cb98916ddfbd2158d4b))
     - Updated readme and examples ([`86f7584`](https://github.com/spmadden/irox/commit/86f758445258f5942fb4b33fa75e2b7c0d64a17f))
     - New serde debug serializer to display objects ([`855a5d0`](https://github.com/spmadden/irox/commit/855a5d0b0c8b984536f45299197a0ddfa2adb217))
