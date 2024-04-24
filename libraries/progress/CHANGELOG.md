@@ -1,5 +1,30 @@
 
 
+## v0.3.3 (2024-04-24)
+
+### Chore
+
+ - <csr-id-5a9b27c4d1a52e0d84365cede052dd6d70e3448b/> bump version of progress for deps
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 3 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version of progress for deps ([`5a9b27c`](https://github.com/spmadden/irox/commit/5a9b27c4d1a52e0d84365cede052dd6d70e3448b))
+</details>
+
 ## v0.3.2 (2024-04-21)
 
 <csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/>
@@ -18,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 1 calendar day.
+ - 5 commits contributed to the release over the course of 1 calendar day.
  - 48 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -30,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.3.2 ([`ad15396`](https://github.com/spmadden/irox/commit/ad1539627dc74d7263afadf4ebcf4208069cc318))
     - Pull in irox_tools::std ([`225a01c`](https://github.com/spmadden/irox/commit/225a01c29e9bf66d2054c3c2ae88ce94e42626ae))
     - Release irox-progress v0.3.2 ([`bdcc93f`](https://github.com/spmadden/irox/commit/bdcc93fd8bd4f677663ee42733332b1b91176e40))
     - Convert new bits error ([`9716722`](https://github.com/spmadden/irox/commit/9716722093a4c5ccccf1894111ca95d356d79fa6))
