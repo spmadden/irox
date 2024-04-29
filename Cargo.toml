@@ -51,7 +51,7 @@ egui = { version = "^0.27", default-features = false }
 eframe = { version = "^0.27", default-features = false }
 egui_plot = { version = "^0.27", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.198", features = ["derive"] }
+serde = { version = "^1.0.199", features = ["derive"] }
 serde_json = {version = "^1.0", features = []}
 ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
 url = {version = "^2.5", features = []}
