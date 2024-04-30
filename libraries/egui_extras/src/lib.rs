@@ -18,6 +18,8 @@ pub mod composite;
 /// A customization of [`egui::widgets::ProgressBar`]
 pub mod progressbar;
 
+#[cfg(feature = "plots")]
+pub mod logplot;
 #[cfg(feature = "serde")]
 pub mod serde;
 pub mod toolframe;

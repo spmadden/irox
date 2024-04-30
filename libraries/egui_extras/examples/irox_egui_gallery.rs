@@ -3,9 +3,12 @@
 //
 
 use std::collections::BTreeMap;
+use std::f64::consts::TAU;
 
-use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Widget, Window};
+use eframe::{App, CreationContext, Frame, WindowBuilder};
+use egui::{CentralPanel, Context, Vec2, ViewportBuilder, Widget, Window};
+use egui_plot::{PlotPoint, PlotPoints};
+use irox_egui_extras::logplot::LogPlot;
 use irox_egui_extras::progressbar::ProgressBar;
 use log::error;
 use serde::Serialize;
@@ -14,7 +17,10 @@ use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 
 pub fn main() {
+    let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
+
     let native_options = eframe::NativeOptions {
+        viewport,
         ..Default::default()
     };
     if let Err(e) = eframe::run_native(
@@ -26,39 +32,64 @@ pub fn main() {
     };
 }
 
-pub struct TestApp;
+pub struct TestApp {
+    log_plot: LogPlot,
+    show_bars: bool,
+    show_serde: bool,
+}
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
-        TestApp {}
+        let mut t = 0.0;
+        let mut pts = Vec::with_capacity(1000);
+        for x in 0..=1000 {
+            t = (x as f64 / 1000. * 4. * TAU).sin() + 1.;
+            pts.push(PlotPoint { x: x as f64, y: t });
+        }
+
+        TestApp {
+            log_plot: LogPlot::new(PlotPoints::Owned(pts)),
+            show_bars: false,
+            show_serde: false,
+        }
     }
 }
 impl App for TestApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        Window::new("test serde")
-            .hscroll(true)
-            .vscroll(true)
-            .show(ctx, |ui| {
-                let def = BasicStruct::new();
+        if self.show_serde {
+            Window::new("test serde")
+                .hscroll(true)
+                .vscroll(true)
+                .show(ctx, |ui| {
+                    let def = BasicStruct::new();
 
-                let mut ser = EguiSerializer::new();
-                if let Ok(()) = def.serialize(&mut ser) {
-                    ser.show(ui);
-                }
-            });
+                    let mut ser = EguiSerializer::new();
+                    if let Ok(()) = def.serialize(&mut ser) {
+                        ser.show(ui);
+                    }
+                });
+        }
 
-        Window::new("progress bars")
+        if self.show_bars {
+            Window::new("progress bars")
+                .constrain(true)
+                .default_width(500.)
+                .show(ctx, |ui| {
+                    ProgressBar::indeterminate()
+                        .text_center("I'm indeterminate!".to_string())
+                        .ui(ui);
+
+                    ProgressBar::new(0.5)
+                        .text_left("Left text".to_string())
+                        .text_center("Center text for a 50% bar".to_string())
+                        .text_right("Right text".to_string())
+                        .ui(ui);
+                });
+        }
+        Window::new("log plot")
             .constrain(true)
             .default_width(500.)
             .show(ctx, |ui| {
-                ProgressBar::indeterminate()
-                    .text_center("I'm indeterminate!".to_string())
-                    .ui(ui);
-
-                ProgressBar::new(0.5)
-                    .text_left("Left text".to_string())
-                    .text_center("Center text for a 50% bar".to_string())
-                    .text_right("Right text".to_string())
-                    .ui(ui);
+                self.log_plot.show(ui);
             });
 
         CentralPanel::default().show(ctx, |_ui| {});

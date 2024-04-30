@@ -3393,6 +3393,7 @@ version = "0.3.8"
 dependencies = [
  "eframe",
  "egui",
+ "egui_plot",
  "irox-tools",
  "log",
  "ron",
