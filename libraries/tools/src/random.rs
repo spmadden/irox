@@ -102,7 +102,8 @@ impl PRNG for PcgRxsMXs64 {
     fn next_u64(&mut self) -> u64 {
         let state = self.state;
         self.state = state.wrapping_mul(MULTIPLIER).wrapping_add(INCREMENT);
-        let word = ((state >> ((state >> 59) + 5)) ^ state) * 12605985483714917081u64;
+        let word = ((state >> ((state >> 59).wrapping_add(5))) ^ state)
+            .wrapping_mul(12605985483714917081u64);
         (word >> 43) ^ word
     }
 }
@@ -194,5 +195,80 @@ impl Default for Random {
 impl Default for Random {
     fn default() -> Self {
         Random::new_seed(DEFAULT_STATE)
+    }
+}
+
+#[cfg(all(test, feature = "std"))]
+mod tests {
+    use crate::random::{PcgRxsMXs64, PcgXslRrRr, PRNG};
+
+    // #[test]
+    // #[ignore]
+    pub fn speedtest_128() -> f64 {
+        let mut rand = PcgXslRrRr::new_seed(0);
+        let start = std::time::Instant::now();
+        let todo = 100_000_000;
+        std::hint::black_box({
+            let mut v = 0;
+            for _i in 0..todo {
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+                v = rand.next_u128();
+            }
+        });
+        let elapsed = start.elapsed().as_secs_f64();
+        let did = todo as f64 * 128. / 1e6;
+        println!("Did {} MB/s", did / elapsed);
+        did
+    }
+    pub fn speedtest_64() -> f64 {
+        let mut rand = PcgRxsMXs64::new_seed(0);
+        let start = std::time::Instant::now();
+        let todo = 1_000_000;
+        std::hint::black_box({
+            let mut v = 0;
+            for _i in 0..todo {
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+                v = rand.next_u64();
+            }
+        });
+        let elapsed = start.elapsed().as_secs_f64();
+        let did = todo as f64 * 64. / 1e6;
+        println!("Did {} MB/s", did / elapsed);
+        did
+    }
+
+    #[test]
+    #[ignore]
+    pub fn multi_speedtest() {
+        let core_ids = core_affinity::get_core_ids().unwrap_or_default();
+        let start = std::time::Instant::now();
+        let mut handles = core_ids
+            .into_iter()
+            .map(|id| {
+                std::thread::spawn(move || {
+                    let val = core_affinity::set_for_current(id);
+                    speedtest_128()
+                })
+            })
+            .collect::<Vec<_>>();
+
+        let did: f64 = handles
+            .drain(..)
+            .map(|v| v.join().unwrap_or_default())
+            .sum();
+        let elapsed = start.elapsed().as_secs_f64();
+        println!("Did {} MB/s", did / elapsed);
     }
 }

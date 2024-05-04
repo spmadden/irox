@@ -74,6 +74,7 @@ git2 = {version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"]}
 cargo = {version = "0.78.1", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
+core_affinity = "0.8.1"
 
 irox-csv = {version = "^0", path = "data-formats/csv"}
 irox-gpx = {version = "^0", path = "data-formats/gpx"}

@@ -20,6 +20,7 @@ irox-bits.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
+core_affinity.workspace = true
 
 [features]
 default = []
