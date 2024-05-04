@@ -10,12 +10,14 @@ use std::io::{Error, Read, Write};
 pub use buffer::*;
 pub use conv::*;
 pub use counting::*;
+pub use pagefile::*;
 pub use readerator::*;
 
 #[cfg(feature = "std")]
 mod buffer;
 mod conv;
 mod counting;
+mod pagefile;
 mod readerator;
 
 ///
