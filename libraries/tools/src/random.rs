@@ -200,6 +200,7 @@ impl Default for Random {
 
 #[cfg(all(test, feature = "std"))]
 mod tests {
+    #![allow(clippy::all)]
     use crate::random::{PcgRxsMXs64, PcgXslRrRr, PRNG};
 
     // #[test]
