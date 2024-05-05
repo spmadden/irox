@@ -50,6 +50,12 @@ impl BasicPlot {
             {
                 ui.close_menu();
             }
+            if ui
+                .selectable_value(&mut self.y_axis.scale_mode, ScaleMode::DBScale, "Y-dB")
+                .clicked()
+            {
+                ui.close_menu();
+            }
         });
         let rect = response.rect;
         let width = rect.width();
@@ -189,7 +195,7 @@ impl BasicPlot {
             painter.text(
                 rect.center_bottom(),
                 Align2::CENTER_BOTTOM,
-                "Warning: some points <= 0 were skipped in log10 mode.".to_string(),
+                "Warning: some points <= 0 were skipped in log10/dB mode.".to_string(),
                 font_id.clone(),
                 caution_color,
             );
@@ -237,6 +243,7 @@ pub enum ScaleMode {
     #[default]
     Linear,
     Log10,
+    DBScale,
 }
 #[derive(Default)]
 pub struct Axis {
@@ -261,7 +268,7 @@ impl Axis {
         for val in vals {
             let v = match self.scale_mode {
                 ScaleMode::Linear => accessor(val),
-                ScaleMode::Log10 => {
+                ScaleMode::Log10 | ScaleMode::DBScale => {
                     let v = accessor(val);
                     if v <= 0.0 {
                         self.draw_log_clip_warning = true;
@@ -275,19 +282,30 @@ impl Axis {
         }
         let high_exp = self.max_val.abs().log10().ceil() as i32;
         let mut low_exp = (self.min_val.abs().log10().ceil() as i32).saturating_sub(1);
-        if self.scale_mode == ScaleMode::Log10 {
-            if self.min_val <= 0.0 {
-                self.draw_log_clip_warning = true;
-                self.min_val = f64::MIN_POSITIVE;
-                low_exp = self.min_val.abs().log10().ceil() as i32;
+        match self.scale_mode {
+            ScaleMode::Log10 => {
+                if self.min_val <= 0.0 {
+                    self.draw_log_clip_warning = true;
+                    self.min_val = f64::MIN_POSITIVE;
+                    low_exp = self.min_val.abs().log10().ceil() as i32;
+                }
+                self.min_val = 10f64.powi(low_exp);
+                self.max_val = 10f64.powi(high_exp);
             }
-            self.min_val = 10f64.powi(low_exp);
-            self.max_val = 10f64.powi(high_exp);
-        }
+            ScaleMode::DBScale => {
+                if self.min_val <= 0.0 {
+                    self.draw_log_clip_warning = true;
+                    self.min_val = f64::MIN_POSITIVE;
+                }
+                self.min_val = 10. * self.min_val.log10();
+                self.max_val = 10. * self.max_val.log10();
+            }
+            _ => {}
+        };
 
         self.range = self.max_val - self.min_val;
         match self.scale_mode {
-            ScaleMode::Linear => {
+            ScaleMode::Linear | ScaleMode::DBScale => {
                 let model_per_point = self.range / (self.screen_range as f64);
                 let base_step_size = model_per_point * 5.0f64;
 
@@ -307,7 +325,11 @@ impl Axis {
                     let frac = idx as f64 / 10f64;
                     let dv = min_detent + range * frac;
                     let drawpnt = self.model_to_screen(dv);
-                    self.detents.push((drawpnt, format!("{dv:4.2}")));
+                    let label = match self.scale_mode {
+                        ScaleMode::DBScale => format!("{dv:4.2} dB"),
+                        _ => format!("{dv:4.2}"),
+                    };
+                    self.detents.push((drawpnt, label));
                 }
             }
             ScaleMode::Log10 => {
@@ -345,6 +367,13 @@ impl Axis {
         frac * self.range + self.min_val
     }
 
+    pub fn db_scale(&self, mut val: f64) -> f64 {
+        if val <= 0.0 {
+            val = f64::MIN_POSITIVE;
+        }
+        10. * val.log10()
+    }
+
     pub fn scale_value(&self, val: f64) -> Option<f32> {
         match self.scale_mode {
             ScaleMode::Linear => Some(self.model_to_screen(val)),
@@ -353,6 +382,14 @@ impl Axis {
                     None
                 } else {
                     let v = self.log_scale(val);
+                    Some(self.model_to_screen(v))
+                }
+            }
+            ScaleMode::DBScale => {
+                if val <= 0.0 {
+                    None
+                } else {
+                    let v = self.db_scale(val);
                     Some(self.model_to_screen(v))
                 }
             }

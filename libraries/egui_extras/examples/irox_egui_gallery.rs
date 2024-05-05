@@ -45,8 +45,8 @@ impl TestApp {
         for x in 0..=1000 {
             t = (x as f64 / 1000. * 6. * TAU).sin() + 1.;
             pts.push(PlotPoint {
-                x: x as f64 + 100.,
-                y: t * 100. + 100.,
+                x: x as f64,
+                y: t * 100.,
             });
         }
 
