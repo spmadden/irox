@@ -4,11 +4,12 @@
 
 use std::collections::BTreeMap;
 use std::f64::consts::TAU;
+use std::sync::Arc;
 
-use eframe::{App, CreationContext, Frame, WindowBuilder};
+use eframe::{App, CreationContext, Frame};
 use egui::{CentralPanel, Context, Vec2, ViewportBuilder, Widget, Window};
-use egui_plot::{PlotPoint, PlotPoints};
-use irox_egui_extras::logplot::LogPlot;
+use egui_plot::PlotPoint;
+use irox_egui_extras::logplot::BasicPlot;
 use irox_egui_extras::progressbar::ProgressBar;
 use log::error;
 use serde::Serialize;
@@ -33,21 +34,24 @@ pub fn main() {
 }
 
 pub struct TestApp {
-    log_plot: LogPlot,
+    log_plot: BasicPlot,
     show_bars: bool,
     show_serde: bool,
 }
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
-        let mut t = 0.0;
+        let mut t;
         let mut pts = Vec::with_capacity(1000);
         for x in 0..=1000 {
-            t = (x as f64 / 1000. * 4. * TAU).sin() + 1.;
-            pts.push(PlotPoint { x: x as f64, y: t });
+            t = (x as f64 / 1000. * 6. * TAU).sin() + 1.;
+            pts.push(PlotPoint {
+                x: x as f64 + 100.,
+                y: t * 100. + 100.,
+            });
         }
 
         TestApp {
-            log_plot: LogPlot::new(PlotPoints::Owned(pts)),
+            log_plot: BasicPlot::new(Arc::new(pts)),
             show_bars: false,
             show_serde: false,
         }
@@ -85,7 +89,7 @@ impl App for TestApp {
                         .ui(ui);
                 });
         }
-        Window::new("log plot")
+        Window::new("test log plot")
             .constrain(true)
             .default_width(500.)
             .show(ctx, |ui| {
