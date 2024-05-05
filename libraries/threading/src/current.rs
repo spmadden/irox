@@ -55,13 +55,17 @@ impl<'a> CurrentThreadExecutor<'a> {
             let waker = Waker::from(task.get_waker());
             let mut context = Context::from_waker(&waker);
 
+            // clear out the 'needs running' flag BEFORE we poll the future,
+            // this way the future can re-schedule itself if necessary
+            task.get_waker()
+                .needs_running
+                .store(false, Ordering::Relaxed);
+
+            // poll the future
             match task.as_mut().poll(&mut context) {
                 Poll::Ready(()) => {}
                 Poll::Pending => {
                     // reschedule task again.
-                    task.get_waker()
-                        .needs_running
-                        .store(false, Ordering::Relaxed);
                     pending.push_back(task);
                 }
             }
