@@ -7,6 +7,8 @@ default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAG
 
 [linux]
 ci +FLAGS='': updates deny (recurse_ci FLAGS) (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
+[windows]
+ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
 
@@ -32,6 +34,7 @@ build +FLAGS='':
     cargo build --all-targets --all-features {{FLAGS}}
     @just logend
 
+[linux]
 check TARGET +FLAGS='':
    @just logstart check-{{TARGET}}
    just check_install cargo-describe
@@ -136,8 +139,20 @@ logend:
 
 [windows]
 logstart RECIPE:
-    @if ( $Env:GITHUB_ACTIONS -eq "true" ) { Write-Output "::group::{{RECIPE}}" }
+    @if ( "{{GITHUB_ACTIONS}}" -eq "true" ) { Write-Output "::group::{{RECIPE}}" }
 
 [windows]
 logend:
-    @if ( $Env:GITHUB_ACTIONS -eq "true" ) { Write-Output "::endgroup::" }
+    @if ( "{{GITHUB_ACTIONS}}" -eq "true" ) { Write-Output "::endgroup::" }
+
+[linux]
+buildperf:
+    @cargo clean
+    @cargo fetch
+    time cargo build --release
+
+[windows]
+buildperf:
+    @cargo clean
+    @cargo fetch
+    Measure-Command{ cargo build --release }
