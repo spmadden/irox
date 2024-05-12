@@ -2,7 +2,7 @@
 // Copyright 2024 IROX Contributors
 //
 
-use irox_bits::Error;
+use irox_bits::{Error, SeekRead, SeekWrite};
 use std::fs::File;
 use std::path::Path;
 
@@ -31,7 +31,6 @@ impl Pagefile {
     }
 
     pub fn read_page<const N: usize>(&mut self, page_num: u64) -> Result<[u8; N], Error> {
-        use std::os::windows::fs::FileExt;
         let mut buf = [0; N];
         let offset = page_num * N as u64;
         let read = self.backing_file.seek_read(&mut buf, offset)?;
@@ -46,7 +45,6 @@ impl Pagefile {
         page_num: u64,
         data: &[u8; N],
     ) -> Result<(), Error> {
-        use std::os::windows::fs::FileExt;
         let offset = page_num * N as u64;
         let write = self.backing_file.seek_write(data, offset)?;
         debug_assert!(write == N, "Wrote less than expected ({write} != {N})");
