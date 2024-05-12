@@ -10,6 +10,7 @@
 pub use bits::*;
 pub use error::*;
 pub use mutbits::*;
+pub use seek::*;
 #[cfg(feature = "std")]
 pub use stdwrappers::*;
 
@@ -18,6 +19,7 @@ pub mod allocimpls;
 mod bits;
 mod error;
 mod mutbits;
+mod seek;
 #[cfg(feature = "std")]
 mod stdimpls;
 #[cfg(feature = "std")]
