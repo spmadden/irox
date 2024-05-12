@@ -210,16 +210,16 @@ mod tests {
         let start = std::time::Instant::now();
         let todo = 100_000_000;
         std::hint::black_box({
-            let mut v = 0;
+            let mut _v = 0;
             for _i in 0..todo {
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
-                v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
+                _v = rand.next_u128();
             }
         });
         let elapsed = start.elapsed().as_secs_f64();
@@ -227,21 +227,22 @@ mod tests {
         println!("Did {} MB/s", did / elapsed);
         did
     }
+    #[allow(unused)]
     pub fn speedtest_64() -> f64 {
         let mut rand = PcgRxsMXs64::new_seed(0);
         let start = std::time::Instant::now();
         let todo = 1_000_000;
         std::hint::black_box({
-            let mut v = 0;
+            let mut _v = 0;
             for _i in 0..todo {
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
-                v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
+                _v = rand.next_u64();
             }
         });
         let elapsed = start.elapsed().as_secs_f64();
@@ -259,7 +260,7 @@ mod tests {
             .into_iter()
             .map(|id| {
                 std::thread::spawn(move || {
-                    let val = core_affinity::set_for_current(id);
+                    let _val = core_affinity::set_for_current(id);
                     speedtest_128()
                 })
             })

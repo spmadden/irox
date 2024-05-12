@@ -71,7 +71,7 @@ mod test {
         let start = std::time::Instant::now();
         for idx in 0..=1_000_000 {
             let mut sli = page.as_mut_slice();
-            for i in 0..32 {
+            for _i in 0..32 {
                 sli.write_all(&rnd.next_u128().to_be_bytes())?;
             }
             file.write_page(idx, &page)?;
