@@ -52,7 +52,6 @@ Current Modules & Organization:
     * [`units`] - Physical Units, Quantities, & Reference Frames
 * [`tools`](https://github.com/spmadden/irox/blob/master/tools) - Rust 'binary' crates, mostly just binaries that depend
   on crates in `libraries`
-    * [`cargo-describe`] - CLI tool to produce human-friendly information from cargo-metadata
     * [`gpsd`] - Implementation of GPSd in Rust, with support for windows targets!
 
 Version Status
@@ -85,7 +84,6 @@ Version Status
 | `irox-types`           | ![std]         | ![alloc]    | [![types-vsn-shield]][types-crate] [![types-doc-shield]][types-doc]                                         |
 | `irox-units`           | ![no_std]      | ![no_alloc] | [![units-vsn-shield]][units-crate] [![units-doc-shield]][units-doc]                                         |
 | `irox-winlocation-api` | ![std]         | ![alloc]    | [![winloc-api-vsn-shield]][winloc-api-crate] [![winloc-api-doc-shield]][winloc-api-doc]                     |
-| `cargo-describe`       | ![std]         | ![alloc]    | [![cargo-describe-vsn-shield]][cargo-describe-crate]                                                        |
 
 [no_std]: https://img.shields.io/badge/no__std-yes-green "Library does not require std but may have features gated by 'std'"
 
@@ -351,9 +349,3 @@ Version Status
 [winloc-api-doc]: https://docs.rs/irox-winlocation-api
 
 [`gpsd`]: https://github.com/spmadden/irox/blob/master/tools/gpsd
-
-[`cargo-describe`]: https://github.com/spmadden/irox/blob/master/tools/cargo-describe
-
-[cargo-describe-vsn-shield]: https://img.shields.io/crates/v/cargo-describe.svg
-
-[cargo-describe-crate]: https://crates.io/crates/cargo-describe

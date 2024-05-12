@@ -1,10 +1,16 @@
 #!/usr/bin/env -S just --justfile
 
+[linux]
 default +FLAGS='': updates (recurse FLAGS) (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
+[windows]
+default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
+[linux]
 ci +FLAGS='': updates deny (recurse_ci FLAGS) (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
+
+set windows-shell := ["pwsh.exe", "-NoLogo", "-noni", "-Command"]
 
 updates:
     @just logstart updates
@@ -90,6 +96,7 @@ unused:
     cargo clippy --bins --lib --all-features -- -Wunused_crate_dependencies
     @just logend
 
+[linux]
 new DEST: 
     just check_install cargo-generate
     mkdir -p {{DEST}}
@@ -99,6 +106,7 @@ release +FLAGS='':
     just check_install cargo-smart-release
     cargo smart-release --no-conservative-pre-release-version-handling --no-isolate-dependencies-from-breaking-changes -u {{FLAGS}}
 
+[linux]
 recurse +FLAGS='':
     #!/usr/bin/bash
     set -euo pipefail
@@ -108,6 +116,7 @@ recurse +FLAGS='':
         just logend; \
     done
 
+[linux]
 recurse_ci +FLAGS='':
     @for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
         just logstart module-$module; \
@@ -115,10 +124,20 @@ recurse_ci +FLAGS='':
         just logend; \
     done
 
+[linux]
 logstart RECIPE:
     #!/bin/bash
     if [[ "{{GITHUB_ACTIONS}}" == "true" ]] ; then echo "::group::{{RECIPE}}"; fi
 
+[linux]
 logend:
     #!/bin/bash
     if [[ "{{GITHUB_ACTIONS}}" == "true" ]] ; then echo "::endgroup::" ; fi
+
+[windows]
+logstart RECIPE:
+    @if ( $Env:GITHUB_ACTIONS -eq "true" ) { Write-Output "::group::{{RECIPE}}" }
+
+[windows]
+logend:
+    @if ( $Env:GITHUB_ACTIONS -eq "true" ) { Write-Output "::endgroup::" }

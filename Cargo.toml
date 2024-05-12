@@ -39,7 +39,6 @@ members = [
     "libraries/threading",
     "libraries/tools",
     "libraries/types",
-    "tools/cargo-describe",
     "tools/gpsd",
     "tools/halflifes",
     "tools/influx-cli",
@@ -51,61 +50,60 @@ egui = { version = "^0.27", default-features = false }
 eframe = { version = "^0.27", default-features = false }
 egui_plot = { version = "^0.27", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.198", features = ["derive"] }
-serde_json = {version = "^1.0", features = []}
-ureq = {version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"]}
-url = {version = "^2.5", features = []}
-clap = {version = "^4.5", features = ["derive", "wrap_help", "string", "cargo", "env"]}
-clap-verbosity-flag = {version = "^2.2"}
-log = {version = "^0.4", features = []}
-env_logger = {version = "^0.11", features = []}
-syn = {version = "^2.0", features = ["extra-traits"]}
-quote = {version = "^1.0", features = []}
-signal-hook = {version = "^0.3", features = []}
-windows = {version = "^0.56", features = [ "Devices_Geolocation", "Foundation" ]}
-rusqlite = {version = "^0.30", features = ["bundled", "bundled-windows"]}
-miniz_oxide = {version = "^0.7", features = []}
-xml = {version = "^0.8", features = []}
-serial = {version = "^0.4", features = []}
-human-panic = {version = "^2.0", features = []}
-proc-macro2 = {version = "^1.0", features = []}
-num_cpus = {version = "1.16.0", features = []}
-git2 = {version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"]}
-cargo = {version = "0.78.1", features = ["all-static", "vendored-openssl", "vendored-libgit2"]}
+serde = { version = "^1.0.201", features = ["derive"] }
+serde_json = { version = "^1.0", features = [] }
+ureq = { version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"] }
+url = { version = "^2.5", features = [] }
+clap = { version = "^4.5", features = ["derive", "wrap_help", "string", "cargo", "env"] }
+clap-verbosity-flag = { version = "^2.2" }
+log = { version = "^0.4", features = [] }
+env_logger = { version = "^0.11", features = [] }
+syn = { version = "^2.0", features = ["extra-traits"] }
+quote = { version = "^1.0", features = [] }
+signal-hook = { version = "^0.3", features = [] }
+windows = { version = "^0.56", features = ["Devices_Geolocation", "Foundation"] }
+rusqlite = { version = "^0.31", features = ["bundled", "bundled-windows"] }
+miniz_oxide = { version = "^0.7", features = [] }
+xml = { version = "^0.8", features = [] }
+serial = { version = "^0.4", features = [] }
+human-panic = { version = "^2.0", features = [] }
+proc-macro2 = { version = "^1.0", features = [] }
+num_cpus = { version = "1.16.0", features = [] }
+git2 = { version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"] }
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
 core_affinity = "0.8.1"
 
-irox-csv = {version = "^0", path = "data-formats/csv"}
-irox-gpx = {version = "^0", path = "data-formats/gpx"}
-irox-nmea0183 = {version = "^0", path = "data-formats/nmea0183"}
-irox-raymarine-sonar = {version = "^0", path = "data-formats/raymarine-sonar"}
-irox-sirf = {version = "^0", path = "data-formats/sirf"}
+irox-csv = { version = "^0", path = "data-formats/csv" }
+irox-gpx = { version = "^0", path = "data-formats/gpx" }
+irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
+irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
+irox-sirf = { version = "^0", path = "data-formats/sirf" }
 
-irox-eieio-api = {version="^0", path = "eieio/api"}
-irox-eieio-nmea0183 = {version="^0", path = "eieio/nmea0183"}
+irox-eieio-api = { version = "^0", path = "eieio/api" }
+irox-eieio-nmea0183 = { version = "^0", path = "eieio/nmea0183" }
 
-irox-influxdb_v1 = {version = "^0", path = "interfaces/influxdb_v1"}
-irox-winlocation-api = {version = "^0", path = "interfaces/win-location-api"}
+irox-influxdb_v1 = { version = "^0", path = "interfaces/influxdb_v1" }
+irox-winlocation-api = { version = "^0", path = "interfaces/win-location-api" }
 
-irox-bits = {version = "^0", path = "libraries/bits"}
-irox-build-rs = {version = "^0", path = "libraries/build-rs", features = ["git"]}
-irox-carto = {version = "^0", path = "libraries/carto"}
-irox-egui-extras = {version = "^0", path = "libraries/egui_extras"}
-irox-enums = {version = "^0", path = "libraries/enums"}
-irox-enums_derive = {version = "^0", path = "libraries/enums_derive"}
-irox-git-tools = {version = "^0", path = "libraries/git-tools"}
-irox-log = {version = "^0", path = "libraries/log"}
-irox-networking = {version = "^0", path = "libraries/network"}
-irox-progress = {version = "^0", path = "libraries/progress"}
-irox-stats = {version = "^0", path = "libraries/stats"}
-irox-structs = {version = "^0", path = "libraries/structs"}
-irox-structs_derive = {version = "^0", path = "libraries/structs_derive"}
-irox-threading = {version = "^0", path = "libraries/threading"}
-irox-time = {version = "^0", path = "libraries/time"}
-irox-tools = {version = "^0", path = "libraries/tools"}
-irox-types = {version = "^0", path = "libraries/types"}
-irox-units = {version = "^0", path = "libraries/units"}
+irox-bits = { version = "^0", path = "libraries/bits" }
+irox-build-rs = { version = "^0", path = "libraries/build-rs", features = ["git"] }
+irox-carto = { version = "^0", path = "libraries/carto" }
+irox-egui-extras = { version = "^0", path = "libraries/egui_extras" }
+irox-enums = { version = "^0", path = "libraries/enums" }
+irox-enums_derive = { version = "^0", path = "libraries/enums_derive" }
+irox-git-tools = { version = "^0", path = "libraries/git-tools" }
+irox-log = { version = "^0", path = "libraries/log" }
+irox-networking = { version = "^0", path = "libraries/network" }
+irox-progress = { version = "^0", path = "libraries/progress" }
+irox-stats = { version = "^0", path = "libraries/stats" }
+irox-structs = { version = "^0", path = "libraries/structs" }
+irox-structs_derive = { version = "^0", path = "libraries/structs_derive" }
+irox-threading = { version = "^0", path = "libraries/threading" }
+irox-time = { version = "^0", path = "libraries/time" }
+irox-tools = { version = "^0", path = "libraries/tools" }
+irox-types = { version = "^0", path = "libraries/types" }
+irox-units = { version = "^0", path = "libraries/units" }
 
 # Lints last updated for Rust 1.74.0
 [workspace.lints.rust]
