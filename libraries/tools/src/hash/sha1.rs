@@ -9,7 +9,7 @@
 
 #![allow(clippy::indexing_slicing)]
 
-use crate::{Buffer, FixedBuf, RoundBuffer};
+use crate::buf::{Buffer, FixedBuf, RoundBuffer};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
 

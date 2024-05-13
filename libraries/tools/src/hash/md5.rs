@@ -7,8 +7,8 @@
 //!
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
+use crate::buf::{Buffer, RoundBuffer};
 use crate::u32::{FromU32Array, ToU32Array};
-use crate::{Buffer, RoundBuffer};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
 

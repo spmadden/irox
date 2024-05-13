@@ -10,6 +10,8 @@ pub use round::*;
 mod round;
 pub use fixed::*;
 mod fixed;
+mod str;
+pub use str::*;
 
 ///
 /// Standard buffer functions

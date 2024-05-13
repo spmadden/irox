@@ -4,12 +4,12 @@
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
 
-use crate::Buffer;
+use crate::buf::Buffer;
 use core::ops::{Index, IndexMut};
 use irox_bits::{Bits, Error, ErrorKind, MutBits};
 
 ///
-/// Double-ended circular Buffer.  Basically a fixed size [`VecDeque`]
+/// Double-ended circular Buffer.  Basically a fixed size [`std::collections::VecDeque`]
 pub struct RoundBuffer<const N: usize, T: Sized> {
     buf: [Option<T>; N],
     head: usize,

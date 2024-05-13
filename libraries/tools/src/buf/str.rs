@@ -2,8 +2,12 @@
 // Copyright 2024 IROX Contributors
 //
 
-use crate::Buffer;
+#![allow(clippy::indexing_slicing)]
+use crate::buf::Buffer;
 
+///
+/// A replacement for [`String`], except can't grow beyond a constant size, so
+/// doesn't require [`alloc`], and is `no_std`/`no_alloc`.
 pub struct StrBuf<const N: usize> {
     chars: [char; N],
     len: usize,

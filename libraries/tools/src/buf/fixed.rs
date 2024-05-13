@@ -4,11 +4,14 @@
 
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
+use crate::buf::Buffer;
 use crate::options::MaybeMap;
-use crate::Buffer;
 use core::ops::{Index, IndexMut};
 
-pub type StrBuf<const N: usize> = FixedBuf<N, char>;
+// pub type StrBuf<const N: usize> = FixedBuf<N, char>;
+
+///
+/// Fixed length stack allocated buffer.  Basically a stack-allocated [`std::vec::Vec`]
 pub struct FixedBuf<const N: usize, T: Sized> {
     buf: [Option<T>; N],
     len: usize,

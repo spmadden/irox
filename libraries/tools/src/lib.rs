@@ -10,7 +10,6 @@
 extern crate alloc;
 extern crate core;
 
-pub use buf::*;
 pub use hash::*;
 pub use primitives::*;
 pub use util::*;
@@ -39,5 +38,5 @@ pub mod fs;
 mod hash;
 mod primitives;
 
-mod buf;
+pub mod buf;
 mod util;
