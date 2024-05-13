@@ -97,7 +97,7 @@ impl FloatExt for f64 {
     }
 
     ///
-    /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: https://dlmf.nist.gov/4.2.E19
+    /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
     fn exp(self) -> Self::Type {
         if self.is_nan() || self.is_infinite() {
             return self;
@@ -117,7 +117,7 @@ impl FloatExt for f64 {
     }
 
     ///
-    /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: https://dlmf.nist.gov/4.6.E4
+    /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
     fn ln(self) -> Self::Type {
         if !self.is_normal() {
             return self;
@@ -143,7 +143,7 @@ impl FloatExt for f64 {
     }
 
     ///
-    /// Implementation of general power function using NIST DLMF eq 4.2.26: https://dlmf.nist.gov/4.2.E26
+    /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
     fn powf(self, a: Self::Type) -> Self::Type {
         if !self.is_normal() {
             return self;

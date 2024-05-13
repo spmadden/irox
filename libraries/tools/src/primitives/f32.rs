@@ -48,7 +48,7 @@ impl crate::f64::FloatExt for f32 {
         1.0
     }
     ///
-    /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: https://dlmf.nist.gov/4.2.E19
+    /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
     fn exp(self) -> Self::Type {
         let mut out = 1.0;
         let i = self;
@@ -78,7 +78,7 @@ impl crate::f64::FloatExt for f32 {
     }
 
     ///
-    /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: https://dlmf.nist.gov/4.6.E4
+    /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
     fn ln(self) -> Self::Type {
         let z = self as f64;
         let iter = (z - 1.) / (z + 1.);
@@ -96,7 +96,7 @@ impl crate::f64::FloatExt for f32 {
     }
 
     ///
-    /// Implementation of general power function using NIST DLMF eq 4.2.26: https://dlmf.nist.gov/4.2.E26
+    /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
     fn powf(self, a: Self::Type) -> Self::Type {
         let z = self;
 
