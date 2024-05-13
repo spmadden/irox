@@ -10,6 +10,7 @@ use std::io::{Error, Read, Write};
 pub use buffer::*;
 pub use conv::*;
 pub use counting::*;
+#[cfg(feature = "bits/std")]
 pub use pagefile::*;
 pub use readerator::*;
 
@@ -17,6 +18,7 @@ pub use readerator::*;
 mod buffer;
 mod conv;
 mod counting;
+#[cfg(feature = "bits/std")]
 mod pagefile;
 mod readerator;
 
