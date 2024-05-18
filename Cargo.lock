@@ -2324,7 +2324,7 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "core_affinity",
  "criterion",

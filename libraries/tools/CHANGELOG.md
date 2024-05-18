@@ -1,7 +1,60 @@
 
 
 
+## v0.8.1 (2024-05-18)
+
+### Chore
+
+ - <csr-id-b8c91df14a0642426aca122ded0339b555f84ade/> clean up some test warnings in irox-tools
+
+### New Features
+
+ - <csr-id-45b145ade2a9fa5e4dedbfc53ec197ddb71d7469/> add new (basic) pagefile wrapper.
+
+### Bug Fixes
+
+ - <csr-id-2c526b417671a161582c0906f631a00b1988c633/> put pagefile behind right feature (bits/std)
+ - <csr-id-835f4d7fb52581c4680e4f778409668f5e474fce/> fix pagefile compiling/function on Linux
+ - <csr-id-62b40dc6b7c560153a6209ea3373aa9cb79ba27b/> disable lints for random's test code
+ - <csr-id-1c413bba298204c593420a2d813291eb3997b054/> fix debug math panic in Random
+
+### Other
+
+ - <csr-id-c853a9178bdb1a6c471b80f817cc13cb2b8a1958/> fix urls in primitives
+
+### Refactor
+
+ - <csr-id-826ce7f53cf2f8d84a251a83fd5909ae71e58a6c/> move buf back into module, expose StrBuf
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 8 commits contributed to the release over the course of 13 calendar days.
+ - 27 days passed between releases.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Put pagefile behind right feature (bits/std) ([`2c526b4`](https://github.com/spmadden/irox/commit/2c526b417671a161582c0906f631a00b1988c633))
+    - Fix urls in primitives ([`c853a91`](https://github.com/spmadden/irox/commit/c853a9178bdb1a6c471b80f817cc13cb2b8a1958))
+    - Move buf back into module, expose StrBuf ([`826ce7f`](https://github.com/spmadden/irox/commit/826ce7f53cf2f8d84a251a83fd5909ae71e58a6c))
+    - Fix pagefile compiling/function on Linux ([`835f4d7`](https://github.com/spmadden/irox/commit/835f4d7fb52581c4680e4f778409668f5e474fce))
+    - Clean up some test warnings in irox-tools ([`b8c91df`](https://github.com/spmadden/irox/commit/b8c91df14a0642426aca122ded0339b555f84ade))
+    - Disable lints for random's test code ([`62b40dc`](https://github.com/spmadden/irox/commit/62b40dc6b7c560153a6209ea3373aa9cb79ba27b))
+    - Add new (basic) pagefile wrapper. ([`45b145a`](https://github.com/spmadden/irox/commit/45b145ade2a9fa5e4dedbfc53ec197ddb71d7469))
+    - Fix debug math panic in Random ([`1c413bb`](https://github.com/spmadden/irox/commit/1c413bba298204c593420a2d813291eb3997b054))
+</details>
+
 ## v0.8.0 (2024-04-21)
+
+<csr-id-05c5b84578474138d78211db2763e11a7bb3a925/>
 
 ### New Features
 
@@ -16,7 +69,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 20 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +81,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.0 ([`00325aa`](https://github.com/spmadden/irox/commit/00325aaa6a8ca13ad071bb0f931f002db1cb6517))
     - New feature: alloc, change default features to be nil rather than everything ([`bb44251`](https://github.com/spmadden/irox/commit/bb44251a3eb5917a0b270880e4956700773da32f))
     - New no-std/no-alloc fixed-size stack impls FixedBuf and RoundBuf ([`2537e8c`](https://github.com/spmadden/irox/commit/2537e8c15422cee078684d2e01f0e0e4f7053316))
     - Pull out tools/bits into own module, no-std, no-alloc ([`05c5b84`](https://github.com/spmadden/irox/commit/05c5b84578474138d78211db2763e11a7bb3a925))
