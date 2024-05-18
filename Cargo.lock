@@ -423,7 +423,7 @@ checksum = "3b43422f69d8ff38f95f1b2bb76517c91589a924d1559a0e935d7c8ce0274c11"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -458,7 +458,7 @@ checksum = "c6fa2087f2753a7da8cc1c0dbfcf89579dd57458e36769de5ac750b4671737ca"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -687,7 +687,7 @@ checksum = "4da9a32f3fed317401fa3c862968128267c3106685286e15d5aaa3d7389c2f60"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -841,7 +841,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -1354,7 +1354,7 @@ checksum = "5c785274071b1b420972453b306eeca06acf4633829db4223b58a2a8c5953bc4"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -1365,7 +1365,7 @@ checksum = "6fd000fd6988e73bbe993ea3db9b1aa64906ab88766d654973924340c8cddb42"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -1553,7 +1553,7 @@ checksum = "1a5c6c585bc94aaf2c7b51dd4c2ba22680844aba4c687be581871a6f518c5742"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -2109,7 +2109,7 @@ name = "irox-enums_derive"
 version = "0.2.2"
 dependencies = [
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -2301,7 +2301,7 @@ dependencies = [
  "irox-types",
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -2337,7 +2337,7 @@ version = "0.4.1"
 dependencies = [
  "irox-enums",
  "irox-enums_derive",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -2748,7 +2748,7 @@ dependencies = [
  "proc-macro-crate 3.1.0",
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -3514,7 +3514,7 @@ checksum = "c5e405930b9796f1c00bee880d03fc7e0bb4b9a11afc776885ffe84320da2865"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -3536,7 +3536,7 @@ checksum = "6c64451ba24fc7a6a2d60fc75dd9c83c90903b19028d4eff35e88fc1e86564e9"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -3768,9 +3768,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.63"
+version = "2.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf5be731623ca1a1fb7d8be6f261a3be6d3e2337b8a1f97be944d020c8fcb704"
+checksum = "7ad3dee41f36859875573074334c200d1add8e4a87bb37113ebd31d926b7b11f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3834,7 +3834,7 @@ checksum = "e2470041c06ec3ac1ab38d0356a6119054dedaea53e12fbefc0de730a1c08524"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -3992,7 +3992,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -4184,7 +4184,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
  "wasm-bindgen-shared",
 ]
 
@@ -4218,7 +4218,7 @@ checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -4594,7 +4594,7 @@ checksum = "f6fc35f58ecd95a9b71c4f2329b911016e6bec66b3f2e6a4aad86bd2e99e2f9b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -4616,7 +4616,7 @@ checksum = "08990546bf4edef8f431fa6326e032865f27138718c587dc21bc0265bbcb57cc"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
@@ -5056,7 +5056,7 @@ checksum = "15e934569e47891f7d9411f1a451d947a60e000ab3bd24fbb970f000387d1b3b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.63",
+ "syn 2.0.64",
 ]
 
 [[package]]
