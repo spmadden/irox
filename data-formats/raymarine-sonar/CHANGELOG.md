@@ -1,6 +1,6 @@
 
 
-## v0.5.1 (2024-04-21)
+## v0.5.1 (2024-05-18)
 
 ### Bug Fixes
 
@@ -10,8 +10,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 1 calendar day.
- - 20 days passed between releases.
+ - 2 commits contributed to the release over the course of 28 calendar days.
+ - 47 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.5.1 ([`6bb635f`](https://github.com/spmadden/irox/commit/6bb635f197f3465dee1a8f8f5e8fc821e20e6741))
     - Convert to using bits ([`425a8bc`](https://github.com/spmadden/irox/commit/425a8bc6dcb9263c694d326f1e4ad122d10dcd24))
 </details>
 
