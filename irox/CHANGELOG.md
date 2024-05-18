@@ -1,6 +1,50 @@
 
 
 
+## v0.6.0 (2024-05-18)
+
+### New Features
+
+ - <csr-id-2e5149d286a7ead907d90e4bb706666729a64b38/> add bits to top level irox & readme
+
+### Refactor (BREAKING)
+
+ - <csr-id-8c5ee8e97b862addcef770e7106398e8fac85e06/> rename exports to be the same as the features
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 16 commits contributed to the release over the course of 126 calendar days.
+ - 145 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Rename exports to be the same as the features ([`8c5ee8e`](https://github.com/spmadden/irox/commit/8c5ee8e97b862addcef770e7106398e8fac85e06))
+    - Release irox-tools v0.8.0 ([`00325aa`](https://github.com/spmadden/irox/commit/00325aaa6a8ca13ad071bb0f931f002db1cb6517))
+    - Add bits to top level irox & readme ([`2e5149d`](https://github.com/spmadden/irox/commit/2e5149d286a7ead907d90e4bb706666729a64b38))
+    - Release irox-influxdb_v1 v0.6.0 ([`62724de`](https://github.com/spmadden/irox/commit/62724de38d2498d5a1f30b03e0d5b52a0b9c748c))
+    - Release irox-structs v0.5.0 ([`0b03542`](https://github.com/spmadden/irox/commit/0b035422991c38db37653dc9f8e27b3b12743d6b))
+    - Release irox-structs_derive v0.3.0 ([`c590e04`](https://github.com/spmadden/irox/commit/c590e0406b0f1551d774bf48ba24306597121811))
+    - Release irox-types v0.4.0 ([`d81a518`](https://github.com/spmadden/irox/commit/d81a518812f731224867d9409c8140be47ec95ac))
+    - Release irox-tools v0.7.0 ([`a6a3ae3`](https://github.com/spmadden/irox/commit/a6a3ae33fa0cae813ea214e58f60fea85c9f0479))
+    - Release irox-tools v0.6.0 ([`0560dc1`](https://github.com/spmadden/irox/commit/0560dc130599c7355e1f57cbadd88395381c0033))
+    - Release irox-networking v0.4.1 ([`1236d8f`](https://github.com/spmadden/irox/commit/1236d8fd2b7b312a96202e27aa36069d95ed6d31))
+    - Release irox-tools v0.5.2 ([`89b01ec`](https://github.com/spmadden/irox/commit/89b01ec20e8637408a1497fa88a30452233efc97))
+    - Release irox-time v0.4.1 ([`0fdd826`](https://github.com/spmadden/irox/commit/0fdd8262853204142cdbd34d863c768df8d0a5d2))
+    - Release irox-egui-extras v0.3.6, irox-progress v0.3.0 ([`f23a34b`](https://github.com/spmadden/irox/commit/f23a34bf76874bd6565db16606a68a4cd1056f18))
+    - Release irox-units v0.3.4 ([`f9d100d`](https://github.com/spmadden/irox/commit/f9d100d8aa111d789a1921ebec5ce7729c626d6d))
+    - Release irox-tools v0.5.1 ([`c51a7a0`](https://github.com/spmadden/irox/commit/c51a7a0e503b78f6e576087178fdad2a227a7e04))
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
 ## v0.5.1 (2023-12-25)
 
 ### New Features
@@ -12,7 +56,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release over the course of 19 calendar days.
+ - 12 commits contributed to the release over the course of 19 calendar days.
  - 26 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +68,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.5.1 ([`b493e10`](https://github.com/spmadden/irox/commit/b493e109ef653af67d9397e31a2610d213b4ffd3))
     - Release irox-threading v0.2.2 ([`4ee9f9f`](https://github.com/spmadden/irox/commit/4ee9f9f7e75357203f586193dd9f2f71d397da20))
     - Release irox-log v0.1.3 ([`8f5ea53`](https://github.com/spmadden/irox/commit/8f5ea538d39d965eb18e181d73e6e8db06993734))
     - New module 'build-rs' to provide compile-time build metadata. ([`72fa70c`](https://github.com/spmadden/irox/commit/72fa70c474e0b77806f5f7d5941b9076f162b55e))
