@@ -1,7 +1,39 @@
 
 
 
+## v0.4.1 (2024-05-18)
+
+### Bug Fixes
+
+ - <csr-id-4ad1c3fefb261538487bcf0c9f08c40c5280cde4/> add dep on bits/std
+ - <csr-id-9b798b2acf8fda000e4d2e15cca9515ae2a66f7e/> pull in irox_structs::alloc
+ - <csr-id-9d0f6eb1a44cbe7bbf29bab46ec4c31473cc821a/> convert to using bits error
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 28 calendar days.
+ - 75 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add dep on bits/std ([`4ad1c3f`](https://github.com/spmadden/irox/commit/4ad1c3fefb261538487bcf0c9f08c40c5280cde4))
+    - Pull in irox_structs::alloc ([`9b798b2`](https://github.com/spmadden/irox/commit/9b798b2acf8fda000e4d2e15cca9515ae2a66f7e))
+    - Convert to using bits error ([`9d0f6eb`](https://github.com/spmadden/irox/commit/9d0f6eb1a44cbe7bbf29bab46ec4c31473cc821a))
+</details>
+
 ## v0.4.0 (2024-03-03)
+
+<csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
+<csr-id-7dccca7f878c10302fa2f6c71b08be6c564276dc/>
 
 ### Chore
 
@@ -15,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 50 calendar days.
+ - 4 commits contributed to the release over the course of 50 calendar days.
  - 95 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-sirf v0.4.0 ([`45a3fea`](https://github.com/spmadden/irox/commit/45a3fea600d96af34fbaac06bffb92c93001d31f))
     - Update to use Bits rather than Read ([`7dccca7`](https://github.com/spmadden/irox/commit/7dccca7f878c10302fa2f6c71b08be6c564276dc))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
