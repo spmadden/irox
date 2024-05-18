@@ -1,7 +1,38 @@
 
 
 
+## v0.3.9 (2024-05-18)
+
+### New Features
+
+ - <csr-id-e90d10a12fb82c0a9070df65f94a1a1c977ca2ff/> add dB space scaling to plot
+ - <csr-id-923576ef0c6d50f1ce719d1be73b3b44c5f22475/> much happier with the final state of the new plot widget.
+ - <csr-id-d4b1c16431af7d952a4c799fb0f6b15bf39c4539/> add basic plot
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 13 calendar days.
+ - 23 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add dB space scaling to plot ([`e90d10a`](https://github.com/spmadden/irox/commit/e90d10a12fb82c0a9070df65f94a1a1c977ca2ff))
+    - Much happier with the final state of the new plot widget. ([`923576e`](https://github.com/spmadden/irox/commit/923576ef0c6d50f1ce719d1be73b3b44c5f22475))
+    - Add basic plot ([`d4b1c16`](https://github.com/spmadden/irox/commit/d4b1c16431af7d952a4c799fb0f6b15bf39c4539))
+</details>
+
 ## v0.3.8 (2024-04-24)
+
+<csr-id-169d25bed38e36f5ae87e69a2bac055290ea0ff6/>
 
 ### Chore
 
@@ -11,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 51 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.8 ([`c38ade3`](https://github.com/spmadden/irox/commit/c38ade31d68081990a4d71bdb0d1457f858c1b65))
     - Bump version of egui-extras for deps ([`169d25b`](https://github.com/spmadden/irox/commit/169d25bed38e36f5ae87e69a2bac055290ea0ff6))
 </details>
 
