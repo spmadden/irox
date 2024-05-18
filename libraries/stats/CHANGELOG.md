@@ -1,7 +1,34 @@
 
 
 
+## v0.2.5 (2024-05-18)
+
+### New Features
+
+ - <csr-id-943df24540ecbce2a596363476d37b39f6a0018f/> add streaming-min, tdigest mod
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 28 calendar days.
+ - 47 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add streaming-min, tdigest mod ([`943df24`](https://github.com/spmadden/irox/commit/943df24540ecbce2a596363476d37b39f6a0018f))
+</details>
+
 ## v0.2.4 (2024-04-01)
+
+<csr-id-46dc6bfb95b3860eba5f9eb47394c92acd5ac502/>
 
 ### New Features
 
@@ -21,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 2 calendar days.
+ - 7 commits contributed to the release over the course of 2 calendar days.
  - 28 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -33,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.4 ([`77715c7`](https://github.com/spmadden/irox/commit/77715c7ed1e594fe97c18d879ea8357350ece160))
     - Release irox-tools v0.6.1 ([`091c8ac`](https://github.com/spmadden/irox/commit/091c8ac155297f942d1a46462e3d2d782d71993e))
     - Add eps value to tests ([`b2f572d`](https://github.com/spmadden/irox/commit/b2f572d459b23fb761eff24daafda319ac8ecc7a))
     - New streaming statistics features ([`96c41ef`](https://github.com/spmadden/irox/commit/96c41ef90232cf89154a0fddb71af0f265daed84))
