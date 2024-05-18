@@ -5,14 +5,15 @@
 ### Bug Fixes
 
  - <csr-id-425a8bc6dcb9263c694d326f1e4ad122d10dcd24/> convert to using bits
+ - <csr-id-c7d4d2049d199ed7d7745ee6456db64601340734/> include bits/std
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 28 calendar days.
+ - 4 commits contributed to the release over the course of 28 calendar days.
  - 47 days passed between releases.
- - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -22,6 +23,8 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Include bits/std ([`c7d4d20`](https://github.com/spmadden/irox/commit/c7d4d2049d199ed7d7745ee6456db64601340734))
+    - Release irox-raymarine-sonar v0.5.1 ([`31c4987`](https://github.com/spmadden/irox/commit/31c49871be286d144210bde472452fc27783533e))
     - Release irox-raymarine-sonar v0.5.1 ([`6bb635f`](https://github.com/spmadden/irox/commit/6bb635f197f3465dee1a8f8f5e8fc821e20e6741))
     - Convert to using bits ([`425a8bc`](https://github.com/spmadden/irox/commit/425a8bc6dcb9263c694d326f1e4ad122d10dcd24))
 </details>
