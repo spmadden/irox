@@ -1,6 +1,34 @@
 
 
+## v0.2.4 (2024-05-18)
+
+### Bug Fixes
+
+ - <csr-id-0b4029db8c0c9882e2c248bdd24b7a708a85d8d3/> fix issue in current thread executor where a task would mark that it should be rescheduled, but the executor would override it.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 75 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix issue in current thread executor where a task would mark that it should be rescheduled, but the executor would override it. ([`0b4029d`](https://github.com/spmadden/irox/commit/0b4029db8c0c9882e2c248bdd24b7a708a85d8d3))
+</details>
+
 ## v0.2.3 (2024-03-03)
+
+<csr-id-7b3a6247e34af3ad754a61c1bd15b03b1abdf82a/>
+<csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
 
 ### Chore
 
@@ -11,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 6 calendar days.
+ - 3 commits contributed to the release over the course of 6 calendar days.
  - 69 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.2.3 ([`e7c45f3`](https://github.com/spmadden/irox/commit/e7c45f37a9e53c535ab4385420547130d701994c))
     - Bump deps to latest versions ([`7b3a624`](https://github.com/spmadden/irox/commit/7b3a6247e34af3ad754a61c1bd15b03b1abdf82a))
     - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
 </details>
