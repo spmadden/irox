@@ -1,6 +1,31 @@
 
 
 
+## v0.4.0 (2024-05-19)
+
+### Refactor (BREAKING)
+
+ - <csr-id-7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e/> rename feature std_errors to std to align with other modules
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 48 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Rename feature std_errors to std to align with other modules ([`7a4c7dc`](https://github.com/spmadden/irox/commit/7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e))
+</details>
+
 ## v0.3.6 (2024-04-01)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 28 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.3.6 ([`90bd31e`](https://github.com/spmadden/irox/commit/90bd31e63ed30080a726a87c05582d1301a1b32f))
     - Add new Duration::from_seconds_f64 method ([`5c59f70`](https://github.com/spmadden/irox/commit/5c59f70540f178aa0f5ddc5e941942f601206513))
 </details>
 
