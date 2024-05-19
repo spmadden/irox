@@ -1,7 +1,34 @@
 
 
 
+## v0.6.1 (2024-05-19)
+
+### New Features
+
+ - <csr-id-d663459e0e6d8148ea772575ab486a2a4abbed7c/> new feature flags std,alloc,egui,num_cpus,serde to enable these deps in exported modules
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-units v0.4.0 ([`aacdec7`](https://github.com/spmadden/irox/commit/aacdec7fe68c21fc82cfa0cd0830292b2c5d1ea5))
+    - New feature flags std,alloc,egui,num_cpus,serde to enable these deps in exported modules ([`d663459`](https://github.com/spmadden/irox/commit/d663459e0e6d8148ea772575ab486a2a4abbed7c))
+</details>
+
 ## v0.6.0 (2024-05-18)
+
+<csr-id-8c5ee8e97b862addcef770e7106398e8fac85e06/>
 
 ### New Features
 
@@ -15,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 16 commits contributed to the release over the course of 126 calendar days.
+ - 17 commits contributed to the release over the course of 126 calendar days.
  - 145 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.0 ([`8ed2149`](https://github.com/spmadden/irox/commit/8ed2149b13de3cd937d69894fb4209d4add8012c))
     - Rename exports to be the same as the features ([`8c5ee8e`](https://github.com/spmadden/irox/commit/8c5ee8e97b862addcef770e7106398e8fac85e06))
     - Release irox-tools v0.8.0 ([`00325aa`](https://github.com/spmadden/irox/commit/00325aaa6a8ca13ad071bb0f931f002db1cb6517))
     - Add bits to top level irox & readme ([`2e5149d`](https://github.com/spmadden/irox/commit/2e5149d286a7ead907d90e4bb706666729a64b38))
