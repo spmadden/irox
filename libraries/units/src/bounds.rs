@@ -135,7 +135,7 @@ impl<T: Debug + Display + Clone + PartialOrd> LessThanEqualToValueError<T> {
         &self.valid_range
     }
 }
-#[cfg(feature = "std_errors")]
+#[cfg(feature = "std")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for LessThanEqualToValueError<T> {}
 
 ///
@@ -198,7 +198,7 @@ impl<T: Debug + Display + Clone + PartialOrd> Display for GreaterThanEqualToValu
         ))
     }
 }
-#[cfg(feature = "std_errors")]
+#[cfg(feature = "std")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error
     for GreaterThanEqualToValueError<T>
 {
@@ -385,7 +385,7 @@ impl<T: Debug + Display + Clone + PartialOrd> Display for OutsideRangeError<T> {
         ))
     }
 }
-#[cfg(feature = "std_errors")]
+#[cfg(feature = "std")]
 impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for OutsideRangeError<T> {}
 
 ///

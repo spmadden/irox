@@ -27,7 +27,7 @@
 #![allow(clippy::cast_precision_loss)]
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::module_name_repetitions)]
-#![cfg_attr(not(feature = "std_errors"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 pub mod bounds;
 pub mod shapes;
