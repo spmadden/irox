@@ -12,7 +12,7 @@ ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny F
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
 
-set windows-shell := ["pwsh.exe", "-NoLogo", "-noni", "-Command"]
+#set windows-shell := ["pwsh.exe", "-NoLogo", "-noni", "-Command"]
 
 updates:
     @just logstart updates
