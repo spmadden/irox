@@ -1,6 +1,33 @@
 
 
+## v0.3.4 (2024-05-19)
+
+### Bug Fixes
+
+ - <csr-id-01427cc100b9394cad1ea130e1faae2c1ccf96cb/> cancel children tasks when parent is cancelled
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 24 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cancel children tasks when parent is cancelled ([`01427cc`](https://github.com/spmadden/irox/commit/01427cc100b9394cad1ea130e1faae2c1ccf96cb))
+</details>
+
 ## v0.3.3 (2024-04-24)
+
+<csr-id-5a9b27c4d1a52e0d84365cede052dd6d70e3448b/>
 
 ### Chore
 
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 3 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.3.3 ([`dfe66c7`](https://github.com/spmadden/irox/commit/dfe66c7bfdda9098fa9f678b46432f7c3672d096))
     - Bump version of progress for deps ([`5a9b27c`](https://github.com/spmadden/irox/commit/5a9b27c4d1a52e0d84365cede052dd6d70e3448b))
 </details>
 

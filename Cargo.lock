@@ -2226,7 +2226,7 @@ dependencies = [
 
 [[package]]
 name = "irox-progress"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "eframe",
  "egui",
