@@ -301,6 +301,9 @@ impl Task {
     /// really more like a suggestion.
     pub fn cancel(&self) {
         self.cancelled.store(true, Ordering::Relaxed);
+        self.each_child(|ch| {
+            ch.cancel();
+        })
     }
 
     /// Returns true if this task has been marked 'cancelled'.  Cancelling a task is a one-way
