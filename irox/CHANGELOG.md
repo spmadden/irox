@@ -1,17 +1,17 @@
 
 
 
-## v0.6.1 (2024-05-19)
+## v0.6.2 (2024-05-19)
 
 ### New Features
 
- - <csr-id-d663459e0e6d8148ea772575ab486a2a4abbed7c/> new feature flags std,alloc,egui,num_cpus,serde to enable these deps in exported modules
+ - <csr-id-7192cb489d330b35371c50192876ef4b02d39c95/> export the individual subcrates as well as the use/features
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 1 commit contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,31 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Export the individual subcrates as well as the use/features ([`7192cb4`](https://github.com/spmadden/irox/commit/7192cb489d330b35371c50192876ef4b02d39c95))
+</details>
+
+## v0.6.1 (2024-05-19)
+
+### New Features
+
+ - <csr-id-d663459e0e6d8148ea772575ab486a2a4abbed7c/> new feature flags std,alloc,egui,num_cpus,serde to enable these deps in exported modules
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox v0.6.1 ([`27e11e3`](https://github.com/spmadden/irox/commit/27e11e368630340eb59f480a322c1c0c9e137f4e))
     - Release irox-units v0.4.0 ([`aacdec7`](https://github.com/spmadden/irox/commit/aacdec7fe68c21fc82cfa0cd0830292b2c5d1ea5))
     - New feature flags std,alloc,egui,num_cpus,serde to enable these deps in exported modules ([`d663459`](https://github.com/spmadden/irox/commit/d663459e0e6d8148ea772575ab486a2a4abbed7c))
 </details>
