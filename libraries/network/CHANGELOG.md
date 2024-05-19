@@ -1,7 +1,35 @@
 
 
 
+## v0.4.3 (2024-05-19)
+
+### Bug Fixes
+
+ - <csr-id-ebb6c803a1b5a59f19862aa156fa91dab8007392/> add irox-tools/std feature to networking
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 76 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add irox-tools/std feature to networking ([`ebb6c80`](https://github.com/spmadden/irox/commit/ebb6c803a1b5a59f19862aa156fa91dab8007392))
+</details>
+
 ## v0.4.2 (2024-03-03)
+
+<csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
+<csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/>
 
 ### Chore
 
@@ -15,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 6 calendar days.
+ - 3 commits contributed to the release over the course of 6 calendar days.
  - 50 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.4.2 ([`010a9a4`](https://github.com/spmadden/irox/commit/010a9a4907e3000d4d537e85590d4e5b2f049e71))
     - Deconflict network/example and build-rs/example ([`b95c39f`](https://github.com/spmadden/irox/commit/b95c39f94603a7c42353fe65114e95cf6a37a4bb))
     - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
 </details>
