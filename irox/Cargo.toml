@@ -43,6 +43,13 @@ tools = ["dep:irox-tools"]
 types = ["dep:irox-types"]
 units = ["dep:irox-units"]
 
+std = ["irox-bits?/std", "irox-time?/std", "irox-tools?/std", "irox-units?/std"]
+alloc = ["irox-bits?/alloc", "irox-structs?/alloc", "irox-tools?/alloc"]
+egui = ["irox-egui-extras?/plots", "irox-progress?/egui"]
+num_cpus = ["irox-threading?/num_cpus"]
+serde = ["irox-egui-extras?/serde", "irox-networking?/serde"]
+
+
 [dependencies]
 irox-csv = { version = "^0.5.0", optional = true, path = "../data-formats/csv" }
 irox-gpx = { version = "^0.5.0", optional = true, path = "../data-formats/gpx" }
