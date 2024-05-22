@@ -242,7 +242,7 @@ impl<T> Eventual<T> {
             _ => {}
         }
         if let Ok(guard) = self.inner.guard.lock() {
-            let _ = self.inner.condvar.wait_while(guard, |()| self.is_pending());
+            let _unused = self.inner.condvar.wait_while(guard, |()| self.is_pending());
         }
         self.get()
     }

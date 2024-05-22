@@ -8,7 +8,7 @@ use log::{error, info};
 
 use config::{GPSdConfig, Transport};
 use error::GPSdError;
-use irox_bits::{Bits, BitsWrapper};
+use irox_bits::BitsWrapper;
 use output::FrameGenerator;
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};
@@ -61,7 +61,6 @@ fn main() -> Result<(), GPSdError> {
 
     Ok(())
 }
-trait BitsRead: Bits + std::io::Read {}
 
 pub fn start_serial(
     mut server: TCPServer,

@@ -104,7 +104,7 @@ impl Wake for LocalWaker {
 
 trait HasLocalWaker {
     fn needs_wake(&self) -> bool;
-    fn clear_wake(&self);
+    // fn clear_wake(&self);
     fn get_waker(&self) -> Arc<LocalWaker>;
 }
 ///
@@ -122,9 +122,9 @@ where
         self.waker.needs_running.load(Ordering::Relaxed)
     }
 
-    fn clear_wake(&self) {
-        self.waker.needs_running.store(false, Ordering::Relaxed);
-    }
+    // fn clear_wake(&self) {
+    //     self.waker.needs_running.store(false, Ordering::Relaxed);
+    // }
 
     fn get_waker(&self) -> Arc<LocalWaker> {
         self.waker.clone()
