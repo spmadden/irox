@@ -2066,6 +2066,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-derive-helpers"
+version = "0.1.0"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-egui-extras"
 version = "0.3.9"
 dependencies = [
@@ -2296,6 +2303,7 @@ dependencies = [
 name = "irox-structs_derive"
 version = "0.3.1"
 dependencies = [
+ "irox-derive-helpers",
  "irox-tools",
  "irox-types",
  "proc-macro2",
