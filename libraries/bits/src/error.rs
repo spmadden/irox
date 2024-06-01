@@ -196,7 +196,7 @@ pub enum BitsErrorKind {
 impl std::error::Error for BitsError {}
 
 impl core::fmt::Display for BitsError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "BitsError({:?}): {}", self.kind, self.msg)
     }
 }

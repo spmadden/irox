@@ -6,7 +6,7 @@
 extern crate alloc;
 
 use crate::{Error, ErrorKind};
-use std::ops::{Deref, DerefMut};
+use core::ops::{Deref, DerefMut};
 
 ///
 /// Write methods for the primitive types
