@@ -2,9 +2,22 @@
 // Copyright 2024 IROX Contributors
 //
 
+/// Type alias to [`BitsError`]
+///
+/// Originally would map to [`std::io::Error`] when the `std` feature was enabled, but that proved
+/// less ergonomic than just a internal error struct.
 pub type Error = BitsError;
+
+/// Type alias to [`BitsErrorKind`]
+///
+/// Originally would map to [`std::io::ErrorKind`] when the `std` feature was enabled, but that proved
+/// less ergonomic than just a internal error struct.
 pub type ErrorKind = BitsErrorKind;
 
+/// Error returned from the various Bits methods.
+///
+/// This used to be a no-std 1:1 swap out with [`std::io::Error`], but it become more ergonomic to
+/// simply use this error type everywhere.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct BitsError {
     kind: BitsErrorKind,
@@ -12,16 +25,24 @@ pub struct BitsError {
 }
 
 impl BitsError {
+    /// Creates a new error
     pub fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
         BitsError { kind, msg }
     }
 
+    /// Returns the error type/kind of this error
     pub fn kind(&self) -> BitsErrorKind {
         self.kind
     }
 
+    /// Returns the error message.
     pub fn msg(&self) -> &'static str {
         self.msg
+    }
+
+    /// Creates an error variant of this type
+    pub fn err<T>(kind: BitsErrorKind, msg: &'static str) -> Result<T, Self> {
+        Err(Self::new(kind, msg))
     }
 }
 
@@ -144,6 +165,8 @@ impl From<BitsErrorKind> for std::io::ErrorKind {
     }
 }
 
+/// Enum originally modelled after [`std::io::ErrorKind`], used to indicate the
+/// type of the error encountered.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum BitsErrorKind {
     InvalidData,

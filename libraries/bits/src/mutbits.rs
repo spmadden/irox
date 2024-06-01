@@ -192,6 +192,7 @@ pub trait MutBits {
     }
 
     #[cfg(feature = "alloc")]
+    /// Allows the use of [`core::format_args`] macro
     fn write_fmt_impl(&mut self, args: core::fmt::Arguments<'_>) -> Result<(), Error> {
         extern crate alloc;
         self.write_all_bytes(alloc::fmt::format(args).as_bytes())

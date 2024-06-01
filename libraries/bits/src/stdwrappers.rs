@@ -5,6 +5,10 @@
 use crate::bits::Bits;
 use crate::mutbits::MutBits;
 use crate::Error;
+
+///
+/// Wraps a borrowed [`std::io::Read`] or [`std::io::Write`] and provides a basic implementation
+/// of [`Bits`] for [`std::io::Read`] and [`MutBits`] for [`std::io::Write`]
 pub struct BitsWrapper<'a, T>(pub &'a mut T);
 
 impl<'a, T> Bits for BitsWrapper<'a, T>
