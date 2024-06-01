@@ -1,8 +1,8 @@
 [package]
 name = "irox-derive-helpers"
-description = ""
-keywords = ["irox"]
-categories = []
+description = "Helper traits & functions for the proc_macro crate to aid in writing less complex derive macros."
+keywords = ["irox", "proc-macro"]
+categories = ["development-tools::procedural-macro-helpers"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
