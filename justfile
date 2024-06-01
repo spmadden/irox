@@ -68,11 +68,15 @@ format_check +FLAGS='':
 
 lints +FLAGS='':
     @just logstart lints
+    cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} --
+    cargo clippy --bins --lib --examples {{FLAGS}} --
     cargo clippy --bins --lib --examples --all-features {{FLAGS}} --
     @just logend
 
 lints_deny +FLAGS='':
     @just logstart lints
+    cargo clippy --bins --lib --examples --no-default-features {{FLAGS}} -- -Dwarnings
+    cargo clippy --bins --lib --examples {{FLAGS}} -- -Dwarnings
     cargo clippy --bins --lib --examples --all-features {{FLAGS}} -- -Dwarnings
     @just logend
 
