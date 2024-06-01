@@ -274,9 +274,7 @@ impl Packet for GGA {
 }
 
 fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
-    let Some(time) = val else {
-        return None;
-    };
+    let time = val?;
 
     let hh = time.get(0..2)?.parse::<u8>().ok()?;
     let mm = time.get(2..4)?.parse::<u8>().ok()?;
