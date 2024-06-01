@@ -24,3 +24,4 @@ mod seek;
 mod stdimpls;
 #[cfg(feature = "std")]
 mod stdwrappers;
+pub mod utf;

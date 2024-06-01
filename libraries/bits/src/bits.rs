@@ -43,6 +43,41 @@ pub trait Bits {
     /// Optionally returns a single [`u8`]
     fn next_u8(&mut self) -> Result<Option<u8>, Error>;
 
+    /// Reads a single [`i8`]
+    fn read_i8(&mut self) -> Result<i8, Error> {
+        Ok(self.read_u8()? as i8)
+    }
+    /// Optionally returns a single [`i8`]
+    fn next_i8(&mut self) -> Result<Option<i8>, Error> {
+        Ok(self.next_u8()?.map(|v| v as i8))
+    }
+
+    /// Reads a single bool (u8), returning true if 1, false if 0, or InvalidInput if anything else.
+    fn read_bool(&mut self) -> Result<bool, Error> {
+        let Some(val) = self.next_bool()? else {
+            return Err(Error::from(ErrorKind::UnexpectedEof));
+        };
+        Ok(val)
+    }
+
+    /// Reads a single bool (u8), returning true if 1, false if 0, or InvalidInput if anything else.
+    fn next_bool(&mut self) -> Result<Option<bool>, Error> {
+        let val = self.next_u8()?;
+        let Some(val) = val else { return Ok(None) };
+        if val == 0 {
+            Ok(Some(false))
+        } else if val == 1 {
+            Ok(Some(true))
+        } else {
+            Err(ErrorKind::InvalidInput.into())
+        }
+    }
+
+    /// Reads 1, 2, 3, or 4 bytes to construct a UTF-8 charpoint.
+    fn read_be_utf8_char(&mut self) -> Result<char, Error> {
+        Ok(crate::utf::read_be_utf8_char(self)?.0)
+    }
+
     /// Reads a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn read_be_u16(&mut self) -> Result<u16, Error> {
         let Some(ret) = self.next_be_u16()? else {
@@ -170,6 +205,18 @@ pub trait Bits {
         next_and_shift!(self, u128, out);
 
         Ok(Some(out))
+    }
+
+    /// Reads a single [`i128`] in big-endian order, 16 bytes, MSB first.
+    fn read_be_i128(&mut self) -> Result<i128, Error> {
+        Ok(self.read_be_u128()? as i128)
+    }
+    /// Optionally reads a single [`i128`] in big-endian order, 16 bytes, MSB first.
+    fn next_be_i128(&mut self) -> Result<Option<i128>, Error> {
+        let Some(val) = self.next_be_u128()? else {
+            return Ok(None);
+        };
+        Ok(Some(val as i128))
     }
 
     /// Reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding

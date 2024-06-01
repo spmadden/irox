@@ -13,6 +13,23 @@ use std::ops::{Deref, DerefMut};
 pub trait MutBits {
     /// Writes a single [`u8`]
     fn write_u8(&mut self, val: u8) -> Result<(), Error>;
+
+    /// Writes a single [`i8`]
+    fn write_i8(&mut self, val: i8) -> Result<(), Error> {
+        self.write_u8(val as u8)
+    }
+
+    /// Writes 1u8 if true, 0u8 if false
+    fn write_bool(&mut self, val: bool) -> Result<(), Error> {
+        self.write_u8(val as u8)
+    }
+
+    /// Encodes the character as UTF-8, and writes anywhere from 1-4 bytes.  The number of bytes
+    /// written is returned.
+    fn write_be_utf8_char(&mut self, val: char) -> Result<usize, Error> {
+        crate::utf::write_be_utf8_char(val, self)
+    }
+
     /// Writes a single [`u16`] in big-endian order, 2 bytes, MSB first.
     fn write_be_u16(&mut self, val: u16) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
@@ -232,29 +249,30 @@ impl MutBits for &mut [u8] {
     }
 }
 
-pub struct FormatBits<'a, T: MutBits + ?Sized> {
-    val: &'a mut T,
-}
+/// Wraps a borrowed [`MutBits`], providing an implementation of [`core::fmt::Write`] to permit the
+/// use of the [`core::write!`] macro with a target of `&mut`[`MutBits`]
+pub struct FormatBits<'a, T: MutBits + ?Sized>(pub &'a mut T);
+
 impl<'a, T: MutBits + ?Sized> FormatBits<'a, T> {
     pub fn wrap(val: &'a mut T) -> Self {
-        Self { val }
+        FormatBits(val)
     }
 }
 impl<'a, T: MutBits + ?Sized> From<&'a mut T> for FormatBits<'a, T> {
     fn from(val: &'a mut T) -> Self {
-        FormatBits { val }
+        FormatBits(val)
     }
 }
 impl<'a, T: MutBits + ?Sized> Deref for FormatBits<'a, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        self.val
+        self.0
     }
 }
 impl<'a, T: MutBits + ?Sized> DerefMut for FormatBits<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.val
+        self.0
     }
 }
 
@@ -267,11 +285,7 @@ impl<'a, T: MutBits + ?Sized> core::fmt::Write for FormatBits<'a, T> {
     }
 
     fn write_char(&mut self, c: char) -> core::fmt::Result {
-        let mut chr = [0; 4];
-        let val = c.encode_utf8(&mut chr).len();
-        if let Err(_e) = self.val.write_exact(&chr, val) {
-            return Err(core::fmt::Error);
-        };
+        self.write_be_utf8_char(c)?;
         Ok(())
     }
 }
