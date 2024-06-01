@@ -3,7 +3,7 @@
 //
 
 //!
-//!
+//! CLI for the InfluxDB v1 interface
 //!
 
 #![forbid(unsafe_code)]

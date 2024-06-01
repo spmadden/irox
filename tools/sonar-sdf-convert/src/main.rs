@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//!
+//! Tool to convert a Raymarine SDF Sonar logfile to a GPX trace.
 //!
 
 #![forbid(unsafe_code)]

@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//!
+//! Implementation of the EIEIO traits for NMEA0183.
 //!
 
 #![forbid(unsafe_code)]
