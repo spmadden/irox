@@ -6,7 +6,8 @@ use std::fmt::{Display, Formatter};
 
 use syn::{Expr, Field, GenericArgument, Lit, PathArguments, Type, TypeArray, TypePath};
 
-use crate::{NamedVariable, PrimitiveType, Primitives, VariableType};
+use crate::primitive::Primitives;
+use crate::{NamedVariable, PrimitiveType, VariableType};
 
 #[derive(Debug, Copy, Clone)]
 pub enum ErrorType {
