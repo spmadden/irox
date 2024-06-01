@@ -226,10 +226,7 @@ impl<'a> Serializer for &'a mut EguiSerializer {
         Ok(())
     }
 
-    fn serialize_some<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_some<T: Serialize + ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.push(Event::Field {
@@ -261,14 +258,11 @@ impl<'a> Serializer for &'a mut EguiSerializer {
         Ok(())
     }
 
-    fn serialize_newtype_struct<T: ?Sized>(
+    fn serialize_newtype_struct<T: Serialize + ?Sized>(
         self,
         name: &'static str,
         value: &T,
-    ) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<Self::Ok, Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         let values = ser.values;
@@ -287,16 +281,13 @@ impl<'a> Serializer for &'a mut EguiSerializer {
         Ok(())
     }
 
-    fn serialize_newtype_variant<T: ?Sized>(
+    fn serialize_newtype_variant<T: Serialize + ?Sized>(
         self,
         name: &'static str,
         _variant_index: u32,
         variant: &'static str,
         value: &T,
-    ) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<Self::Ok, Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.push(Event::Group {
@@ -363,10 +354,7 @@ impl SerializeSeq for &mut EguiSerializer {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_element<T: Serialize + ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.append(&mut ser.values);
@@ -382,10 +370,7 @@ impl SerializeTuple for &mut EguiSerializer {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_element<T: Serialize + ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.append(&mut ser.values);
@@ -426,10 +411,7 @@ impl<'a> SerializeTupleStruct for Named<'a> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_field<T: Serialize + ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.append(&mut ser.values);
@@ -445,10 +427,7 @@ impl<'a> SerializeTupleVariant for Named<'a> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_field<T: Serialize + ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         self.values.push(Event::Field {
@@ -468,14 +447,11 @@ impl<'a> SerializeStruct for Named<'a> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T: ?Sized>(
+    fn serialize_field<T: Serialize + ?Sized>(
         &mut self,
         key: &'static str,
         value: &T,
-    ) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer { values: vec![] };
         value.serialize(&mut ser)?;
         self.values.push(Event::Field {
@@ -495,14 +471,11 @@ impl<'a> SerializeStructVariant for Named<'a> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T: ?Sized>(
+    fn serialize_field<T: Serialize + ?Sized>(
         &mut self,
         key: &'static str,
         value: &T,
-    ) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer { values: vec![] };
         value.serialize(&mut ser)?;
         self.values.push(Event::Field {
@@ -528,20 +501,14 @@ impl<'a> SerializeMap for Mapped<'a> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_key<T: ?Sized>(&mut self, key: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_key<T: Serialize + ?Sized>(&mut self, key: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         key.serialize(&mut ser)?;
         self.key = Some(ser.values);
         Ok(())
     }
 
-    fn serialize_value<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_value<T: Serialize + ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> {
         let mut ser = EguiSerializer::new();
         value.serialize(&mut ser)?;
         if let Some(key) = self.key.take() {
