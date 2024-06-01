@@ -66,9 +66,6 @@ pub trait MaybeMap<Base, Out>: Sized {
 
 impl<Base, Out> MaybeMap<Base, Out> for Option<Base> {
     fn maybe_map<R: FnOnce(Base) -> Option<Out>>(self, map: R) -> Option<Out> {
-        let Some(e) = self else {
-            return None;
-        };
-        map(e)
+        map(self?)
     }
 }

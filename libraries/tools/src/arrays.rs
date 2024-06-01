@@ -53,9 +53,7 @@ pub fn longest_consecutive_values<T: PartialOrd>(arr: &[T], val: &T) -> Option<(
     let mut start_pos = 0;
     while start_pos < len {
         let mut count: usize = 0;
-        let Some(arr) = arr.get(start_pos..) else {
-            return None;
-        };
+        let arr = arr.get(start_pos..)?;
         for (idx, v) in arr.iter().enumerate() {
             if v.ne(val) {
                 start_pos += idx;

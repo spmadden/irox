@@ -24,10 +24,7 @@ where
         if size == 0 {
             return None;
         }
-        let Some(item) = self.items.get(self.index) else {
-            return None;
-        };
-        let item = item.clone();
+        let item = self.items.get(self.index)?.clone();
         self.index = (self.index + 1) % size;
 
         Some(item)

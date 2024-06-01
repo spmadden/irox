@@ -20,7 +20,7 @@ pub struct Buffer<T> {
 }
 
 impl<T: Read> Buffer<T> {
-    ///
+    /// Creates a new buffer
     pub fn new(reader: T) -> Self {
         Buffer {
             reader: BufReader::new(reader),
