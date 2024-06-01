@@ -1,18 +1,12 @@
 #!/usr/bin/env -S just --justfile
 
-[linux]
 default +FLAGS='': updates (recurse FLAGS) (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
-[windows]
-default +FLAGS='': updates (build FLAGS) (test FLAGS) (format FLAGS) (lints FLAGS) (upgrade FLAGS)
 
-[linux]
 ci +FLAGS='': updates deny (recurse_ci FLAGS) (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
-[windows]
-ci +FLAGS='': updates deny (build FLAGS) (test FLAGS) format_check (lints_deny FLAGS) about doc upgrade
 
 GITHUB_ACTIONS := env_var_or_default('GITHUB_ACTIONS', 'false')
 
-#set windows-shell := ["pwsh.exe", "-NoLogo", "-noni", "-Command"]
+set windows-shell := ["c:\\Program Files\\PowerShell\\7\\pwsh.exe", "-NoLogo", "-noni", "-Command"]
 
 updates:
     @just logstart updates
@@ -36,11 +30,21 @@ build +FLAGS='':
 
 [linux]
 check TARGET +FLAGS='':
-   @just logstart check-{{TARGET}}
-   just check_install cargo-describe
-   cargo describe -f name -o plain | sed 's/.*/\-p \0/' | xargs cargo clean
-   cargo check --target {{TARGET}} {{FLAGS}}
-   @just logend
+    @just logstart check-{{TARGET}}
+    just check_install cargo-describe
+    cargo describe -f name -o plain | sed 's/.*/\-p \0/' | xargs cargo clean
+    cargo check --target {{TARGET}} {{FLAGS}}
+    @just logend
+
+[windows]
+check TARGET +FLAGS='':
+    $ErrorActionPreference = "Stop"
+    @just logstart check-{{TARGET}}
+    just check_install cargo-describe
+    &"cargo" clean @(cargo describe -o plain -f name | %{$_ -replace '.+','-p$0'})
+    cargo check --target {{TARGET}} {{FLAGS}}
+    @just logend
+
 
 check_all +FLAGS='':
     @just check x86_64-pc-windows-msvc {{FLAGS}}
@@ -119,6 +123,26 @@ recurse +FLAGS='':
         just logend; \
     done
 
+[windows]
+recurse +FLAGS='':
+    $ErrorActionPreference = "Stop"
+    foreach ($module in @(Get-ChildItem -Path 'libraries' -Recurse -Filter 'justfile' | Resolve-Path -Path {$_.DirectoryName} -Relative)) { \
+       Write-Host $module; \
+       just logstart module-$module; \
+       just $module/default {{FLAGS}}; \
+       just logend; \
+    }
+
+[windows]
+recurse_ci +FLAGS='':
+    $ErrorActionPreference = "Stop"
+    foreach ($module in @(Get-ChildItem -Path 'libraries' -Recurse -Filter 'justfile' | Resolve-Path -Path {$_.DirectoryName} -Relative)) { \
+       Write-Host $module; \
+       just logstart module-$module; \
+       just $module/ci {{FLAGS}}; \
+       just logend; \
+    }
+
 [linux]
 recurse_ci +FLAGS='':
     @for module in `find -mindepth 2 -name 'justfile' -printf '%h\n'` ; do \
@@ -155,4 +179,4 @@ buildperf:
 buildperf:
     @cargo clean
     @cargo fetch
-    Measure-Command{ cargo build --release }
+    pwsh.exe -NoLogo -noni -Command Measure-Command{ cargo build --release }
