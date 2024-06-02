@@ -12,3 +12,7 @@ build:
 ci:
     @just init
     ./build/target/release/irox-build ci
+
+lints:
+    @just init
+    ./build/target/release/irox-build lints
