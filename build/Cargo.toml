@@ -1,0 +1,16 @@
+[package]
+name = "irox-build"
+version = "0.0.1"
+edition = "2021"
+
+authors = ["Sean P. Madden <sean@seanmadden.net>"]
+homepage = "https://github.com/spmadden/irox"
+license = "MIT OR Apache-2.0"
+exclude = ["doc"]
+readme = "README.md"
+repository = "https://github.com/spmadden/irox"
+
+[dependencies]
+clap = { version = "^4.5", features = ["derive", "wrap_help", "string", "cargo", "env"] }
+
+[workspace]
