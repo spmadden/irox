@@ -3,7 +3,7 @@
 default: build
 
 init:
-    pushd build && cargo build --release || popd
+    cd build && cargo build --release 
 
 build:
     @just init
