@@ -16,24 +16,44 @@ const TARGETS: &[&str] = &[
 #[derive(Debug, Clone, Default, Subcommand)]
 enum Commands {
     #[default]
+    /// Runs: Updates, Build, Test, Format, Lints, Upgrade
     Default,
+    /// Runs: Updates, Deny, Build, Test, Format-Check, Lints-Deny, About, Doc, Upgrade
     CI,
+    /// Updates Rust with `rustup upadate` and then updates the 'Cargo.toml'
+    /// file using `cargo update`
     Updates,
+    /// Iterates through multiple feature sets, default, all, none, etc, calling
+    /// `cargo build`
     Build,
+    /// Like Build, but runs `cargo test`
     Test,
+    /// Runs `rustfmt`
     Format,
+    /// Runs `cargo clippy`
     Lints,
+    /// Runs `cargo upgrade`
     Upgrade,
+    /// Runs `cargo deny`
     Deny,
+    /// Runs `cargo about`
     About,
+    /// Runs `cargo doc`
     Doc,
+    /// Runs `cargo check` for all targets
     Check,
+    /// Sets up for a release
     Release,
+    /// Creates a new module
     New {
+        /// Destination path of the new module
         dest: String,
     },
+    /// Runs a performance check for how long the build takes
     BuildPerf,
+    /// Runs a `cargo package` check
     Package,
+    /// Checks for unused modules & deps that could be removed.
     Unused,
 }
 
