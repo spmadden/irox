@@ -60,7 +60,7 @@ fn main() -> Result<(), Error> {
         Commands::Doc => doc()?,
         Commands::Check => check_all()?,
         Commands::Release => release()?,
-        Commands::New { dest } => new(dest)?,
+        Commands::New { dest } => new(&dest)?,
         Commands::BuildPerf => buildperf()?,
         Commands::Package => package()?,
         Commands::Unused => unused()?,
@@ -257,12 +257,12 @@ fn release() -> Result<(), Error> {
     Ok(())
 }
 
-fn new(dest: String) -> Result<(), Error> {
+fn new(dest: &str) -> Result<(), Error> {
     exec(
         "cargo",
         &["install", "--locked", "cargo-generate", "--color=always"],
     )?;
-    std::fs::create_dir_all(&dest)?;
+    std::fs::create_dir_all(dest)?;
     let pwd = std::env::current_dir()?;
     let path = format!("{}/{dest}", pwd.display());
     let src = format!("{}/dev/mod_template", pwd.display());
@@ -287,7 +287,7 @@ fn buildperf() -> Result<(), Error> {
             "--color=always",
         ],
     )?;
-    let elapsed = std::time::Instant::now() - start;
+    let elapsed = start.elapsed();
     println!("Built in {:.2}s", elapsed.as_secs_f64());
     Ok(())
 }

@@ -7,12 +7,12 @@ init:
 
 build:
     @just init
-    ./build/target/release/irox-build
+    ./build/target/release/irox-builder
 
 ci:
     @just init
-    ./build/target/release/irox-build ci
+    ./build/target/release/irox-builder ci
 
 lints:
     @just init
-    ./build/target/release/irox-build lints
+    ./build/target/release/irox-builder lints

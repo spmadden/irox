@@ -37,7 +37,7 @@ pub fn exec(cmd: &str, args: &[&str]) -> Result<(), Error> {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .expect(&format!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     let mut stdout = child.stdout.take().expect("Unable to take stdout");
     let mut stderr = child.stderr.take().expect("Unable to take stderr");
     let run = Arc::new(AtomicBool::new(true));
@@ -101,7 +101,7 @@ pub fn exec_stdout_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Error>
     let output = std::process::Command::new(cmd)
         .args(args)
         .output()
-        .expect(&format!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     match output.status.code() {
         Some(c) => {
             if c != 0 {
@@ -118,7 +118,7 @@ pub fn exec_stdout_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Error>
             });
         }
     }
-    let lines : Vec<String> = output.stdout.lines().map_while(|v|v.ok()).collect();
+    let lines : Vec<String> = output.stdout.lines().map_while(Result::ok).collect();
     Ok(lines)
 }
 
@@ -128,7 +128,7 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .expect(&format!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     let mut stdout = child.stdout.take().expect("Unable to take stdout");
     let mut stderr = child.stderr.take().expect("Unable to take stderr");
     let run = Arc::new(AtomicBool::new(true));
