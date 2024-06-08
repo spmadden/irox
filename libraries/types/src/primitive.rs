@@ -5,13 +5,14 @@
 use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
 use std::char::ParseCharError;
 use std::fmt::{Display, Formatter};
+use std::hash::{Hash, Hasher};
 use std::num::{ParseFloatError, ParseIntError};
 use std::str::{FromStr, ParseBoolError};
 
 ///
 /// A set of possible primitives
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumName, EnumIterItem, EnumTryFromStr)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, EnumName, EnumIterItem, EnumTryFromStr)]
 #[non_exhaustive]
 pub enum Primitives {
     u8,
@@ -164,6 +165,28 @@ pub enum PrimitiveValue {
 
     null,
 }
+impl Hash for PrimitiveValue {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.primitive().hash(state);
+        match self {
+            PrimitiveValue::u8(v) => v.hash(state),
+            PrimitiveValue::i8(v) => v.hash(state),
+            PrimitiveValue::u16(v) => v.hash(state),
+            PrimitiveValue::i16(v) => v.hash(state),
+            PrimitiveValue::u32(v) => v.hash(state),
+            PrimitiveValue::i32(v) => v.hash(state),
+            PrimitiveValue::f32(v) => v.to_bits().hash(state),
+            PrimitiveValue::u64(v) => v.hash(state),
+            PrimitiveValue::i64(v) => v.hash(state),
+            PrimitiveValue::f64(v) => v.to_bits().hash(state),
+            PrimitiveValue::u128(v) => v.hash(state),
+            PrimitiveValue::i128(v) => v.hash(state),
+            PrimitiveValue::bool(v) => v.hash(state),
+            PrimitiveValue::char(v) => v.hash(state),
+            PrimitiveValue::null => {}
+        }
+    }
+}
 
 impl PrimitiveValue {
     /// Returns the type of this primitive
@@ -271,7 +294,7 @@ impl Display for PrimitiveValue {
 ///
 /// A struct to "Name" a primitive - like a Field with an associated type
 ///
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct NamedPrimitive {
     name: String,
     primitive: Primitives,
