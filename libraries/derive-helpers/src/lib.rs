@@ -19,13 +19,71 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     fn add_ident(&mut self, name: &str) {
         self.extend(Self::create_ident(name))
     }
+    /// Creates a literal [`Punct`] type using the provided character
+    fn create_punct(ch: char) -> TokenStream {
+        TokenStream::from_iter([TokenTree::Punct(Punct::new(ch, Spacing::Alone))])
+    }
+    /// Creates two literal adjoining [`Punct`] types using the provided characters
+    fn create_punct2(ch: char, ch2: char) -> TokenStream {
+        TokenStream::from_iter([
+            TokenTree::Punct(Punct::new(ch, Spacing::Joint)),
+            TokenTree::Punct(Punct::new(ch2, Spacing::Alone)),
+        ])
+    }
+    /// Creates a [`Literal`] using the provided string
+    fn create_literal(val: &str) -> TokenStream {
+        TokenStream::from_iter([TokenTree::Literal(Literal::string(val))])
+    }
     /// Creates a [`Ident`] using the provided name
     fn create_ident(name: &str) -> TokenStream {
         TokenStream::from_iter([TokenTree::Ident(Ident::new(name, Span::call_site()))])
     }
+    /// Creates a `&[name]` token stream.
+    fn create_ref_ident(name: &str) -> TokenStream {
+        TokenStream::from_iter([Self::create_punct('&'), Self::create_ident(name)])
+    }
+    /// Creates a `&'lifetime [name]` token stream.
+    fn create_ref_ident_lifetime(name: &str, lifetime: &str) -> TokenStream {
+        TokenStream::from_iter([
+            TokenStream::from_iter([
+                TokenTree::Punct(Punct::new('&', Spacing::Alone)),
+                TokenTree::Punct(Punct::new('\'', Spacing::Joint)),
+                TokenTree::Ident(Ident::new(lifetime, Span::call_site())),
+            ]),
+            Self::create_ident(name),
+        ])
+    }
+    /// Creates a `&'static [name]` token stream.
+    fn create_ref_ident_static(name: &str) -> TokenStream {
+        Self::create_ref_ident_lifetime(name, "static")
+    }
+    /// Creates a `&mut [name]` token stream;
+    fn create_mut_ref_ident(name: &str) -> TokenStream {
+        TokenStream::from_iter([
+            Self::create_punct('&'),
+            Self::create_ident("mut"),
+            Self::create_ident(name),
+        ])
+    }
+    /// Creates a `&'lifetime mut [name]` token stream;
+    fn create_mut_ref_ident_lifetime(name: &str, lifetime: &str) -> TokenStream {
+        TokenStream::from_iter([
+            TokenStream::from_iter([
+                TokenTree::Punct(Punct::new('&', Spacing::Alone)),
+                TokenTree::Punct(Punct::new('\'', Spacing::Joint)),
+                TokenTree::Ident(Ident::new(lifetime, Span::call_site())),
+            ]),
+            Self::create_ident("mut"),
+            Self::create_ident(name),
+        ])
+    }
+    /// Wraps the provided token stream with braces: `{ [inner] }`
+    fn create_wrapped_braces(inner: TokenStream) -> TokenStream {
+        TokenStream::from_iter([TokenTree::Group(Group::new(Delimiter::Brace, inner))])
+    }
     /// Appends the specified character as a [`Punct`] type.
     fn add_punc(&mut self, ch: char) {
-        self.extend([TokenTree::Punct(Punct::new(ch, Spacing::Alone))])
+        self.extend(Self::create_punct(ch))
     }
     /// Appends 2 characters as sequential [`Punct`] types
     fn add_punc2(&mut self, ch: char, ch2: char) {
@@ -84,7 +142,23 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     fn add_single_arrow(&mut self) {
         self.add_punc2('-', '>')
     }
-    /// Appends a `Result< {ok} , {err} >` stream
+    /// Appends the double bar arrow: `=>`
+    fn add_double_arrow(&mut self) {
+        self.add_punc2('=', '>')
+    }
+    /// Appends a single match row, `[matching] => [result],`
+    fn append_match_item(&mut self, matching: TokenStream, result: TokenStream) {
+        self.extend([
+            matching,
+            TokenStream::from_iter([
+                TokenTree::Punct(Punct::new('=', Spacing::Joint)),
+                TokenTree::Punct(Punct::new('>', Spacing::Alone)),
+            ]),
+            TokenStream::create_wrapped_braces(result),
+            TokenStream::create_punct(','),
+        ])
+    }
+    /// Appends a `-> Result< {ok} , {err} >` stream
     fn return_result(&mut self, ok: TokenStream, err: TokenStream) {
         self.add_single_arrow();
         self.add_ident("Result");
@@ -115,6 +189,29 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     /// Appends the provided [`Literal`]
     fn add_literal(&mut self, literal: Literal) {
         self.extend([TokenTree::Literal(literal)])
+    }
+
+    /// Appends the provided [`Ident`]
+    fn add_ident_type(&mut self, ident: Ident) {
+        self.extend([TokenTree::Ident(ident)])
+    }
+    /// Appends the stream `#[must_use]`
+    fn add_must_use(&mut self) {
+        self.extend([
+            TokenTree::Punct(Punct::new('#', Spacing::Alone)),
+            TokenTree::Group(Group::new(
+                Delimiter::Bracket,
+                TokenStream::create_ident("must_use"),
+            )),
+        ])
+    }
+    fn add_getter(&mut self, name: &str, output_type: TokenStream) {
+        self.add_ident("pub");
+        self.add_ident("fn");
+        self.add_ident(name);
+        self.add_parens(TokenStream::create_ref_ident("self"));
+        self.add_single_arrow();
+        self.extend([output_type])
     }
 }
 

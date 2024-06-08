@@ -5,10 +5,11 @@
 
 extern crate alloc;
 
+use alloc::format;
 use alloc::string::ToString;
 use proc_macro::TokenStream;
 
-use quote::{quote, quote_spanned};
+use irox_derive_helpers::DeriveMethods;
 use syn::spanned::Spanned;
 use syn::{parse_macro_input, Data, DeriveInput, Error};
 
@@ -22,48 +23,114 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
     let Data::Enum(s) = input.data else {
         return compile_error(&input, "Unsupported non-struct type found");
     };
-    let enum_name = input.ident;
-
-    let mut match_elements = alloc::vec::Vec::new();
-    let mut names = alloc::vec::Vec::new();
+    let mut match_elements = alloc::vec::Vec::<TokenStream>::new();
+    let mut name_literals = alloc::vec::Vec::<TokenStream>::new();
 
     for field in s.variants {
         // println!("{}: {:?}", field.ident, field);
         let field_ident = field.ident;
         let field_name = field_ident.to_string();
 
-        let inner_fields = match field.fields.len() {
-            0 => quote! {},
-            _ => quote! {(..)},
-        };
-
-        names.push(quote_spanned! {field_ident.span() =>
-           #field_name
+        name_literals.push({
+            let mut ts = TokenStream::create_literal(&field_name);
+            ts.add_punc(',');
+            ts
         });
-        match_elements.push(quote_spanned! {field_ident.span() =>
-            Self::#field_ident #inner_fields => #field_name,
+        match_elements.push(if field.fields.is_empty() {
+            let mut ts = TokenStream::new();
+            ts.append_match_item(
+                TokenStream::create_path(&["Self", &field_name]),
+                TokenStream::create_literal(&field_name),
+            );
+            ts
+        } else {
+            let mut ts = TokenStream::new();
+            ts.append_match_item(
+                {
+                    let mut ts = TokenStream::create_path(&["Self", &field_name]);
+                    ts.add_parens(TokenStream::create_punct2('.', '.'));
+                    ts
+                },
+                TokenStream::create_literal(&field_name),
+            );
+            ts
         });
     }
-    let res = quote! {
-        impl irox_enums::EnumName for #enum_name {
-            #[must_use]
-            fn name(&self) -> &'static str {
-                match self {
-                    #( #match_elements )*
-                }
-            }
-        }
 
-        impl #enum_name {
-            pub fn iter_names() -> impl Iterator<Item=&'static str>{
-                extern crate alloc;
-                let names = alloc::vec![#(#names),*];
-                names.into_iter()
-            }
-        }
-    };
-    // println!("{}", res);
-    proc_macro::TokenStream::from(res)
+    let enum_name = input.ident;
+    let mut out = TokenStream::new();
+    out.add_ident("impl");
+    out.add_ident(&enum_name.to_string());
+    out.wrap_braces({
+        let mut ts = TokenStream::new();
+        //#[must_use]
+        //fn name(&self) -> &'static str {
+        //    match self {
+        //        Self::#field_ident => #field_literal,
+        //        Self::#field_ident(..) => #field_literal,
+        //    }
+        //}
+        ts.add_must_use();
+        ts.add_getter("name", TokenStream::create_ref_ident_static("str"));
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("match");
+            ts.add_ident("self");
+            ts.wrap_braces({
+                let mut ts = TokenStream::new();
+                ts.extend(match_elements);
+                ts
+            });
+            ts
+        });
+
+        //pub fn iter_names() -> impl Iterator<Item=&'static str>{
+        //    extern crate alloc;
+        //    let names = alloc::vec![#(#names),*];
+        //    names.into_iter()
+        //}
+        ts.add_ident("pub");
+        ts.add_ident("fn");
+        ts.add_ident("iter_names");
+        ts.extend(TokenStream::create_empty_type());
+        ts.add_single_arrow();
+        ts.add_ident("impl");
+        ts.add_ident("Iterator");
+        ts.wrap_generics({
+            let mut ts = TokenStream::new();
+            ts.add_ident("Item");
+            ts.add_punc('=');
+            ts.extend(TokenStream::create_ref_ident_static("str"));
+            ts
+        });
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("extern");
+            ts.add_ident("crate");
+            ts.add_ident("alloc");
+            ts.add_punc(';');
+            ts.add_ident("let");
+            ts.add_ident("names");
+            ts.add_punc('=');
+            ts.add_path(&["alloc", "vec"]);
+            ts.add_punc('!');
+            ts.wrap_brackets({
+                let mut ts = TokenStream::new();
+                ts.extend(name_literals);
+                ts
+            });
+            ts.add_punc(';');
+            ts.add_ident("names");
+            ts.add_punc('.');
+            ts.add_ident("into_iter");
+            ts.extend(TokenStream::create_empty_type());
+            ts
+        });
+
+        ts
+    });
+
+    out
 }
 
 #[proc_macro_derive(EnumIterItem)]
@@ -74,7 +141,7 @@ pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
     };
     let enum_name = input.ident;
 
-    let mut items = alloc::vec::Vec::new();
+    let mut items = alloc::vec::Vec::<TokenStream>::new();
 
     for field in s.variants {
         if !field.fields.is_empty() {
@@ -82,22 +149,59 @@ pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
         }
 
         let field_ident = field.ident;
-        items.push(quote_spanned! {field_ident.span() =>
-            Self::#field_ident
+        items.push({
+            let mut ts = TokenStream::create_path(&["Self", &field_ident.to_string()]);
+            ts.add_punc(',');
+            ts
         });
     }
-    let res = quote! {
-        impl irox_enums::EnumIterItem for #enum_name {
-            type Item = #enum_name;
-            fn iter_items() -> irox_enums::IntoIter<Self::Item> {
-                extern crate alloc;
-                let items = alloc::vec![#(#items),*];
-                items.into_iter()
-            }
-        }
-    };
-    // println!("{}", res);
-    proc_macro::TokenStream::from(res)
+    let mut out = TokenStream::new();
+    out.add_ident("impl");
+    out.add_path(&["irox_enums", "EnumIterItem"]);
+    out.add_ident("for");
+    out.add_ident(&enum_name.to_string());
+    out.wrap_braces({
+        let mut ts = TokenStream::new();
+        ts.add_ident("type");
+        ts.add_ident("Item");
+        ts.add_punc('=');
+        ts.add_ident(&enum_name.to_string());
+        ts.add_punc(';');
+
+        ts.add_fn("iter_items");
+        ts.extend([TokenStream::create_empty_type()]);
+        ts.add_single_arrow();
+        ts.add_path(&["irox_enums", "IntoIter"]);
+        ts.wrap_generics(TokenStream::create_path(&["Self", "Item"]));
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("extern");
+            ts.add_ident("crate");
+            ts.add_ident("alloc");
+            ts.add_punc(';');
+
+            ts.add_ident("let");
+            ts.add_ident("items");
+            ts.add_punc('=');
+            ts.add_path(&["alloc", "vec"]);
+            ts.add_punc('!');
+            ts.wrap_brackets({
+                let mut ts = TokenStream::new();
+                ts.extend(items);
+                ts
+            });
+            ts.add_punc(';');
+
+            ts.add_ident("items");
+            ts.add_punc('.');
+            ts.add_ident("into_iter");
+            ts.extend(TokenStream::create_empty_type());
+            ts
+        });
+        ts
+    });
+
+    out
 }
 
 #[proc_macro_derive(EnumTryFromStr)]
@@ -107,34 +211,70 @@ pub fn tryfromstr_derive(input: TokenStream) -> TokenStream {
         return compile_error(&input, "Required enum type");
     };
     let enum_name = input.ident;
+    let mut out = TokenStream::new();
+    out.add_ident("impl");
+    out.add_ident("TryFrom");
+    out.wrap_generics(TokenStream::create_ref_ident("str"));
+    out.add_ident("for");
+    out.add_ident(&format!("{enum_name}"));
+    out.wrap_braces({
+        let mut ts = TokenStream::new();
+        ts.add_ident("type");
+        ts.add_ident("Error");
+        ts.add_punc('=');
+        ts.extend([TokenStream::create_empty_type()]);
+        ts.add_punc(';');
 
-    let mut match_elements = alloc::vec::Vec::new();
-
-    for field in s.variants {
-        if !field.fields.is_empty() {
-            return compile_error(&field.span(), "Field cannot have fields");
-        }
-
-        let field_ident = field.ident;
-        let field_name = field_ident.to_string();
-
-        match_elements.push(quote_spanned! {field_ident.span() =>
-            #field_name => Self::#field_ident,
+        ts.add_fn("try_from");
+        ts.add_parens({
+            let mut ts1 = TokenStream::new();
+            ts1.add_ident("value");
+            ts1.add_punc(':');
+            ts1.extend([TokenStream::create_ref_ident("str")]);
+            ts1
         });
-    }
+        ts.return_result(
+            TokenStream::create_ident("Self"),
+            TokenStream::create_path(&["Self", "Error"]),
+        );
 
-    let res = quote! {
-        impl TryFrom<&str> for #enum_name {
-            type Error = ();
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("Ok");
+            ts.add_parens({
+                let mut ts = TokenStream::new();
+                ts.add_ident("match");
+                ts.add_ident("value");
+                ts.wrap_braces({
+                    let mut ts = TokenStream::new();
+                    for field in s.variants {
+                        if !field.fields.is_empty() {
+                            return compile_error(&field.span(), "Field cannot have fields");
+                        }
 
-            fn try_from(value: &str) -> Result<Self, Self::Error> {
-                Ok(match value {
-                    #( #match_elements )*
-                    _ => {return Err(())}
-                })
-            }
-        }
-    };
-    // println!("{}", res);
-    proc_macro::TokenStream::from(res)
+                        let field_ident = field.ident;
+                        let field_name = field_ident.to_string();
+                        ts.append_match_item(
+                            TokenStream::create_literal(&field_name),
+                            TokenStream::create_path(&["Self", &field_name]),
+                        );
+                    }
+                    ts.add_ident("_");
+                    ts.add_punc2('=', '>');
+                    ts.wrap_braces({
+                        let mut ts = TokenStream::new();
+                        ts.add_ident("return");
+                        ts.add_ident("Err");
+                        ts.add_parens(TokenStream::create_empty_type());
+                        ts
+                    });
+                    ts
+                });
+                ts
+            });
+            ts
+        });
+        ts
+    });
+    out
 }

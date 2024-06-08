@@ -2092,7 +2092,7 @@ dependencies = [
 name = "irox-enums_derive"
 version = "0.2.2"
 dependencies = [
- "quote",
+ "irox-derive-helpers",
  "syn 2.0.66",
 ]
 
@@ -2284,7 +2284,6 @@ dependencies = [
  "irox-derive-helpers",
  "irox-tools",
  "irox-types",
- "proc-macro2",
  "quote",
  "syn 2.0.66",
 ]
