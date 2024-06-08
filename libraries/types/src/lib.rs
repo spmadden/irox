@@ -7,11 +7,15 @@
 //!
 
 mod primitive;
+mod schema;
+#[cfg(feature = "syn")]
+mod syn;
 
 use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
 use std::fmt::{Display, Formatter};
 
 pub use crate::primitive::*;
+pub use crate::schema::*;
 #[cfg(feature = "syn")]
 pub use crate::syn::*;
 
@@ -92,6 +96,7 @@ impl DynamicallySizedValue {
         }
     }
 }
+
 impl Display for DynamicallySizedValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -115,6 +120,7 @@ impl From<PrimitiveValue> for VariableValue {
         VariableValue::Primitive(value)
     }
 }
+
 ///
 /// A value type that can be either statically sized (primitive) or variably sized (dynamic)
 #[derive(Debug, Clone, PartialEq, EnumName)]
@@ -122,6 +128,7 @@ pub enum VariableValue {
     Primitive(PrimitiveValue),
     DynamicallySized(DynamicallySizedValue),
 }
+
 impl Display for VariableValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -163,6 +170,7 @@ pub struct NamedVariableValue {
     name: String,
     value: VariableValue,
 }
+
 impl NamedVariableValue {
     #[must_use]
     pub fn new(name: String, value: VariableValue) -> NamedVariableValue {
@@ -181,6 +189,7 @@ impl NamedVariableValue {
         &self.value
     }
 }
+
 impl From<NamedPrimitiveValue> for NamedVariableValue {
     fn from(value: NamedPrimitiveValue) -> Self {
         NamedVariableValue {
@@ -189,6 +198,3 @@ impl From<NamedPrimitiveValue> for NamedVariableValue {
         }
     }
 }
-
-#[cfg(feature = "syn")]
-mod syn;
