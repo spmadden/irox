@@ -193,3 +193,32 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
 
     Ok(())
 }
+
+pub fn exec_passthru(cmd: &str, args: &[&str]) -> Result<(), Error> {
+    let mut child = std::process::Command::new(cmd)
+        .args(args)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .spawn()
+        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+    let status = child.wait()?;
+    match status.code() {
+        Some(c) => {
+            if c != 0 {
+                return Err(Error {
+                    msg: format!("Command exited with code {c}: {cmd} {}", args.join(" ")),
+                    kind: ErrorKind::SubprocessError,
+                });
+            }
+        }
+        None => {
+            return Err(Error {
+                msg: format!("Command exited by signal: {cmd} {}", args.join(" ")),
+                kind: ErrorKind::SubprocessError,
+            });
+        }
+    }
+
+    Ok(())
+}

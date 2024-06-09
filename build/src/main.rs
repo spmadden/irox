@@ -286,7 +286,7 @@ fn new(dest: &str) -> Result<(), Error> {
     let pwd = std::env::current_dir()?;
     let path = format!("{}/{dest}", pwd.display());
     let src = format!("{}/dev/mod_template", pwd.display());
-    exec(
+    exec_passthru(
         "cargo",
         &["generate", "--destination", &path, "--path", &src, "--init"],
     )?;
