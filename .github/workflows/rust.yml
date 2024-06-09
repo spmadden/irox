@@ -21,6 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: CI Build
-        run:
-          - cargo install just
-          - just run ci
+        run: |
+          cargo install just
+          just run ci
