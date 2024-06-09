@@ -6,14 +6,19 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  build-linux:
+    runs-on:
+      - ubuntu-latest
     container:
       image: ghcr.io/spmadden/irox-dev:latest
     steps:
     - uses: actions/checkout@v4
     - name: CI Build
       run: just run ci
+  build-windows:
+    runs-on:
+      - windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: CI Build
+        run: just run ci
