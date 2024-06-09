@@ -1,0 +1,19 @@
+[package]
+name = "irox-dot"
+description = "DOT Graph Description Language writer, compatible with GraphViz"
+keywords = ["irox"]
+categories = ["encoding", "rendering::data-formats", "mathematics", "science"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-bits = {workspace = true, features = ["std"]}

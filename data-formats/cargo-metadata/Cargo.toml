@@ -1,0 +1,20 @@
+[package]
+name = "irox-cargo-metadata"
+description = "Serde objects for reading & writing the output of `cargo metadata`"
+keywords = ["irox"]
+categories = ["development-tools::build-utils", "encoding", "parser-implementations"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
