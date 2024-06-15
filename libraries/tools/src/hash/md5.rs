@@ -9,8 +9,12 @@
 
 use crate::buf::{Buffer, RoundBuffer};
 use crate::u32::{FromU32Array, ToU32Array};
+use crate::HashDigest;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
+
+pub const BLOCK_SIZE: usize = 64;
+pub const OUTPUT_SIZE: usize = 16;
 
 static SHIFT_AMOUNTS: [u32; 64] = [
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
@@ -40,7 +44,7 @@ pub struct MD5 {
     b0: u32,
     c0: u32,
     d0: u32,
-    buf: RoundBuffer<64, u8>,
+    buf: RoundBuffer<BLOCK_SIZE, u8>,
 }
 
 impl Default for MD5 {
@@ -58,7 +62,7 @@ impl Default for MD5 {
 
 impl MD5 {
     fn try_chomp(&mut self) {
-        if self.buf.len() < 64 {
+        if self.buf.len() < BLOCK_SIZE {
             return;
         }
 
@@ -128,11 +132,11 @@ impl MD5 {
     ///
     /// Finishes the hash and returns the result.
     pub fn finish(mut self) -> u128 {
-        let mut modlen64 = self.written_length & 0x3F;
-        let mut pad: u64 = 0;
+        let mut modlen64 = (self.written_length & 0x3F) as usize;
+        let mut pad: usize = 0;
         if modlen64 >= 56 {
             // append 64 bits/8 bytes;
-            pad += 64 - modlen64;
+            pad += BLOCK_SIZE - modlen64;
             modlen64 = 0;
         }
         pad += 56 - modlen64;
@@ -177,6 +181,20 @@ impl MutBits for MD5 {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         self.write(&[val]);
         Ok(())
+    }
+}
+
+impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for MD5 {
+    fn write(&mut self, bytes: &[u8]) {
+        MD5::write(self, bytes)
+    }
+
+    fn hash(self, bytes: &[u8]) -> [u8; OUTPUT_SIZE] {
+        MD5::hash(self, bytes).to_be_bytes() as [u8; OUTPUT_SIZE]
+    }
+
+    fn finish(self) -> [u8; OUTPUT_SIZE] {
+        MD5::finish(self).to_be_bytes() as [u8; OUTPUT_SIZE]
     }
 }
 
