@@ -6,7 +6,7 @@
 
 use crate::buf::Buffer;
 use core::ops::{Index, IndexMut};
-use irox_bits::{Bits, Error, ErrorKind, MutBits};
+use irox_bits::{Bits, BitsError, BitsErrorKind, Error, ErrorKind, MutBits};
 
 ///
 /// Double-ended circular Buffer.  Basically a fixed size [`std::collections::VecDeque`]
@@ -16,6 +16,30 @@ pub struct RoundBuffer<const N: usize, T: Sized> {
     tail: usize,
     size: usize,
     mod_count: u32,
+}
+
+impl<const N: usize, T: Default + Copy + Sized> RoundBuffer<N, T> {
+    pub fn pop_n_front<const L: usize>(&mut self) -> Option<[T; L]> {
+        if self.size < L || N < L {
+            return None;
+        }
+        self.size -= L;
+        self.mod_count = self.mod_count.wrapping_add(1);
+        let mut out = [T::default(); L];
+        for i in 0..L {
+            out[i] = self.buf[self.head].take().unwrap_or_default();
+            // move the head pointer forward one
+            // unless head == tail
+            if self.head != self.tail {
+                self.head += 1;
+            }
+            // if head >= N, then wrap around
+            if self.head >= N {
+                self.head = 0;
+            }
+        }
+        Some(out)
+    }
 }
 
 /// Circular buffer iterator, just calls `pop_front()` repeatedly
@@ -206,10 +230,24 @@ impl<const N: usize> Bits for RoundBuffer<N, u8> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         Ok(self.pop_front())
     }
+
+    fn read_be_u32(&mut self) -> Result<u32, Error> {
+        let a = self
+            .pop_n_front::<4>()
+            .ok_or_else(|| BitsError::new(BitsErrorKind::UnexpectedEof, "EOF"))?;
+        Ok(u32::from_be_bytes(a))
+    }
 }
 impl<const N: usize> Bits for &mut RoundBuffer<N, u8> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         Ok(self.pop_front())
+    }
+
+    fn read_be_u32(&mut self) -> Result<u32, Error> {
+        let a = self
+            .pop_n_front::<4>()
+            .ok_or_else(|| BitsError::new(BitsErrorKind::UnexpectedEof, "EOF"))?;
+        Ok(u32::from_be_bytes(a))
     }
 }
 
