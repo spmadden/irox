@@ -97,7 +97,7 @@ pub fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
 ///
 /// Parses the provided string, a series of hex characters [a-fA-F0-9] and converts them to the
 /// associated byte format.
-#[cfg(feature = "allocs")]
+#[cfg(feature = "alloc")]
 pub fn from_hex_str(hex: &str) -> Result<alloc::boxed::Box<[u8]>, Error> {
     let len = hex.len();
     let mut out = alloc::vec::Vec::with_capacity(len * 2);
