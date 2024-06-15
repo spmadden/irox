@@ -10,8 +10,12 @@
 #![allow(clippy::indexing_slicing)]
 
 use crate::buf::{Buffer, FixedBuf, RoundBuffer};
+use crate::HashDigest;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
+
+pub const BLOCK_SIZE: usize = 64;
+pub const OUTPUT_SIZE: usize = 20;
 
 ///
 /// Implementation of [RFC 3174](https://datatracker.ietf.org/doc/html/rfc3174) based on the [Wikipedia](https://en.wikipedia.org/wiki/SHA-1#Examples_and_pseudocode) algorithm
@@ -20,7 +24,7 @@ use irox_bits::{Bits, Error, MutBits};
 /// **THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED**
 pub struct SHA1 {
     written_length: u64,
-    buf: RoundBuffer<64, u8>,
+    buf: RoundBuffer<BLOCK_SIZE, u8>,
 
     h0: u32,
     h1: u32,
@@ -45,7 +49,7 @@ impl Default for SHA1 {
 
 impl SHA1 {
     fn try_chomp(&mut self) {
-        if self.buf.len() < 64 {
+        if self.buf.len() < BLOCK_SIZE {
             return;
         }
         let mut words: FixedBuf<80, u32> = FixedBuf::default();
@@ -111,12 +115,12 @@ impl SHA1 {
     }
     ///
     /// Finishes the hash and returns the result.
-    pub fn finish(mut self) -> [u8; 20] {
-        let mut modlen64 = self.written_length & 0x3F;
-        let mut pad: u64 = 0;
+    pub fn finish(mut self) -> [u8; OUTPUT_SIZE] {
+        let mut modlen64 = (self.written_length & 0x3F) as usize;
+        let mut pad: usize = 0;
         if modlen64 >= 56 {
             // append 64 bits/8 bytes;
-            pad += 64 - modlen64;
+            pad += BLOCK_SIZE - modlen64;
             modlen64 = 0;
         }
         pad += 56 - modlen64;
@@ -128,7 +132,7 @@ impl SHA1 {
         }
         let _ = self.buf.write_be_u64(self.written_length << 3);
         self.try_chomp();
-        let mut out: [u8; 20] = [0; 20];
+        let mut out: [u8; OUTPUT_SIZE] = [0; OUTPUT_SIZE];
         let mut v = out.as_mut_slice();
         let _ = v.write_be_u32(self.h0);
         let _ = v.write_be_u32(self.h1);
@@ -150,7 +154,7 @@ impl SHA1 {
 
     ///
     /// Hashes the provided bytes.
-    pub fn hash(mut self, bytes: &[u8]) -> [u8; 20] {
+    pub fn hash(mut self, bytes: &[u8]) -> [u8; OUTPUT_SIZE] {
         self.write(bytes);
         self.finish()
     }
@@ -160,6 +164,20 @@ impl MutBits for SHA1 {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         self.write(&[val]);
         Ok(())
+    }
+}
+
+impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for SHA1 {
+    fn write(&mut self, bytes: &[u8]) {
+        SHA1::write(self, bytes)
+    }
+
+    fn hash(self, bytes: &[u8]) -> [u8; OUTPUT_SIZE] {
+        SHA1::hash(self, bytes)
+    }
+
+    fn finish(self) -> [u8; OUTPUT_SIZE] {
+        SHA1::finish(self)
     }
 }
 
