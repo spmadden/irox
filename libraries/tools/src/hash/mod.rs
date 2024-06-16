@@ -6,6 +6,8 @@
 //! Message Hash (Digest) functions
 //!
 
+#![allow(clippy::indexing_slicing)]
+
 use core::ops::BitXorAssign;
 use irox_bits::MutBits;
 
@@ -52,7 +54,7 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
 
             let _ = key.as_mut_slice().write_all_bytes(&hash);
         } else {
-            let _ = key.as_mut_slice().write_all_bytes(&in_key);
+            let _ = key.as_mut_slice().write_all_bytes(in_key);
         }
         let mut ipad = [0x36u8; BLOCK_SIZE];
         let mut opad = [0x5Cu8; BLOCK_SIZE];
@@ -63,7 +65,7 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
             ipad[idx].bitxor_assign(k);
             opad[idx].bitxor_assign(k);
         }
-        alg.write(&ipad.as_slice());
+        alg.write(ipad.as_slice());
 
         Self { alg, opad }
     }

@@ -26,8 +26,8 @@ impl<const N: usize, T: Default + Copy + Sized> RoundBuffer<N, T> {
         self.size -= L;
         self.mod_count = self.mod_count.wrapping_add(1);
         let mut out = [T::default(); L];
-        for i in 0..L {
-            out[i] = self.buf[self.head].take().unwrap_or_default();
+        for out in out.iter_mut().take(L) {
+            *out = self.buf[self.head].take().unwrap_or_default();
             // move the head pointer forward one
             // unless head == tail
             if self.head != self.tail {
