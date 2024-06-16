@@ -6,6 +6,10 @@
 //! Bog standard implementation of SHA2 / RFC6234.
 //!
 
+#![allow(clippy::indexing_slicing)]
+
+use core::ops::{Index, IndexMut, Not};
+use irox_bits::{Error, ErrorKind, MutBits};
 pub use sha224_256::{SHA224, SHA256};
 pub use sha384_512::{SHA384, SHA512};
 
@@ -35,9 +39,9 @@ macro_rules! MAJ {
     }};
 }
 macro_rules! sha2_impl {
-    ($name:ident, $typ: ident, $init: expr, $block_size: expr, $output_size: expr) => {
+    ($name:ident, $typ: ident, $init: expr, $block_size: expr, $word_size: expr, $output_size: expr) => {
         pub struct $name {
-            alg: $typ<{ $block_size }, { $output_size }>,
+            alg: $typ<{ $block_size }, { $word_size }, { $output_size }>,
         }
         impl $name {
             pub fn new() -> Self {
@@ -73,18 +77,82 @@ macro_rules! sha2_impl {
                 $name::finish(self)
             }
         }
+        impl MutBits for $name {
+            fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+                self.alg.write_u8(val)
+            }
+        }
     };
 }
 
+struct ShaU32Buf<const N: usize> {
+    pub buf: [u32; N],
+    pub size_bytes: usize,
+}
+impl<const N: usize> ShaU32Buf<N> {
+    pub fn new() -> Self {
+        Self {
+            buf: [0u32; N],
+            size_bytes: 0,
+        }
+    }
+    pub fn len(&self) -> usize {
+        self.size_bytes
+    }
+    pub fn push_back(&mut self, val: u8) -> Result<(), Error> {
+        self.write_u8(val)
+    }
+}
+
+impl<const N: usize> MutBits for ShaU32Buf<N> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        let size = self.size_bytes;
+        if size == (N << 2) {
+            return Err(ErrorKind::OutOfMemory.into());
+        }
+        let idx = size >> 2;
+        let shift = 24 - ((size & 0x3) << 3);
+        self.buf[idx] &= (0xFFu32.wrapping_shl(shift as u32)).not();
+        self.buf[idx] |= (val as u32).wrapping_shl(shift as u32);
+        self.size_bytes += 1;
+        Ok(())
+    }
+
+    fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
+        let size = self.size_bytes;
+        if size == (N << 2) {
+            return Err(ErrorKind::OutOfMemory.into());
+        }
+        let idx = size >> 2;
+        self.buf[idx] = val;
+        self.size_bytes += 4;
+        Ok(())
+    }
+}
+impl<const N: usize> Index<usize> for ShaU32Buf<N> {
+    type Output = u32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.buf[index]
+    }
+}
+impl<const N: usize> IndexMut<usize> for ShaU32Buf<N> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.buf[index]
+    }
+}
+
 mod sha224_256 {
-    use crate::buf::{Buffer, RoundBuffer};
+    use crate::sha2::ShaU32Buf;
     use core::ops::{BitAnd, BitXor, Not};
-    use irox_bits::{Bits, MutBits};
+    use irox_bits::{Error, MutBits};
 
     /// Block size (bytes) for SHA224
     pub const SHA224_BLOCK_SIZE: usize = 64;
+    pub const SHA224_WORD_SIZE: usize = 16;
     /// Block size (bytes) for SHA256
     pub const SHA256_BLOCK_SIZE: usize = 64;
+    pub const SHA256_WORD_SIZE: usize = 16;
 
     static KONSTANTS: [u32; 64] = [
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
@@ -140,8 +208,8 @@ mod sha224_256 {
         0x5be0cd19,
     ];
 
-    pub struct LittleSha2<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize> {
-        buf: RoundBuffer<BLOCK_SIZE, u8>,
+    pub struct LittleSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
+        buf: ShaU32Buf<64>,
         written_length: u64,
         h0: u32,
         h1: u32,
@@ -153,11 +221,13 @@ mod sha224_256 {
         h7: u32,
     }
 
-    impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize> LittleSha2<BLOCK_SIZE, OUTPUT_SIZE> {
+    impl<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize>
+        LittleSha2<BLOCK_SIZE, WORD_SIZE, OUTPUT_SIZE>
+    {
         pub fn new(init: [u32; 8]) -> Self {
             let [h0, h1, h2, h3, h4, h5, h6, h7] = init;
             Self {
-                buf: RoundBuffer::default(),
+                buf: ShaU32Buf::new(),
                 written_length: 0,
                 h0,
                 h1,
@@ -175,10 +245,8 @@ mod sha224_256 {
                 return;
             }
 
-            let mut words = [0u32; 64];
-            for idx in 0..16 {
-                words[idx] = self.buf.read_be_u32().unwrap_or_default();
-            }
+            let words = &mut self.buf.buf;
+            self.buf.size_bytes = 0;
             for idx in 16..64 {
                 words[idx] = SSIG1!(words[idx - 2])
                     .wrapping_add(words[idx - 7])
@@ -270,11 +338,20 @@ mod sha224_256 {
         }
     }
 
+    impl<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> MutBits
+        for LittleSha2<BLOCK_SIZE, WORD_SIZE, OUTPUT_SIZE>
+    {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.buf.write_u8(val)
+        }
+    }
+
     sha2_impl!(
         SHA224,
         LittleSha2,
         SHA224_INIT,
         SHA224_BLOCK_SIZE,
+        SHA224_WORD_SIZE,
         super::SHA224_OUTPUT_SIZE
     );
     sha2_impl!(
@@ -282,6 +359,7 @@ mod sha224_256 {
         LittleSha2,
         SHA256_INIT,
         SHA256_BLOCK_SIZE,
+        SHA256_WORD_SIZE,
         super::SHA256_OUTPUT_SIZE
     );
 }
@@ -289,12 +367,14 @@ mod sha224_256 {
 mod sha384_512 {
     use crate::buf::{Buffer, RoundBuffer};
     use core::ops::{BitAnd, BitXor, Not};
-    use irox_bits::{Bits, MutBits};
+    use irox_bits::{Bits, Error, MutBits};
 
     /// Block size (bytes) for SHA384
     pub const SHA384_BLOCK_SIZE: usize = 128;
+    pub const SHA384_WORD_SIZE: usize = 16;
     /// Block size (bytes) for SHA512
     pub const SHA512_BLOCK_SIZE: usize = 128;
+    pub const SHA512_WORD_SIZE: usize = 16;
 
     macro_rules! BSIG0 {
         ($x:expr) => {{
@@ -433,7 +513,7 @@ mod sha384_512 {
         0x5be0cd19137e2179,
     ];
 
-    pub struct BiggerSha2<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize> {
+    pub struct BiggerSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
         buf: RoundBuffer<BLOCK_SIZE, u8>,
         written_length: u128,
         h0: u64,
@@ -446,7 +526,9 @@ mod sha384_512 {
         h7: u64,
     }
 
-    impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize> BiggerSha2<BLOCK_SIZE, OUTPUT_SIZE> {
+    impl<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize>
+        BiggerSha2<BLOCK_SIZE, WORD_SIZE, OUTPUT_SIZE>
+    {
         pub fn new(init: [u64; 8]) -> Self {
             let [h0, h1, h2, h3, h4, h5, h6, h7] = init;
             Self {
@@ -469,8 +551,8 @@ mod sha384_512 {
             }
 
             let mut words = [0u64; 16];
-            for idx in 0..16 {
-                words[idx] = self.buf.read_be_u64().unwrap_or_default().swap_bytes();
+            for word in &mut words {
+                *word = self.buf.read_be_u64().unwrap_or_default().swap_bytes();
             }
             for idx in 16..80 {
                 words[idx] = SSIG1!(words[idx - 2])
@@ -562,11 +644,20 @@ mod sha384_512 {
             self.finish()
         }
     }
+
+    impl<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> MutBits
+        for BiggerSha2<BLOCK_SIZE, WORD_SIZE, OUTPUT_SIZE>
+    {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.buf.write_u8(val)
+        }
+    }
     sha2_impl!(
         SHA384,
         BiggerSha2,
         SHA384_INIT,
         SHA384_BLOCK_SIZE,
+        SHA384_WORD_SIZE,
         super::SHA384_OUTPUT_SIZE
     );
     sha2_impl!(
@@ -574,6 +665,7 @@ mod sha384_512 {
         BiggerSha2,
         SHA512_INIT,
         SHA512_BLOCK_SIZE,
+        SHA512_WORD_SIZE,
         super::SHA512_OUTPUT_SIZE
     );
 }
