@@ -99,12 +99,10 @@ fn default() -> Result<(), Error> {
 }
 
 fn ci() -> Result<(), Error> {
-    updates()?;
     deny()?;
-    build()?;
-    test()?;
     format_check()?;
     lints_deny()?;
+    test()?;
     about()?;
     doc()?;
     upgrade()?;
@@ -134,7 +132,7 @@ fn build() -> Result<(), Error> {
 fn test() -> Result<(), Error> {
     logstart("test");
     for feature in FEATURE_ARGS {
-        exec(
+        exec_passthru(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
         )?;
