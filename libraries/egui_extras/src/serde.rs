@@ -7,7 +7,6 @@
 
 use egui::{CollapsingHeader, Ui};
 use std::fmt::{Display, Formatter};
-use std::usize;
 
 use serde::ser::{
     SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
