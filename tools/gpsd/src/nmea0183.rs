@@ -10,8 +10,9 @@ impl MaybeFrom<Frame> for crate::output::Frame {
         match value.payload {
             FramePayload::GGA(_) => None,
             FramePayload::GSA(_) => None,
+            FramePayload::GNS(_) => None,
             FramePayload::GSV(_) => None,
-            FramePayload::Unknown(_) => None,
+            FramePayload::Unknown { .. } => None,
         }
     }
 }
