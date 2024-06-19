@@ -14,10 +14,12 @@ use irox_tools::vec::PrettyVec;
 use irox_units::units::angle::Angle;
 use irox_units::units::compass::{Azimuth, CompassReference, RotationDirection};
 
+use crate::gsa::GNSSSystemID;
 use crate::{calculate_checksum, Error, MessageType};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct GSV {
+    pub system_id: GNSSSystemID,
     pub sentence_total: u8,
     pub sentence_idx: u8,
     pub sats_in_view: u8,
@@ -27,7 +29,8 @@ pub struct GSV {
 impl Display for GSV {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!(
-            "SatsInView[{}] Sats: {:#}",
+            "System[{}] SatsInView[{}] Sats: {:#}",
+            self.system_id,
             self.sats_in_view,
             PrettyVec(&self.sat_signals)
         ))
@@ -77,7 +80,10 @@ impl PacketBuilder<GSV> for GSVBuilder {
         let buf = input.read_all_str_lossy()?;
 
         let mut split = buf.split(',');
-        let _key = split.next();
+        let system_id = split
+            .next()
+            .map(GNSSSystemID::from_sender)
+            .unwrap_or_default();
         let sentence_total = split
             .next()
             .maybe_into()
@@ -127,6 +133,7 @@ impl PacketBuilder<GSV> for GSVBuilder {
         }
 
         Ok(GSV {
+            system_id,
             sat_signals,
             sentence_total,
             sentence_idx,
