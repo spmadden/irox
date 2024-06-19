@@ -273,16 +273,6 @@ impl Packet for GGA {
     }
 }
 
-fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
-    let time = val?;
-
-    let hh = time.get(0..2)?.parse::<u8>().ok()?;
-    let mm = time.get(2..4)?.parse::<u8>().ok()?;
-    let ss = time.get(4..)?.parse::<f64>().ok()?;
-
-    Time::from_hms_f64(hh, mm, ss).ok()
-}
-
 #[derive(Default, Copy, Clone)]
 pub struct GGABuilder {
     gga: GGA,
@@ -312,7 +302,7 @@ impl PacketBuilder<GGA> for GGABuilder {
         let _refid = split.next();
         let _csum = split.next();
 
-        let timestamp = maybe_timestamp(time);
+        let timestamp = crate::maybe_timestamp(time);
         let latitude = maybe_latitude(lat, ns);
         let longitude = maybe_longitude(lon, ew);
         let quality = MaybeInto::<u8>::maybe_into(qual).map(Into::into);

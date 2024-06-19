@@ -8,6 +8,7 @@ pub use error::*;
 use irox_bits::{Bits, ErrorKind};
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
+use irox_time::Time;
 use irox_tools::options::MaybeInto;
 pub use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
 use irox_units::units::angle::Angle;
@@ -15,6 +16,7 @@ use irox_units::units::length::{Length, LengthUnits};
 pub use output::*;
 
 use crate::gga::GGABuilder;
+use crate::gns::GNSBuilder;
 use crate::gsa::GSABuilder;
 use crate::gsv::GSVBuilder;
 
@@ -26,6 +28,7 @@ mod output;
 pub enum MessageType {
     GGA,
     GLL,
+    GNS,
     GSA,
     GSV,
     RMC,
@@ -53,7 +56,8 @@ pub enum FramePayload {
     GGA(gga::GGA),
     GSA(gsa::GSA),
     GSV(gsv::GSV),
-    Unknown(String),
+    GNS(gns::GNS),
+    Unknown { key: String, raw_data: String },
 }
 
 impl Display for FramePayload {
@@ -62,7 +66,10 @@ impl Display for FramePayload {
             FramePayload::GGA(gga) => f.write_fmt(format_args!("GGA: {gga}")),
             FramePayload::GSA(gsa) => f.write_fmt(format_args!("GSA: {gsa}")),
             FramePayload::GSV(gsv) => f.write_fmt(format_args!("GSV: {gsv}")),
-            FramePayload::Unknown(unk) => f.write_fmt(format_args!("UNK: {unk}")),
+            FramePayload::GNS(gns) => f.write_fmt(format_args!("GNS: {gns}")),
+            FramePayload::Unknown { key, raw_data } => {
+                f.write_fmt(format_args!("UNK: {key} : {raw_data}"))
+            }
         }
     }
 }
@@ -78,7 +85,8 @@ impl Packet for Frame {
             FramePayload::GGA(gga) => gga.get_bytes(),
             FramePayload::GSA(gsa) => gsa.get_bytes(),
             FramePayload::GSV(gsv) => gsv.get_bytes(),
-            FramePayload::Unknown(_) => Err(ErrorKind::Unsupported.into()),
+            FramePayload::GNS(gns) => gns.get_bytes(),
+            FramePayload::Unknown { .. } => Err(ErrorKind::Unsupported.into()),
         }
     }
 
@@ -103,9 +111,14 @@ impl PacketBuilder<Frame> for NMEAParser {
             FramePayload::GSA(GSABuilder.build_from(&mut pkt)?)
         } else if key.ends_with("GSV".as_bytes()) {
             FramePayload::GSV(GSVBuilder.build_from(&mut pkt)?)
+        } else if key.ends_with("GNS".as_bytes()) {
+            FramePayload::GNS(GNSBuilder.build_from(&mut pkt)?)
         } else {
             let key = String::from_utf8_lossy(key.as_slice()).to_string();
-            FramePayload::Unknown(key)
+            FramePayload::Unknown {
+                key,
+                raw_data: raw.clone(),
+            }
         };
         Ok(Frame {
             raw: Some(raw),
@@ -207,4 +220,16 @@ pub(crate) fn maybe_altitude(
     frame: AltitudeReferenceFrame,
 ) -> Option<Altitude> {
     Some(Altitude::new(maybe_length(val, unit)?, frame))
+}
+
+pub struct NMEALatitude(pub Latitude);
+
+pub(crate) fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
+    let time = val?;
+
+    let hh = time.get(0..2)?.parse::<u8>().ok()?;
+    let mm = time.get(2..4)?.parse::<u8>().ok()?;
+    let ss = time.get(4..)?.parse::<f64>().ok()?;
+
+    Time::from_hms_f64(hh, mm, ss).ok()
 }
