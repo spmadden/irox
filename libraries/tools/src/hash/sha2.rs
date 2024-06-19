@@ -674,6 +674,7 @@ mod sha384_512 {
 mod test {
     use crate::sha2::{SHA224, SHA224_OUTPUT_SIZE, SHA256, SHA256_OUTPUT_SIZE};
     use irox_bits::MutBits;
+
     fn u32s_to_arr<const T: usize>(input: &[u32]) -> [u8; T] {
         let mut out = [0u8; T];
         let mut pos = out.as_mut_slice();
@@ -764,6 +765,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha224_nist8() {
         let mut sha = SHA224::new();
         for _ in 0..0x20000000 {
@@ -774,7 +776,9 @@ mod test {
             sha.finish()
         );
     }
+
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha224_nist9() {
         let mut sha = SHA224::new();
         for _ in 0..0x41000000 {
@@ -787,6 +791,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha224_nist10() {
         let mut sha = SHA224::new();
         for _ in 0..0x6000003f {
@@ -862,6 +867,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha256_nist10() {
         let mut sha = SHA256::new();
         for _ in 0..1000000 {
@@ -873,6 +879,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha256_nist11() {
         let mut sha = SHA256::new();
         for _ in 0..0x20000000 {
@@ -884,6 +891,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha256_nist12() {
         let mut sha = SHA256::new();
         for _ in 0..0x41000000 {
@@ -895,6 +903,7 @@ mod test {
         );
     }
     #[test]
+    #[cfg_attr(not(feature = "_toobig-tests"), ignore)]
     pub fn sha256_nist13() {
         let mut sha = SHA256::new();
         for _ in 0..0x6000003e {

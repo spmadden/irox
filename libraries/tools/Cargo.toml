@@ -27,6 +27,8 @@ default = []
 std = ["irox-bits/std", "alloc"]
 alloc = ["irox-bits/alloc"]
 
+_toobig-tests = [] # slow tests that take way too long to run normally.
+
 [lib]
 bench = false
 
