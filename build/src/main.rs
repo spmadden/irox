@@ -43,7 +43,10 @@ enum Commands {
     /// Runs `cargo check` for all targets
     Check,
     /// Sets up for a release
-    Release,
+    Release{
+        /// Additional arguments
+        args: Vec<String>,
+    },
     /// Creates a new module
     New {
         /// Destination path of the new module
@@ -79,7 +82,7 @@ fn main() -> Result<(), Error> {
         Commands::About => about()?,
         Commands::Doc => doc()?,
         Commands::Check => check_all()?,
-        Commands::Release => release()?,
+        Commands::Release {args} => release(args)?,
         Commands::New { dest } => new(&dest)?,
         Commands::BuildPerf => buildperf()?,
         Commands::Package => package()?,
@@ -251,8 +254,19 @@ fn deny() -> Result<(), Error> {
     Ok(())
 }
 
-fn release() -> Result<(), Error> {
+fn release(in_args: Vec<String>) -> Result<(), Error> {
     logstart("release");
+    let mut rgs = Vec::from_iter([
+        "smart-release",
+        "--no-conservative-pre-release-version-handling",
+        "--no-isolate-dependencies-from-breaking-changes",
+        "-u",
+        "--verbose"
+    ]);
+    for v in &in_args {
+        rgs.push(v.as_str());
+    }
+
     exec(
         "cargo",
         &[
@@ -262,14 +276,9 @@ fn release() -> Result<(), Error> {
             "--color=always",
         ],
     )?;
-    exec(
+    exec_passthru(
         "cargo",
-        &[
-            "smart-release",
-            "--no-conservative-pre-release-version-handling",
-            "--no-isolate-dependencies-from-breaking-changes",
-            "-u",
-        ],
+        &rgs,
     )?;
     logend();
     Ok(())
