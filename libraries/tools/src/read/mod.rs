@@ -14,8 +14,9 @@ pub use counting::*;
 pub use pagefile::*;
 pub use readerator::*;
 
-#[cfg(feature = "std")]
-mod buffer;
+crate::cfg_feature_std! {
+    mod buffer;
+}
 mod conv;
 mod counting;
 #[cfg(feature = "bits/std")]

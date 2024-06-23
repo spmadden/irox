@@ -43,6 +43,7 @@ def_item!(FORMAT_COLOR_FG_WHITE, sgr!(37));
 def_item!(FORMAT_COLOR_FG_DEFAULT, sgr!(39));
 
 ///
+/// Creates a ANSI Terminal Foreground Color Code using the specified RGB values
 /// ```
 /// use irox_tools::format_fg_color;
 /// pub const VARBL : &str = format_fg_color!(0x10,0x10,0x10);
@@ -67,6 +68,7 @@ def_item!(FORMAT_COLOR_BG_WHITE, sgr!(47));
 def_item!(FORMAT_COLOR_BG_DEFAULT, sgr!(49));
 
 ///
+/// Creates a ANSI Terminal Background Color Code using the specified RGB values
 /// ```
 /// use irox_tools::format_bg_color;
 /// pub const VARBL : &str = format_bg_color!(0x10,0x10,0x10);

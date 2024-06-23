@@ -104,7 +104,7 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
 
 #[cfg(test)]
 mod test {
-    use crate::murmur3::murmur3_128;
+    use crate::hash::murmur3_128;
     use alloc::vec;
     extern crate alloc;
     use alloc::vec::Vec;

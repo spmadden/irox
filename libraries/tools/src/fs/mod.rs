@@ -74,8 +74,9 @@ impl Display for FilenameError {
         }
     }
 }
-#[cfg(feature = "std")]
-impl std::error::Error for FilenameError {}
+crate::cfg_feature_std! {
+    impl std::error::Error for FilenameError {}
+}
 
 ///
 /// Removes any character in the input value that isn't in [`USUALLY_SAFE_FS_CHARS`]

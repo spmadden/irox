@@ -9,7 +9,7 @@
 
 extern crate alloc;
 use crate::format;
-use crate::murmur3::murmur3_128;
+use crate::hash::murmur3_128;
 use crate::uuid::UUID;
 use alloc::string::{String, ToString};
 use core::fmt::{Display, Formatter};

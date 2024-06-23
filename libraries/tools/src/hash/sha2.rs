@@ -40,21 +40,28 @@ macro_rules! MAJ {
 }
 macro_rules! sha2_impl {
     ($name:ident, $typ: ident, $init: expr, $block_size: expr, $word_size: expr, $output_size: expr) => {
+        /// Standard implementation of
+        #[doc=stringify!($name)]
+        /// following RFC 6234
         pub struct $name {
             alg: $typ<{ $block_size }, { $word_size }, { $output_size }>,
         }
         impl $name {
+            /// Creates a new empty instance of this algorithm
             pub fn new() -> Self {
                 Self {
                     alg: $typ::new($init),
                 }
             }
+            /// Writes all the data in the slice to this algorithm
             pub fn write(&mut self, bytes: &[u8]) {
                 self.alg.write(bytes)
             }
+            /// Finishes this algorithm and returns the result
             pub fn finish(self) -> [u8; $output_size] {
                 self.alg.finish()
             }
+            /// One shot - hashes the data and returns the result.
             pub fn hash(self, bytes: &[u8]) -> [u8; $output_size] {
                 self.alg.hash(bytes)
             }
@@ -143,7 +150,7 @@ impl<const N: usize> IndexMut<usize> for ShaU32Buf<N> {
 }
 
 mod sha224_256 {
-    use crate::sha2::ShaU32Buf;
+    use crate::hash::sha2::ShaU32Buf;
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
 
@@ -672,7 +679,7 @@ mod sha384_512 {
 
 #[cfg(test)]
 mod test {
-    use crate::sha2::{SHA224, SHA224_OUTPUT_SIZE, SHA256, SHA256_OUTPUT_SIZE};
+    use crate::hash::sha2::{SHA224, SHA224_OUTPUT_SIZE, SHA256, SHA256_OUTPUT_SIZE};
     use irox_bits::MutBits;
 
     fn u32s_to_arr<const T: usize>(input: &[u32]) -> [u8; T] {

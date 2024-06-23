@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+//!
+//! Bolt-ons for [`Vec`] and [`VecDeque`] - better displays and iteration tools
+
 extern crate alloc;
 use alloc::collections::VecDeque;
 use alloc::string::String;
@@ -8,9 +11,11 @@ use alloc::vec::Vec;
 use core::fmt::{Display, Formatter, UpperHex, Write};
 
 ///
-/// This struct purely exists to implement 'Display' for a borrowed vec, whose elements implement [`Display`]
+/// This struct purely exists to implement [`Display`] and [`UpperHex`] for a borrowed Vec, whose elements implement [`Display`] or [`UpperHex`]
 pub struct PrettyVec<'a, T>(pub &'a Vec<T>);
 
+///
+/// This struct purely exists to implement [`Display`] and [`UpperHex`] for a borrowed VecDeque, whose elements implement [`Display`] or [`UpperHex`]
 pub struct PrettyVecDeque<'a, T>(pub &'a VecDeque<T>);
 
 impl<'a, T> Display for PrettyVec<'a, T>

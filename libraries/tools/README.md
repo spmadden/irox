@@ -4,12 +4,12 @@ IROX-TOOLS
 *Stuff that should have been in the Rust STL, but are not.*
 
 ### No-STD support:
-
-* Include with `--no-default-features`
+Default.
 
 ### Features:
 
-* `std` (default) - Enables additional modules that make use of elements in `std` (annotated below)
+* `alloc` - Enables additional modules & features that make use of the heap.
+* `std` Enables additional modules that make use of elements in `std` (annotated below) (requires `alloc`)
 
 ### Modules:
 

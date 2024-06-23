@@ -7,6 +7,7 @@
 
 pub mod base64;
 pub mod identifier;
-#[cfg(feature = "std")]
-pub mod scanner;
+crate::cfg_feature_std! {
+    pub mod scanner;
+}
 pub mod uuid;

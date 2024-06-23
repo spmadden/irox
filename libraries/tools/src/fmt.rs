@@ -12,6 +12,8 @@ extern crate alloc;
 use crate::f64::FloatExt;
 use alloc::string::String;
 
+///
+/// Variant of the `format!` macro that doesn't require `std::io::Write`
 #[macro_export]
 macro_rules! format {
     ($($arg:tt)*) => {{

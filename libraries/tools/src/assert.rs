@@ -5,6 +5,8 @@
 //! Additional assert macros for tests
 //!
 
+///
+/// Assert Equal with floating point epsilon/delta values.  `|left-right| <= eps`
 #[macro_export]
 macro_rules! assert_eq_eps {
     ($left:expr, $right:expr, $eps:expr) => {
@@ -22,6 +24,8 @@ macro_rules! assert_eq_eps {
     };
 }
 
+///
+/// Assert equal w/ hex value, for elements that implement [`core::fmt::UpperHex`]
 #[macro_export]
 macro_rules! assert_eq_hex {
     ($left:expr, $right:expr) => {
@@ -38,6 +42,8 @@ macro_rules! assert_eq_hex {
     };
 }
 
+///
+/// Assert equal w/ hex value slices, for slices of elements that implement [`core::fmt::UpperHex`]
 #[macro_export]
 macro_rules! assert_eq_hex_slice {
     ($left:expr, $right:expr) => {

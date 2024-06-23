@@ -224,3 +224,7 @@ zero_sized_map_values = "warn"
 missing_errors_doc = "allow"
 module-name-repetitions = "allow"
 semicolon-if-nothing-returned = "allow"
+
+[metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

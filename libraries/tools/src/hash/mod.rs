@@ -11,6 +11,10 @@
 
 use core::ops::BitXorAssign;
 use irox_bits::MutBits;
+pub use md5::MD5;
+pub use murmur3::{murmur3_128, murmur3_128_seed};
+pub use sha1::SHA1;
+pub use sha2::{SHA224, SHA256, SHA384, SHA512};
 
 pub mod md5;
 pub mod murmur3;
@@ -94,7 +98,7 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
 
 #[cfg(test)]
 mod hmac_tests {
-    use crate::*;
+    use crate::hash::*;
 
     #[test]
     pub fn wikitest1() {

@@ -10,7 +10,7 @@
 #![allow(clippy::indexing_slicing)]
 
 use crate::buf::{Buffer, FixedBuf, RoundBuffer};
-use crate::HashDigest;
+use crate::hash::HashDigest;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
 
@@ -183,8 +183,8 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for SHA1 {
 
 #[cfg(test)]
 mod test {
+    use crate::hash::sha1::SHA1;
     use crate::hex::from_hex_into;
-    use crate::sha1::SHA1;
     use irox_bits::Error;
 
     #[test]

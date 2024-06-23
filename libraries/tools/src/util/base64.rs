@@ -203,16 +203,18 @@ pub fn base64_encode<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<us
 pub fn base64_decode<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_codec().decode(input, output)
 }
-/// Encodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`]
-#[cfg(feature = "alloc")]
-pub fn base64_encode_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
-    new_base64_codec().encode_to_str(input)
+crate::cfg_feature_alloc! {
+    /// Encodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`]
+    pub fn base64_encode_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
+        new_base64_codec().encode_to_str(input)
+    }
 }
-/// Decodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`], dropping
-/// any characters that aren't UTF-8.
-#[cfg(feature = "alloc")]
-pub fn base64_decode_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
-    new_base64_codec().decode_to_str_lossy(input)
+crate::cfg_feature_alloc! {
+    /// Decodes the provided input to a string, using the standard RFC-4648 [`BASE64_ALPHABET`], dropping
+    /// any characters that aren't UTF-8.
+    pub fn base64_decode_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
+        new_base64_codec().decode_to_str_lossy(input)
+    }
 }
 
 /// Encodes the provided the input, writing the encoding to output, using the filesystem and
@@ -225,17 +227,19 @@ pub fn base64_encode_safe<I: Bits, O: MutBits>(input: I, output: &mut O) -> Resu
 pub fn base64_decode_safe<I: Bits, O: MutBits>(input: I, output: &mut O) -> Result<usize, Error> {
     new_base64_safe_codec().decode(input, output)
 }
-/// Encodes the provided input to a string, using the using the filesystem and
-/// URL-safe RFC-4648 [`BASE64URL_ALPHABET`]
-#[cfg(feature = "alloc")]
-pub fn base64_encode_safe_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
-    new_base64_safe_codec().encode_to_str(input)
+crate::cfg_feature_alloc! {
+    /// Encodes the provided input to a string, using the using the filesystem and
+    /// URL-safe RFC-4648 [`BASE64URL_ALPHABET`]
+    pub fn base64_encode_safe_to_str<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
+        new_base64_safe_codec().encode_to_str(input)
+    }
 }
-/// Decodes the provided the input, to a string, using the filesystem and URL-safe RFC-4648
-/// [`BASE64URL_ALPHABET`], any characters not valid UTF-8 are dropped.
-#[cfg(feature = "alloc")]
-pub fn base64_decode_safe_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
-    new_base64_safe_codec().decode_to_str_lossy(input)
+crate::cfg_feature_alloc! {
+    /// Decodes the provided the input, to a string, using the filesystem and URL-safe RFC-4648
+    /// [`BASE64URL_ALPHABET`], any characters not valid UTF-8 are dropped.
+    pub fn base64_decode_safe_to_str_lossy<I: Bits>(input: I) -> Result<alloc::string::String, Error> {
+        new_base64_safe_codec().decode_to_str_lossy(input)
+    }
 }
 
 #[cfg(test)]

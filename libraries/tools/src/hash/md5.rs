@@ -8,8 +8,8 @@
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
 use crate::buf::{Buffer, RoundBuffer};
+use crate::hash::HashDigest;
 use crate::u32::{FromU32Array, ToU32Array};
-use crate::HashDigest;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
 
@@ -200,7 +200,7 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for MD5 {
 
 #[cfg(test)]
 mod test {
-    use crate::md5::MD5;
+    use crate::hash::MD5;
 
     #[test]
     pub fn test_md5() {

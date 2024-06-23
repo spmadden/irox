@@ -6,11 +6,11 @@
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 extern crate alloc;
 extern crate core;
 
-pub use hash::*;
 pub use primitives::*;
 pub use util::*;
 
@@ -27,16 +27,22 @@ pub mod iterators;
 pub mod options;
 pub mod packetio;
 pub mod random;
-#[cfg(feature = "std")]
-pub mod read;
-#[cfg(feature = "std")]
-pub mod sync;
-pub mod vec;
+cfg_feature_std! {
+    pub mod read;
+}
+cfg_feature_std! {
+    pub mod sync;
+}
+cfg_feature_alloc! {
+    pub mod vec;
+}
 
 pub mod errors;
 pub mod fs;
-mod hash;
+pub mod hash;
 mod primitives;
 
 pub mod buf;
 mod util;
+#[macro_use]
+pub mod macros;

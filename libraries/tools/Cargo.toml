@@ -35,3 +35,7 @@ bench = false
 [[bench]]
 name = "random"
 harness = false
+
+[package.metadata.docs.rs]
+workspace = true
+all-features = true

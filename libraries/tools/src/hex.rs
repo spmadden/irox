@@ -4,8 +4,10 @@
 
 //!
 //! Hexdump & Hex manipulation
-#[cfg(feature = "alloc")]
-extern crate alloc;
+
+crate::cfg_feature_alloc! {
+    extern crate alloc;
+}
 use crate::buf::StrBuf;
 use core::fmt::Write;
 use irox_bits::{Error, ErrorKind, FormatBits, MutBits};
@@ -23,18 +25,20 @@ pub static HEX_LOWER_CHARS: [char; 16] = [
 /// Dumps the contents of this data structure in a pretty 16 slot wide format, like the output of
 /// `hexdump -C`
 pub trait HexDump {
-    /// Hexdump this data structure to stdout
-    #[cfg(feature = "std")]
-    fn hexdump(&self);
+    crate::cfg_feature_std! {
+        /// Hexdump this data structure to stdout
+        fn hexdump(&self);
+    }
 
     /// Hexdump to the specified writer.
     fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error>;
 }
 
 impl<S: AsRef<[u8]>> HexDump for S {
-    #[cfg(feature = "std")]
-    fn hexdump(&self) {
-        let _ = self.hexdump_to(&mut irox_bits::BitsWrapper(&mut std::io::stdout().lock()));
+    crate::cfg_feature_std! {
+        fn hexdump(&self) {
+            let _ = self.hexdump_to(&mut irox_bits::BitsWrapper(&mut std::io::stdout().lock()));
+        }
     }
 
     fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error> {
@@ -94,32 +98,33 @@ pub fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
     })
 }
 
-///
-/// Parses the provided string, a series of hex characters [a-fA-F0-9] and converts them to the
-/// associated byte format.
-#[cfg(feature = "alloc")]
-pub fn from_hex_str(hex: &str) -> Result<alloc::boxed::Box<[u8]>, Error> {
-    let len = hex.len();
-    let mut out = alloc::vec::Vec::with_capacity(len * 2);
+crate::cfg_feature_alloc! {
+    ///
+    /// Parses the provided string, a series of hex characters [a-fA-F0-9] and converts them to the
+    /// associated byte format.
+    pub fn from_hex_str(hex: &str) -> Result<alloc::boxed::Box<[u8]>, Error> {
+        let len = hex.len();
+        let mut out = alloc::vec::Vec::with_capacity(len * 2);
 
-    let mut val = 0u8;
-    let mut idx = 0;
-    for ch in hex.chars() {
-        if ch == ' ' {
-            continue;
+        let mut val = 0u8;
+        let mut idx = 0;
+        for ch in hex.chars() {
+            if ch == ' ' {
+                continue;
+            }
+            let ch = hex_char_to_nibble(ch)?;
+            if idx & 0x1 == 0 {
+                val |= (ch << 4) & 0xF0;
+            } else {
+                val |= ch & 0xF;
+                out.push(val);
+                val = 0;
+            }
+            idx += 1;
         }
-        let ch = hex_char_to_nibble(ch)?;
-        if idx & 0x1 == 0 {
-            val |= (ch << 4) & 0xF0;
-        } else {
-            val |= ch & 0xF;
-            out.push(val);
-            val = 0;
-        }
-        idx += 1;
+
+        Ok(out.into_boxed_slice())
     }
-
-    Ok(out.into_boxed_slice())
 }
 
 ///
@@ -148,32 +153,34 @@ pub fn from_hex_into<T: MutBits>(hex: &str, out: &mut T) -> Result<usize, Error>
     Ok(wrote)
 }
 
-///
-/// Prints the value to a uppercase hex string
-#[cfg(feature = "alloc")]
-pub fn to_hex_str_upper(val: &[u8]) -> alloc::string::String {
-    let len = val.len() * 2;
-    let mut out = alloc::string::String::with_capacity(len);
+crate::cfg_feature_alloc! {
+    ///
+    /// Prints the value to a uppercase hex string
+    pub fn to_hex_str_upper(val: &[u8]) -> alloc::string::String {
+        let len = val.len() * 2;
+        let mut out = alloc::string::String::with_capacity(len);
 
-    for v in val {
-        let _ = write!(&mut out, "{v:02X}");
+        for v in val {
+            let _ = write!(&mut out, "{v:02X}");
+        }
+
+        out
     }
-
-    out
 }
 
-///
-/// Prints the value to a lowercase hex string
-#[cfg(feature = "alloc")]
-pub fn to_hex_str_lower(val: &[u8]) -> alloc::string::String {
-    let len = val.len() * 2;
-    let mut out = alloc::string::String::with_capacity(len);
+crate::cfg_feature_alloc! {
+    ///
+    /// Prints the value to a lowercase hex string
+    pub fn to_hex_str_lower(val: &[u8]) -> alloc::string::String {
+        let len = val.len() * 2;
+        let mut out = alloc::string::String::with_capacity(len);
 
-    for v in val {
-        let _ = write!(&mut out, "{v:02x}");
+        for v in val {
+            let _ = write!(&mut out, "{v:02x}");
+        }
+
+        out
     }
-
-    out
 }
 
 ///
