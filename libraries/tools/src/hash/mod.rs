@@ -7,6 +7,7 @@
 //!
 
 #![allow(clippy::indexing_slicing)]
+#![deny(clippy::integer_division_remainder_used)]
 
 use core::ops::BitXorAssign;
 use irox_bits::MutBits;

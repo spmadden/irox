@@ -110,7 +110,7 @@ irox-tools = { version = "^0", path = "libraries/tools" }
 irox-types = { version = "^0", path = "libraries/types" }
 irox-units = { version = "^0", path = "libraries/units" }
 
-# Lints last updated for Rust 1.78.0
+# Lints last updated for Rust 1.79.0
 [workspace.lints.rust]
 unsafe_code = "forbid"
 
