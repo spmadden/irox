@@ -1994,6 +1994,7 @@ dependencies = [
  "irox-build-rs",
  "irox-carto",
  "irox-csv",
+ "irox-derive-helpers",
  "irox-egui-extras",
  "irox-enums",
  "irox-enums_derive",

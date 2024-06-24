@@ -1,21 +1,12 @@
-IROX-XYZ
+IROX Derive Helpers
 ===========
 
-*Module Description*
+*Helper traits & functions for the [`proc_macro`] crate to aid in writing less complex derive macros.*
 
 ### No-STD support:
 
-* Description
+* n/a
 
 ### Features:
 
 * None
-
-### Modules:
-
-| Module | `[no_std]`? |  |
-|--------|-------------|--| 
-
-[no_std]: https://img.shields.io/badge/no__std-yes-green
-
-[std]: https://img.shields.io/badge/feature-std-lightgrey

@@ -35,6 +35,7 @@ Current Modules & Organization:
     * [`bits`] - Bits & Bobs. No-std/No-alloc bit/byte manipulation of streams
     * [`build-rs`] - Compile-time build metadata injection inspired by shadow-rs
     * [`carto`] - Cartographic & Geospatial tools
+    * [`derive-helpers`] - Helper traits & functions for the proc_macro crate to aid in writing less complex derive macros
     * [`egui-extras`] - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
     * [`enums`] - Traits for better Enumerated Types
     * [`enums_derive`] - Derivable impls of the traits in irox-enums
@@ -57,33 +58,34 @@ Current Modules & Organization:
 Version Status
 ------------------
 
-| Crate                  | no_std?        | no_alloc?   | Status                                                                                                      |
-|------------------------|----------------|-------------|-------------------------------------------------------------------------------------------------------------|
-| `irox-bits`            | ![no_std]      | ![no_alloc] | [![bits-vsn-shield]][bits-crate] [![bits-doc-shield]][bits-doc]                                             |
-| `irox-build-rs`        | ![std]         | ![alloc]    | [![build-rs-vsn-shield]][build-rs-crate] [![build-rs-doc-shield]][build-rs-doc]                             |
-| `irox-carto`           | ![std]         | ![alloc]    | [![carto-vsn-shield]][carto-crate] [![carto-doc-shield]][carto-doc]                                         |
-| `irox-csv`             | ![std]         | ![alloc]    | [![csv-vsn-shield]][csv-crate] [![csv-doc-shield]][csv-doc]                                                 |
-| `irox-egui-extras`     | ![std]         | ![alloc]    | [![egui-extras-vsn-shield]][egui-extras-crate] [![egui-extras-doc-shield]][egui-extras-doc]                 |
-| `irox-enums`           | ![no_std]      | ![alloc]    | [![enums-vsn-shield]][enums-crate] [![enums-doc-shield]][enums-doc]                                         |
-| `irox-enums_derive`    | ![no_std]      | ![alloc]    | [![enums_derive-vsn-shield]][enums_derive-crate] [![enums_derive-doc-shield]][enums_derive-doc]             |
-| `irox-git-tools`       | ![std]         | ![alloc]    | [![git-tools-vsn-shield]][git-tools-crate] [![git-tools-doc-shield]][git-tools-doc]                         |
-| `irox-gpx`             | ![std]         | ![alloc]    | [![gpx-vsn-shield]][gpx-crate] [![gpx-doc-shield]][gpx-doc]                                                 |
-| `irox-influxdb_v1`     | ![std]         | ![alloc]    | [![influxdb_v1-vsn-shield]][influxdb_v1-crate] [![influxdb_v1-doc-shield]][influxdb_v1-doc]                 |
-| `irox-log`             | ![std]         | ![alloc]    | [![log-vsn-shield]][log-crate] [![log-doc-shield]][log-doc]                                                 |
-| `irox-networking`      | ![std]         | ![alloc]    | [![networking-vsn-shield]][networking-crate] [![networking-doc-shield]][networking-doc]                     |
-| `irox-nmea0183`        | ![std]         | ![alloc]    | [![nmea0183-vsn-shield]][nmea0183-crate] [![nmea0183-doc-shield]][nmea0183-doc]                             |
-| `irox-progress`        | ![std]         | ![alloc]    | [![progress-vsn-shield]][progress-crate] [![progress-doc-shield]][progress-doc]                             |
-| `irox-raymarine-sonar` | ![std]         | ![alloc]    | [![raymarine-sonar-vsn-shield]][raymarine-sonar-crate] [![raymarine-sonar-doc-shield]][raymarine-sonar-doc] |
-| `irox-sirf`            | ![std]         | ![alloc]    | [![sirf-vsn-shield]][sirf-crate] [![sirf-doc-shield]][sirf-doc]                                             |
-| `irox-stats`           | ![no_std]      | ![alloc]    | [![stats-vsn-shield]][stats-crate] [![stats-doc-shield]][stats-doc]                                         |
-| `irox-structs`         | ![std]         | ![alloc]    | [![structs-vsn-shield]][structs-crate] [![structs-doc-shield]][structs-doc]                                 |
-| `irox-structs_derive`  | ![std]         | ![alloc]    | [![structs_derive-vsn-shield]][structs_derive-crate] [![structs_derive-doc-shield]][structs_derive-doc]     |
-| `irox-threading`       | ![std]         | ![alloc]    | [![threading-vsn-shield]][threading-crate] [![threading-doc-shield]][threading-doc]                         |
+| Crate                  | no_std?     | no_alloc?   | Status                                                                                                      |
+|------------------------|-------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| `irox-bits`            | ![no_std]   | ![no_alloc] | [![bits-vsn-shield]][bits-crate] [![bits-doc-shield]][bits-doc]                                             |
+| `irox-build-rs`        | ![std]      | ![alloc]    | [![build-rs-vsn-shield]][build-rs-crate] [![build-rs-doc-shield]][build-rs-doc]                             |
+| `irox-carto`           | ![std]      | ![alloc]    | [![carto-vsn-shield]][carto-crate] [![carto-doc-shield]][carto-doc]                                         |
+| `irox-csv`             | ![std]      | ![alloc]    | [![csv-vsn-shield]][csv-crate] [![csv-doc-shield]][csv-doc]                                                 |
+| `irox-derive-helpers`  | ![std]      | ![alloc]    | [![derive-helpers-vsn-shield]][derive-helpers-crate] [![derive-helpers-doc-shield]][derive-helpers-doc]                                                 |
+| `irox-egui-extras`     | ![std]      | ![alloc]    | [![egui-extras-vsn-shield]][egui-extras-crate] [![egui-extras-doc-shield]][egui-extras-doc]                 |
+| `irox-enums`           | ![no_std]   | ![alloc]    | [![enums-vsn-shield]][enums-crate] [![enums-doc-shield]][enums-doc]                                         |
+| `irox-enums_derive`    | ![no_std]   | ![alloc]    | [![enums_derive-vsn-shield]][enums_derive-crate] [![enums_derive-doc-shield]][enums_derive-doc]             |
+| `irox-git-tools`       | ![std]      | ![alloc]    | [![git-tools-vsn-shield]][git-tools-crate] [![git-tools-doc-shield]][git-tools-doc]                         |
+| `irox-gpx`             | ![std]      | ![alloc]    | [![gpx-vsn-shield]][gpx-crate] [![gpx-doc-shield]][gpx-doc]                                                 |
+| `irox-influxdb_v1`     | ![std]      | ![alloc]    | [![influxdb_v1-vsn-shield]][influxdb_v1-crate] [![influxdb_v1-doc-shield]][influxdb_v1-doc]                 |
+| `irox-log`             | ![std]      | ![alloc]    | [![log-vsn-shield]][log-crate] [![log-doc-shield]][log-doc]                                                 |
+| `irox-networking`      | ![std]      | ![alloc]    | [![networking-vsn-shield]][networking-crate] [![networking-doc-shield]][networking-doc]                     |
+| `irox-nmea0183`        | ![std]      | ![alloc]    | [![nmea0183-vsn-shield]][nmea0183-crate] [![nmea0183-doc-shield]][nmea0183-doc]                             |
+| `irox-progress`        | ![std]      | ![alloc]    | [![progress-vsn-shield]][progress-crate] [![progress-doc-shield]][progress-doc]                             |
+| `irox-raymarine-sonar` | ![std]      | ![alloc]    | [![raymarine-sonar-vsn-shield]][raymarine-sonar-crate] [![raymarine-sonar-doc-shield]][raymarine-sonar-doc] |
+| `irox-sirf`            | ![std]      | ![alloc]    | [![sirf-vsn-shield]][sirf-crate] [![sirf-doc-shield]][sirf-doc]                                             |
+| `irox-stats`           | ![no_std]   | ![alloc]    | [![stats-vsn-shield]][stats-crate] [![stats-doc-shield]][stats-doc]                                         |
+| `irox-structs`         | ![std]      | ![alloc]    | [![structs-vsn-shield]][structs-crate] [![structs-doc-shield]][structs-doc]                                 |
+| `irox-structs_derive`  | ![std]      | ![alloc]    | [![structs_derive-vsn-shield]][structs_derive-crate] [![structs_derive-doc-shield]][structs_derive-doc]     |
+| `irox-threading`       | ![std]      | ![alloc]    | [![threading-vsn-shield]][threading-crate] [![threading-doc-shield]][threading-doc]                         |
 | `irox-time`            | ![feature_std] | ![alloc]    | [![time-vsn-shield]][time-crate] [![time-doc-shield]][time-doc]                                             |
 | `irox-tools`           | ![feature_std] | ![alloc]    | [![tools-vsn-shield]][tools-crate] [![tools-doc-shield]][tools-doc]                                         |
-| `irox-types`           | ![std]         | ![alloc]    | [![types-vsn-shield]][types-crate] [![types-doc-shield]][types-doc]                                         |
-| `irox-units`           | ![no_std]      | ![no_alloc] | [![units-vsn-shield]][units-crate] [![units-doc-shield]][units-doc]                                         |
-| `irox-winlocation-api` | ![std]         | ![alloc]    | [![winloc-api-vsn-shield]][winloc-api-crate] [![winloc-api-doc-shield]][winloc-api-doc]                     |
+| `irox-types`           | ![std]      | ![alloc]    | [![types-vsn-shield]][types-crate] [![types-doc-shield]][types-doc]                                         |
+| `irox-units`           | ![no_std]   | ![no_alloc] | [![units-vsn-shield]][units-crate] [![units-doc-shield]][units-doc]                                         |
+| `irox-winlocation-api` | ![std]      | ![alloc]    | [![winloc-api-vsn-shield]][winloc-api-crate] [![winloc-api-doc-shield]][winloc-api-doc]                     |
 
 [no_std]: https://img.shields.io/badge/no__std-yes-green "Library does not require std but may have features gated by 'std'"
 
@@ -137,6 +139,17 @@ Version Status
 [csv-crate]: https://crates.io/crates/irox-csv
 
 [csv-doc]: https://docs.rs/irox-csv
+
+[`derive-helpers`]: https://github.com/spmadden/irox/blob/master/libraries/derive-helpers
+
+[derive-helpers-vsn-shield]: https://img.shields.io/crates/v/irox-derive-helpers.svg
+
+[derive-helpers-doc-shield]: https://docs.rs/irox-derive-helpers/badge.svg
+
+[derive-helpers-crate]: https://crates.io/crates/irox-derive-helpers
+
+[derive-helpers-doc]: https://docs.rs/irox-derive-helpers
+
 
 [`egui-extras`]: https://github.com/spmadden/irox/blob/master/libraries/egui-extras
 

@@ -23,6 +23,11 @@ pub extern crate irox_csv;
 #[cfg(feature = "csv")]
 pub use irox_csv as csv;
 
+#[cfg(feature = "derive-helpers")]
+pub extern crate irox_derive_helpers;
+#[cfg(feature = "derive-helpers")]
+pub use irox_derive_helpers as derive_helpers;
+
 #[cfg(feature = "egui-extras")]
 pub extern crate irox_egui_extras;
 #[cfg(feature = "egui-extras")]
