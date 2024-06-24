@@ -1,7 +1,74 @@
 
 
 
+## v0.8.2 (2024-06-24)
+
+### Chore
+
+ - <csr-id-7809b2d2af9bd4b9767c701782530d7fde558421/> Clean up new lints
+ - <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/> fixup some 1.78 lint warnings
+
+### New Features
+
+ - <csr-id-c434f69700976ca796b29e6e9e213ae44ccf4e02/> improvements across the board for docs.rs docs
+ - <csr-id-7d369bf4d9f753411be6eab864fd7f29d4fd888c/> bump to rust 1.79
+ - <csr-id-2e3ec3339b9fa5597bdd39b3c5c6c7a3442dcef2/> new implementation of SHA2
+ - <csr-id-11ff4aaf228d218c9c451e7cb5fcf9b776be7505/> impl HashDigest for MD5
+ - <csr-id-0ab16782054679e07c99e52f96b8ab4109b3ec7d/> impl HashDigest for SHA1
+ - <csr-id-a7d6f47b35f015ef43d7a4431982ac7f0b95bb8f/> implementation of HMAC
+ - <csr-id-167144fabb5e619e925001b204fbe73d795570c3/> improved perf for stack-allocated RoundBuf
+ - <csr-id-f8a4651a0e1eb2a8c8e61431eb58493169d92ca8/> new assert::assert_eq_hex_slice method
+
+### Bug Fixes
+
+ - <csr-id-5ce4b19d2e1d9759ae087b1ef2a14144f7b03076/> clean up lints
+ - <csr-id-5e2c0bdbeee6a09d9b150fed5475c014890b9f2f/> fix typo in feature name guard preventing use of hex::from_hex_str
+
+### Performance
+
+ - <csr-id-1459e3484dbf2d36ba0964fb903a9a2b10fdf2bb/> new testing '_toobig-tests' feature to ignore certain tests that are expensive & slow
+
+### Refactor
+
+ - <csr-id-0999f97c86fd40009c321c0100d6db5db735b3c2/> playing with buffers in sha2 for perf.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 14 commits contributed to the release over the course of 33 calendar days.
+ - 36 days passed between releases.
+ - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Improvements across the board for docs.rs docs ([`c434f69`](https://github.com/spmadden/irox/commit/c434f69700976ca796b29e6e9e213ae44ccf4e02))
+    - Bump to rust 1.79 ([`7d369bf`](https://github.com/spmadden/irox/commit/7d369bf4d9f753411be6eab864fd7f29d4fd888c))
+    - New testing '_toobig-tests' feature to ignore certain tests that are expensive & slow ([`1459e34`](https://github.com/spmadden/irox/commit/1459e3484dbf2d36ba0964fb903a9a2b10fdf2bb))
+    - Playing with buffers in sha2 for perf. ([`0999f97`](https://github.com/spmadden/irox/commit/0999f97c86fd40009c321c0100d6db5db735b3c2))
+    - Clean up lints ([`5ce4b19`](https://github.com/spmadden/irox/commit/5ce4b19d2e1d9759ae087b1ef2a14144f7b03076))
+    - New implementation of SHA2 ([`2e3ec33`](https://github.com/spmadden/irox/commit/2e3ec3339b9fa5597bdd39b3c5c6c7a3442dcef2))
+    - Impl HashDigest for MD5 ([`11ff4aa`](https://github.com/spmadden/irox/commit/11ff4aaf228d218c9c451e7cb5fcf9b776be7505))
+    - Impl HashDigest for SHA1 ([`0ab1678`](https://github.com/spmadden/irox/commit/0ab16782054679e07c99e52f96b8ab4109b3ec7d))
+    - Implementation of HMAC ([`a7d6f47`](https://github.com/spmadden/irox/commit/a7d6f47b35f015ef43d7a4431982ac7f0b95bb8f))
+    - Improved perf for stack-allocated RoundBuf ([`167144f`](https://github.com/spmadden/irox/commit/167144fabb5e619e925001b204fbe73d795570c3))
+    - Fix typo in feature name guard preventing use of hex::from_hex_str ([`5e2c0bd`](https://github.com/spmadden/irox/commit/5e2c0bdbeee6a09d9b150fed5475c014890b9f2f))
+    - New assert::assert_eq_hex_slice method ([`f8a4651`](https://github.com/spmadden/irox/commit/f8a4651a0e1eb2a8c8e61431eb58493169d92ca8))
+    - Clean up new lints ([`7809b2d`](https://github.com/spmadden/irox/commit/7809b2d2af9bd4b9767c701782530d7fde558421))
+    - Fixup some 1.78 lint warnings ([`7b8a2bf`](https://github.com/spmadden/irox/commit/7b8a2bfcae359473feeeb4eb7098f9eab14685ee))
+</details>
+
 ## v0.8.1 (2024-05-18)
+
+<csr-id-b8c91df14a0642426aca122ded0339b555f84ade/>
+<csr-id-c853a9178bdb1a6c471b80f817cc13cb2b8a1958/>
+<csr-id-826ce7f53cf2f8d84a251a83fd5909ae71e58a6c/>
 
 ### Chore
 
@@ -30,7 +97,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release over the course of 13 calendar days.
+ - 9 commits contributed to the release over the course of 13 calendar days.
  - 27 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -42,6 +109,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.1 ([`a77a177`](https://github.com/spmadden/irox/commit/a77a17704f383c889450d7d21232a6bda447b26e))
     - Put pagefile behind right feature (bits/std) ([`2c526b4`](https://github.com/spmadden/irox/commit/2c526b417671a161582c0906f631a00b1988c633))
     - Fix urls in primitives ([`c853a91`](https://github.com/spmadden/irox/commit/c853a9178bdb1a6c471b80f817cc13cb2b8a1958))
     - Move buf back into module, expose StrBuf ([`826ce7f`](https://github.com/spmadden/irox/commit/826ce7f53cf2f8d84a251a83fd5909ae71e58a6c))
