@@ -1,18 +1,27 @@
 
 
-## v0.1.1 (2024-05-18)
+## v0.1.2 (2024-06-24)
+
+### Documentation
+
+ - <csr-id-ef4b515af54d9cf76b87f5493fd59cd386a27041/> vastly improved documentation
 
 ### New Features
 
+ - <csr-id-cd042abec8394ea08c1bc4d14bd323e75cfd38fd/> improved support for i128/bool/char/i8
  - <csr-id-bbb9ff39051ec49313c297d6a4217532b9228390/> new SeekRead and SeekWrite traits to align Linux and Window's FileExt traits
+
+### Bug Fixes
+
+ - <csr-id-fcb40e9370dfb0246350252c2fd0d6158e4c5b59/> std leaked in :<
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 21 days passed between releases.
- - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 5 commits contributed to the release over the course of 41 calendar days.
+ - 62 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -22,8 +31,18 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Std leaked in :< ([`fcb40e9`](https://github.com/spmadden/irox/commit/fcb40e9370dfb0246350252c2fd0d6158e4c5b59))
+    - Vastly improved documentation ([`ef4b515`](https://github.com/spmadden/irox/commit/ef4b515af54d9cf76b87f5493fd59cd386a27041))
+    - Improved support for i128/bool/char/i8 ([`cd042ab`](https://github.com/spmadden/irox/commit/cd042abec8394ea08c1bc4d14bd323e75cfd38fd))
+    - Release irox-bits v0.1.1 ([`92fdded`](https://github.com/spmadden/irox/commit/92fdded1ffad1d268f65c1584e04967e0f04f524))
     - New SeekRead and SeekWrite traits to align Linux and Window's FileExt traits ([`bbb9ff3`](https://github.com/spmadden/irox/commit/bbb9ff39051ec49313c297d6a4217532b9228390))
 </details>
+
+## v0.1.1 (2024-05-18)
+
+### New Features
+
+ - <csr-id-bbb9ff39051ec49313c297d6a4217532b9228390/> new SeekRead and SeekWrite traits to align Linux and Window's FileExt traits
 
 ## v0.1.0 (2024-04-21)
 
