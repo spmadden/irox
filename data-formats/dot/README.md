@@ -1,11 +1,11 @@
-IROX-XYZ
+IROX-DOT
 ===========
 
-*Module Description*
+*DOT Graph Description Language writer, compatible with GraphViz*
 
 ### No-STD support:
 
-* Description
+* Requires `std`
 
 ### Features:
 

@@ -23,6 +23,11 @@ pub extern crate irox_csv;
 #[cfg(feature = "csv")]
 pub use irox_csv as csv;
 
+#[cfg(feature = "dot")]
+pub extern crate irox_dot;
+#[cfg(feature = "dot")]
+pub use irox_dot as dot;
+
 #[cfg(feature = "derive-helpers")]
 pub extern crate irox_derive_helpers;
 #[cfg(feature = "derive-helpers")]
