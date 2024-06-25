@@ -7,8 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+use std::collections::HashSet;
 use irox_bits::{BitsError, FormatBits, MutBits};
 use std::fmt::Write;
+use std::hash::{Hash, Hasher};
 use std::string::String;
 use std::vec::Vec;
 
@@ -22,6 +24,7 @@ pub enum GraphType {
     Graph,
     Digraph,
 }
+
 impl GraphType {
     pub fn get_arrow(&self) -> &'static str {
         match self {
@@ -46,25 +49,47 @@ pub enum Element {
     Attribute(Attribute),
     Subgraph(Subgraph),
 }
+
 impl DotLine for Element {
     fn get_line(&self) -> String {
         match self {
             Element::Node(n) => n.get_line(),
             Element::Edge(e) => e.get_line(),
+            Element::Attribute(a) => a.get_line(),
             _ => {
                 todo!()
             }
         }
     }
 }
-#[derive(Default, Debug, Clone, Eq, PartialEq, Hash)]
+
+#[derive(Default, Debug, Clone, Eq, PartialEq)]
 pub struct Graph {
     pub is_strict: bool,
     pub graph_type: GraphType,
     pub id: Option<String>,
     pub elements: Vec<Element>,
+    pub known_nodes: HashSet<String>,
 }
+impl Hash for Graph {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.is_strict.hash(state);
+        self.graph_type.hash(state);
+        self.id.hash(state);
+        self.elements.hash(state);
+    }
+}
+
 impl Graph {
+    pub fn add_node(&mut self, node: Node) {
+        self.elements.push(Element::Node(node));
+    }
+    pub fn add_edge(&mut self, edge: Edge) {
+        self.elements.push(Element::Edge(edge));
+    }
+    pub fn add_graph_attr(&mut self, key: &str, val: &str) {
+        self.elements.push(Element::Attribute(Attribute::new(key, val)))
+    }
     pub fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), BitsError> {
         let mut out = FormatBits(out);
         if self.is_strict {
@@ -94,8 +119,23 @@ pub struct Attribute {
     pub name: String,
     pub value: String,
 }
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+impl Attribute {
+    pub fn new(key: &str, val: &str) -> Self {
+        Attribute {
+            name: key.to_string(),
+            value: val.to_string()
+        }
+    }
+}
+impl DotLine for Attribute {
+    fn get_line(&self) -> String {
+        format!("{}={}", self.name, self.value)
+    }
+}
+
+#[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct AttrList(pub Vec<Attribute>);
+
 impl DotLine for AttrList {
     fn get_line(&self) -> String {
         if self.0.is_empty() {
@@ -105,7 +145,7 @@ impl DotLine for AttrList {
                 "[{}]",
                 self.0
                     .iter()
-                    .map(|v| format!("{} = {}", v.name, v.value))
+                    .map(DotLine::get_line)
                     .collect::<Vec<_>>()
                     .join("; ")
             )
@@ -118,11 +158,22 @@ pub struct Node {
     pub id: String,
     pub attributes: AttrList,
 }
-impl DotLine for Node {
-    fn get_line(&self) -> String {
-        format!("{} {}", self.id, self.attributes.get_line())
+
+impl Node {
+    pub fn new(id: &str) -> Node {
+        Node {
+            id: id.to_string(),
+            attributes: AttrList::default(),
+        }
     }
 }
+
+impl DotLine for Node {
+    fn get_line(&self) -> String {
+        format!("\"{}\" {}", self.id, self.attributes.get_line())
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Edge {
     pub edge_type: GraphType,
@@ -130,10 +181,21 @@ pub struct Edge {
     pub second_node: String,
     pub attributes: AttrList,
 }
+impl Edge {
+    pub fn new(graph: &Graph, first: &str, second: &str) -> Self {
+        Edge {
+            edge_type: graph.graph_type,
+            first_node: first.to_string(),
+            second_node: second.to_string(),
+            attributes: AttrList::default(),
+        }
+    }
+}
+
 impl DotLine for Edge {
     fn get_line(&self) -> String {
         format!(
-            "{} {} {} {}",
+            "\"{}\" {} \"{}\" {}",
             self.first_node,
             self.edge_type.get_arrow(),
             self.second_node,
