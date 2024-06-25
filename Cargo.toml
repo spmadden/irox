@@ -75,6 +75,7 @@ git2 = { version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"]
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
 core_affinity = "0.8.1"
+toml = "0.8.14"
 
 irox-cargo-metadata = {version = "^0", path = "data-formats/cargo-metadata"}
 irox-csv = { version = "^0", path = "data-formats/csv" }
@@ -225,6 +226,3 @@ missing_errors_doc = "allow"
 module-name-repetitions = "allow"
 semicolon-if-nothing-returned = "allow"
 
-[metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]

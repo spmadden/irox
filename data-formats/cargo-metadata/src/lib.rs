@@ -7,11 +7,16 @@
 
 #![forbid(unsafe_code)]
 
+use error::Error;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
-use std::fmt::{Display, Formatter};
 use std::path::Path;
+
+pub use crate::lockfile::*;
+
+mod error;
+mod lockfile;
 
 /// Cargo metadata
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -31,13 +36,26 @@ pub struct Metadata {
     #[serde(default, deserialize_with = "deserialize_if_null")]
     pub metadata: BTreeMap<String, Value>,
 }
+impl Metadata {
+    pub fn read_from_path<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
+        let child = std::process::Command::new("cargo")
+            .current_dir(path)
+            .args(["metadata", "--all-features", "--format-version=1"])
+            .output()?;
+        Ok(serde_json::from_slice::<Self>(&child.stdout)?)
+    }
+    pub fn read_current_dir() -> Result<Self, Error> {
+        let cwd = std::env::current_dir()?;
+        Self::read_from_path(cwd)
+    }
+}
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Package {
     /// The name of the package.
-    pub name: Option<String>,
+    pub name: String,
     /// The version of the package.
-    pub version: Option<String>,
+    pub version: String,
     pub id: Option<String>,
     pub license: Option<String>,
     pub license_file: Option<String>,
@@ -127,38 +145,6 @@ pub struct DepKind {
     pub kind: Option<String>,
     pub target: Option<String>,
 }
-#[derive(Debug)]
-pub enum Error {
-    IOError(std::io::Error),
-    JSONError(serde_json::Error),
-}
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{self:#?}")
-    }
-}
-impl std::error::Error for Error {}
-impl From<std::io::Error> for Error {
-    fn from(value: std::io::Error) -> Self {
-        Error::IOError(value)
-    }
-}
-impl From<serde_json::Error> for Error {
-    fn from(value: serde_json::Error) -> Self {
-        Error::JSONError(value)
-    }
-}
-pub fn read_from_path<T: AsRef<Path>>(path: T) -> Result<Metadata, Error> {
-    let child = std::process::Command::new("cargo")
-        .current_dir(path)
-        .args(["metadata", "--all-features", "--format-version=1"])
-        .output()?;
-    Ok(serde_json::from_slice::<Metadata>(&child.stdout)?)
-}
-pub fn read_current_dir() -> Result<Metadata, Error> {
-    let cwd = std::env::current_dir()?;
-    read_from_path(cwd)
-}
 
 pub fn deserialize_if_null<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 where
@@ -170,11 +156,11 @@ where
 }
 #[cfg(test)]
 mod test {
-    use crate::{read_current_dir, Error};
+    use crate::error::Error;
 
     #[test]
     pub fn test() -> Result<(), Error> {
-        let out = read_current_dir()?;
+        let out = super::Metadata::read_current_dir()?;
         println!("{out:#?}");
         Ok(())
     }

@@ -7,8 +7,8 @@
 
 #![forbid(unsafe_code)]
 
-use std::collections::HashSet;
 use irox_bits::{BitsError, FormatBits, MutBits};
+use std::collections::HashSet;
 use std::fmt::Write;
 use std::hash::{Hash, Hasher};
 use std::string::String;
@@ -88,7 +88,8 @@ impl Graph {
         self.elements.push(Element::Edge(edge));
     }
     pub fn add_graph_attr(&mut self, key: &str, val: &str) {
-        self.elements.push(Element::Attribute(Attribute::new(key, val)))
+        self.elements
+            .push(Element::Attribute(Attribute::new(key, val)))
     }
     pub fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), BitsError> {
         let mut out = FormatBits(out);
@@ -123,7 +124,7 @@ impl Attribute {
     pub fn new(key: &str, val: &str) -> Self {
         Attribute {
             name: key.to_string(),
-            value: val.to_string()
+            value: val.to_string(),
         }
     }
 }
