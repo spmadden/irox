@@ -26,10 +26,11 @@ jobs:
 
       - name: Run DevSkim scanner
         uses: microsoft/DevSkim-Action@v1
+        with:
+          # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
+          exclude-rules: DS126858,DS109733,DS173237
 
       - name: Upload DevSkim scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: devskim-results.sarif
-          # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
-          exclude-rules: DS126858,DS109733,DS173237
