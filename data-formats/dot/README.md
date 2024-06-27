@@ -11,11 +11,37 @@ IROX-DOT
 
 * None
 
-### Modules:
+### Example:
 
-| Module | `[no_std]`? |  |
-|--------|-------------|--| 
+```rust
 
-[no_std]: https://img.shields.io/badge/no__std-yes-green
+use irox_dot::*;
 
-[std]: https://img.shields.io/badge/feature-std-lightgrey
+fn main() -> Result<(), irox_bits::Error> {
+    let mut graph = Graph::named("TestGraph");
+    graph.graph_type = GraphType::Digraph;
+
+    // add a top-level graph attribute
+    graph.add_graph_attr("landscape", "true");
+
+    // add a basic node with no attributes
+    graph.add_node(Node::new("Node 1"));
+
+    // add an edge
+    graph.add_edge(Edge::new(&graph, "Node 1", "Node 2"));
+
+    let mut out = String::with_capacity(256);
+    graph.write_to(&mut out)?;
+    println!("{out}");
+
+    Ok(())
+}
+```
+produces:
+```dot
+digraph TestGraph {
+    landscape=true
+    "Node 1" 
+    "Node 1" -> "Node 2"
+}
+```

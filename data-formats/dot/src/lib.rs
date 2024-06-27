@@ -4,6 +4,38 @@
 //!
 //! DOT Graph Description Language writer, compatible with GraphViz
 //!
+//! ### Example:
+//! ```
+//! # use irox_dot::*;
+//! # use std::fs::File;
+//! #
+//! # fn main() -> Result<(), irox_bits::Error>{
+//!     let mut graph = Graph::named("TestGraph");
+//!     graph.graph_type = GraphType::Digraph;
+//!
+//!     // add a top-level graph attribute
+//!     graph.add_graph_attr("landscape", "true");
+//!
+//!     // add a basic node with no attributes
+//!     graph.add_node(Node::new("Node 1"));
+//!
+//!     // add an edge
+//!     graph.add_edge(Edge::new(&graph, "Node 1", "Node 2"));
+//!
+//!     let mut out = String::with_capacity(256);
+//!     graph.write_to(&mut out)?;
+//!     println!("{out}");
+//!     assert_eq!(out, "\
+//!digraph TestGraph {\n\
+//!\tlandscape=true\n\
+//!\t\"Node 1\" \n\
+//!\t\"Node 1\" -> \"Node 2\" \n\
+//!}\n"
+//! );
+//! # Ok(())
+//! # }
+//! ```
+//!
 
 #![forbid(unsafe_code)]
 
@@ -81,6 +113,12 @@ impl Hash for Graph {
 }
 
 impl Graph {
+    pub fn named(name: &str) -> Self {
+        Self {
+            id: Some(name.to_string()),
+            ..Default::default()
+        }
+    }
     pub fn add_node(&mut self, node: Node) {
         self.elements.push(Element::Node(node));
     }
