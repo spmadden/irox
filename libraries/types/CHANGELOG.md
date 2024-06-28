@@ -1,6 +1,35 @@
 
 
 
+## v0.4.2 (2024-06-28)
+
+### New Features
+
+ - <csr-id-fe504a4675476e31bc550165b0d65c7872d82812/> New Type Schemas struct
+ - <csr-id-cb5e5b1be16504b4e54a40b13701c36f439f1dd2/> impl Hash for PrimitiveValue
+ - <csr-id-f0a4067befb8ad716a441244a22e4a0448ba69e0/> improved ability to encode/decode variable types
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 26 calendar days.
+ - 68 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New Type Schemas struct ([`fe504a4`](https://github.com/spmadden/irox/commit/fe504a4675476e31bc550165b0d65c7872d82812))
+    - Impl Hash for PrimitiveValue ([`cb5e5b1`](https://github.com/spmadden/irox/commit/cb5e5b1be16504b4e54a40b13701c36f439f1dd2))
+    - Improved ability to encode/decode variable types ([`f0a4067`](https://github.com/spmadden/irox/commit/f0a4067befb8ad716a441244a22e4a0448ba69e0))
+</details>
+
 ## v0.4.1 (2024-04-21)
 
 ### New Features
@@ -11,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 17 calendar days.
+ - 2 commits contributed to the release over the course of 17 calendar days.
  - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.4.1 ([`071d012`](https://github.com/spmadden/irox/commit/071d0125b198ff9cfb28a0bdade122dda6fbe0f6))
     - New variable value type ([`198a9e7`](https://github.com/spmadden/irox/commit/198a9e727016b05d6f6d3537035d8af80ac2073e))
 </details>
 
