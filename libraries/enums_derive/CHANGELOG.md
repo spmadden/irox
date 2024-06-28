@@ -1,6 +1,32 @@
 
 
 
+## v0.2.3 (2024-06-28)
+
+### New Features
+
+ - <csr-id-036bba99979a49bf015c8355533b8a69ca09511f/> drop proc_macro2 as an internal dep
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 19 calendar days.
+ - 116 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-derive-helpers v0.1.0 ([`c4a78dc`](https://github.com/spmadden/irox/commit/c4a78dcfe38422bfd87d85d756e1697cd8c8f6c6))
+    - Drop proc_macro2 as an internal dep ([`036bba9`](https://github.com/spmadden/irox/commit/036bba99979a49bf015c8355533b8a69ca09511f))
+</details>
+
 ## v0.2.2 (2024-03-03)
 
 ### New Features
@@ -11,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 95 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.2, irox-enums v0.2.2 ([`d9f7875`](https://github.com/spmadden/irox/commit/d9f7875c92dba92845f5833fec2173a8b43a26f0))
     - Now no_std! ([`be3d307`](https://github.com/spmadden/irox/commit/be3d30732b59faf7fff949fdeebb908fc12640a3))
 </details>
 

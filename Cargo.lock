@@ -2115,7 +2115,7 @@ dependencies = [
 
 [[package]]
 name = "irox-enums_derive"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "irox-derive-helpers",
  "syn 2.0.67",
