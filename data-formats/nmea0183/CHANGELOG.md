@@ -1,6 +1,40 @@
 
 
 
+## v0.5.2 (2024-06-28)
+
+### Chore
+
+ - <csr-id-1647c4611435c3a4c0547b5c28301b776a7196d7/> Clean up new lints
+
+### New Features
+
+ - <csr-id-323e0ff6c178d4c085f3cd94e7d9b17d9afd7860/> add GNS message
+ - <csr-id-d45bea3b7a7605c6a1a2acce137a6f15c896b663/> add system id to GSV
+ - <csr-id-343697d32084dc9fa722e0fbd3d5bc4d3393e612/> add system id to GSA
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 26 calendar days.
+ - 68 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add GNS message ([`323e0ff`](https://github.com/spmadden/irox/commit/323e0ff6c178d4c085f3cd94e7d9b17d9afd7860))
+    - Add system id to GSV ([`d45bea3`](https://github.com/spmadden/irox/commit/d45bea3b7a7605c6a1a2acce137a6f15c896b663))
+    - Add system id to GSA ([`343697d`](https://github.com/spmadden/irox/commit/343697d32084dc9fa722e0fbd3d5bc4d3393e612))
+    - Clean up new lints ([`1647c46`](https://github.com/spmadden/irox/commit/1647c4611435c3a4c0547b5c28301b776a7196d7))
+</details>
+
 ## v0.5.1 (2024-04-21)
 
 ### Bug Fixes
@@ -11,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 1 calendar day.
+ - 2 commits contributed to the release over the course of 1 calendar day.
  - 48 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.5.1 ([`4d297d7`](https://github.com/spmadden/irox/commit/4d297d7df426804c9d6ef810b509490a30475bd7))
     - Convert to using bits error ([`9af46db`](https://github.com/spmadden/irox/commit/9af46dbd390cd5b45d45b65ec46561c7c9a2238a))
 </details>
 
