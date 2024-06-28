@@ -1,7 +1,36 @@
 
 
 
+## v0.3.2 (2024-06-28)
+
+### New Features
+
+ - <csr-id-036bba99979a49bf015c8355533b8a69ca09511f/> drop proc_macro2 as an internal dep
+ - <csr-id-2099764e9e5811d11ce4280558ec280fb9a9dbcc/> new proc_macro derive-helpers module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 37 calendar days.
+ - 68 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Drop proc_macro2 as an internal dep ([`036bba9`](https://github.com/spmadden/irox/commit/036bba99979a49bf015c8355533b8a69ca09511f))
+    - New proc_macro derive-helpers module ([`2099764`](https://github.com/spmadden/irox/commit/2099764e9e5811d11ce4280558ec280fb9a9dbcc))
+</details>
+
 ## v0.3.1 (2024-04-21)
+
+<csr-id-206ec2a2390f69081af79ca6bf069db1c13a647e/>
 
 ### Bug Fixes
 
@@ -15,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 20 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.3.1 ([`07571ee`](https://github.com/spmadden/irox/commit/07571ee5e3c44888477ae3e832ecc3d8aef939d0))
     - Change derive to export structs rather than irox_bits directly ([`f0e7ae1`](https://github.com/spmadden/irox/commit/f0e7ae115ce7529c398c0731d8928b12d6d90cae))
     - Fix structs to use new bits module ([`206ec2a`](https://github.com/spmadden/irox/commit/206ec2a2390f69081af79ca6bf069db1c13a647e))
 </details>
