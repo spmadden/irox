@@ -1,5 +1,30 @@
 
 
+## v0.2.5 (2024-06-28)
+
+### Chore
+
+ - <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/> fixup some 1.78 lint warnings
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 37 calendar days.
+ - 41 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixup some 1.78 lint warnings ([`7b8a2bf`](https://github.com/spmadden/irox/commit/7b8a2bfcae359473feeeb4eb7098f9eab14685ee))
+</details>
+
 ## v0.2.4 (2024-05-18)
 
 ### Bug Fixes
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 75 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.2.4 ([`42fa14b`](https://github.com/spmadden/irox/commit/42fa14b1a9bf98289ba745f9f03a7c209be0b496))
     - Fix issue in current thread executor where a task would mark that it should be rescheduled, but the executor would override it. ([`0b4029d`](https://github.com/spmadden/irox/commit/0b4029db8c0c9882e2c248bdd24b7a708a85d8d3))
 </details>
 

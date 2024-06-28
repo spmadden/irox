@@ -2315,7 +2315,7 @@ dependencies = [
 
 [[package]]
 name = "irox-threading"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "irox-log",
  "log",
