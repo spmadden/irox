@@ -1,6 +1,33 @@
 
 
 
+## v0.3.10 (2024-06-28)
+
+### Chore
+
+ - <csr-id-cc3197e276912dd7aadf83c092086369381aad91/> clean lints in egui_extras
+ - <csr-id-e2a48c22f0dab037c9db1710a3b3e4764e199404/> Clean up new lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 26 calendar days.
+ - 40 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Clean lints in egui_extras ([`cc3197e`](https://github.com/spmadden/irox/commit/cc3197e276912dd7aadf83c092086369381aad91))
+    - Clean up new lints ([`e2a48c2`](https://github.com/spmadden/irox/commit/e2a48c22f0dab037c9db1710a3b3e4764e199404))
+</details>
+
 ## v0.3.9 (2024-05-18)
 
 ### New Features
@@ -13,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 13 calendar days.
+ - 4 commits contributed to the release over the course of 13 calendar days.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.9 ([`d589ea2`](https://github.com/spmadden/irox/commit/d589ea2748f76c3f3fc33d69ae8ed63661ca9bf7))
     - Add dB space scaling to plot ([`e90d10a`](https://github.com/spmadden/irox/commit/e90d10a12fb82c0a9070df65f94a1a1c977ca2ff))
     - Much happier with the final state of the new plot widget. ([`923576e`](https://github.com/spmadden/irox/commit/923576ef0c6d50f1ce719d1be73b3b44c5f22475))
     - Add basic plot ([`d4b1c16`](https://github.com/spmadden/irox/commit/d4b1c16431af7d952a4c799fb0f6b15bf39c4539))
