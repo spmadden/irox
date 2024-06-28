@@ -1,6 +1,33 @@
 
 
 
+## v0.6.3 (2024-06-28)
+
+### New Features
+
+ - <csr-id-723d3bd69f3009da28eb9b4b6617efa2d4664950/> prep dot for release
+ - <csr-id-c9669eb56d70101b1e85d76d7895ac37f795edfa/> prep for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 3 calendar days.
+ - 39 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Prep dot for release ([`723d3bd`](https://github.com/spmadden/irox/commit/723d3bd69f3009da28eb9b4b6617efa2d4664950))
+    - Prep for release ([`c9669eb`](https://github.com/spmadden/irox/commit/c9669eb56d70101b1e85d76d7895ac37f795edfa))
+</details>
+
 ## v0.6.2 (2024-05-19)
 
 ### New Features
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.2 ([`73c6121`](https://github.com/spmadden/irox/commit/73c6121c5727cdd7ae4a8f466f57f583d60245dc))
     - Export the individual subcrates as well as the use/features ([`7192cb4`](https://github.com/spmadden/irox/commit/7192cb489d330b35371c50192876ef4b02d39c95))
 </details>
 
