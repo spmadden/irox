@@ -44,6 +44,21 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;
 
+#[macro_use]
+mod macros {
+    /// Enables feature-specific code.
+    /// Use this macro instead of `cfg(feature = "alloc")` to generate docs properly.
+    macro_rules! cfg_feature_alloc {
+        ($($item:item)*) => {
+            $(
+                #[cfg(any(all(doc, docsrs), feature = "alloc"))]
+                #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+                $item
+            )*
+        }
+    }
+}
+
 pub use bits::*;
 pub use error::*;
 pub use mutbits::*;
@@ -51,8 +66,9 @@ pub use seek::*;
 #[cfg(feature = "std")]
 pub use stdwrappers::*;
 
-#[cfg(feature = "alloc")]
-mod allocimpls;
+cfg_feature_alloc! {
+    mod allocimpls;
+}
 mod bits;
 mod error;
 mod mutbits;

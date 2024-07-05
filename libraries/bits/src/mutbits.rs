@@ -2,8 +2,9 @@
 // Copyright 2024 IROX Contributors
 //
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
+cfg_feature_alloc! {
+    extern crate alloc;
+}
 
 use crate::{Error, ErrorKind};
 use core::ops::{Deref, DerefMut};
@@ -191,11 +192,12 @@ pub trait MutBits {
         Ok(())
     }
 
-    #[cfg(feature = "alloc")]
-    /// Allows the use of [`core::format_args`] macro
-    fn write_fmt_impl(&mut self, args: core::fmt::Arguments<'_>) -> Result<(), Error> {
-        extern crate alloc;
-        self.write_all_bytes(alloc::fmt::format(args).as_bytes())
+    cfg_feature_alloc! {
+        /// Allows the use of [`core::format_args`] macro
+        fn write_fmt_impl(&mut self, args: core::fmt::Arguments<'_>) -> Result<(), Error> {
+            extern crate alloc;
+            self.write_all_bytes(alloc::fmt::format(args).as_bytes())
+        }
     }
 
     ///

@@ -9,8 +9,12 @@
 use crate::error::{Error, ErrorKind};
 use crate::mutbits::MutBits;
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
+cfg_feature_alloc! {
+    extern crate alloc;
+    use alloc::string::{String, ToString};
+    use alloc::vec::Vec;
+    use alloc::vec;
+}
 
 macro_rules! maybe_next_u8 {
     ($self:ident,$prev:expr) => {{
@@ -308,59 +312,130 @@ pub trait Bits {
         Ok(len)
     }
 
-    /// Reads a sized blob, a series of bytes preceded by a [`u8`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_u8_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_u8()?;
-        self.read_exact_vec(size as usize)
-    }
+    cfg_feature_alloc! {
+        /// Reads a sized blob, a series of bytes preceded by a [`u8`] declaring the size.
+        fn read_u8_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_u8()?;
+            self.read_exact_vec(size as usize)
+        }
 
-    /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_be_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_be_u16()?;
-        self.read_exact_vec(size as usize)
-    }
+        /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
+        fn read_be_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_be_u16()?;
+            self.read_exact_vec(size as usize)
+        }
 
-    /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_le_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_le_u16()?;
-        self.read_exact_vec(size as usize)
-    }
+        /// Reads a sized blob, a series of bytes preceded by a [`u16`] declaring the size.
+        fn read_le_u16_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_le_u16()?;
+            self.read_exact_vec(size as usize)
+        }
+        /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
+        fn read_be_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_be_u32()?;
+            self.read_exact_vec(size as usize)
+        }
+        /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
+        fn read_le_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_le_u32()?;
+            self.read_exact_vec(size as usize)
+        }
 
-    /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_be_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_be_u32()?;
-        self.read_exact_vec(size as usize)
-    }
-    /// Reads a sized blob, a series of bytes preceded by a [`u32`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_le_u32_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_le_u32()?;
-        self.read_exact_vec(size as usize)
-    }
+        /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
+        fn read_be_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_be_u64()?;
+            self.read_exact_vec(size as usize)
+        }
+        /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
+        fn read_le_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
+            let size = self.read_le_u64()?;
+            self.read_exact_vec(size as usize)
+        }
 
-    /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_be_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_be_u64()?;
-        self.read_exact_vec(size as usize)
-    }
-    /// Reads a sized blob, a series of bytes preceded by a [`u64`] declaring the size.
-    #[cfg(feature = "alloc")]
-    fn read_le_u64_blob(&mut self) -> Result<Vec<u8>, Error> {
-        let size = self.read_le_u64()?;
-        self.read_exact_vec(size as usize)
-    }
+        /// Reads the specified amount of bytes into a [`Vec<u8>`] and returns it
+        fn read_exact_vec(&mut self, size: usize) -> Result<alloc::vec::Vec<u8>, Error> {
+            let mut buf: alloc::vec::Vec<u8> = alloc::vec::Vec::with_capacity(size);
+            self.read_exact_into(size, &mut buf)?;
+            Ok(buf)
+        }
 
-    /// Reads the specified amount of bytes into a [`Vec<u8>`] and returns it
-    #[cfg(feature = "alloc")]
-    fn read_exact_vec(&mut self, size: usize) -> Result<alloc::vec::Vec<u8>, Error> {
-        let mut buf: alloc::vec::Vec<u8> = alloc::vec::Vec::with_capacity(size);
-        self.read_exact_into(size, &mut buf)?;
-        Ok(buf)
+        /// Reads the entire stream into a UTF-8 String, dropping all other bytes.
+        fn read_all_str_lossy(&mut self) -> Result<alloc::string::String, Error> {
+            Ok(String::from_utf8_lossy(&self.read_all_vec()?).to_string())
+        }
+
+        /// Reads the specified amount of bytes into a UTF-8 String, dropping all other bytes.
+        fn read_str_sized_lossy(&mut self, len: usize) -> Result<String, Error> {
+            Ok(String::from_utf8_lossy(&self.read_exact_vec(len)?).to_string())
+        }
+
+        /// Reads to the end of the stream and returns the data as a [`Vec<u8>`]
+        fn read_all_vec(&mut self) -> Result<alloc::vec::Vec<u8>, Error> {
+            let mut out: alloc::vec::Vec<u8> = vec![];
+            self.read_all_into(&mut out)?;
+            Ok(out)
+        }
+
+        ///
+        /// Reads from the input stream until:
+        /// 1. The byte stream represented by 'search' has been found or
+        /// 2. The input stream returns 0 bytes read (or errors out)
+        /// It returns all bytes read in the interim
+        fn read_until(&mut self, search: &[u8]) -> Result<alloc::vec::Vec<u8>, Error> {
+            let mut ringbuf: alloc::collections::VecDeque<u8> =
+                alloc::collections::VecDeque::with_capacity(search.len());
+
+            let mut out = Vec::new();
+            loop {
+                if ringbuf.iter().eq(search) {
+                    return Ok(out);
+                }
+
+                let Some(val) = self.next_u8()? else {
+                    return Ok(out);
+                };
+
+                if ringbuf.len() == search.len() {
+                    if let Some(val) = ringbuf.pop_front() {
+                        out.push(val);
+                    }
+                }
+                ringbuf.push_back(val);
+            }
+        }
+
+        ///
+        /// Consumes data from the input stream until:
+        /// 1. The byte stream represented by 'search' has been found or
+        /// 2. The input reader returns 0 bytes read (or errors out)
+        ///
+        /// Note: The input stream position is left JUST AFTER the found search string.
+        fn consume_until(&mut self, search: &[u8]) -> Result<(), Error> {
+            let mut ringbuf: alloc::collections::VecDeque<u8> =
+                alloc::collections::VecDeque::with_capacity(search.len());
+            self.read_exact_into(search.len(), &mut ringbuf)?;
+
+            loop {
+                if ringbuf.iter().eq(search) {
+                    return Ok(());
+                }
+
+                let Some(val) = self.next_u8()? else {
+                    return Ok(());
+                };
+
+                ringbuf.pop_front();
+                ringbuf.push_back(val);
+            }
+        }
+
+        ///
+        /// Reads a specific sized string from the stream, a string prefixed by a
+        /// 4-byte big-endian length.
+        fn read_str_u32_blob(&mut self) -> Result<String, Error> {
+            let len = self.read_be_u32()?;
+            self.read_str_sized_lossy(len as usize)
+        }
     }
 
     /// Reads the specified amount of bytes into a stack-allocated array.
@@ -376,26 +451,6 @@ pub trait Bits {
             into.write_u8(self.read_u8()?)?;
         }
         Ok(())
-    }
-
-    /// Reads the entire stream into a UTF-8 String, dropping all other bytes.
-    #[cfg(feature = "alloc")]
-    fn read_all_str_lossy(&mut self) -> Result<alloc::string::String, Error> {
-        Ok(String::from_utf8_lossy(&self.read_all_vec()?).to_string())
-    }
-
-    /// Reads the specified amount of bytes into a UTF-8 String, dropping all other bytes.
-    #[cfg(feature = "alloc")]
-    fn read_str_sized_lossy(&mut self, len: usize) -> Result<String, Error> {
-        Ok(String::from_utf8_lossy(&self.read_exact_vec(len)?).to_string())
-    }
-
-    /// Reads to the end of the stream and returns the data as a [`Vec<u8>`]
-    #[cfg(feature = "alloc")]
-    fn read_all_vec(&mut self) -> Result<alloc::vec::Vec<u8>, Error> {
-        let mut out: alloc::vec::Vec<u8> = vec![];
-        self.read_all_into(&mut out)?;
-        Ok(out)
     }
 
     /// Reads to the end of the stream, and writes it into the specified target.
@@ -417,70 +472,6 @@ pub trait Bits {
             read += 1;
         }
         Ok(read)
-    }
-
-    ///
-    /// Reads from the input stream until:
-    /// 1. The byte stream represented by 'search' has been found or
-    /// 2. The input stream returns 0 bytes read (or errors out)
-    /// It returns all bytes read in the interim
-    #[cfg(feature = "alloc")]
-    fn read_until(&mut self, search: &[u8]) -> Result<alloc::vec::Vec<u8>, Error> {
-        let mut ringbuf: alloc::collections::VecDeque<u8> =
-            alloc::collections::VecDeque::with_capacity(search.len());
-
-        let mut out = Vec::new();
-        loop {
-            if ringbuf.iter().eq(search) {
-                return Ok(out);
-            }
-
-            let Some(val) = self.next_u8()? else {
-                return Ok(out);
-            };
-
-            if ringbuf.len() == search.len() {
-                if let Some(val) = ringbuf.pop_front() {
-                    out.push(val);
-                }
-            }
-            ringbuf.push_back(val);
-        }
-    }
-
-    ///
-    /// Consumes data from the input stream until:
-    /// 1. The byte stream represented by 'search' has been found or
-    /// 2. The input reader returns 0 bytes read (or errors out)
-    ///
-    /// Note: The input stream position is left JUST AFTER the found search string.
-    #[cfg(feature = "alloc")]
-    fn consume_until(&mut self, search: &[u8]) -> Result<(), Error> {
-        let mut ringbuf: alloc::collections::VecDeque<u8> =
-            alloc::collections::VecDeque::with_capacity(search.len());
-        self.read_exact_into(search.len(), &mut ringbuf)?;
-
-        loop {
-            if ringbuf.iter().eq(search) {
-                return Ok(());
-            }
-
-            let Some(val) = self.next_u8()? else {
-                return Ok(());
-            };
-
-            ringbuf.pop_front();
-            ringbuf.push_back(val);
-        }
-    }
-
-    ///
-    /// Reads a specific sized string from the stream, a string prefixed by a
-    /// 4-byte big-endian length.
-    #[cfg(feature = "alloc")]
-    fn read_str_u32_blob(&mut self) -> Result<String, Error> {
-        let len = self.read_be_u32()?;
-        self.read_str_sized_lossy(len as usize)
     }
 }
 
