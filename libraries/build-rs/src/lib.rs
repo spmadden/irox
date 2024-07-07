@@ -205,6 +205,8 @@ pub fn write_environment<T: Write>(
     env: &BuildEnvironment,
     settings: &Settings,
 ) -> Result<(), Error> {
+    let mut groups = BTreeMap::new();
+
     for varbl in env.variables.values() {
         let name = &varbl.name;
         match &varbl.value {
@@ -224,6 +226,7 @@ pub fn write_environment<T: Write>(
         filter_and_write(
             &mut dest_file,
             env,
+            &mut groups,
             "CARGO_ITEMS",
             &cargo::CARGO_ENV_VARIABLES,
         )?;
@@ -232,6 +235,7 @@ pub fn write_environment<T: Write>(
         filter_and_write(
             &mut dest_file,
             env,
+            &mut groups,
             "RUSTC_ITEMS",
             &cargo::RUSTC_ENV_VARIABLES,
         )?;
@@ -240,7 +244,13 @@ pub fn write_environment<T: Write>(
     #[cfg(feature = "git")]
     {
         if settings.include_git {
-            filter_and_write(&mut dest_file, env, "GIT_ITEMS", &git::GIT_VARIABLES)?;
+            filter_and_write(
+                &mut dest_file,
+                env,
+                &mut groups,
+                "GIT_ITEMS",
+                &git::GIT_VARIABLES,
+            )?;
         }
     }
 
@@ -253,6 +263,7 @@ pub fn write_environment<T: Write>(
             .collect::<Vec<BuildVariable>>()
             .as_slice(),
     )?;
+    write_grouped_block(&mut dest_file, groups)?;
 
     Ok(())
 }
@@ -260,6 +271,7 @@ pub fn write_environment<T: Write>(
 fn filter_and_write<T: Write>(
     dest_file: &mut T,
     env: &BuildEnvironment,
+    groups: &mut BTreeMap<String, Vec<BuildVariable>>,
     name: &str,
     filter: &[&str],
 ) -> Result<(), Error> {
@@ -269,6 +281,7 @@ fn filter_and_write<T: Write>(
         .filter(|v| filter.contains(&v.name.as_str()))
         .cloned()
         .collect();
+    groups.insert(name.to_string(), varbls.clone());
     write_aggregation_block(dest_file, name, varbls.as_slice())
 }
 
@@ -297,6 +310,43 @@ fn write_aggregation_block<T: Write>(
             VariableType::Bool(b) => writeln!(dest_file, "\t\t(\"{name}\", \"{b}\"),")?,
             VariableType::Integer(i) => writeln!(dest_file, "\t\t(\"{name}\", \"{i}\"),")?,
         }
+    }
+    writeln!(dest_file, "\t]))")?;
+    writeln!(dest_file, "}}")?;
+    Ok(())
+}
+
+fn write_grouped_block<T: Write>(
+    dest_file: &mut T,
+    items: BTreeMap<String, Vec<BuildVariable>>,
+) -> Result<(), Error> {
+    writeln!(
+        dest_file,
+        "static GROUPS: std::sync::OnceLock<std::collections::BTreeMap<&'static str, std::collections::BTreeMap<&'static str, &'static str>>> = std::sync::OnceLock::new();"
+    )?;
+    writeln!(dest_file, "#[allow(non_snake_case)]")?;
+    writeln!(
+        dest_file,
+        "pub fn get_GROUPS() -> &'static std::collections::BTreeMap<&'static str, std::collections::BTreeMap<&'static str, &'static str>> {{"
+    )?;
+    writeln!(
+        dest_file,
+        "\tGROUPS.get_or_init(|| std::collections::BTreeMap::from(["
+    )?;
+    for (k, items) in items {
+        writeln!(
+            dest_file,
+            "\t\t(\"{k}\", std::collections::BTreeMap::from(["
+        )?;
+        for varbl in items {
+            let name = &varbl.name;
+            match varbl.value {
+                VariableType::String(_) => writeln!(dest_file, "\t\t\t(\"{name}\", {name}),")?,
+                VariableType::Bool(b) => writeln!(dest_file, "\t\t\t(\"{name}\", \"{b}\"),")?,
+                VariableType::Integer(i) => writeln!(dest_file, "\t\t\t(\"{name}\", \"{i}\"),")?,
+            }
+        }
+        writeln!(dest_file, "\t\t])),")?;
     }
     writeln!(dest_file, "\t]))")?;
     writeln!(dest_file, "}}")?;
