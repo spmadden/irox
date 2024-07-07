@@ -40,3 +40,5 @@ eframe = { workspace = true, features = ["default"] }
 name = "irox_egui_gallery"
 required-features = ["serde", "plots"]
 
+[build-dependencies]
+irox-build-rs.workspace = true

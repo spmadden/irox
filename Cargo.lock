@@ -2082,6 +2082,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui_plot",
+ "irox-build-rs",
  "irox-tools",
  "log",
  "ron",

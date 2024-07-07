@@ -15,6 +15,7 @@ pub mod styles;
 /// [`eframe::App`] composition tools
 pub mod composite;
 
+pub mod about;
 /// A customization of [`egui::widgets::ProgressBar`]
 pub mod progressbar;
 
@@ -23,3 +24,7 @@ pub mod logplot;
 #[cfg(feature = "serde")]
 pub mod serde;
 pub mod toolframe;
+
+pub mod build {
+    include!(concat!(env!("OUT_DIR"), "/builders.rs"));
+}
