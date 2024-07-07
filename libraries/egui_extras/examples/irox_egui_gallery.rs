@@ -9,13 +9,13 @@ use std::sync::Arc;
 use eframe::{App, CreationContext, Frame};
 use egui::{CentralPanel, Context, Vec2, ViewportBuilder, Widget, Window};
 use egui_plot::PlotPoint;
+use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::logplot::BasicPlot;
 use irox_egui_extras::progressbar::ProgressBar;
-use log::error;
-use serde::Serialize;
-
 use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
+use log::error;
+use serde::Serialize;
 
 pub fn main() {
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
@@ -37,6 +37,7 @@ pub struct TestApp {
     log_plot: BasicPlot,
     show_bars: bool,
     show_serde: bool,
+    show_about: bool,
 }
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
@@ -54,6 +55,7 @@ impl TestApp {
             log_plot: BasicPlot::new(Arc::new(pts)),
             show_bars: false,
             show_serde: false,
+            show_about: true,
         }
     }
 }
@@ -87,6 +89,14 @@ impl App for TestApp {
                         .text_center("Center text for a 50% bar".to_string())
                         .text_right("Right text".to_string())
                         .ui(ui);
+                });
+        }
+        if self.show_about {
+            Window::new("About")
+                .constrain(true)
+                .default_width(500.)
+                .show(ctx, |ui| {
+                    AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
                 });
         }
         Window::new("test log plot")
