@@ -1,5 +1,30 @@
 
 
+## v0.1.3 (2024-07-07)
+
+### Documentation
+
+ - <csr-id-9c6515d28c9e049ddeee33db099c81e21c608181/> improve docs.rs docs for bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 1 calendar day.
+ - 12 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Improve docs.rs docs for bits ([`9c6515d`](https://github.com/spmadden/irox/commit/9c6515d28c9e049ddeee33db099c81e21c608181))
+</details>
+
 ## v0.1.2 (2024-06-24)
 
 ### Documentation
@@ -19,8 +44,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 41 calendar days.
- - 62 days passed between releases.
+ - 6 commits contributed to the release over the course of 42 calendar days.
+ - 64 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -31,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.1.2 ([`fcfb061`](https://github.com/spmadden/irox/commit/fcfb061ea219d32b6575115ee722aeb4416e7c63))
     - Std leaked in :< ([`fcb40e9`](https://github.com/spmadden/irox/commit/fcb40e9370dfb0246350252c2fd0d6158e4c5b59))
     - Vastly improved documentation ([`ef4b515`](https://github.com/spmadden/irox/commit/ef4b515af54d9cf76b87f5493fd59cd386a27041))
     - Improved support for i128/bool/char/i8 ([`cd042ab`](https://github.com/spmadden/irox/commit/cd042abec8394ea08c1bc4d14bd323e75cfd38fd))
