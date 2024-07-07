@@ -1,7 +1,35 @@
 
 
 
+## v0.3.11 (2024-07-07)
+
+### New Features
+
+ - <csr-id-57dcb42a7f88f2d23bd1117d0ad59e9300b98ee9/> add drag highlight in logplot, soon zoom.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 8 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add drag highlight in logplot, soon zoom. ([`57dcb42`](https://github.com/spmadden/irox/commit/57dcb42a7f88f2d23bd1117d0ad59e9300b98ee9))
+</details>
+
 ## v0.3.10 (2024-06-28)
+
+<csr-id-cc3197e276912dd7aadf83c092086369381aad91/>
+<csr-id-e2a48c22f0dab037c9db1710a3b3e4764e199404/>
 
 ### Chore
 
@@ -12,8 +40,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 26 calendar days.
- - 40 days passed between releases.
+ - 3 commits contributed to the release over the course of 26 calendar days.
+ - 41 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -24,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.10 ([`726d000`](https://github.com/spmadden/irox/commit/726d00044987c5e42299213b0352797d6f3196d1))
     - Clean lints in egui_extras ([`cc3197e`](https://github.com/spmadden/irox/commit/cc3197e276912dd7aadf83c092086369381aad91))
     - Clean up new lints ([`e2a48c2`](https://github.com/spmadden/irox/commit/e2a48c22f0dab037c9db1710a3b3e4764e199404))
 </details>
