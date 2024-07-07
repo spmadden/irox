@@ -16,6 +16,7 @@ use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use log::error;
 use serde::Serialize;
+use irox_egui_extras::visuals::VisualsWindow;
 
 pub fn main() {
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
@@ -37,6 +38,7 @@ pub struct TestApp {
     log_plot: BasicPlot,
     show_bars: bool,
     show_serde: bool,
+    show_visuals: bool,
     show_about: bool,
 }
 impl TestApp {
@@ -56,6 +58,7 @@ impl TestApp {
             show_bars: false,
             show_serde: false,
             show_about: true,
+            show_visuals: true,
         }
     }
 }
@@ -90,6 +93,9 @@ impl App for TestApp {
                         .text_right("Right text".to_string())
                         .ui(ui);
                 });
+        }
+        if self.show_visuals {
+            self.show_visuals = VisualsWindow::show_visuals_window(ctx);
         }
         if self.show_about {
             Window::new("About")

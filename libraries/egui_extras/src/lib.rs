@@ -24,6 +24,7 @@ pub mod logplot;
 #[cfg(feature = "serde")]
 pub mod serde;
 pub mod toolframe;
+pub mod visuals;
 
 pub mod build {
     include!(concat!(env!("OUT_DIR"), "/builders.rs"));

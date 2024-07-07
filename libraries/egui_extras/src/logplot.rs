@@ -6,10 +6,11 @@
 //! Log plotting widgets.
 
 use egui::{
-    pos2, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Stroke, TextStyle, Ui,
-    Vec2,
+    pos2, Align, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Stroke,
+    TextStyle, Ui, Vec2,
 };
 use egui_plot::PlotPoint;
+use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
 #[derive(Default)]
@@ -78,7 +79,7 @@ impl BasicPlot {
         let major_stroke = Stroke::new(2.0, ui.visuals().widgets.inactive.fg_stroke.color);
         let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
         let caution_color = ui.visuals().warn_fg_color;
-        let font_id = TextStyle::Small.resolve(ui.style());
+        let small_font = TextStyle::Small.resolve(ui.style());
 
         let size = ui.available_size();
         let mut draw_log_warning =
@@ -106,6 +107,7 @@ impl BasicPlot {
             }
         });
         self.interaction.update(&mut response, &mut painter);
+
         let rect = response.rect;
         let width = rect.width();
         let height = rect.height();
@@ -118,7 +120,7 @@ impl BasicPlot {
             .iter()
             .map(|(_, str)| {
                 let galley =
-                    painter.layout_no_wrap(str.to_string(), font_id.clone(), Color32::default());
+                    painter.layout_no_wrap(str.to_string(), small_font.clone(), Color32::default());
                 galley.size().x
             })
             .reduce(f32::max)
@@ -156,7 +158,7 @@ impl BasicPlot {
                 pos,
                 anchor,
                 &detent.1,
-                font_id.clone(),
+                small_font.clone(),
                 ui.visuals().text_color(),
             );
             painter.line_segment(
@@ -184,7 +186,7 @@ impl BasicPlot {
                 pos,
                 anchor,
                 &detent.1,
-                font_id.clone(),
+                small_font.clone(),
                 ui.visuals().text_color(),
             );
             painter.line_segment(
@@ -240,12 +242,14 @@ impl BasicPlot {
             painter.line_segment([first, second], major_stroke);
         }
 
+        self.draw_cursor(ui, &mut response, &mut painter);
+
         if draw_log_warning {
             painter.text(
                 rect.center_bottom(),
                 Align2::CENTER_BOTTOM,
                 "Warning: some points <= 0 were skipped in log10/dB mode.".to_string(),
-                font_id.clone(),
+                small_font.clone(),
                 caution_color,
             );
         }
@@ -284,6 +288,47 @@ impl BasicPlot {
                 ],
                 Stroke::new(1.0, caution_color),
             );
+        }
+    }
+
+    fn draw_cursor(&mut self, ui: &mut Ui, response: &mut Response, painter: &mut Painter) {
+        // draw the hover cursors
+        if let Some(hover) = response.hover_pos() {
+            let rect = response.rect;
+            let xrng = rect.min.x..=rect.max.x;
+            let yrng = rect.min.y..=rect.max.y;
+            let color = ui.visuals().widgets.noninteractive.fg_stroke;
+            // paint the crosshair lines
+            painter.hline(xrng, hover.y, color);
+            painter.vline(hover.x, yrng, color);
+
+            // paint the text
+            let mod_x = self.x_axis.describe_screen_pos(hover.x);
+            let mod_y = self.y_axis.describe_screen_pos(hover.y);
+            let text = format!("x: {mod_x}\ny: {mod_y}");
+            let color = ui.visuals().text_cursor.color;
+            let font_id = TextStyle::Monospace.resolve(ui.style());
+            let mut align = Align2::LEFT_BOTTOM;
+
+            // figure out if it extends out past the rectangle
+            let galley = painter.layout_no_wrap(text.to_string(), font_id.clone(), color);
+            let txtrect = align.anchor_size(hover, galley.size());
+
+            if txtrect.max.x >= rect.max.x {
+                // flip the x dimension
+                let [_, v] = align.0;
+                align.0 = [Align::Max, v];
+            }
+            if txtrect.min.y <= rect.min.y {
+                // flip the y dimension
+                let [h, _] = align.0;
+                align.0 = [h, Align::Min];
+            }
+            let galley = painter.layout_no_wrap(text, font_id, color);
+            let rect = align.anchor_size(hover, galley.size());
+
+            painter.rect_filled(rect, 0.0, Color32::from_white_alpha(32));
+            painter.galley(rect.min, galley, color);
         }
     }
 }
@@ -405,6 +450,9 @@ impl Axis {
     pub fn linear_scale(&self, val: f64) -> f32 {
         ((val - self.min_val) / self.range) as f32
     }
+    pub fn linear_unscale(&self, val: f32) -> f64 {
+        val as f64 * self.range + self.min_val
+    }
 
     pub fn log_scale(&self, mut val: f64) -> f64 {
         if val <= 0.0 {
@@ -416,11 +464,24 @@ impl Axis {
         frac * self.range + self.min_val
     }
 
+    pub fn log_unscale(&self, val: f64) -> f64 {
+        let frac = (val - self.min_val) / self.range;
+        let min_val = self.min_val.log10();
+        let max_val = self.max_val.log10();
+        let frac = frac * (max_val - min_val) + min_val;
+
+        10f64.powf(frac)
+    }
+
     pub fn db_scale(&self, mut val: f64) -> f64 {
         if val <= 0.0 {
             val = f64::MIN_POSITIVE;
         }
         10. * val.log10()
+    }
+
+    pub fn db_unscale(&self, val: f64) -> f64 {
+        10f64.powf(val / 10.)
     }
 
     pub fn scale_value(&self, val: f64) -> Option<f32> {
@@ -444,6 +505,19 @@ impl Axis {
             }
         }
     }
+    pub fn unscale_value(&self, val: f32) -> f64 {
+        match self.scale_mode {
+            ScaleMode::Linear => self.screen_to_model(val),
+            ScaleMode::Log10 => {
+                let val = self.screen_to_model(val);
+                self.log_unscale(val)
+            }
+            ScaleMode::DBScale => {
+                let val = self.screen_to_model(val);
+                self.db_unscale(val)
+            }
+        }
+    }
 
     pub fn model_to_screen(&self, val: f64) -> f32 {
         let scaled = self.linear_scale(val);
@@ -454,5 +528,42 @@ impl Axis {
         } else {
             scaled + self.screen_origin
         }
+    }
+
+    pub fn screen_to_model(&self, val: f32) -> f64 {
+        let pre = if self.incr_sign < 0.0 {
+            self.screen_origin + self.screen_range - val
+        } else {
+            val - self.screen_origin
+        };
+        let pre = pre / self.screen_range;
+        self.linear_unscale(pre)
+    }
+
+    pub fn describe_screen_pos(&self, val: f32) -> String {
+        let v = self.screen_to_model(val);
+        match self.scale_mode {
+            ScaleMode::Linear => format!("{}", PrettyDec(v)),
+            ScaleMode::Log10 => {
+                let orig = self.log_unscale(v);
+                let scaled = orig.log10();
+                format!("{}=10^{}", PrettyDec(orig), PrettyDec(scaled))
+            }
+            ScaleMode::DBScale => {
+                let orig = self.db_unscale(v);
+                let scaled = 10. * orig.log10();
+                format!("{}={} dB", PrettyDec(orig), PrettyDec(scaled))
+            }
+        }
+    }
+}
+struct PrettyDec<T: LowerExp>(T);
+impl<T: LowerExp> Display for PrettyDec<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut v = format!("{:.4e}", self.0);
+        if v.ends_with("e0") {
+            v.truncate(v.len() - 2);
+        }
+        f.write_str(&v)
     }
 }
