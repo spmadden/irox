@@ -5,9 +5,56 @@
 //!
 //! Log plotting widgets.
 
-use egui::{Align2, Color32, Painter, Pos2, Sense, Stroke, TextStyle, Ui};
+use egui::{
+    pos2, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Stroke, TextStyle, Ui,
+    Vec2,
+};
 use egui_plot::PlotPoint;
 use std::sync::Arc;
+
+#[derive(Default)]
+pub struct PlotInteraction {
+    pub drag_started_pos: Option<Pos2>,
+    pub drag_ended_delta: Option<Vec2>,
+    pub zoom_area: Option<Rect>,
+}
+impl PlotInteraction {
+    pub fn clear(&mut self) {
+        self.drag_ended_delta = None;
+        self.drag_started_pos = None;
+        self.zoom_area = None;
+    }
+    pub fn update(&mut self, response: &mut Response, painter: &mut Painter) {
+        if response.drag_started() {
+            self.drag_started_pos = response.interact_pointer_pos();
+        } else if response.drag_stopped() {
+            // println!("drag ended: {:#?}", self.zoom_area);
+
+            self.clear();
+        } else if response.is_pointer_button_down_on() {
+            let new_delt = response.drag_delta();
+            let delta = self.drag_ended_delta.get_or_insert(Vec2::default());
+            delta.x += new_delt.x;
+            delta.y += new_delt.y;
+            if let Some(start) = self.drag_started_pos {
+                let first = start.x;
+                let second = start.x + delta.x;
+
+                let overlay_rect = Rect {
+                    min: pos2(first.min(second), -f32::INFINITY),
+                    max: pos2(first.max(second), f32::INFINITY),
+                };
+                self.zoom_area = Some(overlay_rect);
+                let _shp = painter.rect_filled(
+                    overlay_rect,
+                    Rounding::ZERO,
+                    Color32::from_black_alpha(64),
+                );
+            }
+            // println!("drag delta: {:#?}", self.interaction.drag_ended_delta);
+        }
+    }
+}
 
 ///
 /// Basic plot, with ability to switch between linear and log axes.
@@ -17,6 +64,7 @@ pub struct BasicPlot {
     pub name: Arc<String>,
     pub x_axis: Axis,
     pub y_axis: Axis,
+    pub interaction: PlotInteraction,
 }
 
 impl BasicPlot {
@@ -36,7 +84,7 @@ impl BasicPlot {
         let mut draw_log_warning =
             self.y_axis.draw_log_clip_warning || self.x_axis.draw_log_clip_warning;
 
-        let (response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
+        let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
         response.context_menu(|ui| {
             if ui
                 .selectable_value(&mut self.y_axis.scale_mode, ScaleMode::Linear, "Y-Linear")
@@ -57,6 +105,7 @@ impl BasicPlot {
                 ui.close_menu();
             }
         });
+        self.interaction.update(&mut response, &mut painter);
         let rect = response.rect;
         let width = rect.width();
         let height = rect.height();
