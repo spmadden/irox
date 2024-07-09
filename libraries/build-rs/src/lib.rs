@@ -175,7 +175,9 @@ pub fn generate_build_environment_settings(
     #[cfg(feature = "git")]
     {
         if settings.include_git {
-            git::load_git_variables(&mut envt)?;
+            if let Err(e) = git::load_git_variables(&mut envt) {
+                eprintln!("Warning: Unable to load git variables: {e:#?}");
+            }
         }
     }
 
