@@ -6,17 +6,18 @@ use std::collections::BTreeMap;
 use std::f64::consts::TAU;
 use std::sync::Arc;
 
+use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Vec2, ViewportBuilder, Widget, Window};
+use egui::{CentralPanel, Context, Layout, Vec2, ViewportBuilder, Widget, Window};
 use egui_plot::PlotPoint;
 use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::logplot::BasicPlot;
 use irox_egui_extras::progressbar::ProgressBar;
 use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
+use irox_egui_extras::visuals::VisualsWindow;
 use log::error;
 use serde::Serialize;
-use irox_egui_extras::visuals::VisualsWindow;
 
 pub fn main() {
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
@@ -114,17 +115,19 @@ impl App for TestApp {
             Window::new("About")
                 .constrain(true)
                 .default_width(500.)
+                .open(&mut self.show_about)
                 .show(ctx, |ui| {
                     AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
                 });
         }
 
         CentralPanel::default().show(ctx, |ui| {
-            ui.horizontal(|ui| {
+            ui.with_layout(Layout::top_down(Align::Max), |ui| {
                 ui.toggle_value(&mut self.show_bars, "Progressbars");
                 ui.toggle_value(&mut self.show_serde, "Serde UI");
                 ui.toggle_value(&mut self.show_visuals, "Theme Colors");
                 ui.toggle_value(&mut self.show_plot, "Plots");
+                ui.toggle_value(&mut self.show_about, "About the Build");
             });
         });
     }
