@@ -1,6 +1,44 @@
 
 
 
+## v0.3.12 (2024-07-09)
+
+### New Features
+
+ - <csr-id-fc47b630c4ddda881af8a2da3a0917391088531f/> add about build button
+ - <csr-id-317d6b7bd95c2ece9fee79c4a0521cd0f5dc2012/> add toggle buttons to gallery
+ - <csr-id-ceeef3484020d9ab171979ec3a94201ebe32f607/> add mouseover capability for logplot
+ - <csr-id-109a8c43908cf43a18bc38b2ae6eba859d1a32b8/> Add About Window using irox-build-rs
+ - <csr-id-162f02e7597a778f7220903e14bf4ab56b49d852/> start to generate build info for egui-extras
+
+### Bug Fixes
+
+ - <csr-id-bbb2b9698cadb06c939daf857c0c82665990143b/> move WithAlpha trait to crate top-level to fix packaging error
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release over the course of 2 calendar days.
+ - 2 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Move WithAlpha trait to crate top-level to fix packaging error ([`bbb2b96`](https://github.com/spmadden/irox/commit/bbb2b9698cadb06c939daf857c0c82665990143b))
+    - Add about build button ([`fc47b63`](https://github.com/spmadden/irox/commit/fc47b630c4ddda881af8a2da3a0917391088531f))
+    - Add toggle buttons to gallery ([`317d6b7`](https://github.com/spmadden/irox/commit/317d6b7bd95c2ece9fee79c4a0521cd0f5dc2012))
+    - Add mouseover capability for logplot ([`ceeef34`](https://github.com/spmadden/irox/commit/ceeef3484020d9ab171979ec3a94201ebe32f607))
+    - Add About Window using irox-build-rs ([`109a8c4`](https://github.com/spmadden/irox/commit/109a8c43908cf43a18bc38b2ae6eba859d1a32b8))
+    - Start to generate build info for egui-extras ([`162f02e`](https://github.com/spmadden/irox/commit/162f02e7597a778f7220903e14bf4ab56b49d852))
+</details>
+
 ## v0.3.11 (2024-07-07)
 
 ### New Features
@@ -11,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 8 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.11 ([`2b6f331`](https://github.com/spmadden/irox/commit/2b6f3318a8c9081721c9d948a6de4fe4191551f6))
     - Add drag highlight in logplot, soon zoom. ([`57dcb42`](https://github.com/spmadden/irox/commit/57dcb42a7f88f2d23bd1117d0ad59e9300b98ee9))
 </details>
 
