@@ -39,6 +39,7 @@ pub struct TestApp {
     show_bars: bool,
     show_serde: bool,
     show_visuals: bool,
+    show_plot: bool,
     show_about: bool,
 }
 impl TestApp {
@@ -59,6 +60,7 @@ impl TestApp {
             show_serde: false,
             show_about: true,
             show_visuals: true,
+            show_plot: true,
         }
     }
 }
@@ -68,6 +70,7 @@ impl App for TestApp {
             Window::new("test serde")
                 .hscroll(true)
                 .vscroll(true)
+                .open(&mut self.show_serde)
                 .show(ctx, |ui| {
                     let def = BasicStruct::new();
 
@@ -82,6 +85,7 @@ impl App for TestApp {
             Window::new("progress bars")
                 .constrain(true)
                 .default_width(500.)
+                .open(&mut self.show_bars)
                 .show(ctx, |ui| {
                     ProgressBar::indeterminate()
                         .text_center("I'm indeterminate!".to_string())
@@ -97,6 +101,15 @@ impl App for TestApp {
         if self.show_visuals {
             self.show_visuals = VisualsWindow::show_visuals_window(ctx);
         }
+        if self.show_plot {
+            Window::new("test log plot")
+                .constrain(true)
+                .default_width(500.)
+                .open(&mut self.show_plot)
+                .show(ctx, |ui| {
+                    self.log_plot.show(ui);
+                });
+        }
         if self.show_about {
             Window::new("About")
                 .constrain(true)
@@ -105,14 +118,15 @@ impl App for TestApp {
                     AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
                 });
         }
-        Window::new("test log plot")
-            .constrain(true)
-            .default_width(500.)
-            .show(ctx, |ui| {
-                self.log_plot.show(ui);
-            });
 
-        CentralPanel::default().show(ctx, |_ui| {});
+        CentralPanel::default().show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                ui.toggle_value(&mut self.show_bars, "Progressbars");
+                ui.toggle_value(&mut self.show_serde, "Serde UI");
+                ui.toggle_value(&mut self.show_visuals, "Theme Colors");
+                ui.toggle_value(&mut self.show_plot, "Plots");
+            });
+        });
     }
 }
 
