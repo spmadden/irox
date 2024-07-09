@@ -2025,7 +2025,7 @@ version = "0.1.3"
 
 [[package]]
 name = "irox-build-rs"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "git2",
  "irox-git-tools",

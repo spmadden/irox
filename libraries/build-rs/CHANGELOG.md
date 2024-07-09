@@ -1,5 +1,29 @@
 
 
+## v0.2.3 (2024-07-09)
+
+### Bug Fixes
+
+ - <csr-id-4aa20cb7195857a495457abdc08e62d3b296edbd/> don't die if git fails
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Don't die if git fails ([`4aa20cb`](https://github.com/spmadden/irox/commit/4aa20cb7195857a495457abdc08e62d3b296edbd))
+</details>
+
 ## v0.2.2 (2024-07-09)
 
 ### New Features
@@ -14,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 1 calendar day.
+ - 3 commits contributed to the release over the course of 2 calendar days.
  - 127 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -26,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-build-rs v0.2.2 ([`b303891`](https://github.com/spmadden/irox/commit/b3038910dcef79ddeb91806c971a835dff8ed93c))
     - Add grouped environments ([`3d7a258`](https://github.com/spmadden/irox/commit/3d7a258a7e23858f81fb67b090995dde2a6518b7))
     - Fix git hash names ([`5d771c5`](https://github.com/spmadden/irox/commit/5d771c5cec9d927d90cacdd699c7fa0df8797039))
 </details>
