@@ -8,7 +8,7 @@
 use std::sync::Arc;
 
 use eframe::{CreationContext, Frame, Storage};
-use egui::{Color32, Context, Style};
+use egui::{Context, Style};
 
 ///
 /// Implementation of `eframe::App` that automatically saves the state of the
@@ -43,17 +43,5 @@ impl eframe::App for StylePersistingApp {
         if let Ok(enc) = ron::to_string(&self.style) {
             storage.set_string("style", enc);
         }
-    }
-}
-
-pub trait WithAlpha {
-    #[must_use]
-    fn with_alpha(self, alpha: u8) -> Self;
-}
-impl WithAlpha for Color32 {
-    #[must_use]
-    fn with_alpha(self, alpha: u8) -> Self {
-        let [r, g, b, _] = self.to_srgba_unmultiplied();
-        Color32::from_rgba_unmultiplied(r, g, b, alpha)
     }
 }

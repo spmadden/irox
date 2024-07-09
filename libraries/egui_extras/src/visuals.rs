@@ -2,7 +2,7 @@
 // Copyright 2024 IROX Contributors
 //
 
-use crate::styles::WithAlpha;
+use crate::WithAlpha;
 use egui::color_picker::show_color;
 use egui::{vec2, RichText};
 

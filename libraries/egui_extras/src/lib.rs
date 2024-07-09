@@ -29,3 +29,15 @@ pub mod visuals;
 pub mod build {
     include!(concat!(env!("OUT_DIR"), "/builders.rs"));
 }
+
+pub trait WithAlpha {
+    #[must_use]
+    fn with_alpha(self, alpha: u8) -> Self;
+}
+impl WithAlpha for egui::Color32 {
+    #[must_use]
+    fn with_alpha(self, alpha: u8) -> Self {
+        let [r, g, b, _] = self.to_srgba_unmultiplied();
+        egui::Color32::from_rgba_unmultiplied(r, g, b, alpha)
+    }
+}
