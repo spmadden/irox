@@ -1,7 +1,36 @@
 
 
 
+## v0.8.3 (2024-07-19)
+
+### Other
+
+ - <csr-id-d9679d01898271cdbffd1b56df072317da2d6880/> fix docsrs for irox-tools
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 25 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix docsrs for irox-tools ([`d9679d0`](https://github.com/spmadden/irox/commit/d9679d01898271cdbffd1b56df072317da2d6880))
+</details>
+
 ## v0.8.2 (2024-06-24)
+
+<csr-id-7809b2d2af9bd4b9767c701782530d7fde558421/>
+<csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/>
+<csr-id-0999f97c86fd40009c321c0100d6db5db735b3c2/>
 
 ### Chore
 
@@ -36,7 +65,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release over the course of 33 calendar days.
+ - 15 commits contributed to the release over the course of 33 calendar days.
  - 36 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -48,6 +77,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.2 ([`e85d66a`](https://github.com/spmadden/irox/commit/e85d66a55434a6ece62506d1aefbdf7f02ab0c35))
     - Improvements across the board for docs.rs docs ([`c434f69`](https://github.com/spmadden/irox/commit/c434f69700976ca796b29e6e9e213ae44ccf4e02))
     - Bump to rust 1.79 ([`7d369bf`](https://github.com/spmadden/irox/commit/7d369bf4d9f753411be6eab864fd7f29d4fd888c))
     - New testing '_toobig-tests' feature to ignore certain tests that are expensive & slow ([`1459e34`](https://github.com/spmadden/irox/commit/1459e3484dbf2d36ba0964fb903a9a2b10fdf2bb))
