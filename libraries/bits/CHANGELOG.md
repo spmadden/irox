@@ -1,16 +1,16 @@
 
 
-## v0.1.3 (2024-07-07)
+## v0.1.4 (2024-07-19)
 
-### Documentation
+### Other
 
- - <csr-id-9c6515d28c9e049ddeee33db099c81e21c608181/> improve docs.rs docs for bits
+ - <csr-id-77677189e46aec6b857762f5a8ff0b49d6922ebf/> fix docsrs for irox-bits
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 1 calendar day.
+ - 1 commit contributed to the release.
  - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +22,32 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Fix docsrs for irox-bits ([`7767718`](https://github.com/spmadden/irox/commit/77677189e46aec6b857762f5a8ff0b49d6922ebf))
+</details>
+
+## v0.1.3 (2024-07-07)
+
+### Documentation
+
+ - <csr-id-9c6515d28c9e049ddeee33db099c81e21c608181/> improve docs.rs docs for bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 1 calendar day.
+ - 12 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-bits v0.1.3 ([`305b602`](https://github.com/spmadden/irox/commit/305b6024e951595a1ce18f5a8d65d69301630aa9))
     - Improve docs.rs docs for bits ([`9c6515d`](https://github.com/spmadden/irox/commit/9c6515d28c9e049ddeee33db099c81e21c608181))
 </details>
 
