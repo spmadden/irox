@@ -50,7 +50,7 @@ impl VisualsWindow {
                         add_row!(ui, "window_fill", visuals.window_fill);
                         add_row!(ui, "panel_fill", visuals.panel_fill);
                         add_row!(ui, "window_stroke", visuals.window_stroke.color);
-                        add_row!(ui, "text_cursor", visuals.text_cursor.color);
+                        add_row!(ui, "text_cursor", visuals.text_cursor.stroke.color);
                         add_widget!(ui, "noninteractive", visuals.widgets.noninteractive);
                         add_widget!(ui, "inactive", visuals.widgets.inactive);
                         add_widget!(ui, "hovered", visuals.widgets.hovered);

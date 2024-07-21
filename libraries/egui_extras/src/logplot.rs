@@ -306,7 +306,7 @@ impl BasicPlot {
             let mod_x = self.x_axis.describe_screen_pos(hover.x);
             let mod_y = self.y_axis.describe_screen_pos(hover.y);
             let text = format!("x: {mod_x}\ny: {mod_y}");
-            let color = ui.visuals().text_cursor.color;
+            let color = ui.visuals().text_cursor.stroke.color;
             let font_id = TextStyle::Monospace.resolve(ui.style());
             let mut align = Align2::LEFT_BOTTOM;
 

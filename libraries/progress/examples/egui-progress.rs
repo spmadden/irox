@@ -129,7 +129,7 @@ pub fn main() -> Result<(), std::io::Error> {
     if let Err(e) = eframe::run_native(
         "irox-progress-test",
         native_options,
-        Box::new(|cc| Box::new(ProgressApp::new(cc))),
+        Box::new(|cc| Ok(Box::new(ProgressApp::new(cc)))),
     ) {
         error!("{e:?}");
     };

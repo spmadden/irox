@@ -96,6 +96,7 @@ impl FrameHistory {
             stroke: ui.style().noninteractive().bg_stroke,
             fill_texture_id: Default::default(),
             uv: Rect::ZERO,
+            blur_width: 0.0f32,
         }));
 
         let rect = rect.shrink(4.0);

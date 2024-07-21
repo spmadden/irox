@@ -29,7 +29,7 @@ pub fn main() {
     if let Err(e) = eframe::run_native(
         "irox-egui-gallery",
         native_options,
-        Box::new(|cc| Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc))))),
+        Box::new(|cc| Ok(Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc)))))),
     ) {
         error!("{e:?}");
     };

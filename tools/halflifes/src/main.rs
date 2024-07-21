@@ -34,7 +34,7 @@ fn main() {
                 Box::new(HalflifesApp::new(cc)),
             )));
 
-            Box::new(comp)
+            Ok(Box::new(comp))
         }),
     ) {
         error!("{e:?}");

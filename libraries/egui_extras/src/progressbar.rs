@@ -6,6 +6,7 @@
 //! Augmentations and tweaks for a better progress bar
 
 use eframe::emath::lerp;
+use eframe::epaint::text::TextWrapMode;
 use egui::{
     Color32, NumExt, Rect, Response, Rgba, Sense, Stroke, TextStyle, Ui, Vec2, Widget, WidgetText,
 };
@@ -173,7 +174,12 @@ impl Widget for ProgressBar {
             if let Some(text) = left_text {
                 let text: WidgetText = text.into();
 
-                let galley = text.into_galley(ui, Some(false), f32::INFINITY, TextStyle::Button);
+                let galley = text.into_galley(
+                    ui,
+                    Some(TextWrapMode::Truncate),
+                    f32::INFINITY,
+                    TextStyle::Button,
+                );
                 let text_pos = outer_rect.left_center() - Vec2::new(0.0, galley.size().y / 2.0)
                     + egui::vec2(ui.spacing().item_spacing.x, 0.0);
                 let text_color = visuals
@@ -184,7 +190,12 @@ impl Widget for ProgressBar {
             if let Some(text) = center_text {
                 let text: WidgetText = text.into();
 
-                let galley = text.into_galley(ui, Some(false), f32::INFINITY, TextStyle::Button);
+                let galley = text.into_galley(
+                    ui,
+                    Some(TextWrapMode::Truncate),
+                    f32::INFINITY,
+                    TextStyle::Button,
+                );
                 let size = galley.size();
                 let text_pos = outer_rect.center() - Vec2::new(size.x / 2.0, size.y / 2.0);
                 let text_color = visuals
@@ -196,7 +207,12 @@ impl Widget for ProgressBar {
             if let Some(text) = right_text {
                 let text: WidgetText = text.into();
 
-                let galley = text.into_galley(ui, Some(false), f32::INFINITY, TextStyle::Button);
+                let galley = text.into_galley(
+                    ui,
+                    Some(TextWrapMode::Truncate),
+                    f32::INFINITY,
+                    TextStyle::Button,
+                );
                 let size = galley.size();
                 let text_pos = outer_rect.right_center()
                     - Vec2::new(size.x, size.y / 2.0)

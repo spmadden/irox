@@ -50,13 +50,13 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0.27", default-features = false }
-eframe = { version = "^0.27", default-features = false }
-egui_plot = { version = "^0.27", features = [], default-features = false }
+egui = { version = "^0.28", default-features = false }
+eframe = { version = "^0.28", default-features = false }
+egui_plot = { version = "^0.28", features = [], default-features = false }
 ron = { version = "^0.8", features = ["integer128"] }
-serde = { version = "^1.0.201", features = ["derive"] }
+serde = { version = "^1.0.204", features = ["derive"] }
 serde_json = { version = "^1.0", features = [] }
-ureq = { version = "^2.9", features = ["brotli", "native-certs", "socks-proxy", "cookies"] }
+ureq = { version = "^2.10", features = ["brotli", "native-certs", "socks-proxy", "cookies"] }
 url = { version = "^2.5", features = [] }
 clap = { version = "^4.5", features = ["derive", "wrap_help", "string", "cargo", "env"] }
 clap-verbosity-flag = { version = "^2.2" }
@@ -65,18 +65,18 @@ env_logger = { version = "^0.11", features = [] }
 syn = { version = "^2.0", features = ["extra-traits"] }
 quote = { version = "^1.0", features = [] }
 signal-hook = { version = "^0.3", features = [] }
-windows = { version = "^0.56", features = ["Devices_Geolocation", "Foundation"] }
-rusqlite = { version = "^0.31", features = ["bundled", "bundled-windows"] }
+windows = { version = "^0.58", features = ["Devices_Geolocation", "Foundation"] }
+rusqlite = { version = "^0.32", features = ["bundled", "bundled-windows"] }
 miniz_oxide = { version = "^0.7", features = [] }
 xml = { version = "^0.8", features = [] }
 serial = { version = "^0.4", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
-git2 = { version = "0.18.3", features = ["vendored-openssl", "vendored-libgit2"] }
+git2 = { version = "0.19.0", features = ["vendored-openssl", "vendored-libgit2"] }
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
 core_affinity = "0.8.1"
-toml = "0.8.14"
+toml = "0.8.15"
 
 irox-cargo-metadata = {version = "^0", path = "data-formats/cargo-metadata"}
 irox-csv = { version = "^0", path = "data-formats/csv" }
