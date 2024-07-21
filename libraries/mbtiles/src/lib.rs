@@ -12,9 +12,9 @@ use std::{fmt::Debug, path::Path};
 
 pub use error::*;
 pub use format::*;
+use irox_carto::coordinate::{Latitude, Longitude};
 use irox_units::units::{datasize::DataSizeUnits, FromUnits};
 use rusqlite::{named_params, params, Connection};
-
 pub use sqlite_helpers::*;
 
 pub struct MBTiles {
@@ -181,6 +181,38 @@ impl MBTiles {
             };
             cb(&tile)?;
         }
+        Ok(())
+    }
+
+    pub fn gc(&mut self) -> Result<()> {
+        self.connection().execute("VACUUM;", params![])?;
+        Ok(())
+    }
+
+    pub fn update_bounding_box(
+        &mut self,
+        lat1: Latitude,
+        lat2: Latitude,
+        lon1: Longitude,
+        lon2: Longitude,
+        min_zoom: u8,
+        max_zoom: u8,
+    ) -> Result<()> {
+        let lats = vec![lat1.0.as_degrees().value(), lat2.0.as_degrees().value()];
+        let lons = vec![lon1.0.as_degrees().value(), lon2.0.as_degrees().value()];
+        let (min_lat_deg, max_lat_deg) = irox_tools::f64::min_max(&lats);
+        let (min_lon_deg, max_lon_deg) = irox_tools::f64::min_max(&lons);
+        let conn = self.connection();
+        let bounds = format!("{min_lon_deg},{min_lat_deg},{max_lon_deg},{max_lat_deg}");
+        set_metadata(conn, "bounds", &bounds)?;
+        set_metadata(conn, "minzoom", &format!("{min_zoom}"))?;
+        set_metadata(conn, "maxzoom", &format!("{max_zoom}"))?;
+
+        let center_lon = (max_lon_deg - min_lon_deg) / 2.0 + min_lon_deg;
+        let center_lat = (max_lat_deg - min_lat_deg) / 2.0 + min_lat_deg;
+        let center = format!("{center_lon},{center_lat},{min_zoom}");
+        set_metadata(conn, "center", &center)?;
+
         Ok(())
     }
 }

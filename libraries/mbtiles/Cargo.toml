@@ -18,6 +18,8 @@ workspace = true
 [dependencies]
 rusqlite.workspace = true
 irox-units.workspace = true
+irox-carto.workspace = true
+irox-tools.workspace = true
 
 [dev-dependencies]
 irox-tools = {workspace = true}
