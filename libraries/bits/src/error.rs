@@ -26,22 +26,22 @@ pub struct BitsError {
 
 impl BitsError {
     /// Creates a new error
-    pub fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
+    pub const fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
         BitsError { kind, msg }
     }
 
     /// Returns the error type/kind of this error
-    pub fn kind(&self) -> BitsErrorKind {
+    pub const fn kind(&self) -> BitsErrorKind {
         self.kind
     }
 
     /// Returns the error message.
-    pub fn msg(&self) -> &'static str {
+    pub const fn msg(&self) -> &'static str {
         self.msg
     }
 
     /// Creates an error variant of this type
-    pub fn err<T>(kind: BitsErrorKind, msg: &'static str) -> Result<T, Self> {
+    pub const fn err<T>(kind: BitsErrorKind, msg: &'static str) -> Result<T, Self> {
         Err(Self::new(kind, msg))
     }
 }
@@ -190,6 +190,12 @@ pub enum BitsErrorKind {
     NotConnected,
     Unsupported,
     Other,
+}
+
+impl BitsErrorKind {
+    pub const fn err<T>(self, msg: &'static str) -> Result<T, BitsError> {
+        Err(BitsError::new(self, msg))
+    }
 }
 
 #[cfg(feature = "std")]
