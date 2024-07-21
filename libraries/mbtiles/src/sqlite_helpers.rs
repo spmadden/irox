@@ -2,12 +2,11 @@
 // Copyright 2024 IROX Contributors
 //
 
-use std::future::Future;
 use std::fmt::Display;
 
-use sqlite::{Connection, State, Statement};
+use rusqlite::{named_params, Connection};
 
-use crate::{Error, Result};
+use crate::Result;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub enum JournalMode {
@@ -142,43 +141,22 @@ impl Pragma {
 
     pub fn get(&self, conn: &Connection) -> Result<i64> {
         let name = self.name();
-        let st = conn.prepare(format!("pragma {name} ;"))?;
-
-        if let Some(row) = st.into_iter().next() {
-            let row = row?;
-            let res: i64 = row.try_read(0)?;
-            return Ok(res);
-        }
-
-        Error::not_found("Pragma not found, returned 0 rows")
+        let mut st = conn.prepare_cached("pragma :name ;")?;
+        Ok(st.query_row(
+            named_params! {
+                ":name": name
+            },
+            |v| v.get::<_, i64>(0),
+        )?)
     }
 
     pub fn set(&self, conn: &Connection) -> Result<()> {
         let name = self.name();
-
-        conn.execute(format!("pragma {name} = {};", self.value()))?;
-        Ok(())
-    }
-}
-
-pub trait Executable<'a> {
-    fn execute(&mut self) -> Result<()>;
-}
-
-impl<'a> Executable<'a> for &mut Statement<'a> {
-    fn execute(&mut self) -> Result<()> {
-        while self.next()? != State::Done {
-            // spin
-        }
-        Ok(())
-    }
-}
-
-impl<'a> Executable<'a> for Statement<'a> {
-    fn execute(&mut self) -> Result<()> {
-        while self.next()? != State::Done {
-            // spin
-        }
+        let mut st = conn.prepare_cached("pragma :name = :value;")?;
+        st.execute(named_params! {
+            ":name": name,
+            ":value": self.value(),
+        })?;
         Ok(())
     }
 }

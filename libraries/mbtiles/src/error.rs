@@ -3,6 +3,7 @@
 //
 
 use std::{fmt::Display, num::ParseIntError};
+use rusqlite::types::FromSqlError;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -10,7 +11,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     Other(String),
     IO(std::io::Error),
-    Sqlite(sqlite::Error),
+    Sqlite(rusqlite::Error),
+    SqliteSql(rusqlite::types::FromSqlError),
     NotFound(String),
     NotMBTiles(String),
 
@@ -55,9 +57,14 @@ impl Display for Error {
 
 impl std::error::Error for Error {}
 
-impl From<sqlite::Error> for Error {
-    fn from(value: sqlite::Error) -> Self {
+impl From<rusqlite::Error> for Error {
+    fn from(value: rusqlite::Error) -> Self {
         Error::Sqlite(value)
+    }
+}
+impl From<rusqlite::types::FromSqlError> for Error {
+    fn from(value: FromSqlError) -> Self {
+        Error::SqliteSql(value)
     }
 }
 

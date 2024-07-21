@@ -13,7 +13,7 @@ use std::{fmt::Debug, path::Path};
 pub use error::*;
 pub use format::*;
 use irox_units::units::{datasize::DataSizeUnits, FromUnits};
-use sqlite::{Connection, ConnectionWithFullMutex};
+use rusqlite::{Connection, named_params, params};
 
 pub use sqlite_helpers::*;
 
@@ -21,23 +21,23 @@ pub struct MBTiles {
     name: String,
     format: ImageFormat,
 
-    connection: ConnectionWithFullMutex,
+    connection: Connection,
 }
 
 impl MBTiles {
-    pub fn open(path: &impl AsRef<Path>) -> Result<MBTiles> {
+    pub fn open<T: AsRef<Path>>(path: &T) -> Result<MBTiles> {
         Self::open_options(path, &OpenOptions::default())
     }
-    pub fn open_options(path: &impl AsRef<Path>, options: &OpenOptions) -> Result<MBTiles> {
+    pub fn open_options<T: AsRef<Path>>(path: &T, options: &OpenOptions) -> Result<MBTiles> {
 
-        let mut conn = Connection::open_with_full_mutex(path)?;
+        let mut conn = Connection::open(path)?;
 
         for pragma in &options.pragmas {
             match pragma {
                 Pragma::PageSizeBytes(_) => {
                     pragma.set(&conn)?;
-                    conn.execute("VACUUM;")?;
-                    conn = Connection::open_with_full_mutex(path)?;
+                    conn.execute("VACUUM;", params![])?;
+                    conn = Connection::open(path)?;
                 },
                 _ => {}
             }
@@ -51,10 +51,13 @@ impl MBTiles {
         }
 
         let mut tables: Vec<String> = Vec::new();
-        for row in conn.prepare("select name from sqlite_master;")? {
-            let row = row?;
-            let name: &str = row.try_read(0)?;
-            tables.push(name.to_string());
+        {
+            let mut stmt = conn.prepare("select name from sqlite_master;")?;
+            let mut rows = stmt.raw_query();
+            while let Ok(Some(row)) = rows.next() {
+                let name: String = row.get(0)?;
+                tables.push(name.to_string());
+            }
         }
 
         if !tables.contains(&"tiles".to_string()) && !tables.contains(&"metadata".to_string()) {
@@ -88,18 +91,19 @@ impl MBTiles {
     }
 
     pub fn get_tile(&self, tile_column: u64, tile_row: u64, zoom_level: u64) -> Result<Vec<u8>> {
-        let mut st = self.connection.prepare(
+        let mut st = self.connection.prepare_cached(
             "select tile_data from tiles where
         tile_column = :tile_column and tile_row = :tile_row and zoom_level = :zoom_level;",
         )?;
-        st.bind((":tile_column", tile_column as i64))?;
-        st.bind((":tile_row", tile_row as i64))?;
-        st.bind((":zoom_level", zoom_level as i64))?;
+        let mut rows = st.query(named_params![
+            "tile_column": tile_column,
+            "tile_row": tile_row,
+            "zoom_level": zoom_level
+        ])?;
 
-        if let Some(row) = st.into_iter().next() {
-            let row = row?;
-            let res: &[u8] = row.try_read(0)?;
-            return Ok(Vec::from(res));
+        if let Some(row) = rows.next()? {
+            let res: Vec<u8> = row.get(0)?;
+            return Ok(res);
         }
         Error::tile_not_found(tile_column, tile_row, zoom_level)
     }
@@ -117,18 +121,20 @@ impl MBTiles {
             return Ok(());
         }
 
-        let mut st = self.connection.prepare(
+        let mut st = self.connection.prepare_cached(
             "insert or replace into 
             tiles (tile_index, tile_row, tile_column, zoom_level, tile_data) 
             values (:index, :tile_row, :tile_column, :zoom_level, :tile_data);",
         )?;
-        st.bind((":index", index as i64))?;
-        st.bind((":tile_row", tile_row as i64))?;
-        st.bind((":tile_column", tile_column as i64))?;
-        st.bind((":zoom_level", zoom_level as i64))?;
-        st.bind((":tile_data", tile_data.as_ref()))?;
+        st.execute(named_params! {
+            ":index": index,
+            ":tile_row": tile_row,
+            ":tile_column": tile_column,
+            ":zoom_level": zoom_level,
+            ":tile_data": tile_data.as_ref(),
+        })?;
 
-        st.execute()
+        Ok(())
     }
 
     pub fn update_min_max_zooms(&mut self, new_zoom: u8) -> Result<()> {
@@ -149,31 +155,20 @@ impl MBTiles {
         )
     }
 
-    pub fn foreach_tile<T: FnMut(&Tile)>(&mut self, cb: &mut T) {
+    pub fn foreach_tile<T: FnMut(&Tile)>(&mut self, cb: &mut T) -> std::result::Result<(), Error>{
         let conn = self.connection();
-        let Ok(st) = conn
-            .prepare("select tile_row, tile_column, zoom_level, tile_data from tiles;") else {
-            eprintln!("Error processing statement");
-            return;
-        };
-        for res in st.into_iter() {
-            let Ok(row) = res else {
-                eprintln!("Error retrieving tile row.");
-                return;
-            };
-
-            let Ok(tile_row) : std::result::Result<i64, _> = row.try_read("tile_row") else {
-                return;
-            };
-            let Ok(tile_column): std::result::Result<i64, _> = row.try_read("tile_column") else {
-                return;
-            };
-            let Ok(zoom_level): std::result::Result<i64, _> = row.try_read("zoom_level") else {
-                return;
-            };
-            let Ok(tile_data) = row.try_read("tile_data") else {
-                return;
-            };
+        let mut st = conn
+            .prepare_cached("select tile_row, tile_column, zoom_level, tile_data from tiles;")?;
+        let tile_row_idx = st.column_index("tile_row")?;
+        let tile_col_idx = st.column_index("tile_column")?;
+        let zoom_col_idx = st.column_index("zoom_level")?;
+        let tile_data_idx = st.column_index("tile_data")?;
+        let mut rows = st.query(params![])?;
+        while let Ok(Some(res)) = rows.next() {
+            let tile_row = res.get::<_, i64>(tile_row_idx)?;
+            let tile_column = res.get::<_, i64>(tile_col_idx)?;
+            let zoom_level = res.get::<_, i64>(zoom_col_idx)?;
+            let tile_data = res.get_ref(tile_data_idx)?.as_bytes()?;
 
             let tile = Tile {
                 tile_row: tile_row as u64,
@@ -183,6 +178,7 @@ impl MBTiles {
             };
             cb(&tile);
         }
+        Ok(())
     }
 }
 
@@ -217,13 +213,13 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         return Error::io_exists(format!("DB already exists: {path:?}").as_str());
     }
 
-    let conn = sqlite::Connection::open_with_full_mutex(path)?;
+    let conn = rusqlite::Connection::open(path)?;
 
     for pragma in &options.pragmas {
         match pragma {
             Pragma::PageSizeBytes(_) => {
                 pragma.set(&conn)?;
-                conn.execute("VACUUM;")?;
+                conn.execute("VACUUM;", params![])?;
                 // conn = Connection::open(path)?;
             },
             _ => {}
@@ -241,9 +237,9 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         "CREATE TABLE metadata (
         name text primary key, 
         value text
-    );",
+    );", params![]
     )?;
-    conn.execute("CREATE TABLE tiles (tile_index integer primary key autoincrement, zoom_level integer, tile_column integer, tile_row integer, tile_data blob);")?;
+    conn.execute("CREATE TABLE tiles (tile_index integer primary key autoincrement, zoom_level integer, tile_column integer, tile_row integer, tile_data blob);", params![])?;
 
     set_metadata(&conn, "name", &options.name)?;
     set_metadata(&conn, "format", &options.format.extension())?;
@@ -258,33 +254,35 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
     })
 }
 
-pub fn create_mbtiles_db_hashdedup(path: &impl AsRef<Path>) -> Result<MBTiles> {
+pub fn create_mbtiles_db_hashdedup(_path: &impl AsRef<Path>) -> Result<MBTiles> {
     todo!()
 }
 
 pub fn get_metadata(conn: &Connection, name: &str) -> Result<String> {
-    let mut st = conn.prepare("select value from metadata where name = :name;")?;
-    st.bind((":name", name))?;
+    let mut st = conn.prepare_cached("select value from metadata where name = :name;")?;
+    let mut rows = st.query(named_params! {
+        ":name": name,
+    })?;
 
-    let Some(result) = st.into_iter().next() else {
+    let Ok(Some(result)) = rows.next() else {
         return Error::not_found(format!("Could not find metadata with name {name}").as_str());
     };
-    let row = result?;
-    let value: &str = row.try_read(0)?;
+    let value: String = result.get(0)?;
 
     Ok(value.to_string())
 }
 
 pub fn set_metadata(conn: &Connection, name: &str, value: &impl AsRef<str>) -> Result<()> {
-    let mut st = conn.prepare(
+    let mut st = conn.prepare_cached(
         "insert or replace into 
         metadata (name, value) 
         values (:name, :value);",
     )?;
-    st.bind((":name", name))?;
-    st.bind((":value", value.as_ref()))?;
-
-    st.execute()
+    st.execute(named_params! {
+        ":name": name,
+        ":value": value.as_ref()
+    })?;
+    Ok(())
 }
 
 pub fn get_name(conn: &Connection) -> Result<String> {
@@ -292,15 +290,13 @@ pub fn get_name(conn: &Connection) -> Result<String> {
 }
 
 pub fn contains_metadata(conn: &Connection, name: &str) -> Result<bool> {
-    let mut st = conn.prepare("select count(*) from metadata where name = :name")?;
-    st.bind((":name", name))?;
-
-    if let Some(row) = st.into_iter().next() {
-        let row = row?;
-        let res: i64 = row.try_read(0)?;
-        return Ok(res > 0);
-    }
-    Ok(false)
+    let mut st = conn.prepare_cached("select count(*) from metadata where name = :name")?;
+    let rows = st.query_row(named_params! {
+        ":name": name
+    }, |r| {
+        r.get::<_, i64>(0)
+    })?;
+    Ok(rows > 0)
 }
 
 pub fn get_format(conn: &Connection) -> Result<ImageFormat> {
@@ -371,7 +367,7 @@ impl OpenOptions {
                 Pragma::PageSizeBytes(16384),
                 Pragma::JournalMode(JournalMode::WAL),
                 Pragma::LockingMode(LockingMode::Exclusive),
-                Pragma::CacheSizeBytes(DataSizeUnits::Bytes.from(1, DataSizeUnits::GigaBytes)),
+                Pragma::CacheSizeBytes(DataSizeUnits::Bytes.from(1, DataSizeUnits::Gigabytes)),
                 Pragma::SynchronousMode(SynchronousMode::Normal),
             ],
         }

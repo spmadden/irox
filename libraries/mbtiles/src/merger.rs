@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2024 IROX Contributors
+//
+
 use std::path::Path;
 
 use crate::{MBTiles, Result};
@@ -15,7 +19,7 @@ pub fn merge<T: AsRef<Path>>(inputs: &[T], output: &T) -> Result<()> {
             if let Err(e) = db.insert_tile(tile) {
                 eprintln!("Error inserting tile {e:?}");
             };
-        });
+        })?;
     }
     todo!()
 }
