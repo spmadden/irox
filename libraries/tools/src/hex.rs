@@ -76,7 +76,7 @@ impl<S: AsRef<[u8]>> HexDump for S {
     }
 }
 
-pub fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
+pub const fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
     Ok(match ch {
         '0' => 0,
         '1' => 1,
@@ -94,7 +94,7 @@ pub fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
         'd' | 'D' => 0xD,
         'e' | 'E' => 0xE,
         'f' | 'F' => 0xF,
-        _ => return Err(ErrorKind::InvalidData.into()),
+        _ => return ErrorKind::InvalidData.err("Invalid hex character"),
     })
 }
 
@@ -213,6 +213,75 @@ pub fn to_hex_strbuf_upper<const N: usize>(val: &[u8], buf: &mut StrBuf<N>) -> R
     Ok(())
 }
 
+#[doc(hidden)]
+#[allow(clippy::indexing_slicing)]
+pub const fn hex_len(vals: &[&[u8]]) -> Option<usize> {
+    let mut out = 0;
+    let mut idx = 0;
+    while idx < vals.len() {
+        let val = vals[idx];
+        let len = val.len();
+
+        out += len;
+        idx += 1;
+    }
+    if out & 0x01 == 0x01 {
+        None
+    } else {
+        Some(out / 2)
+    }
+}
+#[doc(hidden)]
+#[allow(clippy::indexing_slicing)]
+pub const fn raw_hex<const L: usize>(vals: &[&[u8]]) -> Result<[u8; L], char> {
+    let mut out = [0u8; L];
+    let mut outidx = 0;
+    let mut idx = 0;
+    while idx < vals.len() {
+        let val = vals[idx];
+        let mut inneridx = 0;
+        while inneridx < val.len() {
+            let a = val[inneridx] as char;
+            let Ok(a) = hex_char_to_nibble(a) else {
+                return Err(a);
+            };
+            inneridx += 1;
+            let b = val[inneridx] as char;
+            let Ok(b) = hex_char_to_nibble(b) else {
+                return Err(b);
+            };
+            inneridx += 1;
+            out[outidx] = a << 4 | b;
+            outidx += 1;
+        }
+        idx += 1;
+    }
+    Ok(out)
+}
+
+#[allow(unused_macros)]
+#[macro_export]
+///
+/// Const compile-time evaluation of the provided string literals
+/// ```
+/// let raw_hex = irox_tools::hex!("C0ffee" "BeEf");
+//  assert_eq_hex_slice!(&[0xc0, 0xff, 0xee, 0xbe, 0xef] as &[u8], &raw_hex);
+/// ```
+macro_rules! hex {
+    ($($input:literal)+) => {{
+        const VALS: &[& 'static [u8]] = &[$($input.as_bytes(),)*];
+        const LEN: usize = match $crate::hex::hex_len(VALS) {
+            Some(v) => v,
+            None => panic!("Hex string is an odd length")
+        };
+        const RTN: [u8;LEN] = match $crate::hex::raw_hex::<LEN>(VALS) {
+            Ok(v) => v,
+            Err(_) => panic!("Hex string contains invalid character")
+        };
+        RTN
+    }};
+}
+
 #[cfg(test)]
 #[cfg(feature = "std")]
 mod tests {
@@ -228,6 +297,16 @@ mod tests {
 
         buf.hexdump();
 
+        Ok(())
+    }
+
+    #[test]
+    pub fn const_hex_test() -> Result<(), irox_bits::Error> {
+        let raw_hex = hex!("");
+        assert_eq_hex_slice!(&[] as &[u8], &raw_hex);
+        let raw_hex = hex!("00");
+        assert_eq_hex_slice!(&[0x0u8], &raw_hex);
+        raw_hex.hexdump();
         Ok(())
     }
 }
