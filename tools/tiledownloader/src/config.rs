@@ -1,8 +1,13 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2024 IROX Contributors
+//
+
 use clap::{
     builder::{TypedValueParser, ValueParser},
     error::{ContextKind, ContextValue, ErrorKind},
     Command, Parser, ValueHint,
 };
+use std::collections::VecDeque;
 use std::{num::ParseFloatError, str::FromStr};
 
 #[derive(Parser, Debug, Clone)]
@@ -58,11 +63,11 @@ impl TypedValueParser for BBOXParser {
     fn parse_ref(
         &self,
         cmd: &clap::Command,
-        arg: Option<&clap::Arg>,
+        _arg: Option<&clap::Arg>,
         value: &std::ffi::OsStr,
     ) -> Result<Self::Value, clap::Error> {
         let str = String::from(value.to_string_lossy());
-        let splits: Vec<&str> = str.split(',').collect();
+        let mut splits = str.split(',').collect::<VecDeque<_>>();
         let len = splits.len();
         if len != 4 {
             let mut err = clap::Error::new(ErrorKind::WrongNumberOfValues).with_cmd(cmd);
@@ -78,14 +83,12 @@ impl TypedValueParser for BBOXParser {
             return Err(err);
         }
 
-        let mut out: [f64; 4] = [0.0; 4];
-        for i in 0..4 {
-            let val = splits[i];
-            out[i] = match f64::from_str(val) {
-                Ok(a) => a,
-                Err(e) => return parse_float_error(&e, cmd, val),
-            };
-        }
+        let out: [f64; 4] = [
+            str_to_f64(splits.pop_front(), cmd)?,
+            str_to_f64(splits.pop_front(), cmd)?,
+            str_to_f64(splits.pop_front(), cmd)?,
+            str_to_f64(splits.pop_front(), cmd)?,
+        ];
 
         Ok(out)
     }
@@ -103,4 +106,19 @@ fn parse_float_error<T>(e: &ParseFloatError, cmd: &Command, val: &str) -> Result
         ContextValue::StyledStrs(vec![e.to_string().into()]),
     );
     Err(error)
+}
+
+fn str_to_f64(val: Option<&str>, cmd: &Command) -> Result<f64, clap::Error> {
+    let Some(val) = val else {
+        let mut error = clap::Error::new(ErrorKind::ValueValidation).with_cmd(cmd);
+        error.insert(
+            ContextKind::InvalidArg,
+            ContextValue::String("--bbox".into()),
+        );
+        return Err(error);
+    };
+    match f64::from_str(val) {
+        Ok(v) => Ok(v),
+        Err(e) => parse_float_error(&e, cmd, val),
+    }
 }

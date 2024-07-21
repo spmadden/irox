@@ -29,5 +29,5 @@ clap = { workspace = true, features = [
     "error-context",
 ] }
 reqwest = { version = "0.12", features = ["gzip", "brotli", "deflate"] }
-bytes = { version = "0.6" }
+bytes = { version = "1" }
 indicatif = { version = "0.17" }
