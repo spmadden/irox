@@ -4,11 +4,11 @@
 
 use std::fmt::Display;
 
-use rusqlite::{named_params, Connection};
+use rusqlite::{params, Connection};
 
 use crate::Result;
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum JournalMode {
     /// Normal behavior.  The rollback journal is deleted after each transaction.
     #[default]
@@ -43,7 +43,7 @@ impl Display for JournalMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum LockingMode {
     /// Unlocks the DB at the end of each transaction
     #[default]
@@ -62,7 +62,7 @@ impl Display for LockingMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum SynchronousMode {
     /// fsync's after each transaction
     #[default]
@@ -89,7 +89,7 @@ impl Display for SynchronousMode {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Pragma {
     ApplicationId(u32),
 
@@ -128,10 +128,10 @@ impl Pragma {
 
     pub fn value(&self) -> String {
         match self {
-            Pragma::ApplicationId(i) => format!("{i}"),
-            Pragma::CacheSizePages(i) => format!("{i}"),
+            Pragma::ApplicationId(i) | Pragma::CacheSizePages(i) | Pragma::PageSizeBytes(i) => {
+                format!("{i}")
+            }
             Pragma::CacheSizeBytes(i) => format!("-{i}"),
-            Pragma::PageSizeBytes(i) => format!("{i}"),
             Pragma::JournalMode(i) => format!("{i}"),
             Pragma::JournalSizeLimitBytes(i) => format!("{i}"),
             Pragma::LockingMode(i) => format!("{i}"),
@@ -141,22 +141,15 @@ impl Pragma {
 
     pub fn get(&self, conn: &Connection) -> Result<i64> {
         let name = self.name();
-        let mut st = conn.prepare_cached("pragma :name ;")?;
-        Ok(st.query_row(
-            named_params! {
-                ":name": name
-            },
-            |v| v.get::<_, i64>(0),
-        )?)
+        let mut st = conn.prepare_cached(&format!("pragma {name} ;"))?;
+        Ok(st.query_row(params![], |v| v.get::<_, i64>(0))?)
     }
 
     pub fn set(&self, conn: &Connection) -> Result<()> {
         let name = self.name();
-        let mut st = conn.prepare_cached("pragma :name = :value;")?;
-        st.execute(named_params! {
-            ":name": name,
-            ":value": self.value(),
-        })?;
+        let value = self.value();
+        let mut st = conn.prepare_cached(&format!("pragma {name} = {value};"))?;
+        let _ = st.query(params![])?;
         Ok(())
     }
 }

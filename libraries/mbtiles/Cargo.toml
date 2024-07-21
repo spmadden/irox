@@ -1,8 +1,8 @@
 [package]
 name = "irox-mbtiles"
-description = ""
-keywords = ["irox"]
-categories = []
+description = "Interface to work with MBTiles imagery files"
+keywords = ["irox", "mbtiles", "tiles", "encoding", "decoding"]
+categories = ["science::geo", "parser-implementations", "encoding"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -18,3 +18,6 @@ workspace = true
 [dependencies]
 rusqlite.workspace = true
 irox-units.workspace = true
+
+[dev-dependencies]
+irox-tools = {workspace = true}

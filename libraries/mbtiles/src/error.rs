@@ -2,8 +2,8 @@
 // Copyright 2024 IROX Contributors
 //
 
-use std::{fmt::Display, num::ParseIntError};
 use rusqlite::types::FromSqlError;
+use std::{fmt::Display, num::ParseIntError};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -66,10 +66,6 @@ impl From<rusqlite::types::FromSqlError> for Error {
     fn from(value: FromSqlError) -> Self {
         Error::SqliteSql(value)
     }
-}
-
-pub fn unwrap<T, E: Into<Error>>(val: std::result::Result<T, E>) -> Result<T> {
-    val.map_err(|e| e.into())
 }
 
 impl From<ParseIntError> for Error {

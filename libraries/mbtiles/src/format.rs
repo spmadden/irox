@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2024 IROX Contributors
+//
+
 use crate::{Error, Result};
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -50,8 +54,7 @@ impl TryFrom<&str> for ImageFormat {
         match value {
             "pbf" => Ok(ImageFormat::Vector),
             "png" => Ok(ImageFormat::Raster(RasterFormat::PNG)),
-            "jpg" => Ok(ImageFormat::Raster(RasterFormat::JPEG)),
-            "jpeg" => Ok(ImageFormat::Raster(RasterFormat::JPEG)),
+            "jpg" | "jpeg" => Ok(ImageFormat::Raster(RasterFormat::JPEG)),
             "webp" => Ok(ImageFormat::Raster(RasterFormat::WEBP)),
             _ => Error::unknown_format(format!("Unknown format: {value}")),
         }

@@ -15,11 +15,7 @@ pub fn merge<T: AsRef<Path>>(inputs: &[T], output: &T) -> Result<()> {
 
     for input in inputs {
         let mut indb = MBTiles::open(input)?;
-        indb.foreach_tile(&mut |tile| {
-            if let Err(e) = db.insert_tile(tile) {
-                eprintln!("Error inserting tile {e:?}");
-            };
-        })?;
+        indb.foreach_tile(&mut |tile| db.insert_tile(tile))?;
     }
-    todo!()
+    Ok(())
 }

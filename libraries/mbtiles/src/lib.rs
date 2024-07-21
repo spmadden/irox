@@ -13,7 +13,7 @@ use std::{fmt::Debug, path::Path};
 pub use error::*;
 pub use format::*;
 use irox_units::units::{datasize::DataSizeUnits, FromUnits};
-use rusqlite::{Connection, named_params, params};
+use rusqlite::{named_params, params, Connection};
 
 pub use sqlite_helpers::*;
 
@@ -29,31 +29,34 @@ impl MBTiles {
         Self::open_options(path, &OpenOptions::default())
     }
     pub fn open_options<T: AsRef<Path>>(path: &T, options: &OpenOptions) -> Result<MBTiles> {
+        let conn = {
+            let conn = Connection::open(path)?;
 
-        let mut conn = Connection::open(path)?;
-
-        for pragma in &options.pragmas {
-            match pragma {
-                Pragma::PageSizeBytes(_) => {
-                    pragma.set(&conn)?;
-                    conn.execute("VACUUM;", params![])?;
-                    conn = Connection::open(path)?;
-                },
-                _ => {}
+            if let Some(psb) = options
+                .pragmas
+                .iter()
+                .find(|v| matches!(v, Pragma::PageSizeBytes(_)))
+            {
+                psb.set(&conn)?;
+                conn.execute("VACUUM;", params![])?;
+                drop(conn);
+                Connection::open(path)?
+            } else {
+                conn
             }
-        }
+        };
 
         for pragma in &options.pragmas {
             match pragma {
-                Pragma::PageSizeBytes(_) => {},
-                p => p.set(&conn)?
+                Pragma::PageSizeBytes(_) => {}
+                p => p.set(&conn)?,
             }
         }
 
         let mut tables: Vec<String> = Vec::new();
         {
             let mut stmt = conn.prepare("select name from sqlite_master;")?;
-            let mut rows = stmt.raw_query();
+            let mut rows = stmt.query(params![])?;
             while let Ok(Some(row)) = rows.next() {
                 let name: String = row.get(0)?;
                 tables.push(name.to_string());
@@ -74,12 +77,12 @@ impl MBTiles {
         })
     }
 
-    pub fn open_or_create(path: &impl AsRef<Path>) -> Result<MBTiles> {
+    pub fn open_or_create<T: AsRef<Path>>(path: &T) -> Result<MBTiles> {
         Self::open_or_create_options(path, &CreateOptions::default())
     }
 
-    pub fn open_or_create_options(
-        path: &impl AsRef<Path>,
+    pub fn open_or_create_options<T: AsRef<Path>>(
+        path: &T,
         options: &CreateOptions,
     ) -> Result<MBTiles> {
         let path_ref = path.as_ref();
@@ -96,9 +99,9 @@ impl MBTiles {
         tile_column = :tile_column and tile_row = :tile_row and zoom_level = :zoom_level;",
         )?;
         let mut rows = st.query(named_params![
-            "tile_column": tile_column,
-            "tile_row": tile_row,
-            "zoom_level": zoom_level
+            ":tile_column": tile_column,
+            ":tile_row": tile_row,
+            ":zoom_level": zoom_level
         ])?;
 
         if let Some(row) = rows.next()? {
@@ -108,13 +111,13 @@ impl MBTiles {
         Error::tile_not_found(tile_column, tile_row, zoom_level)
     }
 
-    pub fn set_tile(
+    pub fn set_tile<T: AsRef<[u8]>>(
         &mut self,
         index: u64,
         tile_column: u64,
         tile_row: u64,
         zoom_level: u8,
-        tile_data: &impl AsRef<[u8]>,
+        tile_data: &T,
     ) -> Result<()> {
         if tile_data.as_ref().len() == 872 {
             // skip transparent PNGs.
@@ -155,10 +158,10 @@ impl MBTiles {
         )
     }
 
-    pub fn foreach_tile<T: FnMut(&Tile)>(&mut self, cb: &mut T) -> std::result::Result<(), Error>{
+    pub fn foreach_tile<T: FnMut(&Tile) -> Result<()>>(&mut self, cb: &mut T) -> Result<()> {
         let conn = self.connection();
-        let mut st = conn
-            .prepare_cached("select tile_row, tile_column, zoom_level, tile_data from tiles;")?;
+        let mut st =
+            conn.prepare_cached("select tile_row, tile_column, zoom_level, tile_data from tiles;")?;
         let tile_row_idx = st.column_index("tile_row")?;
         let tile_col_idx = st.column_index("tile_column")?;
         let zoom_col_idx = st.column_index("zoom_level")?;
@@ -176,13 +179,14 @@ impl MBTiles {
                 zoom_level: zoom_level as u8,
                 tile_data,
             };
-            cb(&tile);
+            cb(&tile)?;
         }
         Ok(())
     }
 }
 
 impl Drop for MBTiles {
+    #[allow(clippy::print_stderr)]
     fn drop(&mut self) {
         if let Err(e) = Pragma::JournalMode(JournalMode::Delete).set(&self.connection) {
             eprintln!("Error clearing journal: {e}");
@@ -207,29 +211,33 @@ impl Debug for MBTiles {
     }
 }
 
-pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Result<MBTiles> {
+pub fn create_mbtiles_db<T: AsRef<Path>>(path: &T, options: &CreateOptions) -> Result<MBTiles> {
     let path = path.as_ref();
     if path.exists() {
         return Error::io_exists(format!("DB already exists: {path:?}").as_str());
     }
 
-    let conn = rusqlite::Connection::open(path)?;
+    let conn = {
+        let conn = Connection::open(path)?;
 
-    for pragma in &options.pragmas {
-        match pragma {
-            Pragma::PageSizeBytes(_) => {
-                pragma.set(&conn)?;
-                conn.execute("VACUUM;", params![])?;
-                // conn = Connection::open(path)?;
-            },
-            _ => {}
+        if let Some(psb) = options
+            .pragmas
+            .iter()
+            .find(|v| matches!(v, Pragma::PageSizeBytes(_)))
+        {
+            psb.set(&conn)?;
+            conn.execute("VACUUM;", params![])?;
+            drop(conn);
+            Connection::open(path)?
+        } else {
+            conn
         }
-    }
+    };
 
     for pragma in &options.pragmas {
         match pragma {
-            Pragma::PageSizeBytes(_) => {},
-            _ => pragma.set(&conn)?
+            Pragma::PageSizeBytes(_) => {}
+            _ => pragma.set(&conn)?,
         }
     }
 
@@ -237,7 +245,8 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
         "CREATE TABLE metadata (
         name text primary key, 
         value text
-    );", params![]
+    );",
+        params![],
     )?;
     conn.execute("CREATE TABLE tiles (tile_index integer primary key autoincrement, zoom_level integer, tile_column integer, tile_row integer, tile_data blob);", params![])?;
 
@@ -254,25 +263,23 @@ pub fn create_mbtiles_db(path: &impl AsRef<Path>, options: &CreateOptions) -> Re
     })
 }
 
-pub fn create_mbtiles_db_hashdedup(_path: &impl AsRef<Path>) -> Result<MBTiles> {
+pub fn create_mbtiles_db_hashdedup<T: AsRef<Path>>(_path: &T) -> Result<MBTiles> {
     todo!()
 }
 
 pub fn get_metadata(conn: &Connection, name: &str) -> Result<String> {
     let mut st = conn.prepare_cached("select value from metadata where name = :name;")?;
-    let mut rows = st.query(named_params! {
-        ":name": name,
-    })?;
+    let val = st.query_row(
+        named_params! {
+            ":name": name,
+        },
+        |r| r.get::<_, String>(0),
+    )?;
 
-    let Ok(Some(result)) = rows.next() else {
-        return Error::not_found(format!("Could not find metadata with name {name}").as_str());
-    };
-    let value: String = result.get(0)?;
-
-    Ok(value.to_string())
+    Ok(val)
 }
 
-pub fn set_metadata(conn: &Connection, name: &str, value: &impl AsRef<str>) -> Result<()> {
+pub fn set_metadata<T: AsRef<str>>(conn: &Connection, name: &str, value: &T) -> Result<()> {
     let mut st = conn.prepare_cached(
         "insert or replace into 
         metadata (name, value) 
@@ -291,11 +298,12 @@ pub fn get_name(conn: &Connection) -> Result<String> {
 
 pub fn contains_metadata(conn: &Connection, name: &str) -> Result<bool> {
     let mut st = conn.prepare_cached("select count(*) from metadata where name = :name")?;
-    let rows = st.query_row(named_params! {
-        ":name": name
-    }, |r| {
-        r.get::<_, i64>(0)
-    })?;
+    let rows = st.query_row(
+        named_params! {
+            ":name": name
+        },
+        |r| r.get::<_, i64>(0),
+    )?;
     Ok(rows > 0)
 }
 
