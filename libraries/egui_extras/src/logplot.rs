@@ -374,28 +374,14 @@ impl Axis {
             self.min_val = self.min_val.min(v);
             self.max_val = self.max_val.max(v);
         }
-        let high_exp = self.max_val.abs().log10().ceil() as i32;
-        let mut low_exp = (self.min_val.abs().log10().ceil() as i32).saturating_sub(1);
-        match self.scale_mode {
-            ScaleMode::Log10 => {
-                if self.min_val <= 0.0 {
-                    self.draw_log_clip_warning = true;
-                    self.min_val = f64::MIN_POSITIVE;
-                    low_exp = self.min_val.abs().log10().ceil() as i32;
-                }
-                self.min_val = 10f64.powi(low_exp);
-                self.max_val = 10f64.powi(high_exp);
+        if self.scale_mode == ScaleMode::DBScale {
+            if self.min_val <= 0.0 {
+                self.draw_log_clip_warning = true;
+                self.min_val = f64::MIN_POSITIVE;
             }
-            ScaleMode::DBScale => {
-                if self.min_val <= 0.0 {
-                    self.draw_log_clip_warning = true;
-                    self.min_val = f64::MIN_POSITIVE;
-                }
-                self.min_val = 10. * self.min_val.log10();
-                self.max_val = 10. * self.max_val.log10();
-            }
-            _ => {}
-        };
+            self.min_val = 10. * self.min_val.log10();
+            self.max_val = 10. * self.max_val.log10();
+        }
 
         self.range = self.max_val - self.min_val;
         match self.scale_mode {
@@ -428,8 +414,19 @@ impl Axis {
             }
             ScaleMode::Log10 => {
                 self.detents = Vec::new();
-                for exp in low_exp..high_exp {
-                    let base = 10f64.powi(exp);
+                let range = self.max_val - self.min_val;
+                let range_exp = range.log10().floor() as i32;
+
+                let scalef = 10f64.powi(range_exp);
+                self.min_val = (self.min_val / scalef).floor() * scalef;
+                self.max_val = (self.max_val / scalef).ceil() * scalef;
+
+                let incr = 10f64.powi(range_exp);
+                let mut current = self.min_val - incr;
+                let stop = self.max_val + incr;
+                while current < stop {
+                    let exp = current.log10().round() as i32;
+                    let base = current;
                     let val = self.log_scale(base);
                     let drawpnt = self.model_to_screen(val);
                     self.detents.push((drawpnt, format!("{base}: 1e{exp}")));
@@ -438,11 +435,8 @@ impl Axis {
                         let drawpnt = self.model_to_screen(minor);
                         self.detents.push((drawpnt, String::new()));
                     }
+                    current += incr;
                 }
-                let high = 10f64.powi(high_exp);
-                let val = self.log_scale(high);
-                self.detents
-                    .push((self.model_to_screen(val), format!("{high}: 1e{high_exp}")));
             }
         }
     }
@@ -546,8 +540,8 @@ impl Axis {
             ScaleMode::Linear => format!("{}", PrettyDec(v)),
             ScaleMode::Log10 => {
                 let orig = self.log_unscale(v);
-                let scaled = orig.log10();
-                format!("{}=10^{}", PrettyDec(orig), PrettyDec(scaled))
+                // let scaled = orig.log10();
+                format!("{}", orig)
             }
             ScaleMode::DBScale => {
                 let orig = self.db_unscale(v);
