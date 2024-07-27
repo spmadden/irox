@@ -541,7 +541,7 @@ impl Axis {
             ScaleMode::Log10 => {
                 let orig = self.log_unscale(v);
                 // let scaled = orig.log10();
-                format!("{}", orig)
+                format!("{orig}")
             }
             ScaleMode::DBScale => {
                 let orig = self.db_unscale(v);
