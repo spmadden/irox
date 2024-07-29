@@ -21,7 +21,7 @@ irox-units.workspace = true
 irox-mbtiles.workspace = true
 irox-tools.workspace = true
 
-tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.39", features = ["macros", "rt-multi-thread"] }
 clap = { workspace = true, features = [
     "derive",
     "cargo",
