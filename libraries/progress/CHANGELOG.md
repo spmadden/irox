@@ -1,5 +1,30 @@
 
 
+## v0.4.0 (2024-08-01)
+
+### New Features (BREAKING)
+
+ - <csr-id-dfa11be274b8e5a61a40c9965096208d64e1fdba/> update egui to 0.28.0
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 10 calendar days.
+ - 73 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Update egui to 0.28.0 ([`dfa11be`](https://github.com/spmadden/irox/commit/dfa11be274b8e5a61a40c9965096208d64e1fdba))
+</details>
+
 ## v0.3.4 (2024-05-19)
 
 ### Bug Fixes
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 24 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.3.4 ([`5d2b982`](https://github.com/spmadden/irox/commit/5d2b982e08be9fbbedff4411e4570e68e8b1bd5f))
     - Cancel children tasks when parent is cancelled ([`01427cc`](https://github.com/spmadden/irox/commit/01427cc100b9394cad1ea130e1faae2c1ccf96cb))
 </details>
 
