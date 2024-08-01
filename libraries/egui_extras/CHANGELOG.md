@@ -1,6 +1,41 @@
 
 
 
+## v0.4.0 (2024-08-01)
+
+### New Features
+
+ - <csr-id-0ab81237491d7797da62156f9c8a3fef0d16097e/> tweak the way that the logplot does autoscaling
+
+### Bug Fixes
+
+ - <csr-id-6d4065fde94c672170008017a30685ad7a293712/> fix lints
+
+### New Features (BREAKING)
+
+ - <csr-id-dfa11be274b8e5a61a40c9965096208d64e1fdba/> update egui to 0.28.0
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 10 calendar days.
+ - 23 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix lints ([`6d4065f`](https://github.com/spmadden/irox/commit/6d4065fde94c672170008017a30685ad7a293712))
+    - Tweak the way that the logplot does autoscaling ([`0ab8123`](https://github.com/spmadden/irox/commit/0ab81237491d7797da62156f9c8a3fef0d16097e))
+    - Update egui to 0.28.0 ([`dfa11be`](https://github.com/spmadden/irox/commit/dfa11be274b8e5a61a40c9965096208d64e1fdba))
+</details>
+
 ## v0.3.12 (2024-07-09)
 
 ### New Features
@@ -19,7 +54,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 2 calendar days.
+ - 7 commits contributed to the release over the course of 2 calendar days.
  - 2 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +66,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.3.12 ([`51933cb`](https://github.com/spmadden/irox/commit/51933cb24f54862e1575cbce95ac386e67e21fdc))
     - Move WithAlpha trait to crate top-level to fix packaging error ([`bbb2b96`](https://github.com/spmadden/irox/commit/bbb2b9698cadb06c939daf857c0c82665990143b))
     - Add about build button ([`fc47b63`](https://github.com/spmadden/irox/commit/fc47b630c4ddda881af8a2da3a0917391088531f))
     - Add toggle buttons to gallery ([`317d6b7`](https://github.com/spmadden/irox/commit/317d6b7bd95c2ece9fee79c4a0521cd0f5dc2012))
