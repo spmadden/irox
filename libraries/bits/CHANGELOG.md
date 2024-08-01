@@ -1,6 +1,33 @@
 
 
+## v0.1.5 (2024-08-01)
+
+### New Features
+
+ - <csr-id-9020f1174abfc895ad3438fb60cc3bc673a0a1b1/> BitsError can be used in const environments
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 6 calendar days.
+ - 8 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - BitsError can be used in const environments ([`9020f11`](https://github.com/spmadden/irox/commit/9020f1174abfc895ad3438fb60cc3bc673a0a1b1))
+</details>
+
 ## v0.1.4 (2024-07-19)
+
+<csr-id-77677189e46aec6b857762f5a8ff0b49d6922ebf/>
 
 ### Other
 
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.1.4 ([`f2464aa`](https://github.com/spmadden/irox/commit/f2464aa9392a50e3bdaeae56e4d7353099c36a15))
     - Fix docsrs for irox-bits ([`7767718`](https://github.com/spmadden/irox/commit/77677189e46aec6b857762f5a8ff0b49d6922ebf))
 </details>
 
