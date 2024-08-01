@@ -2224,7 +2224,7 @@ checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 
 [[package]]
 name = "irox"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "irox-bits",
  "irox-build-rs",
