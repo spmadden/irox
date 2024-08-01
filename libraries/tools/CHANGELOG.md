@@ -1,7 +1,34 @@
 
 
 
+## v0.8.4 (2024-08-01)
+
+### New Features
+
+ - <csr-id-08ae6281049fcea8ac12536cce1792bf52c7d735/> new const hex! macro for compile-time hex string literals
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 11 calendar days.
+ - 13 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New const hex! macro for compile-time hex string literals ([`08ae628`](https://github.com/spmadden/irox/commit/08ae6281049fcea8ac12536cce1792bf52c7d735))
+</details>
+
 ## v0.8.3 (2024-07-19)
+
+<csr-id-d9679d01898271cdbffd1b56df072317da2d6880/>
 
 ### Other
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 25 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.3 ([`8a633e9`](https://github.com/spmadden/irox/commit/8a633e99da0353163e345f270e6273739d9a733f))
     - Fix docsrs for irox-tools ([`d9679d0`](https://github.com/spmadden/irox/commit/d9679d01898271cdbffd1b56df072317da2d6880))
 </details>
 
