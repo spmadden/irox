@@ -1,6 +1,33 @@
 
 
 
+## v0.6.4 (2024-08-01)
+
+### Chore
+
+ - <csr-id-97de4b9c115e3dff3df7124026ab795836b9bc34/> bump irox version to 0.6.4 for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 34 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox version to 0.6.4 for release ([`97de4b9`](https://github.com/spmadden/irox/commit/97de4b9c115e3dff3df7124026ab795836b9bc34))
+    - Release irox-progress v0.4.0 ([`b0fa7bd`](https://github.com/spmadden/irox/commit/b0fa7bda5e953cadb25563a153e4dfd988fbb871))
+    - Release irox-egui-extras v0.4.0 ([`74d6a21`](https://github.com/spmadden/irox/commit/74d6a21d05f69152f7872b55c1130db097748981))
+</details>
+
 ## v0.6.3 (2024-06-28)
 
 ### New Features
@@ -12,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 3 calendar days.
+ - 3 commits contributed to the release over the course of 3 calendar days.
  - 39 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.3 ([`4973819`](https://github.com/spmadden/irox/commit/497381956e48e1c9aa9d86afaed32f0c9f4aee8e))
     - Prep dot for release ([`723d3bd`](https://github.com/spmadden/irox/commit/723d3bd69f3009da28eb9b4b6617efa2d4664950))
     - Prep for release ([`c9669eb`](https://github.com/spmadden/irox/commit/c9669eb56d70101b1e85d76d7895ac37f795edfa))
 </details>
