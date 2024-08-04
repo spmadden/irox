@@ -381,6 +381,9 @@ impl Axis {
             }
             self.min_val = 10. * self.min_val.log10();
             self.max_val = 10. * self.max_val.log10();
+        } else if self.scale_mode == ScaleMode::Log10 && self.min_val <= 0.0 {
+            self.draw_log_clip_warning = true;
+            self.min_val = f64::MIN_POSITIVE;
         }
 
         self.range = self.max_val - self.min_val;
@@ -415,28 +418,51 @@ impl Axis {
             ScaleMode::Log10 => {
                 self.detents = Vec::new();
                 let range = self.max_val - self.min_val;
-                let range_exp = range.log10().floor() as i32;
+                let mut range_exp = if range < 1.0 {
+                    range.log10().floor() as i32
+                } else {
+                    range.log10().ceil() as i32
+                };
 
-                let scalef = 10f64.powi(range_exp);
-                self.min_val = (self.min_val / scalef).floor() * scalef;
-                self.max_val = (self.max_val / scalef).ceil() * scalef;
-
-                let incr = 10f64.powi(range_exp);
-                let mut current = self.min_val - incr;
-                let stop = self.max_val + incr;
-                while current < stop {
-                    let exp = current.log10().round() as i32;
-                    let base = current;
-                    let val = self.log_scale(base);
-                    let drawpnt = self.model_to_screen(val);
-                    self.detents.push((drawpnt, format!("{base}: 1e{exp}")));
-                    for idx in 1..10 {
-                        let minor = self.log_scale(base * idx as f64);
-                        let drawpnt = self.model_to_screen(minor);
-                        self.detents.push((drawpnt, String::new()));
-                    }
-                    current += incr;
+                let mut scalef = 10f64.powi(range_exp);
+                let mut mv = (self.min_val / scalef).floor() * scalef;
+                if self.min_val < 1.0 {
+                    range_exp = self.min_val.log10().floor() as i32;
+                    scalef = 10f64.powi(range_exp);
+                    mv = (self.min_val / scalef).floor() * scalef;
                 }
+                self.min_val = mv;
+                self.max_val = (self.max_val / scalef).ceil() * scalef;
+                let mut current_exp = range_exp - 1;
+                let mut current = self.min_val;
+                let stop = self.max_val;
+                // major detents
+                let drawpnt = self.model_to_screen(self.log_scale(current));
+                self.detents
+                    .push((drawpnt, format!("{current:.4}: 1e{current_exp:.4}")));
+                while current <= stop {
+                    let incr = 10f64.powi(current_exp);
+                    let next = current + 10f64 * incr;
+                    current = (current / incr).round() * incr;
+                    let drawpnt = self.model_to_screen(self.log_scale(current));
+                    self.detents
+                        .push((drawpnt, format!("{current:.4}: 1e{current_exp:.4}")));
+
+                    // minor detents
+                    for _idx in 1..10 {
+                        if current >= next || current >= stop {
+                            break;
+                        }
+                        current += incr;
+                        let drawpnt = self.model_to_screen(self.log_scale(current));
+                        self.detents.push((drawpnt, String::default()));
+                    }
+
+                    current_exp += 1;
+                }
+                let drawpnt = self.model_to_screen(self.log_scale(self.max_val));
+                self.detents
+                    .push((drawpnt, format!("{:.4}: 1e{current_exp:.4}", self.max_val)));
             }
         }
     }
