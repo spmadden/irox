@@ -27,6 +27,9 @@ pub enum LengthUnits {
 
     /// Nautical Mile, classically 1 arcminute on the Earth
     NauticalMile,
+
+    /// The U.S. Survey Foot
+    USSurveyFoot,
 }
 macro_rules! from_units_length {
     ($type:ident) => {
@@ -41,6 +44,7 @@ macro_rules! from_units_length {
                         LengthUnits::Kilometers => value * KILOMETERS_TO_METERS as $type,
                         LengthUnits::Mile => value * MILES_TO_METERS as $type,
                         LengthUnits::NauticalMile => value * NAUTICAL_MILES_TO_METERS as $type,
+                        LengthUnits::USSurveyFoot => value * SURVEYFOOT_TO_METER as $type,
                     },
                     LengthUnits::Feet => match source_unit {
                         LengthUnits::Meters => value * METERS_TO_FEET as $type,
@@ -53,9 +57,76 @@ macro_rules! from_units_length {
                             FromUnits::<$type>::from(&LengthUnits::Meters, value, source_unit)
                                 * METERS_TO_MILES as $type
                         }
-                        _ => todo!(),
+                        LengthUnits::NauticalMile => {
+                            FromUnits::<$type>::from(&LengthUnits::Meters, value, source_unit)
+                                * METERS_TO_NAUTICAL_MILE as $type
+                        }
+                        LengthUnits::USSurveyFoot => {
+                            value * (SURVEYFOOT_TO_METER * METERS_TO_FEET) as $type
+                        }
                     },
-                    _ => todo!(),
+                    LengthUnits::Kilometers => match source_unit {
+                        LengthUnits::Meters => value * METERS_TO_KILOMETERS as $type,
+                        LengthUnits::Kilometers => value,
+                        LengthUnits::Feet => {
+                            value * (FEET_TO_METERS * METERS_TO_KILOMETERS) as $type
+                        }
+                        LengthUnits::Mile => {
+                            value * (MILES_TO_METERS * METERS_TO_KILOMETERS) as $type
+                        }
+                        LengthUnits::NauticalMile => {
+                            value * (NAUTICAL_MILES_TO_METERS * METERS_TO_KILOMETERS) as $type
+                        }
+                        LengthUnits::USSurveyFoot => {
+                            value * (SURVEYFOOT_TO_METER * METERS_TO_KILOMETERS) as $type
+                        }
+                    },
+                    LengthUnits::Mile => match source_unit {
+                        LengthUnits::Meters => value * METERS_TO_MILES as $type,
+                        LengthUnits::Kilometers => {
+                            value * (KILOMETERS_TO_METERS * METERS_TO_MILES) as $type
+                        }
+                        LengthUnits::Feet => value * (FEET_TO_METERS * METERS_TO_MILES) as $type,
+                        LengthUnits::Mile => value,
+                        LengthUnits::NauticalMile => {
+                            value * (NAUTICAL_MILES_TO_METERS * METERS_TO_MILES) as $type
+                        }
+                        LengthUnits::USSurveyFoot => {
+                            value * (SURVEYFOOT_TO_METER * METERS_TO_MILES) as $type
+                        }
+                    },
+                    LengthUnits::NauticalMile => match source_unit {
+                        LengthUnits::Meters => value * METERS_TO_NAUTICAL_MILE as $type,
+                        LengthUnits::Kilometers => {
+                            value * (KILOMETERS_TO_METERS * METERS_TO_NAUTICAL_MILE) as $type
+                        }
+                        LengthUnits::Feet => {
+                            value * (FEET_TO_METERS * METERS_TO_NAUTICAL_MILE) as $type
+                        }
+                        LengthUnits::Mile => {
+                            value * (MILES_TO_METERS * METERS_TO_NAUTICAL_MILE) as $type
+                        }
+                        LengthUnits::NauticalMile => value,
+                        LengthUnits::USSurveyFoot => {
+                            value * (SURVEYFOOT_TO_METER * METERS_TO_NAUTICAL_MILE) as $type
+                        }
+                    },
+                    LengthUnits::USSurveyFoot => match source_unit {
+                        LengthUnits::Meters => value * METER_TO_SURVEYFOOT as $type,
+                        LengthUnits::Kilometers => {
+                            value * (KILOMETERS_TO_METERS * METER_TO_SURVEYFOOT) as $type
+                        }
+                        LengthUnits::Feet => {
+                            value * (FEET_TO_METERS * METER_TO_SURVEYFOOT) as $type
+                        }
+                        LengthUnits::Mile => {
+                            value * (MILES_TO_METERS * METER_TO_SURVEYFOOT) as $type
+                        }
+                        LengthUnits::NauticalMile => {
+                            value * (NAUTICAL_MILES_TO_METERS * METER_TO_SURVEYFOOT) as $type
+                        }
+                        LengthUnits::USSurveyFoot => value,
+                    },
                 }
             }
         }
@@ -73,6 +144,7 @@ impl LengthUnits {
             LengthUnits::Feet => "ft",
             LengthUnits::Mile => "mi",
             LengthUnits::NauticalMile => "nmi",
+            LengthUnits::USSurveyFoot => "ussft",
         }
     }
 }
@@ -135,6 +207,9 @@ pub const METERS_TO_KILOMETERS: f64 = 1. / KILOMETERS_TO_METERS;
 pub const NAUTICAL_MILES_TO_METERS: f64 = 1.852E3;
 pub const METERS_TO_NAUTICAL_MILE: f64 = 1. / NAUTICAL_MILES_TO_METERS;
 
+pub const SURVEYFOOT_TO_METER: f64 = 3.048006E-1;
+pub const METER_TO_SURVEYFOOT: f64 = 1. / SURVEYFOOT_TO_METER;
+
 #[cfg(test)]
 mod tests {
     use crate::units::length::LengthUnits;
@@ -147,5 +222,17 @@ mod tests {
             1.0 / 0.3048
         );
         assert_eq!(LengthUnits::Meters.from(1.0, LengthUnits::Feet), 0.3048);
+    }
+
+    #[test]
+    pub fn test_meters_kilometers() {
+        assert_eq!(
+            LengthUnits::Meters.from(1.0, LengthUnits::Kilometers),
+            1000.
+        );
+        assert_eq!(
+            LengthUnits::Kilometers.from(1000.0, LengthUnits::Meters),
+            1.
+        );
     }
 }
