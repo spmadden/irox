@@ -1,6 +1,31 @@
 
 
 
+## v0.4.1 (2024-08-04)
+
+### New Features
+
+ - <csr-id-5c25d79fdfcb3cfd70bdbc472c790bb40c96c86e/> rework the logplot axes again to be more robust
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 3 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Rework the logplot axes again to be more robust ([`5c25d79`](https://github.com/spmadden/irox/commit/5c25d79fdfcb3cfd70bdbc472c790bb40c96c86e))
+</details>
+
 ## v0.4.0 (2024-08-01)
 
 ### New Features
@@ -19,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 10 calendar days.
+ - 4 commits contributed to the release over the course of 10 calendar days.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.0 ([`74d6a21`](https://github.com/spmadden/irox/commit/74d6a21d05f69152f7872b55c1130db097748981))
     - Fix lints ([`6d4065f`](https://github.com/spmadden/irox/commit/6d4065fde94c672170008017a30685ad7a293712))
     - Tweak the way that the logplot does autoscaling ([`0ab8123`](https://github.com/spmadden/irox/commit/0ab81237491d7797da62156f9c8a3fef0d16097e))
     - Update egui to 0.28.0 ([`dfa11be`](https://github.com/spmadden/irox/commit/dfa11be274b8e5a61a40c9965096208d64e1fdba))
