@@ -1,7 +1,34 @@
 
 
 
+## v0.4.1 (2024-08-04)
+
+### New Features
+
+ - <csr-id-611541ee1f65329c7800099c9faa9525e9f1c5b2/> add US Survey Foot to Length, finish impl
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 77 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add US Survey Foot to Length, finish impl ([`611541e`](https://github.com/spmadden/irox/commit/611541ee1f65329c7800099c9faa9525e9f1c5b2))
+</details>
+
 ## v0.4.0 (2024-05-19)
+
+<csr-id-7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e/>
 
 ### Refactor (BREAKING)
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 48 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.0 ([`aacdec7`](https://github.com/spmadden/irox/commit/aacdec7fe68c21fc82cfa0cd0830292b2c5d1ea5))
     - Rename feature std_errors to std to align with other modules ([`7a4c7dc`](https://github.com/spmadden/irox/commit/7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e))
 </details>
 
