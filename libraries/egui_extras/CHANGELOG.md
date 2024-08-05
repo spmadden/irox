@@ -3,6 +3,8 @@
 
 ## v0.4.2 (2024-08-05)
 
+<csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/>
+
 ### Chore
 
  - <csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/> fix lints
@@ -15,7 +17,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -26,6 +28,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.2 ([`3ab0f78`](https://github.com/spmadden/irox/commit/3ab0f78936ee783ae3228044416b93ab140688d3))
     - Fix lints ([`29a9615`](https://github.com/spmadden/irox/commit/29a9615441c4762311484e3b6ecf32745dc3c486))
     - Plots now zoom ([`dcdd6df`](https://github.com/spmadden/irox/commit/dcdd6df468290e02abd9188f3ec68f5aaf3e49c3))
 </details>
