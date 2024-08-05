@@ -1,6 +1,30 @@
 
 
 
+## v0.4.3 (2024-08-05)
+
+### Bug Fixes
+
+ - <csr-id-62973622e93ec1c331d2e7a4d32779f1175302ea/> fix inverted if check in logplot zooming
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix inverted if check in logplot zooming ([`6297362`](https://github.com/spmadden/irox/commit/62973622e93ec1c331d2e7a4d32779f1175302ea))
+</details>
+
 ## v0.4.2 (2024-08-05)
 
 <csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/>
@@ -17,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -28,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.2 ([`f4c2fea`](https://github.com/spmadden/irox/commit/f4c2fea0eb390e0174140c3beb08d7ff845f5627))
     - Release irox-egui-extras v0.4.2 ([`3ab0f78`](https://github.com/spmadden/irox/commit/3ab0f78936ee783ae3228044416b93ab140688d3))
     - Fix lints ([`29a9615`](https://github.com/spmadden/irox/commit/29a9615441c4762311484e3b6ecf32745dc3c486))
     - Plots now zoom ([`dcdd6df`](https://github.com/spmadden/irox/commit/dcdd6df468290e02abd9188f3ec68f5aaf3e49c3))
