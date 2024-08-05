@@ -1,6 +1,35 @@
 
 
 
+## v0.4.2 (2024-08-05)
+
+### Chore
+
+ - <csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/> fix lints
+
+### New Features
+
+ - <csr-id-dcdd6df468290e02abd9188f3ec68f5aaf3e49c3/> plots now zoom
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix lints ([`29a9615`](https://github.com/spmadden/irox/commit/29a9615441c4762311484e3b6ecf32745dc3c486))
+    - Plots now zoom ([`dcdd6df`](https://github.com/spmadden/irox/commit/dcdd6df468290e02abd9188f3ec68f5aaf3e49c3))
+</details>
+
 ## v0.4.1 (2024-08-04)
 
 ### New Features
@@ -11,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 3 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.1 ([`7edfabe`](https://github.com/spmadden/irox/commit/7edfabe6835dd203ecb4530a56a1224e82f6bae9))
     - Rework the logplot axes again to be more robust ([`5c25d79`](https://github.com/spmadden/irox/commit/5c25d79fdfcb3cfd70bdbc472c790bb40c96c86e))
 </details>
 
