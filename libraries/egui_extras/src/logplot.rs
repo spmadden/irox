@@ -29,9 +29,19 @@ impl PlotInteraction {
         if response.drag_started() {
             self.drag_started_pos = response.interact_pointer_pos();
         } else if response.drag_stopped() {
-            // println!("drag ended: {:#?}", self.zoom_area);
+            if let Some(start) = self.drag_started_pos {
+                let first = start.x;
+                if let Some(delta) = self.drag_ended_delta {
+                    let second = start.x + delta.x;
 
-            self.clear();
+                    let overlay_rect = Rect {
+                        min: pos2(first.min(second), -f32::INFINITY),
+                        max: pos2(first.max(second), f32::INFINITY),
+                    };
+                    self.clear();
+                    self.zoom_area = Some(overlay_rect);
+                }
+            }
         } else if response.is_pointer_button_down_on() {
             let new_delt = response.drag_delta();
             let delta = self.drag_ended_delta.get_or_insert(Vec2::default());
@@ -45,7 +55,6 @@ impl PlotInteraction {
                     min: pos2(first.min(second), -f32::INFINITY),
                     max: pos2(first.max(second), f32::INFINITY),
                 };
-                self.zoom_area = Some(overlay_rect);
                 let _shp = painter.rect_filled(
                     overlay_rect,
                     Rounding::ZERO,
@@ -73,6 +82,35 @@ impl BasicPlot {
         BasicPlot {
             data,
             ..Default::default()
+        }
+    }
+    fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
+        if let Some(area) = self.interaction.zoom_area.take() {
+            let min_x = self.x_axis.unscale_value(area.min.x);
+            let max_x = self.x_axis.unscale_value(area.max.x);
+            self.x_axis.zoomed_range = Some((min_x, max_x));
+        }
+        let (zd, mousepos) = ui.input(|i| (i.zoom_delta(), i.pointer.latest_pos()));
+        if (zd - 1.0).abs() == 0.0 {
+            let Some(mousepos) = mousepos else {
+                return;
+            };
+            if response.rect.contains(mousepos) {
+                let zmouse = self.x_axis.screen_to_model(mousepos.x);
+                let (zrmin, zrmax) = self
+                    .x_axis
+                    .zoomed_range
+                    .get_or_insert({ (self.x_axis.min_val, self.x_axis.max_val) });
+                let zrange = *zrmax - *zrmin;
+                let zmousepct = (zmouse - *zrmin) / zrange;
+                let new_range = zrange / zd as f64;
+                let min = zmouse - new_range * zmousepct;
+                let max = zmouse + new_range * (1. - zmousepct);
+                self.x_axis.zoomed_range = Some((min, max));
+            }
+        }
+        if response.double_clicked() {
+            self.x_axis.zoomed_range = None;
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
@@ -105,8 +143,13 @@ impl BasicPlot {
             {
                 ui.close_menu();
             }
+            if ui.button("reset zoom").clicked() {
+                self.x_axis.zoomed_range = None;
+                ui.close_menu();
+            }
         });
         self.interaction.update(&mut response, &mut painter);
+        self.check_zoom(ui, &mut response);
 
         let rect = response.rect;
         let width = rect.width();
@@ -352,6 +395,8 @@ pub struct Axis {
     pub screen_limit: f32,
     pub detents: Vec<(f32, String)>,
     pub draw_log_clip_warning: bool,
+
+    pub zoomed_range: Option<(f64, f64)>,
 }
 
 impl Axis {
@@ -384,6 +429,10 @@ impl Axis {
         } else if self.scale_mode == ScaleMode::Log10 && self.min_val <= 0.0 {
             self.draw_log_clip_warning = true;
             self.min_val = f64::MIN_POSITIVE;
+        }
+        if let Some((min, max)) = self.zoomed_range {
+            self.min_val = min;
+            self.max_val = max;
         }
 
         self.range = self.max_val - self.min_val;

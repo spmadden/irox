@@ -37,6 +37,8 @@ pub fn main() {
 
 pub struct TestApp {
     log_plot: BasicPlot,
+    log_plot2: BasicPlot,
+    log_plot3: BasicPlot,
     show_bars: bool,
     show_serde: bool,
     show_visuals: bool,
@@ -47,20 +49,32 @@ impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
         let mut t;
         let mut pts = Vec::with_capacity(1000);
+        let mut pts2 = Vec::with_capacity(1000);
+        let mut pts3 = Vec::with_capacity(1000);
         for x in 0..=1000 {
             t = (x as f64 / 1000. * 6. * TAU).sin() + 1.;
             pts.push(PlotPoint {
                 x: x as f64,
+                y: t, // / 1000. + 1000.,
+            });
+            pts2.push(PlotPoint {
+                x: x as f64,
                 y: t / 1000. + 1000.,
+            });
+            pts3.push(PlotPoint {
+                x: x as f64,
+                y: t * 100.,
             });
         }
 
         TestApp {
             log_plot: BasicPlot::new(Arc::new(pts)),
+            log_plot2: BasicPlot::new(Arc::new(pts2)),
+            log_plot3: BasicPlot::new(Arc::new(pts3)),
             show_bars: false,
             show_serde: false,
-            show_about: true,
-            show_visuals: true,
+            show_about: false,
+            show_visuals: false,
             show_plot: true,
         }
     }
@@ -109,6 +123,20 @@ impl App for TestApp {
                 .open(&mut self.show_plot)
                 .show(ctx, |ui| {
                     self.log_plot.show(ui);
+                });
+            Window::new("test log plot 2")
+                .constrain(true)
+                .default_width(500.)
+                .open(&mut self.show_plot)
+                .show(ctx, |ui| {
+                    self.log_plot2.show(ui);
+                });
+            Window::new("test log plot 3")
+                .constrain(true)
+                .default_width(500.)
+                .open(&mut self.show_plot)
+                .show(ctx, |ui| {
+                    self.log_plot3.show(ui);
                 });
         }
         if self.show_about {
