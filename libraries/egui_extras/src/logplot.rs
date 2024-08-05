@@ -91,7 +91,7 @@ impl BasicPlot {
             self.x_axis.zoomed_range = Some((min_x, max_x));
         }
         let (zd, mousepos) = ui.input(|i| (i.zoom_delta(), i.pointer.latest_pos()));
-        if (zd - 1.0).abs() == 0.0 {
+        if (zd - 1.0).abs() != 0.0 {
             let Some(mousepos) = mousepos else {
                 return;
             };
