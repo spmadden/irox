@@ -100,7 +100,7 @@ impl BasicPlot {
                 let (zrmin, zrmax) = self
                     .x_axis
                     .zoomed_range
-                    .get_or_insert({ (self.x_axis.min_val, self.x_axis.max_val) });
+                    .get_or_insert((self.x_axis.min_val, self.x_axis.max_val));
                 let zrange = *zrmax - *zrmin;
                 let zmousepct = (zmouse - *zrmin) / zrange;
                 let new_range = zrange / zd as f64;
