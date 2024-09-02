@@ -11,7 +11,13 @@ mod round;
 pub use fixed::*;
 mod fixed;
 mod str;
+cfg_feature_alloc! {
+    pub use pyramids::*;
+    mod pyramids;
+}
+
 pub use str::*;
+use crate::cfg_feature_alloc;
 
 ///
 /// Standard buffer functions

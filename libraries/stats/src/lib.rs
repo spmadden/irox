@@ -18,6 +18,7 @@ pub mod filter;
 pub mod gaussian;
 pub mod streaming;
 pub mod tdigest;
+pub mod pyramid;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DistributionParams {
