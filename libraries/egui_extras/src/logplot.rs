@@ -5,8 +5,9 @@
 //!
 //! Log plotting widgets.
 
+use egui::epaint::TextShape;
 use egui::{
-    pos2, Align, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Stroke,
+    pos2, Align, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Shape, Stroke,
     TextStyle, Ui, Vec2,
 };
 use egui_plot::PlotPoint;
@@ -90,6 +91,16 @@ impl BasicPlot {
         self.title = Some(title.as_ref().to_string());
         self
     }
+    #[must_use]
+    pub fn with_x_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
+        self.x_axis.axis_label = Some(title.as_ref().to_string());
+        self
+    }
+    #[must_use]
+    pub fn with_y_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
+        self.y_axis.axis_label = Some(title.as_ref().to_string());
+        self
+    }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         if let Some(area) = self.interaction.zoom_area.take() {
             let min_x = self.x_axis.unscale_value(area.min.x);
@@ -162,6 +173,41 @@ impl BasicPlot {
         let width = rect.width();
         let height = rect.height();
 
+        // setup the y-axis label (if it exists)
+        let mut y_label_additional_width = 0.0;
+        if let Some(y_label) = &self.y_axis.axis_label {
+            let galley = painter.layout_no_wrap(
+                y_label.to_string(),
+                large_font.clone(),
+                ui.visuals().text_color(),
+            );
+            y_label_additional_width += galley.size().y + 5.;
+            let mut pos = rect.left_center();
+            pos.y += galley.size().x / 2.0;
+            painter.add(Shape::Text(
+                TextShape::new(pos, galley, ui.visuals().text_color())
+                    .with_angle(-std::f32::consts::FRAC_PI_2),
+            ));
+        }
+        let mut x_label_additional_width = 0.0;
+        if let Some(x_label) = &self.x_axis.axis_label {
+            let galley = painter.layout_no_wrap(
+                x_label.to_string(),
+                large_font.clone(),
+                ui.visuals().text_color(),
+            );
+            let mut pos = rect.center_bottom();
+            pos.y -= galley.size().y;
+            x_label_additional_width += galley.size().y;
+            painter.text(
+                pos,
+                Align2::CENTER_CENTER,
+                x_label,
+                large_font.clone(),
+                ui.visuals().text_color(),
+            );
+        }
+
         // layout all the detents along the Y-axis to see how far we need to offset it from the
         // left side of the screen in the X-axis
         let x_offset = self
@@ -174,22 +220,25 @@ impl BasicPlot {
                 galley.size().x
             })
             .reduce(f32::max)
-            .unwrap_or(width * 0.1);
+            .unwrap_or(width * 0.1)
+            + y_label_additional_width;
+
+        let y_offset = 0.0 + x_label_additional_width;
 
         let y_axis_x_offset = rect.min.x + x_offset + 5.;
         let y_axis_y_min = rect.min.y + height * 0.05;
         let y_axis_y_max = rect.min.y + height * 0.95;
         let x_axis_x_min = y_axis_x_offset;
         let x_axis_x_max = rect.min.x + width * 0.98;
-        let x_axis_y_offset = y_axis_y_max;
+        let x_axis_y_offset = y_axis_y_max - y_offset;
 
         self.x_axis.screen_origin = x_axis_x_min;
         self.x_axis.screen_limit = x_axis_x_max;
         self.x_axis.screen_range = x_axis_x_max - x_axis_x_min;
         self.x_axis.incr_sign = 1.0;
         self.y_axis.screen_origin = y_axis_y_min;
-        self.y_axis.screen_limit = y_axis_y_max;
-        self.y_axis.screen_range = y_axis_y_max - y_axis_y_min;
+        self.y_axis.screen_limit = x_axis_y_offset;
+        self.y_axis.screen_range = x_axis_y_offset - y_axis_y_min;
         self.y_axis.incr_sign = -1.0;
 
         let points = &self.data;
@@ -219,7 +268,7 @@ impl BasicPlot {
                     },
                     Pos2 {
                         x: detent.0,
-                        y: y_axis_y_max,
+                        y: x_axis_y_offset,
                     },
                 ],
                 minor_stroke,
@@ -257,7 +306,7 @@ impl BasicPlot {
         painter.line_segment(
             [
                 Pos2::new(y_axis_x_offset, y_axis_y_min),
-                Pos2::new(y_axis_x_offset, y_axis_y_max),
+                Pos2::new(y_axis_x_offset, x_axis_y_offset),
             ],
             major_stroke,
         );
@@ -413,6 +462,7 @@ pub struct Axis {
     pub draw_log_clip_warning: bool,
 
     pub zoomed_range: Option<(f64, f64)>,
+    pub axis_label: Option<String>,
 }
 
 impl Axis {
