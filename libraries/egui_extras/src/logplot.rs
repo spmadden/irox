@@ -75,6 +75,7 @@ pub struct BasicPlot {
     pub x_axis: Axis,
     pub y_axis: Axis,
     pub interaction: PlotInteraction,
+    pub title: Option<String>,
 }
 
 impl BasicPlot {
@@ -83,6 +84,11 @@ impl BasicPlot {
             data,
             ..Default::default()
         }
+    }
+    #[must_use]
+    pub fn with_title<T: AsRef<str>>(mut self, title: T) -> Self {
+        self.title = Some(title.as_ref().to_string());
+        self
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         if let Some(area) = self.interaction.zoom_area.take() {
@@ -118,6 +124,7 @@ impl BasicPlot {
         let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
         let caution_color = ui.visuals().warn_fg_color;
         let small_font = TextStyle::Small.resolve(ui.style());
+        let large_font = TextStyle::Heading.resolve(ui.style());
 
         let size = ui.available_size();
         let mut draw_log_warning =
@@ -294,6 +301,15 @@ impl BasicPlot {
                 "Warning: some points <= 0 were skipped in log10/dB mode.".to_string(),
                 small_font.clone(),
                 caution_color,
+            );
+        }
+        if let Some(title) = &self.title {
+            painter.text(
+                rect.center_top(),
+                Align2::CENTER_TOP,
+                title,
+                large_font.clone(),
+                ui.visuals().text_color(),
             );
         }
     }

@@ -66,11 +66,14 @@ impl TestApp {
                 y: t * 100.,
             });
         }
+        let log_plot = BasicPlot::new(Arc::new(pts)).with_title("log plot 1");
+        let log_plot2 = BasicPlot::new(Arc::new(pts2)).with_title("log plot 2");
+        let log_plot3 = BasicPlot::new(Arc::new(pts3)).with_title("log plot 3");
 
         TestApp {
-            log_plot: BasicPlot::new(Arc::new(pts)),
-            log_plot2: BasicPlot::new(Arc::new(pts2)),
-            log_plot3: BasicPlot::new(Arc::new(pts3)),
+            log_plot,
+            log_plot2,
+            log_plot3,
             show_bars: false,
             show_serde: false,
             show_about: false,
