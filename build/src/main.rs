@@ -43,7 +43,7 @@ enum Commands {
     /// Runs `cargo check` for all targets
     Check,
     /// Sets up for a release
-    Release{
+    Release {
         /// Additional arguments
         args: Vec<String>,
     },
@@ -58,6 +58,8 @@ enum Commands {
     Package,
     /// Checks for unused modules & deps that could be removed.
     Unused,
+    /// Runs quick checks, `ci` without the actual builds/checks
+    QuickChecks,
 }
 
 #[derive(Debug, Default, Parser)]
@@ -82,11 +84,12 @@ fn main() -> Result<(), Error> {
         Commands::About => about()?,
         Commands::Doc => doc()?,
         Commands::Check => check_all()?,
-        Commands::Release {args} => release(args)?,
+        Commands::Release { args } => release(args)?,
         Commands::New { dest } => new(&dest)?,
         Commands::BuildPerf => buildperf()?,
         Commands::Package => package()?,
         Commands::Unused => unused()?,
+        Commands::QuickChecks => quick_checks()?,
     }
     Ok(())
 }
@@ -106,6 +109,16 @@ fn ci() -> Result<(), Error> {
     format_check()?;
     lints_deny()?;
     test()?;
+    about()?;
+    doc()?;
+    upgrade()?;
+    Ok(())
+}
+
+fn quick_checks() -> Result<(), Error> {
+    deny()?;
+    format_check()?;
+    lints_deny()?;
     about()?;
     doc()?;
     upgrade()?;
@@ -261,7 +274,7 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
         "--no-conservative-pre-release-version-handling",
         "--no-isolate-dependencies-from-breaking-changes",
         "-u",
-        "--verbose"
+        "--verbose",
     ]);
     for v in &in_args {
         rgs.push(v.as_str());
@@ -276,10 +289,7 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
             "--color=always",
         ],
     )?;
-    exec_passthru(
-        "cargo",
-        &rgs,
-    )?;
+    exec_passthru("cargo", &rgs)?;
     logend();
     Ok(())
 }
