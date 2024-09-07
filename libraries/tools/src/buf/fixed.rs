@@ -12,6 +12,7 @@ use core::ops::{Index, IndexMut};
 
 ///
 /// Fixed length stack allocated buffer.  Basically a stack-allocated [`std::vec::Vec`]
+#[derive(Clone)]
 pub struct FixedBuf<const N: usize, T: Sized> {
     buf: [Option<T>; N],
     len: usize,
