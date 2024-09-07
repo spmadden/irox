@@ -10,14 +10,21 @@ const PAGE_SIZE: usize = 0x1000; // 4096
 const PAGE_SHIFT: usize = 12;
 const DATA_MASK: usize = 0x0FFF;
 
-#[derive(Default)]
-pub struct UnlimitedBuffer<T> {
+///
+/// Zero re-allocation linked-page buffer.  Faster than a Vec for large datasets
+/// because it does not require pre-allocation of memory to achieve zero-reallocation.
+/// However, wastes memory for very small data sets since the minimum size quanta
+/// that allocates is 4k * sizeof(T).  IE, a `u8` page will be 4k wide, but a
+/// `u128` page will be 64k wide and a `Box<T>` page will either be 32k (standard
+/// types) or 64k wide (`dyn` types)
+#[derive(Default, Clone)]
+pub struct UnlimitedBuffer<T: Clone> {
     #[allow(clippy::linkedlist)]
     data: LinkedList<FixedBuf<PAGE_SIZE, T>>,
     len: u64,
 }
 
-impl<T> UnlimitedBuffer<T> {
+impl<T: Clone> UnlimitedBuffer<T> {
     pub fn new() -> UnlimitedBuffer<T> {
         UnlimitedBuffer {
             data: LinkedList::new(),
