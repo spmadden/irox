@@ -11,13 +11,12 @@ mod round;
 pub use fixed::*;
 mod fixed;
 mod str;
-pub use str::*;
 use crate::cfg_feature_alloc;
+pub use str::*;
 cfg_feature_alloc! {
     pub use unlimited::*;
     mod unlimited;
 }
-
 
 ///
 /// Standard buffer functions

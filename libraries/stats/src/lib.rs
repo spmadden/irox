@@ -16,9 +16,9 @@ pub use gaussian as standard;
 pub mod decay;
 pub mod filter;
 pub mod gaussian;
+pub mod pyramid;
 pub mod streaming;
 pub mod tdigest;
-pub mod pyramid;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DistributionParams {
