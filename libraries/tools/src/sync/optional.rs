@@ -2,11 +2,12 @@
 // Copyright 2023 IROX Contributors
 //
 
-//! Contains the [`SynchronizedOptional`] and other associated primitives
+//! Contains the [`SynchronizedOptional`], [`SharedCell`] and other associated primitives
 
 use alloc::sync::Arc;
 use core::fmt::{Debug, Formatter};
-use std::sync::RwLock;
+use core::ops::Deref;
+use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 ///
 /// Basically a [`RwLock<Option<Arc<T>>>`] - the benefits here being:
@@ -127,5 +128,137 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:?}", self.get())
+    }
+}
+
+///
+/// Atomic shared version of `OnceLock` - backed by an `Arc<RwLock<Option<T>>>`.
+///
+/// ```
+/// # use irox_tools::sync::SharedCell;
+/// let value = SharedCell::<bool>::empty(); // or default()
+/// assert_eq!(None, value.take());
+///
+/// value.set(true);
+/// assert_eq!(Some(true), value.take());
+/// assert_eq!(None, value.take());
+/// ```
+#[derive(Debug)]
+pub struct SharedCell<T> {
+    inner: Arc<RwLock<Option<T>>>,
+}
+impl<T> Clone for SharedCell<T> {
+    fn clone(&self) -> Self {
+        SharedCell {
+            inner: self.inner.clone(),
+        }
+    }
+}
+impl<T> Default for SharedCell<T> {
+    fn default() -> Self {
+        SharedCell {
+            inner: Arc::new(RwLock::new(None)),
+        }
+    }
+}
+impl<T> From<Option<T>> for SharedCell<T> {
+    fn from(value: Option<T>) -> Self {
+        SharedCell {
+            inner: Arc::new(RwLock::new(value)),
+        }
+    }
+}
+impl<T> SharedCell<T> {
+    /// Creates a new, unset cell.
+    pub fn empty() -> Self {
+        None.into()
+    }
+    /// Create a new, set cell with the provided value.
+    pub fn new(val: T) -> Self {
+        Some(val).into()
+    }
+    /// Sets the value, throwing away any old value
+    pub fn set(&self, val: T) {
+        if let Ok(mut lock) = self.inner.write() {
+            *lock = Some(val)
+        }
+    }
+    /// Takes the value, if previously set.
+    pub fn take(&self) -> Option<T> {
+        if let Ok(mut lock) = self.inner.write() {
+            return lock.take();
+        }
+        None
+    }
+    /// Peeks at the value, does not consume it.
+    pub fn peek<V: Fn(Option<&T>)>(&self, func: V) {
+        if let Ok(lock) = self.inner.read() {
+            func(lock.as_ref())
+        }
+    }
+
+    ///
+    /// Returns a shared (locked) reference to the inner object
+    pub fn as_ref(&self) -> ReadGuard<T> {
+        if let Ok(lock) = self.inner.read() {
+            return Some(lock).into();
+        }
+        None.into()
+    }
+
+    /// Mutably peeks at the value, allows for edits.
+    pub fn peek_mut<V: FnMut(Option<&mut T>)>(&self, mut func: V) {
+        if let Ok(mut lock) = self.inner.write() {
+            func(lock.as_mut())
+        }
+    }
+    ///
+    /// Returns a mutable (locked) reference to the inner object.
+    pub fn as_mut(&self) -> WriteGuard<T> {
+        if let Ok(lock) = self.inner.write() {
+            return Some(lock).into();
+        }
+        None.into()
+    }
+}
+/// Type-safe wrapper around a [`RwLockReadGuard`]
+#[derive(Default)]
+pub struct ReadGuard<'a, T> {
+    lock: Option<RwLockReadGuard<'a, Option<T>>>,
+}
+impl<'a, T> From<Option<RwLockReadGuard<'a, Option<T>>>> for ReadGuard<'a, T> {
+    fn from(value: Option<RwLockReadGuard<'a, Option<T>>>) -> Self {
+        ReadGuard { lock: value }
+    }
+}
+impl<'a, T> Deref for ReadGuard<'a, T> {
+    type Target = Option<T>;
+
+    fn deref(&self) -> &Self::Target {
+        if let Some(lock) = &self.lock {
+            return lock.deref();
+        }
+        &None
+    }
+}
+
+/// Type-safe wrapper around a [`RwLockWriteGuard`]
+#[derive(Default)]
+pub struct WriteGuard<'a, T> {
+    lock: Option<RwLockWriteGuard<'a, Option<T>>>,
+}
+impl<'a, T> Deref for WriteGuard<'a, T> {
+    type Target = Option<T>;
+
+    fn deref(&self) -> &Self::Target {
+        if let Some(lock) = &self.lock {
+            return lock.deref();
+        }
+        &None
+    }
+}
+impl<'a, T> From<Option<RwLockWriteGuard<'a, Option<T>>>> for WriteGuard<'a, T> {
+    fn from(value: Option<RwLockWriteGuard<'a, Option<T>>>) -> Self {
+        WriteGuard { lock: value }
     }
 }
