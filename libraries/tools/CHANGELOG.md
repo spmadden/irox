@@ -1,6 +1,45 @@
 
 
 
+## v0.8.5 (2024-09-11)
+
+### Chore
+
+ - <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/> fixup lints & formatting
+
+### New Features
+
+ - <csr-id-15ab6224386e56d53472b3991f2078d5f469e83e/> new SharedCell wrapper around Arc<RwLock<Option<T>>>
+ - <csr-id-98d5046d137ecb02f5270ff794de182df044c606/> add new unlimited/paged buffer that does not reallocate
+ - <csr-id-165dc1952bc470b07ab44a4834dc31edb4300a04/> derive clone on fixedbuf
+
+### Other
+
+ - <csr-id-53f8eaa1d223ce33a9898de829d2557ca30832ed/> ignore the documentation that's not rustdoc tests in errors
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 40 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New SharedCell wrapper around Arc<RwLock<Option<T>>> ([`15ab622`](https://github.com/spmadden/irox/commit/15ab6224386e56d53472b3991f2078d5f469e83e))
+    - Ignore the documentation that's not rustdoc tests in errors ([`53f8eaa`](https://github.com/spmadden/irox/commit/53f8eaa1d223ce33a9898de829d2557ca30832ed))
+    - Fixup lints & formatting ([`a359753`](https://github.com/spmadden/irox/commit/a35975360f42880d6e74ceb4443ccd4093c27975))
+    - Add new unlimited/paged buffer that does not reallocate ([`98d5046`](https://github.com/spmadden/irox/commit/98d5046d137ecb02f5270ff794de182df044c606))
+    - Derive clone on fixedbuf ([`165dc19`](https://github.com/spmadden/irox/commit/165dc1952bc470b07ab44a4834dc31edb4300a04))
+</details>
+
 ## v0.8.4 (2024-08-01)
 
 ### New Features
@@ -11,7 +50,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 11 calendar days.
+ - 2 commits contributed to the release.
  - 13 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +62,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.4 ([`62055d3`](https://github.com/spmadden/irox/commit/62055d336f90405466124924e9dee3da59f8916c))
     - New const hex! macro for compile-time hex string literals ([`08ae628`](https://github.com/spmadden/irox/commit/08ae6281049fcea8ac12536cce1792bf52c7d735))
 </details>
 
@@ -93,7 +133,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release over the course of 33 calendar days.
+ - 15 commits contributed to the release.
  - 36 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -155,7 +195,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 13 calendar days.
+ - 9 commits contributed to the release.
  - 27 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -268,7 +308,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 12 commits contributed to the release over the course of 2 calendar days.
+ - 12 commits contributed to the release.
  - 28 days passed between releases.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -329,7 +369,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 35 calendar days.
+ - 7 commits contributed to the release.
  - 48 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -554,7 +594,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 25 commits contributed to the release over the course of 8 calendar days.
+ - 25 commits contributed to the release.
  - 37 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -593,7 +633,7 @@
     - Now 'no_std' capable (without the 'std' feature) ([`a9c45bf`](https://github.com/spmadden/irox/commit/a9c45bfedc2d7b35a1f726ee5cd7fc555ebd6c81))
 </details>
 
-## v0.4.1 (2023-12-06)
+## v0.4.1 (2023-12-05)
 
 ### New Features
 
@@ -604,7 +644,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 4 calendar days.
+ - 3 commits contributed to the release.
  - 6 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -621,7 +661,7 @@
     - New hexdump module ([`4e6c896`](https://github.com/spmadden/irox/commit/4e6c8961dc8820c39ccabc0e8283f5d50aefed2f))
 </details>
 
-## v0.4.0 (2023-11-29)
+## v0.4.0 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
@@ -647,7 +687,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 14 calendar days.
+ - 7 commits contributed to the release.
  - 23 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -720,7 +760,7 @@
     - Add new RetainTake for Vec and VecDeque ([`1f0e241`](https://github.com/spmadden/irox/commit/1f0e241f6207cf7b91b74377d393a0f867c1bb92))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 <csr-id-3793f0549be87bcce984d72c6153851be869cb43/>
 <csr-id-f8ab392c14af57bb2f6198c45c82c602225ac356/>
@@ -756,7 +796,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release over the course of 1 calendar day.
+ - 15 commits contributed to the release.
  - 14 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -785,7 +825,7 @@
     - Bits and MutBits no longer require Read & Write ([`b791aca`](https://github.com/spmadden/irox/commit/b791aca7dd8c0df67ed2912863d170b70684ae28))
 </details>
 
-## v0.2.2 (2023-10-16)
+## v0.2.2 (2023-10-15)
 
 ### Documentation
 
@@ -806,7 +846,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 7 calendar days.
+ - 7 commits contributed to the release.
  - 7 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -827,7 +867,7 @@
     - New Scanner to scan a data stream for tokens ([`c6b8e0f`](https://github.com/spmadden/irox/commit/c6b8e0f938b71b0da764a33b5ba837cd012a9928))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 <csr-id-c1fe9a1fe0a599202b7bf402bb6d81fc5eccc9e2/>
 
@@ -846,7 +886,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 12 calendar days.
+ - 6 commits contributed to the release.
  - 19 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -866,7 +906,7 @@
     - Some new static helper functions ([`6465a08`](https://github.com/spmadden/irox/commit/6465a082becb8f100184dd5cf166428c3d01e1b0))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -917,7 +957,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 27 commits contributed to the release over the course of 62 calendar days.
+ - 27 commits contributed to the release.
  - 26 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
