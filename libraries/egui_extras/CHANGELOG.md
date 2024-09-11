@@ -1,6 +1,33 @@
 
 
 
+## v0.4.4 (2024-09-11)
+
+### New Features
+
+ - <csr-id-6927e8b9576c895bf41455d68c7263635bfa64cc/> add axis labels to BasicPlot
+ - <csr-id-26394ddde84dd66c75d8197abf83d8ca0ddbacf0/> adding title to BasicPlot
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 36 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add axis labels to BasicPlot ([`6927e8b`](https://github.com/spmadden/irox/commit/6927e8b9576c895bf41455d68c7263635bfa64cc))
+    - Adding title to BasicPlot ([`26394dd`](https://github.com/spmadden/irox/commit/26394ddde84dd66c75d8197abf83d8ca0ddbacf0))
+</details>
+
 ## v0.4.3 (2024-08-05)
 
 ### Bug Fixes
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.3 ([`5826d07`](https://github.com/spmadden/irox/commit/5826d07803d94b3d231d5ea5a56ee2fb9298f25d))
     - Fix inverted if check in logplot zooming ([`6297362`](https://github.com/spmadden/irox/commit/62973622e93ec1c331d2e7a4d32779f1175302ea))
 </details>
 
@@ -102,7 +130,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 10 calendar days.
+ - 4 commits contributed to the release.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -138,7 +166,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 2 calendar days.
+ - 7 commits contributed to the release.
  - 2 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -159,7 +187,7 @@
     - Start to generate build info for egui-extras ([`162f02e`](https://github.com/spmadden/irox/commit/162f02e7597a778f7220903e14bf4ab56b49d852))
 </details>
 
-## v0.3.11 (2024-07-07)
+## v0.3.11 (2024-07-06)
 
 ### New Features
 
@@ -199,7 +227,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 26 calendar days.
+ - 3 commits contributed to the release.
  - 41 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -228,7 +256,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 13 calendar days.
+ - 4 commits contributed to the release.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -287,7 +315,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 26 calendar days.
+ - 5 commits contributed to the release.
  - 50 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -322,7 +350,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 10 calendar days.
+ - 3 commits contributed to the release.
  - 25 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -365,7 +393,7 @@
     - Fix packaging on linux ([`b4a61ea`](https://github.com/spmadden/irox/commit/b4a61eaee2797b459366487c8b2c60dd19b46f99))
 </details>
 
-## v0.3.4 (2023-12-06)
+## v0.3.4 (2023-12-05)
 
 ### New Features
 
@@ -413,7 +441,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 14 calendar days.
+ - 6 commits contributed to the release.
  - 27 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -459,7 +487,7 @@
     - Add new progressbar impl with indeterminate mode ([`69bb1e4`](https://github.com/spmadden/irox/commit/69bb1e4bcb962b22bcb7d46582c2b877a03b6322))
 </details>
 
-## v0.3.1 (2023-10-30)
+## v0.3.1 (2023-10-29)
 
 <csr-id-7218f70a16f1a21f1ed716bb7aaa712511645476/>
 
@@ -487,7 +515,7 @@
     - ALL THE LINTS. ([`7218f70`](https://github.com/spmadden/irox/commit/7218f70a16f1a21f1ed716bb7aaa712511645476))
 </details>
 
-## v0.3.0 (2023-10-16)
+## v0.3.0 (2023-10-15)
 
 ### New Features (BREAKING)
 
@@ -497,7 +525,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 7 calendar days.
+ - 3 commits contributed to the release.
  - 7 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -514,7 +542,7 @@
     - Bump egui dep to 0.23.0 ([`ecf8c32`](https://github.com/spmadden/irox/commit/ecf8c32dab7374550c63ad62aa3a6637238bdca9))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/>
 
@@ -526,7 +554,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 19 calendar days.
+ - 2 commits contributed to the release.
  - 19 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -542,7 +570,7 @@
     - Fix up the readmes for publishing ([`f99614a`](https://github.com/spmadden/irox/commit/f99614a5ce3368072b4d44dacede0e6e847b0b2e))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
@@ -565,7 +593,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 28 calendar days.
+ - 5 commits contributed to the release.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
