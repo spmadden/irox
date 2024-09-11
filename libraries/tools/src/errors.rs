@@ -8,7 +8,7 @@
 crate::cfg_feature_alloc! {
     ///
     /// Macro to build a fairly standard error struct.
-    /// ```no_run
+    /// ```ignore
     /// extern crate alloc;
     /// #[derive(Debug, Clone, Eq, PartialEq)]
     /// pub struct ErrorName {
@@ -44,10 +44,11 @@ crate::cfg_feature_alloc! {
 }
 ///
 /// Macro to implement from converters for error types generated with [`impl_error!`]
-/// ```no_run
+/// ```ignore
+/// # struct ErrorName;
 /// impl From<source> for ErrorName {
 ///     fn from(value: source) -> Self {
-///         Error {
+///         ErrorName {
 ///             error_type: ty,
 ///             msg: value.to_string(),
 ///         }
@@ -69,11 +70,11 @@ macro_rules! impl_from_error {
 }
 
 /// Macro to template out standard builder functions for types build with [`impl_error`]
-/// ```no_run
+/// ```ignore
 /// impl ErrorName {
 ///     pub fn name(msg: String) -> Self {
 ///         Self {
-///             error_type: $ty,
+///             error_type: ty,
 ///             msg,
 ///         }
 ///     }
