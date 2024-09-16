@@ -1,6 +1,31 @@
 
 
 
+## v0.4.5 (2024-09-15)
+
+### New Features
+
+ - <csr-id-db1fcf488d8ec101ee79ebbf0c8363f30bad9a11/> new ability in logplot to format the axis detents.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 4 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New ability in logplot to format the axis detents. ([`db1fcf4`](https://github.com/spmadden/irox/commit/db1fcf488d8ec101ee79ebbf0c8363f30bad9a11))
+</details>
+
 ## v0.4.4 (2024-09-11)
 
 ### New Features
@@ -12,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 36 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.4 ([`0da8d38`](https://github.com/spmadden/irox/commit/0da8d38d68179c142db4df25a7591bb9f5ab2d1a))
     - Add axis labels to BasicPlot ([`6927e8b`](https://github.com/spmadden/irox/commit/6927e8b9576c895bf41455d68c7263635bfa64cc))
     - Adding title to BasicPlot ([`26394dd`](https://github.com/spmadden/irox/commit/26394ddde84dd66c75d8197abf83d8ca0ddbacf0))
 </details>
