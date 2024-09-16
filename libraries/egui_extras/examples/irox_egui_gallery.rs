@@ -69,7 +69,9 @@ impl TestApp {
         let log_plot = BasicPlot::new(Arc::new(pts))
             .with_title("log plot 1")
             .with_x_axis_label("x axis label for 1")
-            .with_y_axis_label("y axis label for 1");
+            .with_y_axis_label("y axis label for 1")
+            .with_y_axis_formatter(Box::new(|val| format!("{val:.3}")))
+            .with_x_axis_formatter(Box::new(|val| format!("{val:.1}")));
         let log_plot2 = BasicPlot::new(Arc::new(pts2)).with_title("log plot 2");
         let log_plot3 = BasicPlot::new(Arc::new(pts3)).with_title("log plot 3");
 

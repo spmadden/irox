@@ -14,6 +14,10 @@ use egui_plot::PlotPoint;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
+/// A tracking struct for an user interaction with a plot.
+///
+/// This tracks whether a drag has started, the end delta of the drag, and the
+/// current "painter coordinates" of the highlighted area by the mouse.
 #[derive(Default)]
 pub struct PlotInteraction {
     pub drag_started_pos: Option<Pos2>,
@@ -21,18 +25,25 @@ pub struct PlotInteraction {
     pub zoom_area: Option<Rect>,
 }
 impl PlotInteraction {
+    /// Clear and reset the interaction state back to zero.
     pub fn clear(&mut self) {
         self.drag_ended_delta = None;
         self.drag_started_pos = None;
         self.zoom_area = None;
     }
+    /// Call update on every frame to track the current interaction state.
     pub fn update(&mut self, response: &mut Response, painter: &mut Painter) {
         if response.drag_started() {
+            // mark that a drag has started this frame.
             self.drag_started_pos = response.interact_pointer_pos();
         } else if response.drag_stopped() {
+            // mark that a drag has stopped this frame.
             if let Some(start) = self.drag_started_pos {
+                // ensure that the location the drag started was tracked.
                 let first = start.x;
                 if let Some(delta) = self.drag_ended_delta {
+                    // make sure the mouse moved between frames, and then update
+                    // the zoom rectangle
                     let second = start.x + delta.x;
 
                     let overlay_rect = Rect {
@@ -44,6 +55,7 @@ impl PlotInteraction {
                 }
             }
         } else if response.is_pointer_button_down_on() {
+            // update the drag delta from the start location as the mouse moves.
             let new_delt = response.drag_delta();
             let delta = self.drag_ended_delta.get_or_insert(Vec2::default());
             delta.x += new_delt.x;
@@ -56,6 +68,7 @@ impl PlotInteraction {
                     min: pos2(first.min(second), -f32::INFINITY),
                     max: pos2(first.max(second), f32::INFINITY),
                 };
+                // paint the horizontal drag rectangle.
                 let _shp = painter.rect_filled(
                     overlay_rect,
                     Rounding::ZERO,
@@ -68,14 +81,20 @@ impl PlotInteraction {
 }
 
 ///
-/// Basic plot, with ability to switch between linear and log axes.
+/// Basic plot, with ability to switch between linear and log axes.  This widget
+/// tracks state and is meant to be saved across multiple frames.
 #[derive(Default)]
 pub struct BasicPlot {
+    /// The data to plot each frame.
     pub data: Arc<Vec<PlotPoint>>,
     pub name: Arc<String>,
+    /// The X-axis settings
     pub x_axis: Axis,
+    /// The Y-axis settings
     pub y_axis: Axis,
+    /// The Interaction tracking of the plot
     pub interaction: PlotInteraction,
+    /// Optional title for this plot.
     pub title: Option<String>,
 }
 
@@ -99,6 +118,16 @@ impl BasicPlot {
     #[must_use]
     pub fn with_y_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
         self.y_axis.axis_label = Some(title.as_ref().to_string());
+        self
+    }
+    #[must_use]
+    pub fn with_x_axis_formatter(mut self, fmtr: Box<dyn Fn(f64) -> String>) -> Self {
+        self.x_axis.axis_formatter = Some(fmtr);
+        self
+    }
+    #[must_use]
+    pub fn with_y_axis_formatter(mut self, fmtr: Box<dyn Fn(f64) -> String>) -> Self {
+        self.y_axis.axis_formatter = Some(fmtr);
         self
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
@@ -450,19 +479,36 @@ pub enum ScaleMode {
 #[derive(Default)]
 pub struct Axis {
     pub name: Arc<String>,
+    /// Minimum detected value of this axis in data-coordinates
     pub min_val: f64,
+    /// Maximum detected value of this axis in data-coordinates
     pub max_val: f64,
+    /// Scaling mode for this axis
     pub scale_mode: ScaleMode,
+    /// -1 or +1, the direction of "positive" on this axis.
     pub incr_sign: f64,
+    /// The range of this axis (max - min values) in data-coordinates
     pub range: f64,
+    /// The origin (zero value) of this axis in screen coordinates
     pub screen_origin: f32,
+    /// The range of this axis in screen coordinates
     pub screen_range: f32,
+    /// The limit (max value) of this axis in screen coordinates
     pub screen_limit: f32,
+    /// The list of detents to draw on this axis, position and label
     pub detents: Vec<(f32, String)>,
+    /// Whether or not to draw a warning that the values have been clipped to
+    /// positive values for `log` drawing
     pub draw_log_clip_warning: bool,
 
+    /// If the plot has been zoomed in, this is the (min,max) values in data
+    /// coordinates of the changed range.
     pub zoomed_range: Option<(f64, f64)>,
+    /// Optional label to paint on this axis
     pub axis_label: Option<String>,
+    /// Optional formatter for the detents on this axis, accepts the data value
+    /// and returns a string as the detent.
+    pub axis_formatter: Option<Box<dyn Fn(f64) -> String>>,
 }
 
 impl Axis {
@@ -523,9 +569,13 @@ impl Axis {
                     let frac = idx as f64 / 10f64;
                     let dv = min_detent + range * frac;
                     let drawpnt = self.model_to_screen(dv);
-                    let label = match self.scale_mode {
-                        ScaleMode::DBScale => format!("{dv:4.2} dB"),
-                        _ => format!("{dv:4.2}"),
+                    let label = if let Some(fmtr) = &self.axis_formatter {
+                        fmtr(dv)
+                    } else {
+                        match self.scale_mode {
+                            ScaleMode::DBScale => format!("{dv:4.2} dB"),
+                            _ => format!("{dv:4.2}"),
+                        }
                     };
                     self.detents.push((drawpnt, label));
                 }
@@ -553,15 +603,23 @@ impl Axis {
                 let stop = self.max_val;
                 // major detents
                 let drawpnt = self.model_to_screen(self.log_scale(current));
-                self.detents
-                    .push((drawpnt, format!("{current:.4}: 1e{current_exp:.4}")));
+                let label = if let Some(fmtr) = &self.axis_formatter {
+                    fmtr(current)
+                } else {
+                    format!("{current:.4}: 1e{current_exp:.4}")
+                };
+                self.detents.push((drawpnt, label));
                 while current <= stop {
                     let incr = 10f64.powi(current_exp);
                     let next = current + 10f64 * incr;
                     current = (current / incr).round() * incr;
                     let drawpnt = self.model_to_screen(self.log_scale(current));
-                    self.detents
-                        .push((drawpnt, format!("{current:.4}: 1e{current_exp:.4}")));
+                    let label = if let Some(fmtr) = &self.axis_formatter {
+                        fmtr(current)
+                    } else {
+                        format!("{current:.4}: 1e{current_exp:.4}")
+                    };
+                    self.detents.push((drawpnt, label));
 
                     // minor detents
                     for _idx in 1..10 {
@@ -576,8 +634,12 @@ impl Axis {
                     current_exp += 1;
                 }
                 let drawpnt = self.model_to_screen(self.log_scale(self.max_val));
-                self.detents
-                    .push((drawpnt, format!("{:.4}: 1e{current_exp:.4}", self.max_val)));
+                let label = if let Some(fmtr) = &self.axis_formatter {
+                    fmtr(self.max_val)
+                } else {
+                    format!("{:.4}: 1e{current_exp:.4}", self.max_val)
+                };
+                self.detents.push((drawpnt, label));
             }
         }
     }
