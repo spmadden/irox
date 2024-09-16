@@ -3,7 +3,7 @@
 //
 
 use crate::gsa::GNSSSystemID;
-use crate::{maybe_latitude, maybe_longitude, maybe_timestamp, Error, MessageType};
+use crate::{maybe_latitude, maybe_longitude, maybe_timestamp, Error, MessageType, ModeIndicator};
 use core::str::FromStr;
 use irox_bits::Bits;
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
@@ -41,41 +41,6 @@ impl MaybeFrom<Option<&str>> for NavigationalStatus {
             }
         }
         None
-    }
-}
-
-#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
-pub enum ModeIndicator {
-    Autonomous,
-    Differential,
-    Estimated,
-    RTKFloat,
-    ManualInput,
-    NoValidFix,
-    Precise,
-    RTKInteger,
-    Simulator,
-
-    #[default]
-    UnsetUnknown,
-}
-impl From<Option<char>> for ModeIndicator {
-    fn from(value: Option<char>) -> Self {
-        if let Some(value) = value {
-            return match value {
-                'A' => ModeIndicator::Autonomous,
-                'D' => ModeIndicator::Differential,
-                'E' => ModeIndicator::Estimated,
-                'F' => ModeIndicator::RTKFloat,
-                'M' => ModeIndicator::ManualInput,
-                'N' => ModeIndicator::NoValidFix,
-                'P' => ModeIndicator::Precise,
-                'R' => ModeIndicator::RTKInteger,
-                'S' => ModeIndicator::Simulator,
-                _ => ModeIndicator::UnsetUnknown,
-            };
-        }
-        Default::default()
     }
 }
 

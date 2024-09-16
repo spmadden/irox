@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 use log::trace;
 
@@ -8,17 +9,21 @@ pub use error::*;
 use irox_bits::{Bits, ErrorKind};
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{Latitude, Longitude};
+use irox_time::gregorian::Date;
 use irox_time::Time;
 use irox_tools::options::MaybeInto;
 pub use irox_tools::packetio::{Packet, PacketBuilder, PacketData, Packetization};
 use irox_units::units::angle::Angle;
+use irox_units::units::compass::{CompassReference, RotationDirection, Track};
 use irox_units::units::length::{Length, LengthUnits};
+use irox_units::units::speed::{Speed, SpeedUnits};
 pub use output::*;
 
 use crate::gga::GGABuilder;
 use crate::gns::GNSBuilder;
 use crate::gsa::GSABuilder;
 use crate::gsv::GSVBuilder;
+use crate::rmc::RMCBuilder;
 
 mod error;
 pub mod input;
@@ -57,6 +62,7 @@ pub enum FramePayload {
     GSA(gsa::GSA),
     GSV(gsv::GSV),
     GNS(gns::GNS),
+    RMC(rmc::RMC),
     Unknown { key: String, raw_data: String },
 }
 
@@ -67,6 +73,7 @@ impl Display for FramePayload {
             FramePayload::GSA(gsa) => f.write_fmt(format_args!("GSA: {gsa}")),
             FramePayload::GSV(gsv) => f.write_fmt(format_args!("GSV: {gsv}")),
             FramePayload::GNS(gns) => f.write_fmt(format_args!("GNS: {gns}")),
+            FramePayload::RMC(rmc) => f.write_fmt(format_args!("RMC: {rmc}")),
             FramePayload::Unknown { key, raw_data } => {
                 f.write_fmt(format_args!("UNK: {key} : {raw_data}"))
             }
@@ -86,6 +93,7 @@ impl Packet for Frame {
             FramePayload::GSA(gsa) => gsa.get_bytes(),
             FramePayload::GSV(gsv) => gsv.get_bytes(),
             FramePayload::GNS(gns) => gns.get_bytes(),
+            FramePayload::RMC(rmc) => rmc.get_bytes(),
             FramePayload::Unknown { .. } => Err(ErrorKind::Unsupported.into()),
         }
     }
@@ -113,6 +121,8 @@ impl PacketBuilder<Frame> for NMEAParser {
             FramePayload::GSV(GSVBuilder.build_from(&mut pkt)?)
         } else if key.ends_with("GNS".as_bytes()) {
             FramePayload::GNS(GNSBuilder.build_from(&mut pkt)?)
+        } else if key.ends_with("RMC".as_bytes()) {
+            FramePayload::RMC(RMCBuilder.build_from(&mut pkt)?)
         } else {
             let key = String::from_utf8_lossy(key.as_slice()).to_string();
             FramePayload::Unknown {
@@ -232,4 +242,79 @@ pub(crate) fn maybe_timestamp(val: Option<&str>) -> Option<Time> {
     let ss = time.get(4..)?.parse::<f64>().ok()?;
 
     Time::from_hms_f64(hh, mm, ss).ok()
+}
+
+pub(crate) fn maybe_date(val: Option<&str>) -> Option<Date> {
+    let val = val?;
+    let (dd, rest) = val.split_at(2);
+    let (mm, yy) = rest.split_at(2);
+
+    let year = i32::from_str(yy).ok()? + 2000;
+    let mm = u8::from_str(mm).ok()?;
+    let dd = u8::from_str(dd).ok()?;
+
+    Date::try_from_values(year, mm, dd).ok()
+}
+
+pub(crate) fn maybe_speed(val: Option<&str>) -> Option<Speed> {
+    let speed = val?;
+
+    let speed = f64::from_str(speed).ok()?;
+    Some(Speed::new(speed, SpeedUnits::Knots))
+}
+
+pub(crate) fn maybe_track(val: Option<&str>) -> Option<Track> {
+    let angle = val?;
+    let angle = f64::from_str(angle).ok()?;
+    Some(Track::new_track(
+        Angle::new_degrees(angle),
+        RotationDirection::PositiveClockwise,
+        CompassReference::TrueNorth,
+    ))
+}
+
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub enum ModeIndicator {
+    Autonomous,
+    Differential,
+    Estimated,
+    RTKFloat,
+    ManualInput,
+    NoValidFix,
+    Precise,
+    RTKInteger,
+    Simulator,
+    Valid,
+
+    #[default]
+    UnsetUnknown,
+}
+
+impl From<Option<char>> for ModeIndicator {
+    fn from(value: Option<char>) -> Self {
+        if let Some(value) = value {
+            return match value {
+                'A' => ModeIndicator::Autonomous,
+                'D' => ModeIndicator::Differential,
+                'E' => ModeIndicator::Estimated,
+                'F' => ModeIndicator::RTKFloat,
+                'M' => ModeIndicator::ManualInput,
+                'N' => ModeIndicator::NoValidFix,
+                'P' => ModeIndicator::Precise,
+                'R' => ModeIndicator::RTKInteger,
+                'S' => ModeIndicator::Simulator,
+                'V' => ModeIndicator::Valid,
+                _ => ModeIndicator::UnsetUnknown,
+            };
+        }
+        Default::default()
+    }
+}
+impl From<Option<&str>> for ModeIndicator {
+    fn from(value: Option<&str>) -> Self {
+        if let Some(val) = value {
+            return val.chars().next().into();
+        }
+        Default::default()
+    }
 }

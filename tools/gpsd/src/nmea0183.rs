@@ -12,6 +12,7 @@ impl MaybeFrom<Frame> for crate::output::Frame {
             FramePayload::GSA(_) => None,
             FramePayload::GNS(_) => None,
             FramePayload::GSV(_) => None,
+            FramePayload::RMC(_) => None,
             FramePayload::Unknown { .. } => None,
         }
     }
