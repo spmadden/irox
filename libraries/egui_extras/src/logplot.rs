@@ -14,6 +14,8 @@ use egui_plot::PlotPoint;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
+pub type FormatterFn = dyn Fn(f64) -> String + Send;
+
 /// A tracking struct for an user interaction with a plot.
 ///
 /// This tracks whether a drag has started, the end delta of the drag, and the
@@ -121,12 +123,12 @@ impl BasicPlot {
         self
     }
     #[must_use]
-    pub fn with_x_axis_formatter(mut self, fmtr: Box<dyn Fn(f64) -> String>) -> Self {
+    pub fn with_x_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
         self.x_axis.axis_formatter = Some(fmtr);
         self
     }
     #[must_use]
-    pub fn with_y_axis_formatter(mut self, fmtr: Box<dyn Fn(f64) -> String>) -> Self {
+    pub fn with_y_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
         self.y_axis.axis_formatter = Some(fmtr);
         self
     }
@@ -508,7 +510,7 @@ pub struct Axis {
     pub axis_label: Option<String>,
     /// Optional formatter for the detents on this axis, accepts the data value
     /// and returns a string as the detent.
-    pub axis_formatter: Option<Box<dyn Fn(f64) -> String>>,
+    pub axis_formatter: Option<Box<FormatterFn>>,
 }
 
 impl Axis {
