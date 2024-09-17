@@ -1,6 +1,31 @@
 
 
 
+## v0.4.6 (2024-09-17)
+
+### Bug Fixes
+
+ - <csr-id-53ee70d68dfcebe2fdf134d5a7d0b6c860e346cb/> adding required Send trait to formatter function
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 day passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Adding required Send trait to formatter function ([`53ee70d`](https://github.com/spmadden/irox/commit/53ee70d68dfcebe2fdf134d5a7d0b6c860e346cb))
+</details>
+
 ## v0.4.5 (2024-09-15)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 4 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.5 ([`9e0d778`](https://github.com/spmadden/irox/commit/9e0d7787e8d42de13cb85ac9e544afc838c1d0f7))
     - New ability in logplot to format the axis detents. ([`db1fcf4`](https://github.com/spmadden/irox/commit/db1fcf488d8ec101ee79ebbf0c8363f30bad9a11))
 </details>
 
