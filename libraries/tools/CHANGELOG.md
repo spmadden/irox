@@ -1,7 +1,35 @@
 
 
 
+## v0.8.6 (2024-09-16)
+
+### New Features
+
+ - <csr-id-57bccdba5ee3921ef359ca35953d6c6bd8929a92/> new SyncFlag signalling
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New SyncFlag signalling ([`57bccdb`](https://github.com/spmadden/irox/commit/57bccdba5ee3921ef359ca35953d6c6bd8929a92))
+</details>
+
 ## v0.8.5 (2024-09-11)
+
+<csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/>
+<csr-id-53f8eaa1d223ce33a9898de829d2557ca30832ed/>
 
 ### Chore
 
@@ -21,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 6 commits contributed to the release.
  - 40 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -33,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.5 ([`3261257`](https://github.com/spmadden/irox/commit/3261257312d17a0c0703550f5dcaa538f153a11f))
     - New SharedCell wrapper around Arc<RwLock<Option<T>>> ([`15ab622`](https://github.com/spmadden/irox/commit/15ab6224386e56d53472b3991f2078d5f469e83e))
     - Ignore the documentation that's not rustdoc tests in errors ([`53f8eaa`](https://github.com/spmadden/irox/commit/53f8eaa1d223ce33a9898de829d2557ca30832ed))
     - Fixup lints & formatting ([`a359753`](https://github.com/spmadden/irox/commit/a35975360f42880d6e74ceb4443ccd4093c27975))

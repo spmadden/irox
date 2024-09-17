@@ -2602,7 +2602,7 @@ dependencies = [
 
 [[package]]
 name = "irox-tools"
-version = "0.8.5"
+version = "0.8.6"
 dependencies = [
  "core_affinity",
  "criterion",
