@@ -2483,6 +2483,7 @@ dependencies = [
 name = "irox-networking"
 version = "0.4.3"
 dependencies = [
+ "irox-bits",
  "irox-enums",
  "irox-log",
  "irox-structs",

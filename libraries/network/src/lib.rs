@@ -12,3 +12,4 @@ pub mod pool;
 pub mod url;
 #[cfg(feature = "websockets")]
 pub mod websocket;
+pub mod whois;
