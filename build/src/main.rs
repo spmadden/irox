@@ -22,25 +22,32 @@ enum Commands {
     CI,
     /// Updates Rust with `rustup upadate` and then updates the 'Cargo.toml'
     /// file using `cargo update`
+    #[clap(visible_alias("update"))]
     Updates,
     /// Iterates through multiple feature sets, default, all, none, etc, calling
     /// `cargo build`
     Build,
     /// Like Build, but runs `cargo test`
+    #[clap(visible_alias("tests"))]
     Test,
     /// Runs `rustfmt`
+    #[clap(visible_alias("fmt"))]
     Format,
     /// Runs `cargo clippy`
+    #[clap(visible_alias("clippy"))]
     Lints,
     /// Runs `cargo upgrade`
+    #[clap(visible_alias("upgrades"))]
     Upgrade,
     /// Runs `cargo deny`
     Deny,
     /// Runs `cargo about`
     About,
     /// Runs `cargo doc`
+    #[clap(visible_alias("docs"))]
     Doc,
     /// Runs `cargo check` for all targets
+    #[clap(visible_alias("checks"))]
     Check,
     /// Sets up for a release
     Release {
@@ -59,6 +66,7 @@ enum Commands {
     /// Checks for unused modules & deps that could be removed.
     Unused,
     /// Runs quick checks, `ci` without the actual builds/checks
+    #[clap(visible_alias("qc"))]
     QuickChecks,
 }
 
