@@ -2,6 +2,8 @@
 // Copyright 2024 IROX Contributors
 //
 
+use alloc::string::FromUtf8Error;
+
 /// Type alias to [`BitsError`]
 ///
 /// Originally would map to [`std::io::Error`] when the `std` feature was enabled, but that proved
@@ -204,5 +206,16 @@ impl std::error::Error for BitsError {}
 impl core::fmt::Display for BitsError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "BitsError({:?}): {}", self.kind, self.msg)
+    }
+}
+
+cfg_feature_alloc! {
+    impl From<alloc::string::FromUtf8Error> for BitsError {
+        fn from(_value: FromUtf8Error) -> Self {
+            BitsError {
+                kind: BitsErrorKind::InvalidInput,
+                msg: "Invalid UTF-8 detected while trying to process input.",
+            }
+        }
     }
 }

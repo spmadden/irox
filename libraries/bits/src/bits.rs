@@ -406,6 +406,44 @@ pub trait Bits {
         }
 
         ///
+        /// Reads until the next `\n` character, ignoring any `\r` characters along
+        /// the way.
+        fn read_line_vec(&mut self) -> Result<Option<alloc::vec::Vec<u8>>, Error> {
+            let mut out = Vec::new();
+            while let Some(val) = self.next_u8()? {
+                if val == b'\r' {
+                    continue;
+                }
+                else if val == b'\n' {
+                    return Ok(Some(out));
+                }
+                out.push(val);
+            }
+            if out.is_empty() {
+                return Ok(None)
+            }
+            Ok(Some(out))
+        }
+
+        ///
+        /// Reads until the next `\n` character, then calls [`String::from_utf8_lossy`].
+        fn read_line_str_lossy(&mut self) -> Result<Option<alloc::string::String>, Error> {
+            let Some(data) = self.read_line_vec()? else {
+                return Ok(None);
+            };
+            Ok(Some(String::from_utf8_lossy(&data).to_string()))
+        }
+
+        ///
+        /// Reads until the next `\n` character, then calls [`String::from_utf8`]
+        fn read_line_str(&mut self) -> Result<Option<alloc::string::String>, Error> {
+            let Some(data) = self.read_line_vec()? else {
+                return Ok(None);
+            };
+            Ok(Some(String::from_utf8(data)?))
+        }
+
+        ///
         /// Consumes data from the input stream until:
         /// 1. The byte stream represented by 'search' has been found or
         /// 2. The input reader returns 0 bytes read (or errors out)
