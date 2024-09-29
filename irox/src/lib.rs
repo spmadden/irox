@@ -43,6 +43,11 @@ pub extern crate irox_enums;
 #[cfg(feature = "enums")]
 pub use irox_enums as enums;
 
+#[cfg(feature = "fixedmath")]
+pub extern crate irox_fixedmath;
+#[cfg(feature = "fixedmath")]
+pub use irox_fixedmath as fixedmath;
+
 #[cfg(feature = "enums_derive")]
 pub use irox_enums_derive;
 

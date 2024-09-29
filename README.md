@@ -39,6 +39,7 @@ Current Modules & Organization:
     * [`egui-extras`] - Extra stuff for the wonderful [`egui`](https://github.com/emilk/egui) crate
     * [`enums`] - Traits for better Enumerated Types
     * [`enums_derive`] - Derivable impls of the traits in irox-enums
+    * [`fixedmath`] - Fixed Precision Math Primitives
     * [`git-tools`] - Tools and wrappers to help with GitOps
     * [`log`] - Basic console and file logging
     * [`networking`] - Networking tools
@@ -68,6 +69,7 @@ Version Status
 | `irox-egui-extras`     | ![std]      | ![alloc]    | [![egui-extras-vsn-shield]][egui-extras-crate] [![egui-extras-doc-shield]][egui-extras-doc]                 |
 | `irox-enums`           | ![no_std]   | ![alloc]    | [![enums-vsn-shield]][enums-crate] [![enums-doc-shield]][enums-doc]                                         |
 | `irox-enums_derive`    | ![no_std]   | ![alloc]    | [![enums_derive-vsn-shield]][enums_derive-crate] [![enums_derive-doc-shield]][enums_derive-doc]             |
+| `irox-fixedmath`       | ![no_std]   | ![no_alloc] | [![fixedmath-vsn-shield]][fixedmath-crate] [![fixedmath-doc-shield]][fixedmath-doc]             |
 | `irox-git-tools`       | ![std]      | ![alloc]    | [![git-tools-vsn-shield]][git-tools-crate] [![git-tools-doc-shield]][git-tools-doc]                         |
 | `irox-gpx`             | ![std]      | ![alloc]    | [![gpx-vsn-shield]][gpx-crate] [![gpx-doc-shield]][gpx-doc]                                                 |
 | `irox-influxdb_v1`     | ![std]      | ![alloc]    | [![influxdb_v1-vsn-shield]][influxdb_v1-crate] [![influxdb_v1-doc-shield]][influxdb_v1-doc]                 |
@@ -180,6 +182,16 @@ Version Status
 [enums_derive-crate]: https://crates.io/crates/irox-enums_derive
 
 [enums_derive-doc]: https://docs.rs/irox-enums_derive
+
+[`fixedmath`]: https://github.com/spmadden/irox/blob/master/libraries/fixedmath
+
+[fixedmath-vsn-shield]: https://img.shields.io/crates/v/irox-fixedmath.svg
+
+[fixedmath-doc-shield]: https://docs.rs/irox-fixedmath/badge.svg
+
+[fixedmath-crate]: https://crates.io/crates/irox-fixedmath
+
+[fixedmath-doc]: https://docs.rs/irox-fixedmath
 
 [`git-tools`]: https://github.com/spmadden/irox/blob/master/libraries/git-tools
 

@@ -34,6 +34,7 @@ derive-helpers = ["dep:irox-derive-helpers"]
 egui-extras = ["dep:irox-egui-extras"]
 enums = ["dep:irox-enums"]
 enums_derive = ["dep:irox-enums_derive"]
+fixedmath = ["dep:irox-fixedmath"]
 git-tools = ["dep:irox-git-tools"]
 log = ["dep:irox-log"]
 networking = ["dep:irox-networking"]
@@ -72,6 +73,7 @@ irox-derive-helpers = { version = "^0.1.0", optional = true, path = "../librarie
 irox-egui-extras = { version = "^0.4.0", optional = true, path = "../libraries/egui_extras" }
 irox-enums = { version = "^0.2.1", optional = true, path = "../libraries/enums" }
 irox-enums_derive = { version = "^0.2.1", optional = true, path = "../libraries/enums_derive" }
+irox-fixedmath = { version = "^0.1.0", optional = true, path = "../libraries/fixedmath" }
 irox-git-tools = { version = "^0.2.0", optional = true, path = "../libraries/git-tools" }
 irox-log = { version = "^0.2.0", optional = true, path = "../libraries/log" }
 irox-networking = { version = "^0.4.1", optional = true, path = "../libraries/network" }

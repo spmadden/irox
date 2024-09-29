@@ -1,8 +1,8 @@
 [package]
 name = "irox-fixedmath"
 description = "Fixed Precision Math Primitives"
-keywords = ["irox"]
-categories = ["embedded", "mathematics", "no-std"]
+keywords = ["irox", "math", "fixed-precision"]
+categories = ["embedded", "mathematics", "no-std::no-alloc"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
