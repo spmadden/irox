@@ -36,7 +36,7 @@ pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range}
 pub use irox_units::units::duration::{Duration, DurationUnit};
 use irox_units::units::duration::{NANOS_TO_SEC, SEC_TO_NANOS};
 
-use crate::epoch::Epoch;
+use crate::epoch::{Epoch, Timestamp};
 use crate::format::{Format, FormatError, FormatParser};
 
 pub mod datetime;
@@ -330,19 +330,10 @@ pub struct Time32 {
 }
 
 impl Time32 {
-    #[must_use]
-    pub fn new(epoch: Epoch, seconds: u16, fractional_seconds: u16) -> Self {
-        Self {
-            epoch,
-            seconds,
-            fractional_seconds,
-        }
-    }
-
     ///
     /// Returns the value of this Time32 as a Q16.16
     #[must_use]
-    pub fn as_u32(&self) -> u32 {
+    pub const fn as_u32(&self) -> u32 {
         ((self.seconds as u32) << 16) | (self.fractional_seconds as u32)
     }
 }
@@ -372,27 +363,11 @@ pub struct Time64 {
 }
 
 impl Time64 {
-    #[must_use]
-    pub fn new(epoch: Epoch, seconds: u32, fractional_seconds: u32) -> Self {
-        Self {
-            epoch,
-            seconds,
-            fractional_seconds,
-        }
-    }
-
     ///
     /// Returns the value of this Time64 as a Q32.32
     #[must_use]
-    pub fn as_u64(&self) -> u64 {
+    pub const fn as_u64(&self) -> u64 {
         ((self.seconds as u64) << 32) | (self.fractional_seconds as u64)
-    }
-
-    ///
-    /// Returns the reference epoch of this Time64
-    #[must_use]
-    pub fn get_epoch(&self) -> Epoch {
-        self.epoch
     }
 }
 
@@ -425,26 +400,117 @@ pub struct Time128 {
 }
 
 impl Time128 {
-    #[must_use]
-    pub fn new(epoch: Epoch, seconds: u64, fractional_seconds: u64) -> Self {
-        Self {
-            epoch,
-            seconds,
-            fractional_seconds,
-        }
-    }
-
     ///
     /// Returns the value of this Time128 as a Q64.64
     #[must_use]
-    pub fn as_u128(&self) -> u128 {
+    pub const fn as_u128(&self) -> u128 {
         ((self.seconds as u128) << 64) | (self.fractional_seconds as u128)
     }
-
-    ///
-    /// Returns the reference epoch of this Time128
-    #[must_use]
-    pub fn get_epoch(&self) -> Epoch {
-        self.epoch
-    }
 }
+
+macro_rules! impls {
+    ($strukt:ty, $prim:ty) => {
+        impl $strukt {
+            #[must_use]
+            pub const fn new(epoch: Epoch, seconds: $prim, fractional_seconds: $prim) -> Self {
+                Self {
+                    epoch,
+                    seconds,
+                    fractional_seconds,
+                }
+            }
+            #[must_use]
+            pub fn new_f64(epoch: Epoch, seconds: f64) -> Self {
+                let fracs = seconds.fract();
+                let fractional_seconds = (fracs * <$prim>::MAX as f64) as $prim;
+                let seconds = seconds.floor() as $prim;
+                Self {
+                    epoch,
+                    seconds,
+                    fractional_seconds,
+                }
+            }
+            ///
+            /// Returns the reference epoch of this Time
+            #[must_use]
+            pub const fn get_epoch(&self) -> Epoch {
+                self.epoch
+            }
+            #[must_use]
+            pub const fn get_seconds(&self) -> $prim {
+                self.seconds
+            }
+            #[must_use]
+            pub const fn get_fractional_seconds(&self) -> $prim {
+                self.fractional_seconds
+            }
+            #[must_use]
+            pub fn as_f64(&self) -> f64 {
+                self.into()
+            }
+        }
+        impl From<$strukt> for f64 {
+            fn from(value: $strukt) -> Self {
+                let val =
+                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
+                val
+            }
+        }
+        impl From<&$strukt> for f64 {
+            fn from(value: &$strukt) -> Self {
+                let val =
+                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
+                val
+            }
+        }
+        impl From<&mut $strukt> for f64 {
+            fn from(value: &mut $strukt) -> Self {
+                let val =
+                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
+                val
+            }
+        }
+        impl<T> From<Timestamp<T>> for $strukt {
+            fn from(value: Timestamp<T>) -> Self {
+                let val = value.get_offset().as_seconds_f64();
+
+                <$strukt>::new_f64(value.get_epoch(), val)
+            }
+        }
+        impl<T> From<&Timestamp<T>> for $strukt {
+            fn from(value: &Timestamp<T>) -> Self {
+                let val = value.get_offset().as_seconds_f64();
+
+                <$strukt>::new_f64(value.get_epoch(), val)
+            }
+        }
+        impl<T> From<&mut Timestamp<T>> for $strukt {
+            fn from(value: &mut Timestamp<T>) -> Self {
+                let val = value.get_offset().as_seconds_f64();
+
+                <$strukt>::new_f64(value.get_epoch(), val)
+            }
+        }
+        impl<T> From<$strukt> for Timestamp<T> {
+            fn from(value: $strukt) -> Self {
+                let dur = Duration::new(value.as_f64(), DurationUnit::Second);
+                Timestamp::<T>::new(value.get_epoch(), dur)
+            }
+        }
+        impl<T> From<&$strukt> for Timestamp<T> {
+            fn from(value: &$strukt) -> Self {
+                let dur = Duration::new(value.as_f64(), DurationUnit::Second);
+                Timestamp::<T>::new(value.get_epoch(), dur)
+            }
+        }
+        impl<T> From<&mut $strukt> for Timestamp<T> {
+            fn from(value: &mut $strukt) -> Self {
+                let dur = Duration::new(value.as_f64(), DurationUnit::Second);
+                Timestamp::<T>::new(value.get_epoch(), dur)
+            }
+        }
+    };
+}
+impls!(Time32, u16);
+impls!(Time64, u32);
+impls!(Time128, u64);
