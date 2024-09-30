@@ -50,6 +50,12 @@ macro_rules! impl_fromf64 {
                 val + ((value.data & $mask) as f64 / $val as f64)
             }
         }
+        impl From<$($typ)+> for f32 {
+            fn from(value: $($typ)+) -> Self {
+                let val = (value.data >> $shift) as f32;
+                val + ((value.data & $mask) as f32 / $val as f32)
+            }
+        }
     };
 }
 macro_rules! impl_from {
