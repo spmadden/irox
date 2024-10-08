@@ -42,4 +42,14 @@ pub trait Buffer<T> {
     fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    cfg_feature_alloc! {
+        fn into_boxed_slice(mut self) -> alloc::boxed::Box<[T]> where Self: Sized {
+            let mut vec = alloc::vec::Vec::<T>::with_capacity(self.len());
+            while let Some(elem) = self.pop_front() {
+                vec.push(elem);
+            }
+            vec.into_boxed_slice()
+        }
+    }
 }

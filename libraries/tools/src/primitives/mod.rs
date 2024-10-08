@@ -11,6 +11,7 @@ pub mod u8;
 
 ///
 /// An integer!
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum IntegerValue {
     U8(u8),
     U16(u16),

@@ -2,9 +2,10 @@
 // Copyright 2024 IROX Contributors
 //
 
+use crate::buf::Buffer;
+use crate::buf::FixedBuf;
 use crate::IntegerValue;
 use alloc::boxed::Box;
-use alloc::vec::Vec;
 
 macro_rules! round {
     ($val:ident) => {{
@@ -354,19 +355,18 @@ pub fn encode_64bits(val: u64) -> [u8; 10] {
 ///
 /// ```
 pub fn encode_u128bits(val: u128) -> Box<[u8]> {
-    let mut out = Vec::new();
+    let mut out = FixedBuf::<19, u8>::new();
     let j = (val & 0x7F) as u8;
-    out.push(j);
+    let _ = out.push(j);
     loop {
         let (i, val) = round!(val);
-        out.push(i);
+        let _ = out.push(i);
         if val == 0 {
             break;
         }
     }
     out.into_boxed_slice()
 }
-
 
 pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
     match val {
@@ -496,6 +496,5 @@ mod tests {
             0xFFF_FFFFu32.encode_vbyte().as_ref(),
             &[0xFF, 0xFF, 0xFF, 0x7F]
         );
-
     }
 }
