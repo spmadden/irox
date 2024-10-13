@@ -12,6 +12,9 @@ pub use fixed::*;
 
 mod fixed;
 mod str;
+pub use round_u8::*;
+mod round_u8;
+
 use crate::cfg_feature_alloc;
 pub use str::*;
 cfg_feature_alloc! {
