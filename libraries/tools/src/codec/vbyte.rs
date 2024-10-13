@@ -6,6 +6,7 @@ use crate::buf::Buffer;
 use crate::buf::FixedBuf;
 use crate::IntegerValue;
 use alloc::boxed::Box;
+use irox_bits::{Bits, Error};
 
 macro_rules! round {
     ($val:ident) => {{
@@ -471,9 +472,32 @@ impl_encode!(i32);
 impl_encode!(u64);
 impl_encode!(i64);
 
+pub trait DecodeVByte {
+    fn decode_vbyte(&mut self) -> Result<u128, Error>;
+}
+
+pub fn decode_vbyte<T: Bits>(inp: &mut T) -> Result<u128, Error> {
+    let mut out: u128 = 0;
+    while let Some(val) = inp.next_u8()? {
+        let v = (val & 0x7F) as u128;
+        out = out << 7 | v;
+        if val & 0x80 == 0 {
+            break;
+        }
+    }
+    Ok(out)
+}
+
+impl<T: Bits> DecodeVByte for T {
+    fn decode_vbyte(&mut self) -> Result<u128, Error> {
+        decode_vbyte(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::codec::vbyte::EncodeVByte;
+    use crate::codec::vbyte::{DecodeVByte, EncodeVByte};
+    use irox_bits::Error;
 
     #[test]
     pub fn test_encode() {
@@ -496,5 +520,26 @@ mod tests {
             0xFFF_FFFFu32.encode_vbyte().as_ref(),
             &[0xFF, 0xFF, 0xFF, 0x7F]
         );
+    }
+
+    #[test]
+    pub fn test_decode() -> Result<(), Error> {
+        assert_eq_hex!(0x0, [0x0].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x7F, [0x7F].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x80, [0x81, 0x00].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x2000, [0xC0, 0x00].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x3FFF, [0xFF, 0x7F].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x4000, [0x81, 0x80, 0x00].as_ref().decode_vbyte()?);
+        assert_eq_hex!(0x1F_FFFF, [0xFF, 0xFF, 0x7F].as_ref().decode_vbyte()?);
+        assert_eq_hex!(
+            0x800_0000,
+            [0xC0, 0x80, 0x80, 0x00].as_ref().decode_vbyte()?
+        );
+        assert_eq_hex!(
+            0xFFF_FFFF,
+            [0xFF, 0xFF, 0xFF, 0x7F].as_ref().decode_vbyte()?
+        );
+
+        Ok(())
     }
 }
