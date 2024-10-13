@@ -5,9 +5,11 @@
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
 use crate::buf::Buffer;
+use crate::iterators::LendingIterator;
 use crate::options::MaybeMap;
+use core::iter::zip;
 use core::ops::{Index, IndexMut};
-use std::iter::zip;
+use irox_bits::{BitsErrorKind, Error, MutBits};
 // pub type StrBuf<const N: usize> = FixedBuf<N, char>;
 
 ///
@@ -172,14 +174,15 @@ where
     }
 }
 
-impl<const N: usize, T: Sized+Default+Copy> FixedBuf<N, T> {
-    pub fn into_buf_default(mut self) -> [T;N] {
-        let mut out = [T::default();N];
+impl<const N: usize, T: Sized + Default + Copy> FixedBuf<N, T> {
+    pub fn into_buf_default(&mut self) -> [T; N] {
+        let mut out = [T::default(); N];
         for (i, o) in zip(self.buf.iter_mut(), out.iter_mut()) {
             if let Some(val) = i.take() {
                 *o = val;
             }
         }
+        self.clear();
         out
     }
 }
@@ -193,7 +196,7 @@ impl<'a, const N: usize, T: Sized> Iterator for FixedBufIter<'a, N, T> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(val) = self.buf.get(self.idx) {
             self.idx += 1;
-            return Some(val)
+            return Some(val);
         }
         None
     }
@@ -207,7 +210,7 @@ impl<'a, const N: usize, T: Sized> DoubleEndedIterator for FixedBufIter<'a, N, T
 
         self.idx += 1;
         if let Some(val) = self.buf.get(idx) {
-            return Some(val)
+            return Some(val);
         }
         None
     }
@@ -220,16 +223,34 @@ impl<'a, const N: usize, T: Sized> ExactSizeIterator for FixedBufIter<'a, N, T> 
 
 pub struct FixedBufIterMut<'a, const N: usize, T: Sized> {
     buf: &'a mut FixedBuf<N, T>,
-    idx: usize
+    idx: usize,
 }
 
-impl<'a, const N: usize, T: Sized> Iterator for FixedBufIterMut<'a, N, T> {
-    type Item = &'a mut T;
-    fn next(&mut self) -> Option<Self::Item> {
+impl<'a, const N: usize, T: Sized> LendingIterator<'a> for FixedBufIterMut<'a, N, T> {
+    type Item<'b> = &'a mut T where Self: 'b;
+
+    fn next_ref(&'a mut self) -> Option<Self::Item<'a>> {
         if let Some(val) = self.buf.get_mut(self.idx) {
             self.idx += 1;
-            return Some(val)
+            return Some(val);
         }
         None
+    }
+}
+
+impl<const N: usize> MutBits for &mut FixedBuf<N, u8> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        if self.push_back(val).is_err() {
+            return Err(BitsErrorKind::UnexpectedEof.into());
+        }
+        Ok(())
+    }
+}
+impl<const N: usize> MutBits for FixedBuf<N, u8> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        if self.push_back(val).is_err() {
+            return Err(BitsErrorKind::UnexpectedEof.into());
+        }
+        Ok(())
     }
 }
