@@ -9,6 +9,7 @@ pub use round::*;
 
 mod round;
 pub use fixed::*;
+
 mod fixed;
 mod str;
 use crate::cfg_feature_alloc;
@@ -22,7 +23,7 @@ cfg_feature_alloc! {
 /// Standard buffer functions
 pub trait Buffer<T> {
     fn get(&self, index: usize) -> Option<&T>;
-    fn get_mut<'a>(&'a mut self, index: usize) -> Option<&'a mut T>;
+    fn get_mut(&mut self, index: usize) -> Option<&mut T>;
     fn capacity(&self) -> usize;
     fn len(&self) -> usize;
     fn clear(&mut self);
@@ -41,6 +42,9 @@ pub trait Buffer<T> {
 
     fn is_empty(&self) -> bool {
         self.len() == 0
+    }
+    fn is_full(&self) -> bool {
+        self.capacity() == self.len()
     }
 
     cfg_feature_alloc! {
