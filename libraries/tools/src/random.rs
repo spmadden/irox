@@ -17,8 +17,8 @@ const MULTIPLIER: u64 = 6364136223846793005u64;
 /// incremental incrementer for each state
 const INCREMENT: u64 = 1442695040888963407u64;
 
-const MULTIPLIER_128: u128 = 25492979953554139244865540595714422341u128;
-const INCREMENT_128: u128 = 63641362238467930051442695040888963407u128;
+const MULTIPLIER_128: u128 = 0x2360ED051FC65DA44385DF649FCCF645u128;
+const INCREMENT_128: u128 = 0x5851F42D4C957F2D14057B7EF767814Fu128;
 
 pub type Random = PcgXshRR;
 ///
@@ -138,6 +138,31 @@ impl PRNG for PcgXslRrRr {
         let newlow = (high ^ state as u64).rotate_right(rot1);
         let newhigh = high.rotate_right((newlow & 0x3F) as u32);
         (newhigh as u128) << 64 | newlow as u128
+    }
+}
+
+pub struct PcgMcgXslRr {
+    state: u128,
+}
+impl PcgMcgXslRr {
+    pub fn new_seed(seed: u128) -> Self {
+        Self {
+            state: seed.wrapping_mul(2).wrapping_add(1),
+        }
+    }
+}
+impl PRNG for PcgMcgXslRr {
+    fn next_u32(&mut self) -> u32 {
+        self.next_u64() as u32
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        let state = self.state.wrapping_mul(MULTIPLIER_128);
+        self.state = state;
+        let rot = (state >> 122) as u32;
+        ((state >> 64) as u64)
+            .bitxor(state as u64)
+            .rotate_right(rot)
     }
 }
 
