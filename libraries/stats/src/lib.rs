@@ -16,6 +16,8 @@ pub use gaussian as standard;
 pub mod decay;
 pub mod filter;
 pub mod gaussian;
+pub mod lttb;
+pub mod points;
 pub mod pyramid;
 pub mod streaming;
 pub mod tdigest;
