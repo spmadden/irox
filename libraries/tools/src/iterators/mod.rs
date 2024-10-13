@@ -17,6 +17,8 @@ use alloc::vec::Vec;
 
 mod join;
 pub mod looping_forever;
+mod streaming;
+pub use streaming::*;
 
 ///
 /// Itertools adds helpful additional methods to [`Iterator`]
