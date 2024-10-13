@@ -354,7 +354,7 @@ pub fn encode_64bits(val: u64) -> [u8; 10] {
 /// |--------|--------|--------|
 ///
 /// ```
-pub fn encode_u128bits(val: u128) -> Box<[u8]> {
+pub fn encode_u128bits(val: u128) -> [u8; 19] {
     let mut out = FixedBuf::<19, u8>::new();
     let j = (val & 0x7F) as u8;
     let _ = out.push(j);
@@ -365,7 +365,7 @@ pub fn encode_u128bits(val: u128) -> Box<[u8]> {
             break;
         }
     }
-    out.into_boxed_slice()
+    out.into_buf_default()
 }
 
 pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
