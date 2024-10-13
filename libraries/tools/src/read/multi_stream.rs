@@ -7,13 +7,13 @@
 //! databases, pagefiles, and the ilk.  Each stream is essentially a linked list of pages, where
 //! the last 4 bytes of the last page point to the next page index.
 
-use crate::buf::{Buffer, FixedBuf};
-use crate::codec::vbyte::encode_integer;
+use crate::buf::{Buffer, FixedBuf, RoundU8Buffer};
+use crate::codec::vbyte::{encode_integer, DecodeVByte};
 use crate::IntegerValue;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
 use core::sync::atomic::{AtomicU32, AtomicU8, Ordering};
-use irox_bits::{BitsErrorKind, Error, MutBits, SeekWrite};
+use irox_bits::{Bits, BitsErrorKind, Error, MutBits, SeekRead, SeekWrite};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
@@ -22,6 +22,15 @@ use std::sync::Mutex;
 pub const DEFAULT_BLOCK_SIZE: usize = 16 * 1024; // 16K
 pub const DATA_SIZE: usize = DEFAULT_BLOCK_SIZE - 4;
 pub const HEADER: &[u8] = b"IRXMSB";
+
+macro_rules! broken_pipe {
+    () => {
+        Err(Error::new(
+            BitsErrorKind::BrokenPipe,
+            "Error: Lock poisoned",
+        ))
+    };
+}
 
 ///
 /// Writer for a Multi-Stream File.
@@ -43,9 +52,10 @@ impl MultiStreamWriter {
             .truncate(true)
             .write(true)
             .open(path.as_ref())?;
+
         Ok(MultiStreamWriter {
             inner: Arc::new(Mutex::new(inner)),
-            num_streams: Arc::new(AtomicU8::new(0)),
+            num_streams: Arc::new(AtomicU8::new(1)),
             current_block: Arc::new(AtomicU32::new(1)),
             stream_first_blocks: Arc::new(Mutex::new(Default::default())),
             stream_latest_blocks: Arc::new(Mutex::new(Default::default())),
@@ -62,10 +72,7 @@ impl MultiStreamWriter {
         let block_idx = self.current_block.fetch_add(1, Ordering::AcqRel);
         {
             let Ok(mut lock) = self.stream_first_blocks.lock() else {
-                return Err(Error::new(
-                    BitsErrorKind::BrokenPipe,
-                    "Error: Lock poisoned",
-                ));
+                return broken_pipe!();
             };
             let stream_first_entry = lock.entry(stream_idx).or_insert(block_idx);
             if *stream_first_entry == block_idx {
@@ -78,34 +85,26 @@ impl MultiStreamWriter {
                 }
                 drop(lock);
                 let Ok(mut lock) = self.inner.lock() else {
-                    return Err(Error::new(
-                        BitsErrorKind::BrokenPipe,
-                        "Error: Lock poisoned",
-                    ));
+                    return broken_pipe!();
                 };
-                lock.seek_write(&header, 0)?;
+                lock.seek_write_all(&header, 0)?;
             }
         }
         let offset = block_idx as u64 * DEFAULT_BLOCK_SIZE as u64;
         let Ok(mut lock) = self.inner.lock() else {
-            return Err(Error::new(
-                BitsErrorKind::BrokenPipe,
-                "Error: Lock poisoned",
-            ));
+            return broken_pipe!();
         };
-        lock.seek_write(block, offset)?;
+        lock.seek_write_all(block, offset)?;
         let Ok(mut l2) = self.stream_latest_blocks.lock() else {
-            return Err(Error::new(
-                BitsErrorKind::BrokenPipe,
-                "Error: Lock poisoned",
-            ));
+            return broken_pipe!();
         };
+        lock.write_all(&[0, 0, 0, 0])?;
         let last_block_idx = l2.entry(stream_idx).or_insert(block_idx);
         if *last_block_idx != block_idx {
             let offset = *last_block_idx as u64 * DEFAULT_BLOCK_SIZE as u64 + DATA_SIZE as u64;
             // println!("Updating {last_block_idx} at offset {offset:0X} to be new block {block_idx}");
             let byts = block_idx.to_be_bytes();
-            lock.seek_write(&byts, offset)?;
+            lock.seek_write_all(&byts, offset)?;
             *last_block_idx = block_idx;
         }
 
@@ -148,10 +147,113 @@ impl Drop for StreamWriter {
     }
 }
 
+///
+/// Reader for a multi-stream file.
+#[derive(Clone)]
+pub struct MultiStreamReader {
+    inner: Arc<Mutex<File>>,
+    stream_next_block: Arc<Mutex<BTreeMap<u8, u32>>>,
+}
+impl MultiStreamReader {
+    /// Opens a multi-stream file and returns readers for every stream contained therein.
+    pub fn open<P: AsRef<Path>>(path: P) -> Result<Vec<StreamReader>, Error> {
+        let mut inner = OpenOptions::new().read(true).open(path.as_ref())?;
+        let mut header_buf = [0u8; DEFAULT_BLOCK_SIZE];
+        inner.seek_read_all(&mut header_buf, 0)?;
+        let (magic, mut data) = header_buf.split_at(HEADER.len());
+        if magic != HEADER {
+            return Err(BitsErrorKind::InvalidData.into());
+        }
+
+        let mut stream_next_block = BTreeMap::<u8, u32>::new();
+        let mut expected_stream_idx = 1;
+        while let Some(read_idx) = data.next_u8()? {
+            if read_idx == 0 {
+                // 0'th idx indicates EOL
+                break;
+            }
+            if read_idx != expected_stream_idx {
+                return Err(BitsErrorKind::InvalidData.into());
+            }
+            let start_block = data.decode_vbyte()? as u32;
+            stream_next_block.insert(read_idx, start_block);
+            expected_stream_idx += 1;
+        }
+        let stream_ids = stream_next_block.keys().copied().collect::<Vec<_>>();
+        let parent = Arc::new(MultiStreamReader {
+            inner: Arc::new(Mutex::new(inner)),
+            stream_next_block: Arc::new(Mutex::new(stream_next_block)),
+        });
+        let mut out = Vec::<StreamReader>::new();
+        for k in stream_ids {
+            out.push(StreamReader::new(parent.clone(), k));
+        }
+
+        Ok(out)
+    }
+    pub(crate) fn read_next_block(
+        &self,
+        stream_idx: u8,
+        buf: &mut RoundU8Buffer<DATA_SIZE>,
+    ) -> Result<(), Error> {
+        let block_idx = {
+            let Ok(lock) = self.stream_next_block.lock() else {
+                return broken_pipe!();
+            };
+            let Some(v) = lock.get(&stream_idx) else {
+                return Ok(());
+            };
+            *v
+        };
+        let next_idx = {
+            let Ok(mut lock) = self.inner.lock() else {
+                return broken_pipe!();
+            };
+            let offset = block_idx as u64 * DEFAULT_BLOCK_SIZE as u64;
+            buf.as_ref_mut(|_, buf| {
+                lock.seek_read_all(buf, offset)?;
+                Ok(buf.len())
+            })?;
+            lock.read_be_u32()?
+        };
+        let Ok(mut lock) = self.stream_next_block.lock() else {
+            return broken_pipe!();
+        };
+        lock.insert(stream_idx, next_idx);
+        Ok(())
+    }
+}
+pub struct StreamReader {
+    parent: Arc<MultiStreamReader>,
+    stream_idx: u8,
+    buf: RoundU8Buffer<DATA_SIZE>,
+}
+impl StreamReader {
+    pub fn new(parent: Arc<MultiStreamReader>, stream_idx: u8) -> StreamReader {
+        StreamReader {
+            stream_idx,
+            parent,
+            buf: RoundU8Buffer::default(),
+        }
+    }
+}
+impl Bits for StreamReader {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        if self.buf.is_empty() {
+            self.parent
+                .read_next_block(self.stream_idx, &mut self.buf)?;
+            if self.buf.is_empty() {
+                return Ok(None);
+            }
+        }
+        Ok(self.buf.pop_front())
+    }
+}
+
 #[cfg(all(test, feature = "std"))]
 mod test {
-    use crate::read::{MultiStreamWriter, DATA_SIZE};
-    use irox_bits::{Error, MutBits};
+    use crate::read::{MultiStreamReader, MultiStreamWriter, StreamReader, DATA_SIZE};
+    use irox_bits::{Bits, Error, MutBits};
     use std::sync::Arc;
     use std::thread::JoinHandle;
     use std::time::Instant;
@@ -171,7 +273,7 @@ mod test {
 
     #[test]
     #[ignore]
-    pub fn test() -> Result<(), Error> {
+    pub fn test_write() -> Result<(), Error> {
         let ms = MultiStreamWriter::new("e:/test_multistream.ms")?;
         let ms = Arc::new(ms);
         let start = Instant::now();
@@ -192,6 +294,45 @@ mod test {
         let mbs = bs / 1e6;
         let lmb = len as f64 / 1e6;
         println!("Wrote {lmb} MB in {end:?} = {mbs:02.02} MB/s");
+        Ok(())
+    }
+
+    fn spawn_reader_stream(mut stream: StreamReader, value: u8) -> JoinHandle<()> {
+        std::thread::spawn(move || {
+            let num_blocks = NUM_BLOCKS;
+            let count = num_blocks * DATA_SIZE;
+            for _ in 0..count {
+                assert_eq!(value, stream.read_u8().unwrap());
+            }
+        })
+    }
+
+    #[test]
+    #[ignore]
+    pub fn test_read() -> Result<(), Error> {
+        let mut streams = MultiStreamReader::open("e:/test_multistream.ms")?;
+        assert_eq!(streams.len(), 6);
+
+        let start = Instant::now();
+
+        let mut drain = streams.drain(..);
+        let mut handles = vec![
+            spawn_reader_stream(drain.next().unwrap(), 0xA),
+            spawn_reader_stream(drain.next().unwrap(), 0x9),
+            spawn_reader_stream(drain.next().unwrap(), 0xF),
+            spawn_reader_stream(drain.next().unwrap(), 0x5),
+            spawn_reader_stream(drain.next().unwrap(), 0x3),
+            spawn_reader_stream(drain.next().unwrap(), 0x2),
+        ];
+
+        handles.drain(..).for_each(|h| h.join().unwrap());
+
+        let end = start.elapsed();
+        let len = NUM_BLOCKS as u64 * DATA_SIZE as u64 * 6;
+        let bs = len as f64 / end.as_secs_f64();
+        let mbs = bs / 1e6;
+        let lmb = len as f64 / 1e6;
+        println!("Read {lmb} MB in {end:?} = {mbs:02.02} MB/s");
         Ok(())
     }
 }
