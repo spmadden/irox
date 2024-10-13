@@ -22,7 +22,7 @@ cfg_feature_alloc! {
 /// Standard buffer functions
 pub trait Buffer<T> {
     fn get(&self, index: usize) -> Option<&T>;
-    fn get_mut(&mut self, index: usize) -> Option<&mut T>;
+    fn get_mut<'a>(&'a mut self, index: usize) -> Option<&'a mut T>;
     fn capacity(&self) -> usize;
     fn len(&self) -> usize;
     fn clear(&mut self);

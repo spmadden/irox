@@ -7,7 +7,7 @@
 use crate::buf::Buffer;
 use crate::options::MaybeMap;
 use core::ops::{Index, IndexMut};
-
+use std::iter::zip;
 // pub type StrBuf<const N: usize> = FixedBuf<N, char>;
 
 ///
@@ -169,5 +169,67 @@ where
             self.buf[index] = Some(Default::default());
         }
         self.buf[index].as_mut().unwrap()
+    }
+}
+
+impl<const N: usize, T: Sized+Default+Copy> FixedBuf<N, T> {
+    pub fn into_buf_default(mut self) -> [T;N] {
+        let mut out = [T::default();N];
+        for (i, o) in zip(self.buf.iter_mut(), out.iter_mut()) {
+            if let Some(val) = i.take() {
+                *o = val;
+            }
+        }
+        out
+    }
+}
+pub struct FixedBufIter<'a, const N: usize, T: Sized> {
+    buf: &'a FixedBuf<N, T>,
+    idx: usize,
+}
+
+impl<'a, const N: usize, T: Sized> Iterator for FixedBufIter<'a, N, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(val) = self.buf.get(self.idx) {
+            self.idx += 1;
+            return Some(val)
+        }
+        None
+    }
+}
+impl<'a, const N: usize, T: Sized> DoubleEndedIterator for FixedBufIter<'a, N, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.idx >= self.buf.len {
+            return None;
+        }
+        let idx = self.buf.len().saturating_sub(self.idx).saturating_sub(1);
+
+        self.idx += 1;
+        if let Some(val) = self.buf.get(idx) {
+            return Some(val)
+        }
+        None
+    }
+}
+impl<'a, const N: usize, T: Sized> ExactSizeIterator for FixedBufIter<'a, N, T> {
+    fn len(&self) -> usize {
+        self.buf.len()
+    }
+}
+
+pub struct FixedBufIterMut<'a, const N: usize, T: Sized> {
+    buf: &'a mut FixedBuf<N, T>,
+    idx: usize
+}
+
+impl<'a, const N: usize, T: Sized> Iterator for FixedBufIterMut<'a, N, T> {
+    type Item = &'a mut T;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(val) = self.buf.get_mut(self.idx) {
+            self.idx += 1;
+            return Some(val)
+        }
+        None
     }
 }

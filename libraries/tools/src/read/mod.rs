@@ -7,7 +7,6 @@
 extern crate alloc;
 use std::io::{Error, Read, Write};
 
-pub use buffer::*;
 pub use conv::*;
 pub use counting::*;
 #[cfg(feature = "bits/std")]
@@ -15,7 +14,11 @@ pub use pagefile::*;
 pub use readerator::*;
 
 crate::cfg_feature_std! {
+    pub use buffer::*;
     mod buffer;
+    
+    mod multi_stream;
+    pub use multi_stream::*;
 }
 mod conv;
 mod counting;
