@@ -62,6 +62,7 @@ mod macros {
 }
 
 pub use bits::*;
+pub use codec::*;
 pub use error::*;
 pub use mutbits::*;
 pub use seek::*;
@@ -72,6 +73,7 @@ cfg_feature_alloc! {
     mod allocimpls;
 }
 mod bits;
+mod codec;
 mod error;
 mod mutbits;
 mod seek;
