@@ -6,6 +6,7 @@
 //! This module contains a rudimentary reflection/type system
 //!
 
+mod num;
 mod primitive;
 mod schema;
 #[cfg(feature = "syn")]
@@ -14,6 +15,7 @@ mod syn;
 use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
 use std::fmt::{Display, Formatter};
 
+pub use crate::num::*;
 pub use crate::primitive::*;
 pub use crate::schema::*;
 #[cfg(feature = "syn")]
