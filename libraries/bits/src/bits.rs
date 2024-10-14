@@ -545,6 +545,14 @@ impl<'a, const N: usize> MutBitsArray<'a, N> {
     pub fn new(arr: &'a mut [u8; N]) -> Self {
         Self { arr, pos: 0 }
     }
+    /// Returns the current length of the written data.
+    pub fn len(&self) -> usize {
+        self.pos
+    }
+    /// Has anything been written?
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
     /// Resets the writing position to zero. Does NOT clear the data.
     pub fn reset(&mut self) {
         self.pos = 0;

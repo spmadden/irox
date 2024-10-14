@@ -2563,7 +2563,9 @@ version = "0.2.5"
 dependencies = [
  "irox-bits",
  "irox-tools",
+ "irox-types",
  "irox-units",
+ "miniz_oxide",
 ]
 
 [[package]]

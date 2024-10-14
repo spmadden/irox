@@ -12,13 +12,22 @@ exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
 
+[features]
+default = []
+std = []
+miniz = ["dep:miniz_oxide"]
+
 [lints]
 workspace = true
 
 [dependencies]
 irox-tools.workspace = true
 irox-bits.workspace = true
+irox-types.workspace = true
+miniz_oxide = {workspace = true, optional = true}
 
 
 [dev-dependencies]
 irox-units = {workspace = true}
+irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true, features = ["std"]}

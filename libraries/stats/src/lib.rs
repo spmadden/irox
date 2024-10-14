@@ -5,7 +5,7 @@
 //! A collection of digital signals processing and statistics functions
 
 #![forbid(unsafe_code)]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate alloc;
 
@@ -17,9 +17,11 @@ pub mod decay;
 pub mod filter;
 pub mod gaussian;
 pub mod lttb;
+mod macros;
 pub mod points;
 pub mod pyramid;
 pub mod streaming;
+pub mod streams;
 pub mod tdigest;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
