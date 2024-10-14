@@ -5,6 +5,8 @@
 //!
 //! Bits encoding and decoding functions
 
+use crate::{Error, MutBits};
+
 /// Splits the input into two equal sized arrays.
 pub const fn array_concat_2(a: [u8; 2], b: [u8; 2]) -> [u8; 4] {
     let [c, d] = b;
@@ -200,5 +202,72 @@ impl FromBEBytes<32> for [u128; 2] {
     fn from_be_bytes(bytes: [u8; 32]) -> [u128; 2] {
         let (a, b) = array_split_16(bytes);
         [u128::from_be_bytes(a), u128::from_be_bytes(b)]
+    }
+}
+
+/// Writes 'self' to the provided [`MutBits`] impl in big endian order.
+pub trait WriteToBEBits {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error>;
+}
+
+impl WriteToBEBits for u8 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_u8(*self)
+    }
+}
+impl WriteToBEBits for u16 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_u16(*self)
+    }
+}
+
+impl WriteToBEBits for u32 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_u32(*self)
+    }
+}
+impl WriteToBEBits for u64 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_u64(*self)
+    }
+}
+impl WriteToBEBits for u128 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_u128(*self)
+    }
+}
+impl WriteToBEBits for f32 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_f32(*self)
+    }
+}
+impl WriteToBEBits for f64 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_f64(*self)
+    }
+}
+impl WriteToBEBits for i8 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_i8(*self)
+    }
+}
+impl WriteToBEBits for i16 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_i16(*self)
+    }
+}
+impl WriteToBEBits for i32 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_i32(*self)
+    }
+}
+impl WriteToBEBits for i64 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_i64(*self)
+    }
+}
+impl WriteToBEBits for i128 {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
+        bits.write_be_i128(*self)
     }
 }
