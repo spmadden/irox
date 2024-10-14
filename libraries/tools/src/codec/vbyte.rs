@@ -6,7 +6,7 @@ use crate::buf::Buffer;
 use crate::buf::FixedBuf;
 use crate::IntegerValue;
 use alloc::boxed::Box;
-use irox_bits::{Bits, Error};
+use irox_bits::{Bits, BitsError, Error, MutBits};
 
 macro_rules! round {
     ($val:ident) => {{
@@ -355,7 +355,7 @@ pub fn encode_64bits(val: u64) -> [u8; 10] {
 /// |--------|--------|--------|
 ///
 /// ```
-pub fn encode_u128bits(val: u128) -> [u8; 19] {
+pub fn encode_u128bits(val: u128) -> FixedBuf<19, u8> {
     let mut out = FixedBuf::<19, u8>::new();
     let j = (val & 0x7F) as u8;
     let _ = out.push(j);
@@ -366,9 +366,99 @@ pub fn encode_u128bits(val: u128) -> [u8; 19] {
             break;
         }
     }
-    out.into_buf_default()
+    out
 }
-
+pub fn encode_integer_to<T: MutBits + ?Sized>(
+    val: IntegerValue,
+    out: &mut T,
+) -> Result<(), BitsError> {
+    match val {
+        IntegerValue::U8(v) => {
+            if v <= one_byte_mask!() {
+                out.write_all_bytes(&encode_7bits(v))
+            } else {
+                out.write_all_bytes(&encode_8bits(v))
+            }
+        }
+        IntegerValue::U16(v) => {
+            if v <= one_byte_mask!() {
+                out.write_all_bytes(&encode_7bits(v as u8))
+            } else if v <= two_byte_mask!() {
+                out.write_all_bytes(&encode_14bits(v))
+            } else {
+                out.write_all_bytes(&encode_16bits(v))
+            }
+        }
+        IntegerValue::U32(v) => {
+            if v <= one_byte_mask!() {
+                out.write_all_bytes(&encode_7bits(v as u8))
+            } else if v <= two_byte_mask!() {
+                out.write_all_bytes(&encode_14bits(v as u16))
+            } else if v <= three_byte_mask!() {
+                out.write_all_bytes(&encode_21bits(v))
+            } else if v <= four_byte_mask!() {
+                out.write_all_bytes(&encode_28bits(v))
+            } else {
+                out.write_all_bytes(&encode_32bits(v))
+            }
+        }
+        IntegerValue::U64(v) => {
+            if v <= one_byte_mask!() {
+                out.write_all_bytes(&encode_7bits(v as u8))
+            } else if v <= two_byte_mask!() {
+                out.write_all_bytes(&encode_14bits(v as u16))
+            } else if v <= three_byte_mask!() {
+                out.write_all_bytes(&encode_21bits(v as u32))
+            } else if v <= four_byte_mask!() {
+                out.write_all_bytes(&encode_28bits(v as u32))
+            } else if v <= five_byte_mask!() {
+                out.write_all_bytes(&encode_35bits(v))
+            } else if v <= six_byte_mask!() {
+                out.write_all_bytes(&encode_42bits(v))
+            } else if v <= seven_byte_mask!() {
+                out.write_all_bytes(&encode_49bits(v))
+            } else if v <= eight_byte_mask!() {
+                out.write_all_bytes(&encode_56bits(v))
+            } else if v <= nine_byte_mask!() {
+                out.write_all_bytes(&encode_63bits(v))
+            } else {
+                out.write_all_bytes(&encode_64bits(v))
+            }
+        }
+        IntegerValue::U128(v) => encode_u128bits(v).write_to(out),
+        // IntegerValue::I8(_) => {}
+        // IntegerValue::I16(_) => {}
+        // IntegerValue::I32(_) => {}
+        // IntegerValue::I64(_) => {}
+        // IntegerValue::I128(_) => {}
+        _ => {
+            todo!()
+        }
+    }
+}
+pub trait EncodeVByteTo {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError>;
+}
+impl EncodeVByteTo for u128 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::U128(*self), out)
+    }
+}
+impl EncodeVByteTo for u64 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::U64(*self), out)
+    }
+}
+impl EncodeVByteTo for u32 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::U32(*self), out)
+    }
+}
+impl EncodeVByteTo for u16 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::U16(*self), out)
+    }
+}
 pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
     match val {
         IntegerValue::U8(v) => {
