@@ -9,7 +9,7 @@ use crate::iterators::LendingIterator;
 use crate::options::MaybeMap;
 use core::iter::zip;
 use core::ops::{Index, IndexMut};
-use irox_bits::{BitsErrorKind, Error, MutBits};
+use irox_bits::{BitsError, BitsErrorKind, Error, MutBits, WriteToBEBits};
 // pub type StrBuf<const N: usize> = FixedBuf<N, char>;
 
 ///
@@ -184,6 +184,19 @@ impl<const N: usize, T: Sized + Default + Copy> FixedBuf<N, T> {
         }
         self.clear();
         out
+    }
+}
+impl<const N: usize, T: Sized> FixedBuf<N, T> {
+    pub fn iter(&self) -> FixedBufIter<N, T> {
+        FixedBufIter { buf: self, idx: 0 }
+    }
+}
+impl<const N: usize, T: Sized + WriteToBEBits> FixedBuf<N, T> {
+    pub fn write_to<B: MutBits + ?Sized>(&self, out: &mut B) -> Result<(), BitsError> {
+        for v in self.iter() {
+            WriteToBEBits::write_be_to(v, out)?;
+        }
+        Ok(())
     }
 }
 pub struct FixedBufIter<'a, const N: usize, T: Sized> {
