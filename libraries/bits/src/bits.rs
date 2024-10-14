@@ -8,6 +8,7 @@
 
 use crate::error::{Error, ErrorKind};
 use crate::mutbits::MutBits;
+use crate::BitsErrorKind;
 
 cfg_feature_alloc! {
     extern crate alloc;
@@ -530,4 +531,97 @@ pub fn read_f32<T: Bits>(mut data: T) -> Result<f32, Error> {
 /// Calls [`Bits::read_f64()`].  Provided for type-elusion purposes.
 pub fn read_f64<T: Bits>(mut data: T) -> Result<f64, Error> {
     data.read_f64()
+}
+
+///
+/// This struct wraps a provided borrowed static array in a MutBits impl.  Operates
+/// like a slice, walking through the array filling it up.
+pub struct MutBitsArray<'a, const N: usize> {
+    arr: &'a mut [u8; N],
+    pos: usize,
+}
+impl<'a, const N: usize> MutBitsArray<'a, N> {
+    /// Wraps the provided array, providing a [`MutBits`] impl
+    pub fn new(arr: &'a mut [u8; N]) -> Self {
+        Self { arr, pos: 0 }
+    }
+    /// Resets the writing position to zero. Does NOT clear the data.
+    pub fn reset(&mut self) {
+        self.pos = 0;
+    }
+    /// Resets the writing position to zero and clears the data back to zeros.
+    /// Same as calling `fill(0)`
+    pub fn zero(&mut self) {
+        self.fill(0)
+    }
+    /// Fills the array with the value, resets the writing position back to zero.
+    pub fn fill(&mut self, val: u8) {
+        self.arr.fill(val);
+        self.pos = 0;
+    }
+    /// Get an Reader from this array, starts at the beginning and runs until the
+    /// high water 'pos' mark returning a view into JUST the data written.
+    pub fn reader(&'a self) -> BitsArray<'a, N> {
+        BitsArray::new_limited(self.arr, self.pos)
+    }
+}
+impl<'a, const N: usize> From<&'a mut [u8; N]> for MutBitsArray<'a, N> {
+    fn from(arr: &'a mut [u8; N]) -> Self {
+        MutBitsArray { arr, pos: 0 }
+    }
+}
+impl<'a, const N: usize> MutBits for MutBitsArray<'a, N> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        if let Some(v) = self.arr.get_mut(self.pos) {
+            *v = val;
+            self.pos += 1;
+            return Ok(());
+        }
+        Err(BitsErrorKind::UnexpectedEof.into())
+    }
+}
+///
+/// This struct wraps a provided borrowed static array in a MutBits impl.  Operates
+/// like a slice, walking through the array filling it up.
+pub struct BitsArray<'a, const N: usize> {
+    arr: &'a [u8; N],
+    pos: usize,
+    max_len: usize,
+}
+impl<'a, const N: usize> BitsArray<'a, N> {
+    /// A new view into the backed array, limited only by the length of the backed array
+    pub fn new(arr: &'a [u8; N]) -> Self {
+        Self {
+            max_len: arr.len(),
+            pos: 0,
+            arr,
+        }
+    }
+    /// A new view into the backed array, limited by the provided maximum length.
+    pub fn new_limited(arr: &'a [u8; N], max_len: usize) -> Self {
+        Self {
+            arr,
+            max_len,
+            pos: 0,
+        }
+    }
+    /// Resets the reading position back to the start of the array.
+    pub fn reset(&mut self) {
+        self.pos = 0;
+    }
+}
+impl<'a, const N: usize> From<&'a [u8; N]> for BitsArray<'a, N> {
+    fn from(value: &'a [u8; N]) -> Self {
+        Self::new(value)
+    }
+}
+impl<'a, const N: usize> Bits for BitsArray<'a, N> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        if self.pos >= self.max_len {
+            return Ok(None);
+        }
+        let v = self.arr.get(self.pos).copied();
+        self.pos += 1;
+        Ok(v)
+    }
 }
