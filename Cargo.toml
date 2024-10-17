@@ -33,6 +33,7 @@ members = [
     "libraries/fixedmath",
     "libraries/git-tools",
     "libraries/log",
+    "libraries/metrics",
     "libraries/mbtiles",
     "libraries/network",
     "libraries/progress",
@@ -104,6 +105,7 @@ irox-enums_derive = { version = "^0", path = "libraries/enums_derive" }
 irox-fixedmath = {version = "^0", path = "libraries/fixedmath"}
 irox-git-tools = { version = "^0", path = "libraries/git-tools" }
 irox-log = { version = "^0", path = "libraries/log" }
+irox-metrics = {version = "^0", path = "libraries/metrics"}
 irox-mbtiles = { version = "^0", path = "libraries/mbtiles" }
 irox-networking = { version = "^0", path = "libraries/network" }
 irox-progress = { version = "^0", path = "libraries/progress" }
@@ -118,6 +120,7 @@ irox-units = { version = "^0", path = "libraries/units" }
 
 [profile.test]
 opt-level = 1
+
 
 # Lints last updated for Rust 1.79.0
 [workspace.lints.rust]
