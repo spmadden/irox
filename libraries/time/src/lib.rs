@@ -32,12 +32,13 @@ extern crate alloc;
 use alloc::string::String;
 use core::fmt::{Display, Formatter};
 
+use crate::datetime::UTCDateTime;
+use crate::epoch::{Epoch, Timestamp, UnixTimestamp};
+use crate::format::iso8601::ISO8601_DATE_TIME;
+use crate::format::{Format, FormatError, FormatParser};
 pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 pub use irox_units::units::duration::{Duration, DurationUnit};
 use irox_units::units::duration::{NANOS_TO_SEC, SEC_TO_NANOS};
-
-use crate::epoch::{Epoch, Timestamp};
-use crate::format::{Format, FormatError, FormatParser};
 
 pub mod datetime;
 pub mod epoch;
@@ -448,6 +449,10 @@ macro_rules! impls {
             pub fn as_f64(&self) -> f64 {
                 self.into()
             }
+            pub fn try_from_iso8601(val: &str) -> Result<Self, FormatError> {
+                let v = ISO8601_DATE_TIME.try_from(val)?;
+                Ok(v.into())
+            }
         }
         impl From<$strukt> for f64 {
             fn from(value: $strukt) -> Self {
@@ -507,6 +512,24 @@ macro_rules! impls {
             fn from(value: &mut $strukt) -> Self {
                 let dur = Duration::new(value.as_f64(), DurationUnit::Second);
                 Timestamp::<T>::new(value.get_epoch(), dur)
+            }
+        }
+        impl From<UTCDateTime> for $strukt {
+            fn from(value: UTCDateTime) -> Self {
+                let ts = UnixTimestamp::from(value);
+                <$strukt>::from(ts)
+            }
+        }
+        impl From<&UTCDateTime> for $strukt {
+            fn from(value: &UTCDateTime) -> Self {
+                let ts = UnixTimestamp::from(value);
+                <$strukt>::from(ts)
+            }
+        }
+        impl From<&mut UTCDateTime> for $strukt {
+            fn from(value: &mut UTCDateTime) -> Self {
+                let ts = UnixTimestamp::from(*value);
+                <$strukt>::from(ts)
             }
         }
     };
