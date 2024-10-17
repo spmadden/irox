@@ -290,6 +290,34 @@ impl Display for PrimitiveValue {
         }
     }
 }
+macro_rules! impl_into_primivevalue {
+    ($ty:ty, $pv:tt) => {
+        impl From<$ty> for PrimitiveValue {
+            fn from(value: $ty) -> Self {
+                PrimitiveValue::$pv(value)
+            }
+        }
+    };
+}
+impl_into_primivevalue!(u8, u8);
+impl_into_primivevalue!(i8, i8);
+impl_into_primivevalue!(u16, u16);
+impl_into_primivevalue!(i16, i16);
+impl_into_primivevalue!(u32, u32);
+impl_into_primivevalue!(i32, i32);
+impl_into_primivevalue!(f32, f32);
+impl_into_primivevalue!(u64, u64);
+impl_into_primivevalue!(i64, i64);
+impl_into_primivevalue!(f64, f64);
+impl_into_primivevalue!(u128, u128);
+impl_into_primivevalue!(i128, i128);
+impl_into_primivevalue!(bool, bool);
+impl_into_primivevalue!(char, char);
+impl From<()> for PrimitiveValue {
+    fn from((): ()) -> Self {
+        PrimitiveValue::null
+    }
+}
 
 ///
 /// A struct to "Name" a primitive - like a Field with an associated type
