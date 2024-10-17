@@ -7,6 +7,7 @@
 //!
 
 use core::ops::{BitXor, BitXorAssign};
+use irox_bits::MutBits;
 
 /// Default starting state/seed if the system clock fails
 const DEFAULT_STATE: u64 = 0x4d595df4d0f33173u64;
@@ -203,6 +204,17 @@ pub trait PRNG {
     /// Gets the next random [`f64`] for this random sequence
     fn next_f64(&mut self) -> f64 {
         f64::from_bits(self.next_u64())
+    }
+
+    fn fill(&mut self, mut data: &mut [u8]) {
+        while !data.is_empty() {
+            let val = self.next_u64().to_ne_bytes();
+            for v in val {
+                if data.write_u8(v).is_err() {
+                    return;
+                }
+            }
+        }
     }
 }
 
