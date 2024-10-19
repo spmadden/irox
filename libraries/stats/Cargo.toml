@@ -28,6 +28,7 @@ miniz_oxide = {workspace = true, optional = true}
 
 
 [dev-dependencies]
+irox-time.workspace = true
 irox-units = {workspace = true}
 irox-bits = {workspace = true, features = ["std"]}
 irox-tools = {workspace = true, features = ["std"]}

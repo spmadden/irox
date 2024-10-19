@@ -2563,6 +2563,7 @@ name = "irox-stats"
 version = "0.2.5"
 dependencies = [
  "irox-bits",
+ "irox-time",
  "irox-tools",
  "irox-types",
  "irox-units",
@@ -2617,6 +2618,7 @@ name = "irox-time"
 version = "0.4.2"
 dependencies = [
  "irox-enums",
+ "irox-fixedmath",
  "irox-tools",
  "irox-units",
 ]
