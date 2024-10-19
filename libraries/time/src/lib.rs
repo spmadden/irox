@@ -29,13 +29,13 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate alloc;
-use alloc::string::String;
-use core::fmt::{Display, Formatter};
-
 use crate::datetime::UTCDateTime;
 use crate::epoch::{Epoch, Timestamp, UnixTimestamp};
 use crate::format::iso8601::ISO8601_DATE_TIME;
 use crate::format::{Format, FormatError, FormatParser};
+use alloc::string::String;
+use core::fmt::{Display, Formatter};
+use irox_fixedmath::{FixedU128, FixedU32, FixedU64};
 pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 pub use irox_units::units::duration::{Duration, DurationUnit};
 use irox_units::units::duration::{NANOS_TO_SEC, SEC_TO_NANOS};
@@ -322,12 +322,7 @@ pub struct Time32 {
     /// The Reference Epoch
     epoch: Epoch,
 
-    /// The number of seconds into the reference epoch
-    seconds: u16,
-
-    /// The fractional number of seconds into the current second.  Divide this
-    /// number by 2^16 to get the actual fractional component.
-    fractional_seconds: u16,
+    inner: FixedU32,
 }
 
 impl Time32 {
@@ -335,7 +330,7 @@ impl Time32 {
     /// Returns the value of this Time32 as a Q16.16
     #[must_use]
     pub const fn as_u32(&self) -> u32 {
-        ((self.seconds as u32) << 16) | (self.fractional_seconds as u32)
+        self.inner.raw_value()
     }
 }
 
@@ -354,13 +349,7 @@ impl Time32 {
 pub struct Time64 {
     /// The Reference Epoch
     epoch: Epoch,
-
-    /// The number of seconds into the current reference epoch
-    seconds: u32,
-
-    /// The fractional element into the current second.  Divide this number by
-    /// 2^32 to get the actual fractional component.
-    fractional_seconds: u32,
+    inner: FixedU64,
 }
 
 impl Time64 {
@@ -368,7 +357,7 @@ impl Time64 {
     /// Returns the value of this Time64 as a Q32.32
     #[must_use]
     pub const fn as_u64(&self) -> u64 {
-        ((self.seconds as u64) << 32) | (self.fractional_seconds as u64)
+        self.inner.raw_value()
     }
 }
 
@@ -392,12 +381,7 @@ pub struct Time128 {
     /// Reference Epoch Date
     epoch: Epoch,
 
-    /// The number of seconds into the reference epoch
-    seconds: u64,
-
-    /// The fractional element into the current second.  Divide this number by
-    /// 2^64 to get the actual fractional component.
-    fractional_seconds: u64,
+    inner: FixedU128,
 }
 
 impl Time128 {
@@ -405,31 +389,22 @@ impl Time128 {
     /// Returns the value of this Time128 as a Q64.64
     #[must_use]
     pub const fn as_u128(&self) -> u128 {
-        ((self.seconds as u128) << 64) | (self.fractional_seconds as u128)
+        self.inner.raw_value()
     }
 }
 
 macro_rules! impls {
-    ($strukt:ty, $prim:ty) => {
+    ($strukt:ty, $prim:ty, $inner:ty) => {
         impl $strukt {
             #[must_use]
             pub const fn new(epoch: Epoch, seconds: $prim, fractional_seconds: $prim) -> Self {
-                Self {
-                    epoch,
-                    seconds,
-                    fractional_seconds,
-                }
+                let inner = <$inner>::from_parts(seconds, fractional_seconds);
+                Self { epoch, inner }
             }
             #[must_use]
             pub fn new_f64(epoch: Epoch, seconds: f64) -> Self {
-                let fracs = seconds.fract();
-                let fractional_seconds = (fracs * <$prim>::MAX as f64) as $prim;
-                let seconds = seconds.floor() as $prim;
-                Self {
-                    epoch,
-                    seconds,
-                    fractional_seconds,
-                }
+                let inner = <$inner>::from(seconds);
+                Self { epoch, inner }
             }
             ///
             /// Returns the reference epoch of this Time
@@ -439,11 +414,11 @@ macro_rules! impls {
             }
             #[must_use]
             pub const fn get_seconds(&self) -> $prim {
-                self.seconds
+                self.inner.whole()
             }
             #[must_use]
             pub const fn get_fractional_seconds(&self) -> $prim {
-                self.fractional_seconds
+                self.inner.fract()
             }
             #[must_use]
             pub fn as_f64(&self) -> f64 {
@@ -453,26 +428,25 @@ macro_rules! impls {
                 let v = ISO8601_DATE_TIME.try_from(val)?;
                 Ok(v.into())
             }
+
+            #[cfg(feature = "std")]
+            pub fn now() -> Self {
+                UnixTimestamp::now().into()
+            }
         }
         impl From<$strukt> for f64 {
             fn from(value: $strukt) -> Self {
-                let val =
-                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
-                val
+                value.inner.as_f64()
             }
         }
         impl From<&$strukt> for f64 {
             fn from(value: &$strukt) -> Self {
-                let val =
-                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
-                val
+                value.inner.as_f64()
             }
         }
         impl From<&mut $strukt> for f64 {
             fn from(value: &mut $strukt) -> Self {
-                let val =
-                    value.fractional_seconds as f64 / <$prim>::MAX as f64 + value.seconds as f64;
-                val
+                value.inner.as_f64()
             }
         }
         impl<T> From<Timestamp<T>> for $strukt {
@@ -532,8 +506,60 @@ macro_rules! impls {
                 <$strukt>::from(ts)
             }
         }
+        impl core::ops::Deref for $strukt {
+            type Target = $inner;
+
+            fn deref(&self) -> &Self::Target {
+                &self.inner
+            }
+        }
+        impl core::ops::Sub for $strukt {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                //TODO: verify epochs.
+                let v = self.inner - rhs.inner;
+                Self {
+                    epoch: self.epoch,
+                    inner: v,
+                }
+            }
+        }
+        impl core::ops::Sub for &$strukt {
+            type Output = $strukt;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                //TODO: verify epochs.
+                let v = self.inner - rhs.inner;
+                Self::Output {
+                    epoch: self.epoch,
+                    inner: v,
+                }
+            }
+        }
+        impl core::ops::Add<Duration> for $strukt {
+            type Output = Self;
+
+            fn add(self, rhs: Duration) -> Self::Output {
+                let v = self.inner + rhs.as_seconds_f64();
+                Self {
+                    epoch: self.epoch,
+                    inner: v,
+                }
+            }
+        }
+        impl core::ops::AddAssign<Duration> for $strukt {
+            fn add_assign(&mut self, rhs: Duration) {
+                self.inner += rhs.as_seconds_f64();
+            }
+        }
+        impl core::ops::AddAssign<Duration> for &mut $strukt {
+            fn add_assign(&mut self, rhs: Duration) {
+                self.inner += rhs.as_seconds_f64();
+            }
+        }
     };
 }
-impls!(Time32, u16);
-impls!(Time64, u32);
-impls!(Time128, u64);
+impls!(Time32, u16, FixedU32);
+impls!(Time64, u32, FixedU64);
+impls!(Time128, u64, FixedU128);
