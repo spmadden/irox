@@ -175,8 +175,26 @@ macro_rules! impl_fmt_as_inner {
         }
     };
 }
+
 macro_rules! impl_unsigned_flops {
     ($typ:ty, $prim:ty, $lower_prim:ty, $shift:ident, $val:ident, $mask:ident) => {
+        impl core::ops::Add<f64> for $typ {
+            type Output = Self;
+            fn add(self, rhs: f64) -> Self::Output {
+                let v = <$typ>::from(rhs);
+                self + v
+            }
+        }
+        impl core::ops::AddAssign<f64> for $typ {
+            fn add_assign(&mut self, rhs: f64) {
+                *self = *self + rhs;
+            }
+        }
+        impl core::ops::AddAssign<f64> for &mut $typ {
+            fn add_assign(&mut self, rhs: f64) {
+                **self = **self + rhs;
+            }
+        }
         impl irox_tools::f64::FloatExt for $typ {
             type Type = Self;
 
@@ -568,7 +586,7 @@ impl FixedU128 {
     pub const RESOLUTION: FixedU128 = FixedU128::from_parts(0, 1);
 }
 impl_base!(FixedU128, u128, u64, u128, U128_SHIFT, U128_VAL, U128_MASK);
-//impl_unsigned_flops!(FixedU128, u128, u64, U128_SHIFT, U128_VAL, U128_MASK);
+impl_unsigned_flops!(FixedU128, u128, u64, U128_SHIFT, U128_VAL, U128_MASK);
 impl_prim_ops!(FixedU128, u64, u8);
 impl_prim_ops!(FixedU128, u64, u16);
 impl_prim_ops!(FixedU128, u64, u32);
