@@ -459,6 +459,11 @@ impl EncodeVByteTo for u16 {
         encode_integer_to(IntegerValue::U16(*self), out)
     }
 }
+impl EncodeVByteTo for u8 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::U8(*self), out)
+    }
+}
 pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
     match val {
         IntegerValue::U8(v) => {
