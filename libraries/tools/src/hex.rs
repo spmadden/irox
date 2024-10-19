@@ -37,7 +37,7 @@ pub trait HexDump {
 impl<S: AsRef<[u8]>> HexDump for S {
     crate::cfg_feature_std! {
         fn hexdump(&self) {
-            let _ = self.hexdump_to(&mut irox_bits::BitsWrapper(&mut std::io::stdout().lock()));
+            let _ = self.hexdump_to(&mut irox_bits::BitsWrapper::Borrowed(&mut std::io::stdout().lock()));
         }
     }
 

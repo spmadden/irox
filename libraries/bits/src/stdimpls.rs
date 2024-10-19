@@ -26,22 +26,22 @@ impl MutBits for std::fs::File {
 
 impl Bits for std::net::TcpStream {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        BitsWrapper(self).next_u8()
+        BitsWrapper::Borrowed(self).next_u8()
     }
 }
 impl Bits for &mut std::net::TcpStream {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
-        BitsWrapper(self).next_u8()
+        BitsWrapper::Borrowed(self).next_u8()
     }
 }
 impl MutBits for std::net::TcpStream {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        BitsWrapper(self).write_u8(val)
+        BitsWrapper::Borrowed(self).write_u8(val)
     }
 }
 impl MutBits for &mut std::net::TcpStream {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        BitsWrapper(self).write_u8(val)
+        BitsWrapper::Borrowed(self).write_u8(val)
     }
 }
 

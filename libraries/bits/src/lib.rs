@@ -66,7 +66,6 @@ pub use codec::*;
 pub use error::*;
 pub use mutbits::*;
 pub use seek::*;
-#[cfg(feature = "std")]
 pub use stdwrappers::*;
 
 cfg_feature_alloc! {
@@ -79,6 +78,5 @@ mod mutbits;
 mod seek;
 #[cfg(feature = "std")]
 mod stdimpls;
-#[cfg(feature = "std")]
 mod stdwrappers;
 pub mod utf;
