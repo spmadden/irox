@@ -8,6 +8,7 @@
 
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
+    type Size = u32;
 
     fn trunc(self) -> f32 {
         (self as u64) as f32
@@ -115,6 +116,18 @@ impl crate::f64::FloatExt for f32 {
 
     fn sqrt(self) -> Self::Type {
         self.powf(0.5)
+    }
+
+    fn to_bits(self) -> Self::Size {
+        f32::to_bits(self)
+    }
+
+    fn exponent(self) -> u16 {
+        ((self.to_bits() >> 23) & 0x0F) as u16
+    }
+
+    fn significand(self) -> Self::Size {
+        self.to_bits() & 0x7FFFFF
     }
 }
 

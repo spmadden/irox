@@ -30,6 +30,7 @@ pub fn min_max(iter: &[f64]) -> (f64, f64) {
 
 pub trait FloatExt {
     type Type;
+    type Size;
     fn trunc(self) -> Self::Type;
     fn fract(self) -> Self::Type;
     fn abs(self) -> Self::Type;
@@ -45,11 +46,15 @@ pub trait FloatExt {
     fn powf(self, val: Self::Type) -> Self::Type;
 
     fn sqrt(self) -> Self::Type;
+    fn to_bits(self) -> Self::Size;
+    fn exponent(self) -> u16;
+    fn significand(self) -> Self::Size;
 }
 
 #[cfg(not(feature = "std"))]
 impl FloatExt for f64 {
     type Type = f64;
+    type Size = u64;
 
     ///
     /// Truncate the value
@@ -169,11 +174,24 @@ impl FloatExt for f64 {
     fn sqrt(self) -> Self::Type {
         self.powf(0.5)
     }
+
+    fn to_bits(self) -> Self::Size {
+        f64::to_bits(self)
+    }
+
+    fn exponent(self) -> u16 {
+        ((self.to_bits() >> 52) & 0x7FF) as u16
+    }
+
+    fn significand(self) -> Self::Size {
+        self.to_bits() & 0xF_FFFF_FFFF_FFFF
+    }
 }
 
 #[cfg(feature = "std")]
 impl FloatExt for f64 {
     type Type = f64;
+    type Size = u64;
 
     fn trunc(self) -> Self::Type {
         f64::trunc(self)
@@ -221,6 +239,18 @@ impl FloatExt for f64 {
 
     fn sqrt(self) -> Self::Type {
         f64::sqrt(self)
+    }
+
+    fn to_bits(self) -> Self::Size {
+        f64::to_bits(self)
+    }
+
+    fn exponent(self) -> u16 {
+        ((self.to_bits() >> 52) & 0x7FF) as u16
+    }
+
+    fn significand(self) -> Self::Size {
+        self.to_bits() & 0xF_FFFF_FFFF_FFFF
     }
 }
 

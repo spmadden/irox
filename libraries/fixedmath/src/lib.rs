@@ -197,6 +197,7 @@ macro_rules! impl_unsigned_flops {
         }
         impl irox_tools::f64::FloatExt for $typ {
             type Type = Self;
+            type Size = $prim;
 
             fn trunc(self) -> Self::Type {
                 // just mask out the fractional bits leaving the whole bits.
@@ -290,6 +291,17 @@ macro_rules! impl_unsigned_flops {
 
             fn sqrt(self) -> Self::Type {
                 self.powf(0.5.into())
+            }
+            fn to_bits(self) -> Self::Size {
+                self.raw_value()
+            }
+
+            fn exponent(self) -> u16 {
+                irox_tools::f64::FloatExt::exponent(self.as_f64())
+            }
+
+            fn significand(self) -> Self::Size {
+                irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
             }
         }
     };
