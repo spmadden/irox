@@ -30,7 +30,7 @@
 
 extern crate alloc;
 use crate::datetime::UTCDateTime;
-use crate::epoch::{Epoch, Timestamp, UnixTimestamp};
+use crate::epoch::{Epoch, Timestamp, UnixTimestamp, UNIX_EPOCH};
 use crate::format::iso8601::ISO8601_DATE_TIME;
 use crate::format::{Format, FormatError, FormatParser};
 use alloc::string::String;
@@ -351,7 +351,14 @@ pub struct Time64 {
     epoch: Epoch,
     inner: FixedU64,
 }
-
+impl Default for Time64 {
+    fn default() -> Self {
+        Time64 {
+            epoch: UNIX_EPOCH,
+            inner: FixedU64::default(),
+        }
+    }
+}
 impl Time64 {
     ///
     /// Returns the value of this Time64 as a Q32.32
