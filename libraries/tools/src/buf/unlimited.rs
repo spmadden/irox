@@ -5,6 +5,8 @@
 extern crate alloc;
 use crate::buf::{Buffer, FixedBuf};
 use alloc::collections::LinkedList;
+use irox_bits::Bits;
+use irox_bits::{Error, MutBits};
 
 const PAGE_SIZE: usize = 0x1000; // 4096
 const PAGE_SHIFT: usize = 12;
@@ -118,6 +120,7 @@ impl<T: Clone> UnlimitedBuffer<T> {
         let mut buf = FixedBuf::new();
         let _ = buf.push_back(value);
         self.data.push_front(buf);
+        self.len += 1;
     }
 
     pub fn push_back(&mut self, value: T) {
@@ -127,6 +130,24 @@ impl<T: Clone> UnlimitedBuffer<T> {
                 let _ = buf.push_back(e);
                 self.data.push_back(buf);
             }
+        } else {
+            let mut buf = FixedBuf::new();
+            let _ = buf.push_back(value);
+            self.data.push_back(buf);
         }
+        self.len += 1;
+    }
+}
+
+impl MutBits for UnlimitedBuffer<u8> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        self.push_back(val);
+        Ok(())
+    }
+}
+
+impl Bits for UnlimitedBuffer<u8> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        Ok(self.pop_front())
     }
 }
