@@ -86,7 +86,10 @@ pub trait AnyUnsignedInteger:
     fn as_u128(&self) -> u128;
 }
 pub trait AnySignedInteger: AnyUnsignedInteger + NumberSigned {}
-pub trait AnyFloat: Number + NumberMut + NumberFloating + NumberSigned {}
+pub trait AnyFloat:
+    Number + NumberMut + NumberFloating + NumberSigned + irox_tools::f64::FloatExt
+{
+}
 macro_rules! impl_exact {
     ($($typ:ty) *) => {
         $(

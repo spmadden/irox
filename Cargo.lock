@@ -2639,6 +2639,7 @@ dependencies = [
  "irox-bits",
  "irox-enums",
  "irox-enums_derive",
+ "irox-tools",
  "syn 2.0.79",
 ]
 
