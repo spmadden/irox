@@ -15,6 +15,7 @@ repository.workspace = true
 [features]
 default = []
 std = []
+time = ["dep:irox-time"]
 miniz = ["dep:miniz_oxide"]
 
 [lints]
@@ -24,6 +25,7 @@ workspace = true
 irox-tools.workspace = true
 irox-bits.workspace = true
 irox-types.workspace = true
+irox-time = {workspace = true, optional = true}
 miniz_oxide = {workspace = true, optional = true}
 
 

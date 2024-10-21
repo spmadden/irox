@@ -5,9 +5,13 @@
 //! A collection of digital signals processing and statistics functions
 
 #![forbid(unsafe_code)]
+#![warn(clippy::alloc_instead_of_core)]
+#![warn(clippy::std_instead_of_alloc)]
+#![warn(clippy::std_instead_of_core)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate alloc;
+extern crate core;
 
 use alloc::vec::Vec;
 
@@ -23,6 +27,9 @@ pub mod pyramid;
 pub mod streaming;
 pub mod streams;
 pub mod tdigest;
+#[cfg(any(all(doc, docsrs), all(feature = "std", feature = "time")))]
+#[cfg_attr(docsrs, doc(cfg(all(feature = "std", feature = "time"))))]
+pub mod tsdf;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DistributionParams {

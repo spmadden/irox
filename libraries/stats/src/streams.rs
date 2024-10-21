@@ -6,21 +6,32 @@
 //! Streaming data encoders and decoders
 
 use crate::cfg_feature_miniz;
+use core::fmt::UpperHex;
 use core::ops::Sub;
 use irox_bits::{Error, MutBits, WriteToBEBits};
 use irox_tools::codec::vbyte::EncodeVByteTo;
-use irox_types::AnyUnsignedInteger;
-use irox_types::Number;
+
+pub trait Streamable: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> {}
+impl<T> Streamable for T where T: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits>
+{}
+pub trait StreamableVByte:
+    Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo
+{
+}
+impl<T> StreamableVByte for T where
+    T: Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo
+{
+}
 
 ///
 /// A stream impl that writes the difference between the last value and the current
 /// value to the provided [`MutBits`] writer.  The previous value is initialized to 0.
-pub struct DeltaStream<'a, T: Number + WriteToBEBits + Sub<Output: WriteToBEBits>, B: MutBits> {
+pub struct DeltaStream<'a, T: Streamable, B: MutBits> {
     last_value: T,
     writer: &'a mut B,
 }
 
-impl<'a, T: Number + WriteToBEBits + Sub<Output: WriteToBEBits>, B: MutBits> DeltaStream<'a, T, B> {
+impl<'a, T: Streamable, B: MutBits> DeltaStream<'a, T, B> {
     ///
     /// Create a new stream impl
     pub fn new(writer: &'a mut B) -> Self {
@@ -46,10 +57,7 @@ impl<'a, B: MutBits> VByteIntStream<'a, B> {
     pub fn new(writer: &'a mut B) -> Self {
         Self { writer }
     }
-    pub fn write_value<T: AnyUnsignedInteger + Sub<Output: EncodeVByteTo> + EncodeVByteTo>(
-        &mut self,
-        value: T,
-    ) -> Result<(), Error> {
+    pub fn write_value<T: StreamableVByte>(&mut self, value: T) -> Result<(), Error> {
         EncodeVByteTo::encode_vbyte_to(&value, self.writer)
     }
 }
@@ -84,18 +92,12 @@ impl<'a, B: MutBits> MutBits for VByteIntStream<'a, B> {
 /// A stream impl that writes the varint-encoded difference between the last
 /// value and the current value to the provided [`MutBits`] writer.  The previous
 /// value is initialized to 0.
-pub struct VByteDeltaIntStream<
-    'a,
-    T: AnyUnsignedInteger + Sub<Output: EncodeVByteTo> + EncodeVByteTo,
-    B: MutBits,
-> {
+pub struct VByteDeltaIntStream<'a, T: StreamableVByte, B: MutBits> {
     last_value: T,
     writer: VByteIntStream<'a, B>,
 }
 
-impl<'a, T: AnyUnsignedInteger + Sub<Output: EncodeVByteTo> + EncodeVByteTo, B: MutBits>
-    VByteDeltaIntStream<'a, T, B>
-{
+impl<'a, T: StreamableVByte, B: MutBits> VByteDeltaIntStream<'a, T, B> {
     /// Creates a new stream
     pub fn new(writer: &mut B) -> VByteDeltaIntStream<T, B> {
         VByteDeltaIntStream {
@@ -119,17 +121,17 @@ cfg_feature_miniz! {
     use miniz_oxide::deflate::CompressionLevel;
     use miniz_oxide::DataFormat;
     use alloc::collections::VecDeque;
-    use irox_bits::ErrorKind;
+    use irox_bits::{ErrorKind, BitsWrapper};
 
     pub struct CompressStream<'a, T: MutBits> {
-        writer: &'a mut T,
+        writer: BitsWrapper<'a, T>,
         inbuf: VecDeque<u8>,
         compressor: CompressorOxide,
     }
     impl<'a, T: MutBits> CompressStream<'a, T> {
-        pub fn new(writer: &'a mut T) -> Self {
+        pub fn new(writer: BitsWrapper<'a, T>) -> Self {
             let mut compressor = CompressorOxide::default();
-            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::DefaultLevel as u8);
+            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::BestCompression as u8);
             Self {
                 writer,
                 inbuf: VecDeque::with_capacity(4096),
@@ -137,7 +139,7 @@ cfg_feature_miniz! {
             }
         }
 
-        pub fn write_value<V: AnyUnsignedInteger + Sub<Output: WriteToBEBits> + WriteToBEBits>(
+        pub fn write_value<V: Streamable>(
                 &mut self, value: V) -> Result<(), Error> {
             // println!("writing {value:08X}");
             WriteToBEBits::write_be_to(&value, &mut self.inbuf)?;
@@ -193,13 +195,13 @@ cfg_feature_miniz! {
     /// A stream impl that writes the deflated, varint-encoded difference between
     /// the last value and the current value to the provided [`MutBits`] writer.
     /// The previous value is initialized to 0.
-    pub struct DeltaCompressStream<'a, T: AnyUnsignedInteger+Sub<Output: EncodeVByteTo+AnyUnsignedInteger>+EncodeVByteTo, B: MutBits> {
+    pub struct DeltaCompressStream<'a, T: StreamableVByte, B: MutBits> {
         last_value: T,
         compressor: CompressStream<'a, B>
     }
-    impl<'a, T: AnyUnsignedInteger+Sub<Output: EncodeVByteTo+AnyUnsignedInteger>+EncodeVByteTo, B: MutBits> DeltaCompressStream<'a, T, B> {
+    impl<'a, T: StreamableVByte, B: MutBits> DeltaCompressStream<'a, T, B> {
         /// Create a new stream
-        pub fn new(writer: &'a mut B) -> DeltaCompressStream<'a, T, B> {
+        pub fn new(writer: BitsWrapper<'a, B>) -> DeltaCompressStream<'a, T, B> {
             DeltaCompressStream {
                 last_value: Default::default(),
                 compressor: CompressStream::new(writer),
@@ -222,7 +224,7 @@ cfg_feature_miniz! {
         }
 
     }
-    impl<'a, T: AnyUnsignedInteger+Sub<Output: EncodeVByteTo+AnyUnsignedInteger>+EncodeVByteTo, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
+    impl<'a, T: StreamableVByte, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
         /// Make sure the buffer is fully flushed on drop
         fn drop(&mut self) {
             let _ = self.flush();
@@ -232,7 +234,7 @@ cfg_feature_miniz! {
 
 #[cfg(all(test, feature = "miniz", feature = "std"))]
 mod test {
-    use crate::streams::DeltaCompressStream;
+    use crate::streams::{BitsWrapper, DeltaCompressStream};
     use irox_bits::{Error, MutBitsArray};
     use irox_time::Time64;
     use irox_units::units::duration::Duration;
@@ -247,7 +249,8 @@ mod test {
         let start = Instant::now();
         let written = {
             let mut arr: MutBitsArray<4096> = (&mut buf).into();
-            let mut vbout = DeltaCompressStream::<u64, _>::new(&mut arr);
+            let wrapper = BitsWrapper::Borrowed(&mut arr);
+            let mut vbout = DeltaCompressStream::<u64, _>::new(wrapper);
 
             for i in 0..4_000_000 {
                 input += 8;
@@ -275,7 +278,8 @@ mod test {
         let count = 2_000_000;
         let written = {
             let mut arr: MutBitsArray<16384> = (&mut buf).into();
-            let mut vbout = DeltaCompressStream::new(&mut arr);
+            let wrapper = BitsWrapper::Borrowed(&mut arr);
+            let mut vbout = DeltaCompressStream::new(wrapper);
 
             for _ in 0..count {
                 input += incr;
