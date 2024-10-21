@@ -368,6 +368,21 @@ pub fn encode_u128bits(val: u128) -> FixedBuf<19, u8> {
     }
     out
 }
+
+macro_rules! zigzag_impl {
+    ($id:ident,$sig:ty,$usig:ty,$len:literal) => {
+        pub fn $id(n: $sig) -> $usig {
+            let n = n as $usig;
+            (n << 1) ^ (n >> ($len - 1))
+        }
+    };
+}
+zigzag_impl!(zigzag_i8, i8, u8, 8);
+zigzag_impl!(zigzag_i16, i16, u16, 16);
+zigzag_impl!(zigzag_i32, i32, u32, 32);
+zigzag_impl!(zigzag_i64, i64, u64, 64);
+zigzag_impl!(zigzag_i128, i128, u128, 128);
+
 pub fn encode_integer_to<T: MutBits + ?Sized>(
     val: IntegerValue,
     out: &mut T,
@@ -426,14 +441,11 @@ pub fn encode_integer_to<T: MutBits + ?Sized>(
             }
         }
         IntegerValue::U128(v) => encode_u128bits(v).write_to(out),
-        // IntegerValue::I8(_) => {}
-        // IntegerValue::I16(_) => {}
-        // IntegerValue::I32(_) => {}
-        // IntegerValue::I64(_) => {}
-        // IntegerValue::I128(_) => {}
-        _ => {
-            todo!()
-        }
+        IntegerValue::I8(v) => zigzag_i8(v).encode_vbyte_to(out),
+        IntegerValue::I16(v) => zigzag_i16(v).encode_vbyte_to(out),
+        IntegerValue::I32(v) => zigzag_i32(v).encode_vbyte_to(out),
+        IntegerValue::I64(v) => zigzag_i64(v).encode_vbyte_to(out),
+        IntegerValue::I128(v) => zigzag_i128(v).encode_vbyte_to(out),
     }
 }
 pub trait EncodeVByteTo {
@@ -444,9 +456,19 @@ impl EncodeVByteTo for u128 {
         encode_integer_to(IntegerValue::U128(*self), out)
     }
 }
+impl EncodeVByteTo for i128 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::I128(*self), out)
+    }
+}
 impl EncodeVByteTo for u64 {
     fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
         encode_integer_to(IntegerValue::U64(*self), out)
+    }
+}
+impl EncodeVByteTo for i64 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::I64(*self), out)
     }
 }
 impl EncodeVByteTo for u32 {
@@ -454,14 +476,29 @@ impl EncodeVByteTo for u32 {
         encode_integer_to(IntegerValue::U32(*self), out)
     }
 }
+impl EncodeVByteTo for i32 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::I32(*self), out)
+    }
+}
 impl EncodeVByteTo for u16 {
     fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
         encode_integer_to(IntegerValue::U16(*self), out)
     }
 }
+impl EncodeVByteTo for i16 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::I16(*self), out)
+    }
+}
 impl EncodeVByteTo for u8 {
     fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
         encode_integer_to(IntegerValue::U8(*self), out)
+    }
+}
+impl EncodeVByteTo for i8 {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+        encode_integer_to(IntegerValue::I8(*self), out)
     }
 }
 pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
