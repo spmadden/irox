@@ -19,7 +19,7 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::Mutex;
 
-pub const DEFAULT_BLOCK_SIZE: usize = 16 * 1024; // 16K
+pub const DEFAULT_BLOCK_SIZE: usize = 4 * 1024; // 16K
 pub const DATA_SIZE: usize = DEFAULT_BLOCK_SIZE - 4;
 pub const HEADER: &[u8] = b"IRXMSB";
 
@@ -46,20 +46,20 @@ impl MultiStreamWriter {
     ///
     /// Creates a new writer against the provided path.  If the file exists, will be truncated and
     /// any data removed.  If it doesn't exist, it will be created.
-    pub fn new<P: AsRef<Path>>(path: P) -> Result<MultiStreamWriter, Error> {
+    pub fn new<P: AsRef<Path>>(path: P) -> Result<Arc<MultiStreamWriter>, Error> {
         let inner = OpenOptions::new()
             .create(true)
             .truncate(true)
             .write(true)
             .open(path.as_ref())?;
 
-        Ok(MultiStreamWriter {
+        Ok(Arc::new(MultiStreamWriter {
             inner: Arc::new(Mutex::new(inner)),
             num_streams: Arc::new(AtomicU8::new(1)),
             current_block: Arc::new(AtomicU32::new(1)),
             stream_first_blocks: Arc::new(Mutex::new(Default::default())),
             stream_latest_blocks: Arc::new(Mutex::new(Default::default())),
-        })
+        }))
     }
     ///
     /// Creates a new buffered data stream within this writer.
@@ -109,6 +109,16 @@ impl MultiStreamWriter {
         }
 
         Ok(())
+    }
+
+    pub fn len(&self) -> Result<u64, Error> {
+        if let Ok(lock) = self.inner.lock() {
+            return Ok(lock.metadata()?.len());
+        }
+        broken_pipe!()
+    }
+    pub fn is_empty(&self) -> Result<bool, Error> {
+        Ok(self.len()? == 0)
     }
 }
 
