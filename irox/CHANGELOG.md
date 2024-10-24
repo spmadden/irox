@@ -1,7 +1,41 @@
 
 
 
+## v0.6.5 (2024-10-24)
+
+### Chore
+
+ - <csr-id-7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7/> bump irox version for release
+
+### New Features
+
+ - <csr-id-353b7b809d14e0f7e944eac0ad1dcfc012c63fd1/> prep for initial release.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 84 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox version for release ([`7a50d13`](https://github.com/spmadden/irox/commit/7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7))
+    - Release irox-tools v0.9.0 ([`7e9a935`](https://github.com/spmadden/irox/commit/7e9a935d9d1060f712e6ec2c5cacff048cbb1036))
+    - Release irox-bits v0.2.0 ([`3ed7b85`](https://github.com/spmadden/irox/commit/3ed7b850a87bfc670ce18f5c824008f09b0af7b4))
+    - Prep for initial release. ([`353b7b8`](https://github.com/spmadden/irox/commit/353b7b809d14e0f7e944eac0ad1dcfc012c63fd1))
+</details>
+
 ## v0.6.4 (2024-08-01)
+
+<csr-id-97de4b9c115e3dff3df7124026ab795836b9bc34/>
 
 ### Chore
 
@@ -11,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 34 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.4 ([`8007aa0`](https://github.com/spmadden/irox/commit/8007aa046063aa347926262662635602bbaff8c2))
     - Bump irox version to 0.6.4 for release ([`97de4b9`](https://github.com/spmadden/irox/commit/97de4b9c115e3dff3df7124026ab795836b9bc34))
     - Release irox-progress v0.4.0 ([`b0fa7bd`](https://github.com/spmadden/irox/commit/b0fa7bda5e953cadb25563a153e4dfd988fbb871))
     - Release irox-egui-extras v0.4.0 ([`74d6a21`](https://github.com/spmadden/irox/commit/74d6a21d05f69152f7872b55c1130db097748981))
@@ -39,7 +74,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 3 calendar days.
+ - 3 commits contributed to the release.
  - 39 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -123,7 +158,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 17 commits contributed to the release over the course of 126 calendar days.
+ - 17 commits contributed to the release.
  - 145 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -165,7 +200,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 12 commits contributed to the release over the course of 19 calendar days.
+ - 12 commits contributed to the release.
  - 26 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -207,7 +242,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 27 commits contributed to the release over the course of 28 calendar days.
+ - 27 commits contributed to the release.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -248,7 +283,7 @@
     - Release irox-tools v0.3.1 ([`f7eaa32`](https://github.com/spmadden/irox/commit/f7eaa327672c26b14a18869d6b10ce831a16a4a3))
 </details>
 
-## v0.4.0 (2023-10-30)
+## v0.4.0 (2023-10-29)
 
 ### New Features
 
@@ -283,7 +318,7 @@
     - New async/threading module ([`d495715`](https://github.com/spmadden/irox/commit/d495715a0cfd5c30b1fe659382f16210e8dad538))
 </details>
 
-## v0.3.0 (2023-10-16)
+## v0.3.0 (2023-10-15)
 
 ### New Features
 
@@ -313,7 +348,7 @@
     - Update top level modules for time ([`6954cd3`](https://github.com/spmadden/irox/commit/6954cd342702f75b4485a03f30b494c478889108))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 <csr-id-3300f2ad844907609b1fc6cdaa5b632ae28cde95/>
 <csr-id-3ebb2f1f68bb1cb598bcdf651fd0656702e03aaf/>
@@ -331,7 +366,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 6 calendar days.
+ - 6 commits contributed to the release.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -351,7 +386,7 @@
     - Adding missing modules to lib ([`3ebb2f1`](https://github.com/spmadden/irox/commit/3ebb2f1f68bb1cb598bcdf651fd0656702e03aaf))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
@@ -382,7 +417,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 35 calendar days.
+ - 9 commits contributed to the release.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
