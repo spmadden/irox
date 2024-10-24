@@ -1,6 +1,40 @@
 
 
 
+## v0.4.3 (2024-10-24)
+
+### New Features
+
+ - <csr-id-cc714380db2c733153ccf938df2ec939c4c8ddd4/> require FloatExt for 'AnyFloat'
+ - <csr-id-421971094cd6b1b3288c71c3452931e211df7696/> impl Into<PrimitiveValue> for lots of stuff
+ - <csr-id-a53e614d4029a5512b5a5605ad4925a8f1926500/> Add traits describing the number primitives
+
+### Bug Fixes
+
+ - <csr-id-1a87db6fda93f333ff81c62080ef1c9859bc4dbf/> cleaning up the NumberTraits to remove a bunch of lifetimes dicking with intended uses.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 118 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Require FloatExt for 'AnyFloat' ([`cc71438`](https://github.com/spmadden/irox/commit/cc714380db2c733153ccf938df2ec939c4c8ddd4))
+    - Impl Into<PrimitiveValue> for lots of stuff ([`4219710`](https://github.com/spmadden/irox/commit/421971094cd6b1b3288c71c3452931e211df7696))
+    - Cleaning up the NumberTraits to remove a bunch of lifetimes dicking with intended uses. ([`1a87db6`](https://github.com/spmadden/irox/commit/1a87db6fda93f333ff81c62080ef1c9859bc4dbf))
+    - Add traits describing the number primitives ([`a53e614`](https://github.com/spmadden/irox/commit/a53e614d4029a5512b5a5605ad4925a8f1926500))
+</details>
+
 ## v0.4.2 (2024-06-28)
 
 ### New Features
@@ -13,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 26 calendar days.
+ - 4 commits contributed to the release.
  - 68 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.4.2 ([`490f3d7`](https://github.com/spmadden/irox/commit/490f3d76f8f675180b62415b413dda7f8d125fa3))
     - New Type Schemas struct ([`fe504a4`](https://github.com/spmadden/irox/commit/fe504a4675476e31bc550165b0d65c7872d82812))
     - Impl Hash for PrimitiveValue ([`cb5e5b1`](https://github.com/spmadden/irox/commit/cb5e5b1be16504b4e54a40b13701c36f439f1dd2))
     - Improved ability to encode/decode variable types ([`f0a4067`](https://github.com/spmadden/irox/commit/f0a4067befb8ad716a441244a22e4a0448ba69e0))
@@ -40,7 +75,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 17 calendar days.
+ - 2 commits contributed to the release.
  - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -84,7 +119,7 @@
     - Moved the variably sized elements from Primitives into new enum ([`4e8bd7e`](https://github.com/spmadden/irox/commit/4e8bd7e566d5eb0eda3e7a4e0992abcc05da389c))
 </details>
 
-## v0.3.0 (2023-11-29)
+## v0.3.0 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
@@ -104,7 +139,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release.
  - 30 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -122,7 +157,7 @@
     - Refactor 'Primitives::blob' into sized types ([`69dd290`](https://github.com/spmadden/irox/commit/69dd29057e64e9313e95d7e3be7ec3b948f9c1a9))
 </details>
 
-## v0.2.2 (2023-10-30)
+## v0.2.2 (2023-10-29)
 
 <csr-id-645afe2dca3b6f200aa6a8ed73c157316d30943c/>
 
@@ -150,7 +185,7 @@
     - ALL THE LINTS. ([`645afe2`](https://github.com/spmadden/irox/commit/645afe2dca3b6f200aa6a8ed73c157316d30943c))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 ### New Features
 
@@ -165,7 +200,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 8 calendar days.
+ - 4 commits contributed to the release.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -183,7 +218,7 @@
     - Add 'blob' type ([`4e0bc91`](https://github.com/spmadden/irox/commit/4e0bc913e685e2e7d02a6186b68282cb3aaaae2e))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
@@ -203,7 +238,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 21 calendar days.
+ - 6 commits contributed to the release.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
