@@ -109,7 +109,7 @@ mod tests {
                 // println!("value: {val} // {:08X}", val.to_bits());
                 cbuf1.write_value(input.as_u64())?;
                 cbuf2.write_value(val)?;
-                file.write_sample(Sample64::new(input, val))?;
+                file.write_sample(&Sample64::new(input, val))?;
                 input += incr;
             }
             drop(file);
