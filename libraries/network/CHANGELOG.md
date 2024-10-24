@@ -1,6 +1,31 @@
 
 
 
+## v0.4.4 (2024-10-24)
+
+### New Features
+
+ - <csr-id-ac7d990b556e3cebf5e22cf41f2ffba2dc5d79d0/> Basic impl of RFC3912/Whois
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 158 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Basic impl of RFC3912/Whois ([`ac7d990`](https://github.com/spmadden/irox/commit/ac7d990b556e3cebf5e22cf41f2ffba2dc5d79d0))
+</details>
+
 ## v0.4.3 (2024-05-19)
 
 ### Bug Fixes
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 76 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.4.3 ([`a8ba268`](https://github.com/spmadden/irox/commit/a8ba268103427be5c3eae8f210eb9b0c16138fb2))
     - Add irox-tools/std feature to networking ([`ebb6c80`](https://github.com/spmadden/irox/commit/ebb6c803a1b5a59f19862aa156fa91dab8007392))
 </details>
 
@@ -43,7 +69,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 6 calendar days.
+ - 3 commits contributed to the release.
  - 50 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -168,7 +194,7 @@
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
 
-## v0.3.2 (2023-12-06)
+## v0.3.2 (2023-12-05)
 
 ### New Features
 
@@ -178,7 +204,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 5 calendar days.
+ - 2 commits contributed to the release.
  - 6 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -194,7 +220,7 @@
     - Put serde behind a feature gate ([`4e408ca`](https://github.com/spmadden/irox/commit/4e408cab037480839fb013f3692e753dc824ecb5))
 </details>
 
-## v0.3.1 (2023-11-29)
+## v0.3.1 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
@@ -206,7 +232,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 3 calendar days.
+ - 2 commits contributed to the release.
  - 30 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -222,7 +248,7 @@
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 ### New Features
 
@@ -253,7 +279,7 @@
     - New network addressing tools ([`43889bf`](https://github.com/spmadden/irox/commit/43889bfa327f789f8913ced2394262d0a7039555))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 ### Bug Fixes
 
@@ -279,7 +305,7 @@
     - Bump version to pull in new dep ([`fc10cc8`](https://github.com/spmadden/irox/commit/fc10cc83d34183fb0e7be80f6a521fac8f6cf933))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
@@ -311,7 +337,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 10 commits contributed to the release over the course of 29 calendar days.
+ - 10 commits contributed to the release.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
