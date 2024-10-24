@@ -1,5 +1,52 @@
 
 
+## v0.2.0 (2024-10-24)
+
+### New Features
+
+ - <csr-id-6e758eeead6cad3c16a8ce60e86ba4984f19514b/> impl Bits and MutBits for TcpStream
+ - <csr-id-cac183713d52850472d3a5b90714938710796c56/> impl readline
+ - <csr-id-f1c45cd905228e9f38f5c537148a329b971d3140/> new statistical lossless streaming encoders
+ - <csr-id-fb3aca49374c55a105fd810b430031b5dc3bb55d/> new 'WriteToBEBits' trait and impls on primitives
+ - <csr-id-031470c6ea39e78f319fd263c04f15a7ad8eab56/> new BitsArray and MutBitsArray wrappers around fixed stack-sized arrays.
+ - <csr-id-89f0582bfad2a71a79b8d702a5f239a67efd357a/> SeekRead and SeekWrite now have seek_*_all methods to ensure the entire buffer is read/written.
+ - <csr-id-40c370fe3b2be7e78a927f21a75a264942be193f/> new ToBEBytes and FromBEBytes const-ish traits for primitives
+
+### Bug Fixes
+
+ - <csr-id-223f172cdf729543c8f08c7ad34bce22e04ef1a9/> fix warning from alloc
+
+### New Features (BREAKING)
+
+ - <csr-id-d256059f37bcfc75dc8ba556e35343cb3cb18add/> Breaking: refactor BitsWrapper to have an owned and borrowed variant.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 84 days passed between releases.
+ - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Breaking: refactor BitsWrapper to have an owned and borrowed variant. ([`d256059`](https://github.com/spmadden/irox/commit/d256059f37bcfc75dc8ba556e35343cb3cb18add))
+    - Fix warning from alloc ([`223f172`](https://github.com/spmadden/irox/commit/223f172cdf729543c8f08c7ad34bce22e04ef1a9))
+    - Impl Bits and MutBits for TcpStream ([`6e758ee`](https://github.com/spmadden/irox/commit/6e758eeead6cad3c16a8ce60e86ba4984f19514b))
+    - Impl readline ([`cac1837`](https://github.com/spmadden/irox/commit/cac183713d52850472d3a5b90714938710796c56))
+    - New statistical lossless streaming encoders ([`f1c45cd`](https://github.com/spmadden/irox/commit/f1c45cd905228e9f38f5c537148a329b971d3140))
+    - New 'WriteToBEBits' trait and impls on primitives ([`fb3aca4`](https://github.com/spmadden/irox/commit/fb3aca49374c55a105fd810b430031b5dc3bb55d))
+    - New BitsArray and MutBitsArray wrappers around fixed stack-sized arrays. ([`031470c`](https://github.com/spmadden/irox/commit/031470c6ea39e78f319fd263c04f15a7ad8eab56))
+    - SeekRead and SeekWrite now have seek_*_all methods to ensure the entire buffer is read/written. ([`89f0582`](https://github.com/spmadden/irox/commit/89f0582bfad2a71a79b8d702a5f239a67efd357a))
+    - New ToBEBytes and FromBEBytes const-ish traits for primitives ([`40c370f`](https://github.com/spmadden/irox/commit/40c370fe3b2be7e78a927f21a75a264942be193f))
+</details>
+
 ## v0.1.5 (2024-08-01)
 
 ### New Features
@@ -10,8 +57,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 6 calendar days.
- - 8 days passed between releases.
+ - 2 commits contributed to the release.
+ - 13 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +69,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.1.5 ([`68fc27f`](https://github.com/spmadden/irox/commit/68fc27ff2ff0a347963cd36cab03930278b5c31f))
     - BitsError can be used in const environments ([`9020f11`](https://github.com/spmadden/irox/commit/9020f1174abfc895ad3438fb60cc3bc673a0a1b1))
 </details>
 
@@ -53,7 +101,7 @@
     - Fix docsrs for irox-bits ([`7767718`](https://github.com/spmadden/irox/commit/77677189e46aec6b857762f5a8ff0b49d6922ebf))
 </details>
 
-## v0.1.3 (2024-07-07)
+## v0.1.3 (2024-07-06)
 
 ### Documentation
 
@@ -63,7 +111,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 1 calendar day.
+ - 2 commits contributed to the release.
  - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -98,7 +146,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 42 calendar days.
+ - 6 commits contributed to the release.
  - 64 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
