@@ -1,7 +1,34 @@
 
 
 
+## v0.5.3 (2024-10-24)
+
+### New Features
+
+ - <csr-id-88dac868ff81d6f0f7466318f141a6959a829c59/> basic RMC support
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 118 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Basic RMC support ([`88dac86`](https://github.com/spmadden/irox/commit/88dac868ff81d6f0f7466318f141a6959a829c59))
+</details>
+
 ## v0.5.2 (2024-06-28)
+
+<csr-id-1647c4611435c3a4c0547b5c28301b776a7196d7/>
 
 ### Chore
 
@@ -17,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 26 calendar days.
+ - 5 commits contributed to the release.
  - 68 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -29,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.5.2 ([`ddd2d44`](https://github.com/spmadden/irox/commit/ddd2d44b3540b0ce4cfdc058f27b68f7f26a67f6))
     - Add GNS message ([`323e0ff`](https://github.com/spmadden/irox/commit/323e0ff6c178d4c085f3cd94e7d9b17d9afd7860))
     - Add system id to GSV ([`d45bea3`](https://github.com/spmadden/irox/commit/d45bea3b7a7605c6a1a2acce137a6f15c896b663))
     - Add system id to GSA ([`343697d`](https://github.com/spmadden/irox/commit/343697d32084dc9fa722e0fbd3d5bc4d3393e612))
@@ -45,7 +73,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 1 calendar day.
+ - 2 commits contributed to the release.
  - 48 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -82,7 +110,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 59 calendar days.
+ - 5 commits contributed to the release.
  - 95 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -124,7 +152,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 23 calendar days.
+ - 9 commits contributed to the release.
  - 30 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -147,7 +175,7 @@
     - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 ### New Features (BREAKING)
 
@@ -161,7 +189,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -179,7 +207,7 @@
     - Pivot to using irox_time ([`56d56f5`](https://github.com/spmadden/irox/commit/56d56f52703b29e4ba79b5e12e0b9332e1b0f400))
 </details>
 
-## v0.2.0 (2023-10-16)
+## v0.2.0 (2023-10-15)
 
 ### New Features
 
@@ -206,7 +234,7 @@
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
 </details>
 
-## v0.1.0 (2023-09-18)
+## v0.1.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -228,7 +256,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 44 calendar days.
+ - 7 commits contributed to the release.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 

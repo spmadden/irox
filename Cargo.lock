@@ -2495,7 +2495,7 @@ dependencies = [
 
 [[package]]
 name = "irox-nmea0183"
-version = "0.5.2"
+version = "0.5.3"
 dependencies = [
  "irox-bits",
  "irox-carto",
