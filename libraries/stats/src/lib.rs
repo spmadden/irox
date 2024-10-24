@@ -26,7 +26,6 @@ pub mod points;
 pub mod pyramid;
 pub mod streaming;
 pub mod streams;
-pub mod tdigest;
 #[cfg(any(all(doc, docsrs), all(feature = "std", feature = "time")))]
 #[cfg_attr(docsrs, doc(cfg(all(feature = "std", feature = "time"))))]
 pub mod tsdf;
