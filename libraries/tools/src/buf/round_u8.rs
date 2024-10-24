@@ -152,8 +152,7 @@ impl<const N: usize> Buffer<u8> for RoundU8Buffer<N> {
 
         let out = Some(self.buf[self.head]);
         // move the head pointer forward one
-        // unless head == tail
-        if self.head != self.tail {
+        if self.size > 0 {
             self.head += 1;
         }
         // if head >= N, then wrap around
