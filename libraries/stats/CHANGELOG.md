@@ -1,6 +1,52 @@
 
 
 
+## v0.2.6 (2024-10-24)
+
+### Chore
+
+ - <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/> fixup lints & formatting
+
+### New Features
+
+ - <csr-id-d8da320deb6fade1ed8a1ae225af7d28d16714a3/> more work on TimeSeriesDataWriters, TSDF gets "varying floats" about 2x compressed than straight deflate
+ - <csr-id-58c16d115737ad98dd8deb0852e170378b7c2a78/> improved layering ability for the statistical compression streams
+ - <csr-id-f1c45cd905228e9f38f5c537148a329b971d3140/> new statistical lossless streaming encoders
+ - <csr-id-df11e3da1d562ecb184f7bde002b608dd494f47f/> new Point2D trait, with impls Float2D, Double2D, Quad2D
+ - <csr-id-98d5046d137ecb02f5270ff794de182df044c606/> add new unlimited/paged buffer that does not reallocate
+
+### Bug Fixes
+
+ - <csr-id-58b51d507bb1722c0dd2896a734a8ba6dfe884f2/> remove unused tdigest module
+ - <csr-id-e8ef0ace18ba71f7aedb871040488b6a5ecaa680/> fix stats tests
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 159 days passed between releases.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Remove unused tdigest module ([`58b51d5`](https://github.com/spmadden/irox/commit/58b51d507bb1722c0dd2896a734a8ba6dfe884f2))
+    - Release irox-bits v0.2.0 ([`3ed7b85`](https://github.com/spmadden/irox/commit/3ed7b850a87bfc670ce18f5c824008f09b0af7b4))
+    - Fix stats tests ([`e8ef0ac`](https://github.com/spmadden/irox/commit/e8ef0ace18ba71f7aedb871040488b6a5ecaa680))
+    - More work on TimeSeriesDataWriters, TSDF gets "varying floats" about 2x compressed than straight deflate ([`d8da320`](https://github.com/spmadden/irox/commit/d8da320deb6fade1ed8a1ae225af7d28d16714a3))
+    - Improved layering ability for the statistical compression streams ([`58c16d1`](https://github.com/spmadden/irox/commit/58c16d115737ad98dd8deb0852e170378b7c2a78))
+    - New statistical lossless streaming encoders ([`f1c45cd`](https://github.com/spmadden/irox/commit/f1c45cd905228e9f38f5c537148a329b971d3140))
+    - New Point2D trait, with impls Float2D, Double2D, Quad2D ([`df11e3d`](https://github.com/spmadden/irox/commit/df11e3da1d562ecb184f7bde002b608dd494f47f))
+    - Fixup lints & formatting ([`a359753`](https://github.com/spmadden/irox/commit/a35975360f42880d6e74ceb4443ccd4093c27975))
+    - Add new unlimited/paged buffer that does not reallocate ([`98d5046`](https://github.com/spmadden/irox/commit/98d5046d137ecb02f5270ff794de182df044c606))
+</details>
+
 ## v0.2.5 (2024-05-18)
 
 ### New Features
@@ -11,7 +57,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 28 calendar days.
+ - 2 commits contributed to the release.
  - 47 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +69,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.5 ([`38375e2`](https://github.com/spmadden/irox/commit/38375e207080946ec8c97efe7e88e501a15f68c4))
     - Add streaming-min, tdigest mod ([`943df24`](https://github.com/spmadden/irox/commit/943df24540ecbce2a596363476d37b39f6a0018f))
 </details>
 
@@ -48,7 +95,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 2 calendar days.
+ - 7 commits contributed to the release.
  - 28 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -81,7 +128,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 50 calendar days.
+ - 2 commits contributed to the release.
  - 95 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -109,7 +156,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 3 calendar days.
+ - 2 commits contributed to the release.
  - 52 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -125,7 +172,7 @@
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 ### New Features
 
@@ -140,7 +187,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 12 calendar days.
+ - 4 commits contributed to the release.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -158,7 +205,7 @@
     - Decay can use a duration now ([`cc0585f`](https://github.com/spmadden/irox/commit/cc0585f380c7ae6a25b1dd490489182a741fe3f8))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
@@ -177,7 +224,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 29 calendar days.
+ - 5 commits contributed to the release.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
