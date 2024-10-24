@@ -131,9 +131,11 @@ pub struct StreamWriter {
 }
 impl StreamWriter {
     pub(crate) fn new(parent: Arc<MultiStreamWriter>, stream_idx: u8) -> StreamWriter {
+        let mut buf = FixedBuf::default();
+        let _ = buf.write_be_u16(0);
         StreamWriter {
             parent,
-            buf: FixedBuf::new(),
+            buf,
             stream_idx,
         }
     }
@@ -144,6 +146,7 @@ impl MutBits for StreamWriter {
         if self.buf.is_full() {
             let v = &self.buf.into_buf_default();
             self.parent.write_block(self.stream_idx, v)?;
+            self.buf.write_be_u16(0x0)?;
         }
         self.buf.write_u8(val)
     }
@@ -151,7 +154,9 @@ impl MutBits for StreamWriter {
 impl Drop for StreamWriter {
     fn drop(&mut self) {
         if !self.buf.is_empty() {
-            let v = &self.buf.into_buf_default();
+            let len = self.buf.len() as u16 - 2;
+            let v = &mut self.buf.into_buf_default();
+            let _ = v.as_mut_slice().write_be_u16(len);
             let _ = self.parent.write_block(self.stream_idx, v);
         }
     }
@@ -237,6 +242,7 @@ pub struct StreamReader {
     parent: Arc<MultiStreamReader>,
     stream_idx: u8,
     buf: RoundU8Buffer<DATA_SIZE>,
+    stream_counter: u64,
 }
 impl StreamReader {
     pub fn new(parent: Arc<MultiStreamReader>, stream_idx: u8) -> StreamReader {
@@ -244,7 +250,11 @@ impl StreamReader {
             stream_idx,
             parent,
             buf: RoundU8Buffer::default(),
+            stream_counter: 0,
         }
+    }
+    pub fn stream_position(&self) -> u64 {
+        self.stream_counter
     }
 }
 impl Bits for StreamReader {
@@ -252,10 +262,15 @@ impl Bits for StreamReader {
         if self.buf.is_empty() {
             self.parent
                 .read_next_block(self.stream_idx, &mut self.buf)?;
+            let lim = self.buf.read_be_u16()?;
+            if lim > 0 {
+                self.buf.limit(lim as usize)?;
+            }
             if self.buf.is_empty() {
                 return Ok(None);
             }
         }
+        self.stream_counter += 1;
         Ok(self.buf.pop_front())
     }
 }
@@ -274,7 +289,7 @@ mod test {
         let mut stream = ms.new_stream();
         std::thread::spawn(move || {
             let num_blocks = NUM_BLOCKS;
-            let count = num_blocks * DATA_SIZE;
+            let count = num_blocks * DATA_SIZE - 100;
             for _ in 0..count {
                 stream.write_u8(value).unwrap();
             }
@@ -284,7 +299,7 @@ mod test {
     #[test]
     #[ignore]
     pub fn test_write() -> Result<(), Error> {
-        let ms = MultiStreamWriter::new("e:/test_multistream.ms")?;
+        let ms = MultiStreamWriter::new("./test_multistream.ms")?;
         let ms = Arc::new(ms);
         let start = Instant::now();
         let mut handles = vec![
@@ -299,7 +314,7 @@ mod test {
         handles.drain(..).for_each(|h| h.join().unwrap());
 
         let end = start.elapsed();
-        let len = NUM_BLOCKS as u64 * DATA_SIZE as u64 * 6;
+        let len = NUM_BLOCKS as u64 * DATA_SIZE as u64 * 6 - 600;
         let bs = len as f64 / end.as_secs_f64();
         let mbs = bs / 1e6;
         let lmb = len as f64 / 1e6;
@@ -310,9 +325,10 @@ mod test {
     fn spawn_reader_stream(mut stream: StreamReader, value: u8) -> JoinHandle<()> {
         std::thread::spawn(move || {
             let num_blocks = NUM_BLOCKS;
-            let count = num_blocks * DATA_SIZE;
+            let count = num_blocks * DATA_SIZE - 100;
             for _ in 0..count {
-                assert_eq!(value, stream.read_u8().unwrap());
+                let len = stream.stream_position();
+                assert_eq!(value, stream.read_u8().unwrap(), "at position {len}");
             }
         })
     }
@@ -320,7 +336,7 @@ mod test {
     #[test]
     #[ignore]
     pub fn test_read() -> Result<(), Error> {
-        let mut streams = MultiStreamReader::open("e:/test_multistream.ms")?;
+        let mut streams = MultiStreamReader::open("./test_multistream.ms")?;
         assert_eq!(streams.len(), 6);
 
         let start = Instant::now();
@@ -338,7 +354,7 @@ mod test {
         handles.drain(..).for_each(|h| h.join().unwrap());
 
         let end = start.elapsed();
-        let len = NUM_BLOCKS as u64 * DATA_SIZE as u64 * 6;
+        let len = NUM_BLOCKS as u64 * DATA_SIZE as u64 * 6 - 600;
         let bs = len as f64 / end.as_secs_f64();
         let mbs = bs / 1e6;
         let lmb = len as f64 / 1e6;
