@@ -1,5 +1,36 @@
 
 
+## v0.4.3 (2024-10-24)
+
+### New Features
+
+ - <csr-id-d2e07dabab880102043e70b02825ae1f8d27811c/> Impl default for Time64
+ - <csr-id-15e836b755e9f60d10d89b8523d99a3ea68701cc/> pivot Time32/64/128 over to using fixedmath
+ - <csr-id-6331e8d75f7e2651ba25cc5d0d55e59e99f89b82/> add more conversions for TimeXX
+ - <csr-id-88c58722841fe5d083dbee4aefb528a63581ddb3/> bunch of conversions for Time32/Time64/Time128
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 235 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Impl default for Time64 ([`d2e07da`](https://github.com/spmadden/irox/commit/d2e07dabab880102043e70b02825ae1f8d27811c))
+    - Pivot Time32/64/128 over to using fixedmath ([`15e836b`](https://github.com/spmadden/irox/commit/15e836b755e9f60d10d89b8523d99a3ea68701cc))
+    - Add more conversions for TimeXX ([`6331e8d`](https://github.com/spmadden/irox/commit/6331e8d75f7e2651ba25cc5d0d55e59e99f89b82))
+    - Bunch of conversions for Time32/Time64/Time128 ([`88c5872`](https://github.com/spmadden/irox/commit/88c58722841fe5d083dbee4aefb528a63581ddb3))
+</details>
+
 ## v0.4.2 (2024-03-03)
 
 ### New Features
@@ -14,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 50 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -26,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.2 ([`9a60116`](https://github.com/spmadden/irox/commit/9a60116c33c18d2414e579e27f0d63928ff29fe2))
     - Fix omitted dep path ([`561aa29`](https://github.com/spmadden/irox/commit/561aa29db8f2bffe2d094b80753e00b9f0de54a2))
     - Now no_std! ([`e706524`](https://github.com/spmadden/irox/commit/e7065245c7d62686aa617fa1306d5ab8d9bf1e0c))
 </details>
@@ -97,7 +129,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 8 calendar days.
+ - 9 commits contributed to the release.
  - 37 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -120,7 +152,7 @@
     - Fix import of tools::fmt ([`2d441bf`](https://github.com/spmadden/irox/commit/2d441bfe429979f1ce5bdba94b709cd960a948f6))
 </details>
 
-## v0.3.5 (2023-12-06)
+## v0.3.5 (2023-12-05)
 
 ### Bug Fixes
 
@@ -146,7 +178,7 @@
     - Leading zeros may not appear for fractional seconds in ISO8601 ([`cbe1921`](https://github.com/spmadden/irox/commit/cbe19212886560100de6cfa1c7403aaf1efbeeb4))
 </details>
 
-## v0.3.4 (2023-11-29)
+## v0.3.4 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
@@ -162,7 +194,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 14 calendar days.
+ - 3 commits contributed to the release.
  - 20 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -232,7 +264,7 @@
     - Impl 'wrapping_add' for Time ([`b615236`](https://github.com/spmadden/irox/commit/b615236b420d596cb4a12368f4061c9da9560be2))
 </details>
 
-## v0.3.1 (2023-11-06)
+## v0.3.1 (2023-11-05)
 
 ### New Features
 
@@ -304,7 +336,7 @@
     - Switching Format/FormatParser traits from types to generics so they can be implemented multiple times on a single format struct. ([`1654133`](https://github.com/spmadden/irox/commit/1654133411d46a4bf1697ffb6045946542e047f9))
 </details>
 
-## v0.2.0 (2023-10-30)
+## v0.2.0 (2023-10-29)
 
 <csr-id-62a00cc08ddb4edc44b587e91db9d372ace2dcd8/>
 
@@ -330,7 +362,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release over the course of 9 calendar days.
+ - 14 commits contributed to the release.
  - 14 days passed between releases.
  - 12 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -358,7 +390,7 @@
     - Impl Display and add format for UTCDateTime ([`3848add`](https://github.com/spmadden/irox/commit/3848add99a2e03b2b79aa378f1ff058329110ba4))
 </details>
 
-## v0.1.0 (2023-10-16)
+## v0.1.0 (2023-10-15)
 
 ### Documentation
 
