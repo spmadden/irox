@@ -1,6 +1,86 @@
 
 
 
+## v0.9.0 (2024-10-24)
+
+### New Features
+
+ - <csr-id-c3fceccc71f1617c4376c684029e89f2da4c4630/> add 'limit' capability to RoundU8Buffer to artificially limit the output
+ - <csr-id-a2e38381e8de3faa2bd3ea29d7d0f8c2f20587d3/> MultiStreamWriter returns an Arc, add len and is_empty
+ - <csr-id-7bf1542894179a6005a28819032adf21f458ee5e/> impl bits & mutbits for unlimited buffer, fix lengths & push_back
+ - <csr-id-09104c6821dcbaf5d1f02376b54e5c50f78ad979/> impl signed vbyte/zigzag encoding
+ - <csr-id-aa7909f619e332d37cb2b6099b3bba2be52fccc4/> add 'to_bits', 'exponent', and 'significand' to FloatExt trait
+ - <csr-id-fb0ed97e95a61348d3b72915f3404ca99ca27a39/> impl EncodeVByteTo for u8
+ - <csr-id-897fc6368878d09d9cc91b752cc1a6f6b318ac8b/> random now has a fill() method
+ - <csr-id-b2d313d3dbf852a2c7ca635065fc5bc3495e9de3/> new trait EncodeVByteTo for writing encoded VBytes (varints) to MutBits impls
+ - <csr-id-1c0968904aae747527b9c8d5c17f76ba35db3b4d/> FixedBuf gets an iterator and an impl of WriteToBEBits
+ - <csr-id-c3c4adea1d8d876620b8f38e72f00be253448bac/> Multi-Stream Reader impls.
+ - <csr-id-cb9d4e6e60f90eb2b6ff9db76e13ece93e548c7d/> Decode vbytes directly from Bits impls.
+ - <csr-id-5075479018db38b8944a0d554d88154c767fdb7a/> new Round Buffer optimized for u8's
+ - <csr-id-5fb2f75cbee4960b86829e0f7493dc977847a07f/> New Multi-Stream File writer
+ - <csr-id-2aa6728b1789faf420f7c9bc4d9ac3bc666156a5/> vbyte encode_u128 uses same encoding method as generally accepted.
+ - <csr-id-d19bfdc570ea6010e2ed446cc135d551f33bef03/> Buffer gets new 'is_full' method
+ - <csr-id-6e808d638afbca28a5fc2daea955aa1b55bfdff2/> FixedBuf gets MutBits and LendingIterator support.
+ - <csr-id-5488bb2fd5ef691e38bfc0cbaa7ff5eae2a635f8/> lending iterator trait
+ - <csr-id-5eaec4960399ffa235f2b720b4efd49d975fb91c/> pivot vbyte to use fixedbuf internally
+ - <csr-id-9c38e72895be6a00382ad1f8c42bbffb1a51759e/> better vbyte impl
+
+### Bug Fixes
+
+ - <csr-id-93fb4fb43b97cfb6bdc6d3258862a3a2fdb3b125/> Fix issue where MultiStream would return garbage if the stream didn't end on a block boundary
+ - <csr-id-6e48657b59c217477e65bc2066ac87b08df7ef1c/> fix issue in RoundU8Buffer where the head pointer wouldn't increment if the buffer was full
+ - <csr-id-b1542dbc8f81c8dd486d71b24b4b5b11dafa9a32/> fix garbage constants in random generators
+
+### Other
+
+ - <csr-id-03011089653d97ae0c6ec0624aec627285d3c19a/> more work on multi-streams
+
+### New Features (BREAKING)
+
+ - <csr-id-d256059f37bcfc75dc8ba556e35343cb3cb18add/> Breaking: refactor BitsWrapper to have an owned and borrowed variant.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 24 commits contributed to the release.
+ - 37 days passed between releases.
+ - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix issue where MultiStream would return garbage if the stream didn't end on a block boundary ([`93fb4fb`](https://github.com/spmadden/irox/commit/93fb4fb43b97cfb6bdc6d3258862a3a2fdb3b125))
+    - Add 'limit' capability to RoundU8Buffer to artificially limit the output ([`c3fcecc`](https://github.com/spmadden/irox/commit/c3fceccc71f1617c4376c684029e89f2da4c4630))
+    - Fix issue in RoundU8Buffer where the head pointer wouldn't increment if the buffer was full ([`6e48657`](https://github.com/spmadden/irox/commit/6e48657b59c217477e65bc2066ac87b08df7ef1c))
+    - MultiStreamWriter returns an Arc, add len and is_empty ([`a2e3838`](https://github.com/spmadden/irox/commit/a2e38381e8de3faa2bd3ea29d7d0f8c2f20587d3))
+    - Impl bits & mutbits for unlimited buffer, fix lengths & push_back ([`7bf1542`](https://github.com/spmadden/irox/commit/7bf1542894179a6005a28819032adf21f458ee5e))
+    - Impl signed vbyte/zigzag encoding ([`09104c6`](https://github.com/spmadden/irox/commit/09104c6821dcbaf5d1f02376b54e5c50f78ad979))
+    - Add 'to_bits', 'exponent', and 'significand' to FloatExt trait ([`aa7909f`](https://github.com/spmadden/irox/commit/aa7909f619e332d37cb2b6099b3bba2be52fccc4))
+    - Breaking: refactor BitsWrapper to have an owned and borrowed variant. ([`d256059`](https://github.com/spmadden/irox/commit/d256059f37bcfc75dc8ba556e35343cb3cb18add))
+    - Impl EncodeVByteTo for u8 ([`fb0ed97`](https://github.com/spmadden/irox/commit/fb0ed97e95a61348d3b72915f3404ca99ca27a39))
+    - Random now has a fill() method ([`897fc63`](https://github.com/spmadden/irox/commit/897fc6368878d09d9cc91b752cc1a6f6b318ac8b))
+    - New trait EncodeVByteTo for writing encoded VBytes (varints) to MutBits impls ([`b2d313d`](https://github.com/spmadden/irox/commit/b2d313d3dbf852a2c7ca635065fc5bc3495e9de3))
+    - FixedBuf gets an iterator and an impl of WriteToBEBits ([`1c09689`](https://github.com/spmadden/irox/commit/1c0968904aae747527b9c8d5c17f76ba35db3b4d))
+    - Multi-Stream Reader impls. ([`c3c4ade`](https://github.com/spmadden/irox/commit/c3c4adea1d8d876620b8f38e72f00be253448bac))
+    - Decode vbytes directly from Bits impls. ([`cb9d4e6`](https://github.com/spmadden/irox/commit/cb9d4e6e60f90eb2b6ff9db76e13ece93e548c7d))
+    - New Round Buffer optimized for u8's ([`5075479`](https://github.com/spmadden/irox/commit/5075479018db38b8944a0d554d88154c767fdb7a))
+    - New Multi-Stream File writer ([`5fb2f75`](https://github.com/spmadden/irox/commit/5fb2f75cbee4960b86829e0f7493dc977847a07f))
+    - Vbyte encode_u128 uses same encoding method as generally accepted. ([`2aa6728`](https://github.com/spmadden/irox/commit/2aa6728b1789faf420f7c9bc4d9ac3bc666156a5))
+    - Buffer gets new 'is_full' method ([`d19bfdc`](https://github.com/spmadden/irox/commit/d19bfdc570ea6010e2ed446cc135d551f33bef03))
+    - FixedBuf gets MutBits and LendingIterator support. ([`6e808d6`](https://github.com/spmadden/irox/commit/6e808d638afbca28a5fc2daea955aa1b55bfdff2))
+    - Lending iterator trait ([`5488bb2`](https://github.com/spmadden/irox/commit/5488bb2fd5ef691e38bfc0cbaa7ff5eae2a635f8))
+    - More work on multi-streams ([`0301108`](https://github.com/spmadden/irox/commit/03011089653d97ae0c6ec0624aec627285d3c19a))
+    - Fix garbage constants in random generators ([`b1542db`](https://github.com/spmadden/irox/commit/b1542dbc8f81c8dd486d71b24b4b5b11dafa9a32))
+    - Pivot vbyte to use fixedbuf internally ([`5eaec49`](https://github.com/spmadden/irox/commit/5eaec4960399ffa235f2b720b4efd49d975fb91c))
+    - Better vbyte impl ([`9c38e72`](https://github.com/spmadden/irox/commit/9c38e72895be6a00382ad1f8c42bbffb1a51759e))
+</details>
+
 ## v0.8.6 (2024-09-16)
 
 ### New Features
@@ -11,7 +91,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +103,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.8.6 ([`1c99a16`](https://github.com/spmadden/irox/commit/1c99a1610eb84fb7127a28f34628b2dec5045415))
     - New SyncFlag signalling ([`57bccdb`](https://github.com/spmadden/irox/commit/57bccdba5ee3921ef359ca35953d6c6bd8929a92))
 </details>
 
