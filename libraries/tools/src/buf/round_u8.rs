@@ -55,6 +55,14 @@ impl<const N: usize> RoundU8Buffer<N> {
         self.size = used;
         Ok(())
     }
+
+    pub fn limit(&mut self, limit: usize) -> Result<(), BitsError> {
+        if limit >= N || self.size < limit {
+            return BitsErrorKind::InvalidInput.err("Invalid limit");
+        }
+        self.size = limit;
+        Ok(())
+    }
 }
 
 impl<const N: usize> AsRef<[u8]> for RoundU8Buffer<N> {
