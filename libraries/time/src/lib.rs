@@ -34,6 +34,7 @@ use crate::epoch::{Epoch, Timestamp, UnixTimestamp, UNIX_EPOCH};
 use crate::format::iso8601::ISO8601_DATE_TIME;
 use crate::format::{Format, FormatError, FormatParser};
 use alloc::string::String;
+use core::cmp::Ordering;
 use core::fmt::{Display, Formatter};
 use irox_fixedmath::{FixedU128, FixedU32, FixedU64};
 pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
@@ -317,7 +318,7 @@ pub const NANOS_IN_DAY: u64 = 86_400_000_000_000_u64;
 ///
 /// The 16-bit seconds field can resolve a little over 18 hours, and the
 /// 16-bit fractional seconds field can resolve a little over 15 microseconds.
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, Clone)]
 pub struct Time32 {
     /// The Reference Epoch
     epoch: Epoch,
@@ -345,7 +346,7 @@ impl Time32 {
 /// The raw value is 64 bits wide, if you take the middle 32
 /// bits, this is identical to a [`Time32`] - (lower 16 of `seconds`, upper 16 of
 /// `fractional_seconds`).
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, Clone)]
 pub struct Time64 {
     /// The Reference Epoch
     epoch: Epoch,
@@ -382,7 +383,7 @@ impl Time64 {
 /// The raw value is 128 bits wide, if you take the middle 64 bits, this is
 /// identical to a [`Time64`] - (lower 32 of `seconds`, upper 32 of
 /// `fractional_seconds`).
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Copy, Clone)]
 pub struct Time128 {
     ///
     /// Reference Epoch Date
@@ -439,6 +440,19 @@ macro_rules! impls {
             #[cfg(feature = "std")]
             pub fn now() -> Self {
                 UnixTimestamp::now().into()
+            }
+            #[must_use]
+            pub fn as_only_seconds(&self) -> Self {
+                Self::new(self.epoch, self.inner.whole(), 0)
+            }
+            #[must_use]
+            pub fn as_only_fractional(&self) -> Self {
+                Self::new(self.epoch, 0, self.inner.fract())
+            }
+            #[must_use]
+            pub fn as_epoch(&self, other: Epoch) -> Self {
+                let offset = other.0 - self.epoch.0;
+                *self + offset
             }
         }
         impl From<$strukt> for f64 {
@@ -563,6 +577,22 @@ macro_rules! impls {
         impl core::ops::AddAssign<Duration> for &mut $strukt {
             fn add_assign(&mut self, rhs: Duration) {
                 self.inner += rhs.as_seconds_f64();
+            }
+        }
+        impl PartialEq for $strukt {
+            fn eq(&self, other: &Self) -> bool {
+                other.as_epoch(self.epoch).inner == self.inner
+            }
+        }
+        impl Eq for $strukt {}
+        impl PartialOrd for $strukt {
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                Some(self.cmp(&other))
+            }
+        }
+        impl Ord for $strukt {
+            fn cmp(&self, other: &Self) -> Ordering {
+                other.as_epoch(self.epoch).inner.cmp(&self.inner)
             }
         }
     };
