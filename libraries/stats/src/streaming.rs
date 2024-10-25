@@ -83,6 +83,11 @@ pub struct Max<T> {
     last_sample: T,
     num_samples: u64,
 }
+impl<T: Copy> Max<T> {
+    pub fn get_max_val(&self) -> T {
+        self.max_val
+    }
+}
 
 impl<T> StreamingStatistic for Max<T>
 where
@@ -117,6 +122,12 @@ pub struct Min<T> {
     min_val: T,
     last_sample: T,
     num_samples: u64,
+}
+
+impl<T: Copy> Min<T> {
+    pub fn get_min_val(&self) -> T {
+        self.min_val
+    }
 }
 
 impl<T> StreamingStatistic for Min<T>
@@ -423,6 +434,78 @@ where
 
     fn get_num_samples(&self) -> u64 {
         self.inner.get_num_samples()
+    }
+}
+
+pub struct Summary<T> {
+    mean: Mean<T>,
+    min: Min<T>,
+    max: Max<T>,
+    stdev: UnbiasedStandardDeviation<T>,
+}
+impl<T: Default> Default for Summary<T> {
+    fn default() -> Self {
+        Summary {
+            mean: Mean::default(),
+            min: Min::default(),
+            max: Max::default(),
+            stdev: UnbiasedStandardDeviation::default(),
+        }
+    }
+}
+impl<T> Summary<T>
+where
+    T: Sub<T, Output = T>
+        + PartialOrd
+        + Copy
+        + Div<f64, Output = T>
+        + Add<T, Output = T>
+        + Mul<f64, Output = T>
+        + Mul<T, Output = T>
+        + FloatExt<Type = T>,
+{
+    pub fn add_sample(&mut self, value: T) {
+        self.min.add_sample(value);
+        self.max.add_sample(value);
+        self.stdev.add_sample(value);
+        self.mean.add_sample(value);
+    }
+    pub fn mean(&self) -> T {
+        self.mean.get_mean()
+    }
+    pub fn min(&self) -> T {
+        self.min.get_min_val()
+    }
+    pub fn max(&self) -> T {
+        self.max.get_max_val()
+    }
+    pub fn stdev(&self) -> T {
+        self.stdev.get_unbiased_stdev()
+    }
+    pub fn num_samples(&self) -> u64 {
+        self.mean.get_num_samples()
+    }
+}
+#[cfg(feature = "time,std")]
+pub struct OneSecondWindows {
+    epoch: irox_time::epoch::Epoch,
+    windows: alloc::collections::BTreeMap<irox_time::Time64, Summary<f64>>,
+}
+#[cfg(feature = "time,std")]
+impl OneSecondWindows {
+    pub fn new(epoch: irox_time::epoch::Epoch) -> Self {
+        Self {
+            epoch,
+            windows: alloc::collections::BTreeMap::new(),
+        }
+    }
+    pub fn add_sample(&mut self, time: irox_time::Time64, value: f64) {
+        let seconds = time.as_epoch(self.epoch).as_only_seconds();
+        self.windows.entry(seconds).or_default().add_sample(value);
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&irox_time::Time64, &Summary<f64>)> {
+        self.windows.iter()
     }
 }
 
