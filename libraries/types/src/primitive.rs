@@ -2,7 +2,7 @@
 // Copyright 2024 IROX Contributors
 //
 
-use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
+use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 use std::char::ParseCharError;
 use std::fmt::{Display, Formatter};
 use std::hash::{Hash, Hasher};
@@ -14,6 +14,7 @@ use std::str::{FromStr, ParseBoolError};
 #[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, EnumName, EnumIterItem, EnumTryFromStr)]
 #[non_exhaustive]
+#[repr(u8)]
 pub enum Primitives {
     u8,
     i8,
@@ -32,6 +33,19 @@ pub enum Primitives {
     char,
 
     null,
+}
+
+impl TryFrom<u8> for Primitives {
+    type Error = ();
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        for v in Primitives::iter_items() {
+            if value == v as u8 {
+                return Ok(v);
+            }
+        }
+        Err(())
+    }
 }
 
 pub enum PrimitiveParseError {
