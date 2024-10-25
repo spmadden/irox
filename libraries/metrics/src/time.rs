@@ -18,7 +18,7 @@ pub struct TimeWrapper {
 }
 impl TimeWrapper {
     pub fn new(timer: Arc<Box<dyn TimeProvider + 'static>>) -> TimeWrapper {
-        TimeWrapper { timer: timer }
+        TimeWrapper { timer }
     }
 
     pub fn wrap_infallible<V: Into<PrimitiveValue>, F: FnMut() -> V>(&self, mut func: F) -> Sample {

@@ -1,8 +1,8 @@
 [package]
 name = "irox-metrics"
-description = ""
+description = "Secure metrology for your application & library"
 keywords = ["irox"]
-categories = []
+categories = ["config", "data-structures", "development-tools::debugging", "network-programming"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -14,20 +14,17 @@ readme = "README.md"
 
 [features]
 
-[profile.release]
-strip = "symbols"
-codegen-units = 1
-
 [lints]
 workspace = true
 
 [dependencies]
 irox-bits.workspace = true
 irox-time.workspace = true
-irox-types.workspace = true
+irox-types = { workspace = true, features = ["bits"] }
 irox-tools = {workspace = true, features = ["std"]}
 
 x25519-dalek = { version ="2", features = ["getrandom", "static_secrets"] }
+ed25519-dalek = { version = "2", features = [] }
 crypto_box = {version = "0", features = ["chacha20", "seal"]}
 crypto_secretbox = {version = "0", features = ["chacha20"]}
 blake2 = {version = "0"}

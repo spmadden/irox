@@ -4,23 +4,42 @@
 
 extern crate alloc;
 
-use crate::{Sample, SampleError};
+use crate::{Error, Metric, Sample, SampleError};
+use irox_bits::MutBits;
 use irox_types::PrimitiveValue;
 
 ///
 /// A Gauge is an instantaneous value of something at a specific point in time.
 pub struct Gauge {
     // sinks: Vec<SI>,
+    name: String,
     value: Option<Sample>,
 }
+impl Metric for Gauge {
+    fn get_name(&self) -> &str {
+        &self.name
+    }
 
+    fn encode<T: MutBits>(&self, out: &mut T) -> Result<usize, Error> {
+        let mut len = out.write_str_u32_blob(&self.name)?;
+        if let Some(value) = &self.value {
+            len += value.encode(out)?;
+        }
+        Ok(len)
+    }
+}
 impl Gauge {
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new<T: AsRef<str>>(name: T) -> Self {
         Self {
             // sinks: Vec::new(),
+            name: name.as_ref().to_string(),
             value: None,
         }
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
     }
 
     // /// Adds a listener for when this value changes.

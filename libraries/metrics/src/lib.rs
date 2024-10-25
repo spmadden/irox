@@ -2,12 +2,14 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//!
+//! Secure metrology for your application & library
 //!
 
 #![forbid(unsafe_code)]
 
+pub use error::*;
 pub use gauge::*;
+use irox_bits::MutBits;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::Time64;
 use irox_tools::static_init;
@@ -17,12 +19,18 @@ pub use sampling::*;
 use std::sync::{Arc, Mutex};
 pub use time::*;
 
+mod error;
 mod gauge;
 mod net;
 mod sampling;
 mod time;
 
 static_init!(get_metrics, Metrics<'static>, Metrics::new());
+
+pub trait Metric {
+    fn get_name(&self) -> &str;
+    fn encode<T: MutBits>(&self, out: &mut T) -> Result<usize, Error>;
+}
 
 pub fn time_infallible<V: Into<PrimitiveValue>, F: FnMut() -> V>(mut func: F) -> Sample {
     let time: Time64 = UnixTimestamp::now().into();
@@ -40,6 +48,11 @@ impl<'a> MetricsInner<'a> {
 
 pub struct Metrics<'a> {
     inner: Arc<Mutex<MetricsInner<'a>>>,
+}
+impl<'a> Default for Metrics<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 impl Metrics<'static> {
     pub fn as_ref() -> &'static Metrics<'static> {
@@ -64,7 +77,7 @@ impl<'a> Metrics<'a> {
     }
 
     pub fn new_gauge<S: AsRef<str>>(&self, name: S) -> Gauge {
-        Gauge::new()
+        Gauge::new(name)
     }
 }
 

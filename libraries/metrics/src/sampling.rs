@@ -2,6 +2,8 @@
 // Copyright 2024 IROX Contributors
 //
 
+use crate::Error;
+use irox_bits::MutBits;
 use irox_time::Time64;
 use irox_types::PrimitiveValue;
 
@@ -14,6 +16,23 @@ impl Sample {
     pub fn new<V: Into<PrimitiveValue>>(value: V, timestamp: Time64) -> Sample {
         let value = value.into();
         Sample { value, timestamp }
+    }
+    #[must_use]
+    pub fn get_value(&self) -> &PrimitiveValue {
+        &self.value
+    }
+    #[must_use]
+    pub fn get_timestamp(&self) -> &Time64 {
+        &self.timestamp
+    }
+    pub fn encode<T: MutBits>(&self, out: &mut T) -> Result<usize, Error> {
+        let ts = self.timestamp.as_u64();
+        let ty = self.value.primitive();
+
+        out.write_be_u64(ts)?;
+        out.write_u8(ty as u8)?;
+        self.value.write_be_to(out)?;
+        Ok(9 + ty.bytes_length())
     }
 }
 
