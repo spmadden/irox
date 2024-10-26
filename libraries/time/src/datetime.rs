@@ -5,18 +5,18 @@
 //! Contains [`UTCDateTime`] and associated elements to represent a [`Date`] and [`Time`] in UTC
 //!
 
+extern crate alloc;
 use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
-use crate::format::iso8601::BASIC_DATE_TIME_OF_DAY;
-use crate::format::Format;
+use crate::format::iso8601::{BASIC_DATE_TIME_OF_DAY, ISO8601_DATE_TIME};
+use crate::format::{Format, FormatError, FormatParser};
 use crate::gregorian::Date;
 use crate::julian::JulianDate;
 use crate::Time;
+pub use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::ops::{Add, AddAssign, Sub};
 use irox_units::bounds::GreaterThanEqualToValueError;
 use irox_units::units::duration::Duration;
-extern crate alloc;
-pub use alloc::string::String;
 
 ///
 /// Represents a Gregorian Date and Time in UTC
@@ -96,6 +96,21 @@ impl UTCDateTime {
     #[must_use]
     pub fn format<T: Format<UTCDateTime>>(&self, format: &T) -> String {
         format.format(self)
+    }
+
+    /// Formats this date as a extended ISO8601 Date & Time, `2023-12-31T05:10:25Z`
+    #[must_use]
+    pub fn format_iso8601_extended(&self) -> String {
+        ISO8601_DATE_TIME.format(self)
+    }
+    /// Formats this date as a basic ISO8601 Date & Time, `20231231T051025Z`, suitable for filenames
+    #[must_use]
+    pub fn format_iso8601_basic(&self) -> String {
+        BASIC_DATE_TIME_OF_DAY.format(self)
+    }
+    /// Attempts to parse the provided string as either a [`crate::format::iso8601::BasicDateTimeOfDay`] or a [`crate::format::iso8601::ExtendedDateTimeFormat`]
+    pub fn try_from_iso8601(val: &str) -> Result<Self, FormatError> {
+        ISO8601_DATE_TIME.try_from(val)
     }
 }
 

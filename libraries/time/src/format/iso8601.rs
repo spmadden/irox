@@ -21,15 +21,11 @@ use crate::gregorian::Date;
 use crate::Time;
 
 ///
-/// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2
-///
-/// Equivalent to `YYYYMMddTHHmmssZ`
+/// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2 Equivalent to `YYYYMMddTHHmmssZ`/`20231231T051025Z`
 pub struct BasicDateTimeOfDay;
 
 ///
-/// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2
-///
-/// Equivalent to `YYYYMMddTHHmmssZ`
+/// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2 Equivalent to `YYYYMMddTHHmmssZ`/`20231231T051025Z`
 pub const BASIC_DATE_TIME_OF_DAY: BasicDateTimeOfDay = BasicDateTimeOfDay {};
 
 impl Format<UTCDateTime> for BasicDateTimeOfDay {
@@ -58,16 +54,12 @@ impl FormatParser<UTCDateTime> for BasicDateTimeOfDay {
 }
 
 ///
-/// IS0 8601-1:2019 Basic Calendar Date Format, of section 5.2.2
-///
-/// Equivalent to `YYYYMMdd`
+/// IS0 8601-1:2019 Basic Calendar Date Format, of section 5.2.2. Equivalent to `YYYYMMdd`/`20231231`
 #[derive(Default, Debug, Copy, Clone)]
 pub struct BasicCalendarDate;
 
 ///
-/// IS0 8601-1:2019 Basic Calendar Date Format, of section 5.2.2
-///
-/// Equivalent to `YYYYMMdd`
+/// IS0 8601-1:2019 Basic Calendar Date Format, of section 5.2.2. Equivalent to `YYYYMMdd`/`20231231`
 pub const BASIC_CALENDAR_DATE: BasicCalendarDate = BasicCalendarDate {};
 
 impl BasicCalendarDate {
@@ -156,16 +148,12 @@ impl Format<UTCDateTime> for BasicCalendarDate {
 }
 
 ///
-/// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3
-///
-/// Equivalent to `THHmmssZ`
+/// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3. Equivalent to `THHmmssZ`/`T051025Z`
 #[derive(Default, Debug, Copy, Clone)]
 pub struct BasicTimeOfDay;
 
 ///
-/// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3
-///
-/// Equivalent to `THHmmssZ`
+/// IS0 8601-1:2019 Basic Time Of Day Format, of section 5.3.3. Equivalent to `THHmmssZ`/`T051025Z`
 pub const BASIC_TIME_OF_DAY: BasicTimeOfDay = BasicTimeOfDay {};
 
 impl Format<Time> for BasicTimeOfDay {
@@ -242,8 +230,10 @@ impl BasicTimeOfDay {
     }
 }
 
+/// IS0 8601-1:2019 Duration Format, of section 5.5.2. Equivalent to `PddDThhHmmMssS`/`P10DT05H10M25S`
 pub struct ISO8601Duration;
 
+/// IS0 8601-1:2019 Duration Format, of section 5.5.2. Equivalent to `PddDThhHmmMssS`/`P10DT05H10M25S`
 pub const DURATION: ISO8601Duration = ISO8601Duration;
 
 impl Format<Duration> for ISO8601Duration {
@@ -262,8 +252,10 @@ impl Format<Duration> for ISO8601Duration {
     }
 }
 
+/// ISO 8601-1:2019 Extended Date Format, of section 5.2.2. Equivalent to `YYYY-mm-dd`/`2023-12-31`
 pub struct ExtendedDateFormat;
 
+/// ISO 8601-1:2019 Extended Date Format, of section 5.2.2. Equivalent to `YYYY-mm-dd`/`2023-12-31`
 pub const EXTENDED_DATE_FORMAT: ExtendedDateFormat = ExtendedDateFormat;
 
 impl Format<Date> for ExtendedDateFormat {
@@ -305,8 +297,10 @@ impl Format<UTCDateTime> for ExtendedDateFormat {
     }
 }
 
+/// ISO 8601-1:2019 Extended Time Format, of section 5.3.3. Equivalent to `THH:mm:ssZ`/`T05:10:25Z`
 pub struct ExtendedTimeFormat;
 
+/// ISO 8601-1:2019 Extended Time Format, of section 5.3.3. Equivalent to `THH:mm:ssZ`/`T05:10:25Z`
 pub const EXTENDED_TIME_FORMAT: ExtendedTimeFormat = ExtendedTimeFormat;
 
 impl Format<Time> for ExtendedTimeFormat {
@@ -360,7 +354,9 @@ impl FormatParser<Time> for ExtendedTimeFormat {
     }
 }
 
+/// ISO 8601-1:2019 Extended Date Time Format, of section 5.4.2. Equivalent to `YYYY-MM-DDTHH:mm:ssZ`/`2023-12-31T05:10:25Z`
 pub struct ExtendedDateTimeFormat;
+/// ISO 8601-1:2019 Extended Date Time Format, of section 5.4.2. Equivalent to `YYYY-MM-DDTHH:mm:ssZ`/`2023-12-31T05:10:25Z`
 pub const EXTENDED_DATE_TIME_FORMAT: ExtendedDateTimeFormat = ExtendedDateTimeFormat;
 
 impl Format<UTCDateTime> for ExtendedDateTimeFormat {
@@ -388,8 +384,10 @@ impl FormatParser<UTCDateTime> for ExtendedDateTimeFormat {
     }
 }
 
+/// ISO 8601-1:2019 Date Time Format of section 5.4.2.  Will read either the basic or extended formats, produces the extended format.
 pub struct ISO8601DateTime;
 
+/// ISO 8601-1:2019 Date Time Format of section 5.4.2.  Will read either the basic or extended formats, produces the extended format.
 pub const ISO8601_DATE_TIME: ISO8601DateTime = ISO8601DateTime;
 
 impl FormatParser<UTCDateTime> for ISO8601DateTime {
@@ -407,8 +405,10 @@ impl Format<UTCDateTime> for ISO8601DateTime {
     }
 }
 
+/// ISO 8601-1:2019 Date Format of section 5.2.2.  Will read either the basic or extended formats, produces the extended format.
 pub struct ISO8601Date;
 
+/// ISO 8601-1:2019 Date Format of section 5.2.2.  Will read either the basic or extended formats, produces the extended format.
 pub const ISO8601_DATE: ISO8601Date = ISO8601Date;
 
 impl FormatParser<Date> for ISO8601Date {
@@ -427,7 +427,9 @@ impl Format<Date> for ISO8601Date {
     }
 }
 
+/// ISO 8601-1:2019 Time Format of section 5.3.3.  Will read either the basic or extended formats, produces the extended format.
 pub struct ISO8601Time;
+/// ISO 8601-1:2019 Time Format of section 5.3.3.  Will read either the basic or extended formats, produces the extended format.
 pub const ISO8601_TIME: ISO8601Time = ISO8601Time;
 impl FormatParser<Time> for ISO8601Time {
     fn try_from(&self, data: &str) -> Result<Time, FormatError> {
@@ -439,7 +441,9 @@ impl FormatParser<Time> for ISO8601Time {
     }
 }
 
+/// ISO 8601-1:2019 Basic Week Number format of section 5.2.4.2. Equivalent to: `YYYYWww`/`2023W52` (Week 52)
 pub struct ISO8601WeekNumber;
+/// ISO 8601-1:2019 Basic Week Number format of section 5.2.4.2. Equivalent to: `YYYYWww`/`2023W52` (Week 52)
 pub const ISO8601_WEEK_NUMBER: ISO8601WeekNumber = ISO8601WeekNumber;
 impl Format<Date> for ISO8601WeekNumber {
     fn format(&self, date: &Date) -> String {
