@@ -134,7 +134,7 @@ pub fn load_linux_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
     env.variables.insert(
         "BUILD_HOST_KERNELVER".to_string(),
         BuildVariable::new_str(
-            "BUILD_HOST_HOSTNAME",
+            "BUILD_HOST_KERNELVER",
             &kernel_ver,
             VariableSource::BuildHost,
         ),
