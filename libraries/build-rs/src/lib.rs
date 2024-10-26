@@ -7,12 +7,12 @@
 
 #![forbid(unsafe_code)]
 
+use crate::cargo::load_buildhost_variables;
+pub use crate::error::*;
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
 use std::io::Write;
 use std::path::Path;
-
-pub use crate::error::*;
 
 mod cargo;
 mod error;
@@ -28,6 +28,7 @@ pub enum VariableSource {
     Environment,
     Cargo,
     Git,
+    BuildHost,
     Other(String),
 }
 
@@ -80,6 +81,7 @@ impl BuildVariable {
 pub struct Settings {
     include_cargo: bool,
     include_rustc: bool,
+    include_buildhost: bool,
     #[cfg(feature = "git")]
     include_git: bool,
 
@@ -91,6 +93,7 @@ impl Default for Settings {
         Settings {
             include_cargo: true,
             include_rustc: true,
+            include_buildhost: true,
             #[cfg(feature = "git")]
             include_git: true,
             extra_envs: vec![],
@@ -111,6 +114,12 @@ impl Settings {
     pub fn without_rustc(self) -> Self {
         Settings {
             include_rustc: false,
+            ..self
+        }
+    }
+    pub fn without_buildhost(self) -> Self {
+        Settings {
+            include_buildhost: false,
             ..self
         }
     }
@@ -165,6 +174,10 @@ pub fn generate_build_environment_settings(
             add_env(varbl, &mut envt);
         }
     }
+    if settings.include_buildhost {
+        load_buildhost_variables(&mut envt)?;
+    }
+
     for extra_env in &settings.extra_envs {
         add_env(extra_env.as_str(), &mut envt);
     }
@@ -242,6 +255,14 @@ pub fn write_environment<T: Write>(
             &cargo::RUSTC_ENV_VARIABLES,
         )?;
     }
+
+    filter_and_write(
+        &mut dest_file,
+        env,
+        &mut groups,
+        "BUILD_HOST",
+        &cargo::BUILD_HOST_VARIABLES,
+    )?;
 
     #[cfg(feature = "git")]
     {

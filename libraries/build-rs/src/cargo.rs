@@ -2,6 +2,9 @@
 // Copyright 2023 IROX Contributors
 //
 
+use crate::{BuildEnvironment, BuildVariable, Error, VariableSource};
+use std::io::{BufRead, BufReader};
+
 pub static CARGO_ENV_VARIABLES: [&str; 26] = [
     "CARGO_PKG_VERSION",
     "CARGO_PKG_VERSION_MAJOR",
@@ -43,3 +46,77 @@ pub static RUSTC_ENV_VARIABLES: [&str; 10] = [
     "OPT_LEVEL",
     "DEBUG",
 ];
+
+pub static BUILD_HOST_VARIABLES: [&str; 6] = [
+    "RUSTC_VERSION",
+    "CARGO_VERSION",
+    "BUILD_HOST_HOSTNAME",
+    "BUILD_HOST_OSNAME",
+    "BUILD_HOST_OSVER",
+    "BUILD_TIME",
+];
+
+static COMMANDS: &[(&str, &[&str])] = &[
+    ("RUSTC_VERSION", &["rustc", "--version"]),
+    ("CARGO_VERSION", &["cargo", "--version"]),
+];
+
+pub fn load_buildhost_variables(env: &mut BuildEnvironment) -> Result<(), Error> {
+    for (var, cmd) in COMMANDS {
+        let output = std::process::Command::new(cmd[0])
+            .args(&cmd[1..])
+            .output()?;
+        let res = String::from_utf8_lossy(&output.stdout);
+        let res = res.trim();
+        env.variables.insert(
+            var.to_string(),
+            BuildVariable::new_str(var, res, VariableSource::BuildHost),
+        );
+    }
+
+    let build_time = irox_time::datetime::UTCDateTime::now().format_iso8601_extended();
+    env.variables.insert(
+        "BUILD_TIME".to_string(),
+        BuildVariable::new_str("BUILD_TIME", &build_time, VariableSource::BuildHost),
+    );
+
+    load_windows_sysinfo(env)?;
+
+    Ok(())
+}
+pub fn load_windows_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
+    static SYSINFO_VARS: &[(&str, &str)] = &[
+        ("BUILD_HOST_HOSTNAME", "Host Name"),
+        ("BUILD_HOST_OSNAME", "OS Name"),
+        ("BUILD_HOST_OSVER", "OS Version"),
+    ];
+    fn parse_output(env: &mut BuildEnvironment, output: Vec<u8>) -> Result<(), Error> {
+        let output = BufReader::new(output.as_slice());
+        for line in output.lines() {
+            let line = line?;
+            let line = line.trim();
+            if line.is_empty() {
+                continue;
+            }
+            let Some((k, v)) = line.split_once(':') else {
+                continue;
+            };
+            let v = v.trim();
+            for (var, key) in SYSINFO_VARS {
+                if *key == k {
+                    env.variables.insert(
+                        var.to_string(),
+                        BuildVariable::new_str(var, v, VariableSource::BuildHost),
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+    parse_output(
+        env,
+        std::process::Command::new("systeminfo").output()?.stdout,
+    )?;
+
+    Ok(())
+}
