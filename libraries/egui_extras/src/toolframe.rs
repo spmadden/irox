@@ -69,7 +69,12 @@ impl App for ToolFrame {
             Window::new("style")
                 .open(&mut self.style_ui)
                 .show(ctx, |ui| {
-                    ctx.style_ui(ui);
+                    let mut theme = ctx.options(|o| o.theme_preference);
+                    theme.radio_buttons(ui);
+                    if theme != ctx.options(|o| o.theme_preference) {
+                        ctx.set_theme(theme);
+                    }
+                    ctx.style_ui(ui, ctx.theme());
                 });
         }
 

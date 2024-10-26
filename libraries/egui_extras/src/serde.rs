@@ -63,7 +63,7 @@ impl Event {
             }
             Event::Group { name, values } => {
                 CollapsingHeader::new(name)
-                    .id_source(ui.next_auto_id())
+                    .id_salt(ui.next_auto_id())
                     .show(ui, |ui| {
                         for event in values {
                             event.show(ui);
@@ -90,7 +90,7 @@ impl Event {
                     }
                 } else {
                     CollapsingHeader::new(format!("{name}: {field_type}"))
-                        .id_source(ui.next_auto_id())
+                        .id_salt(ui.next_auto_id())
                         .show(ui, |ui| {
                             for val in values {
                                 if let Event::Row(val) = val {
