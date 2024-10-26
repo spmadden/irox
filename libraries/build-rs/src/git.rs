@@ -61,8 +61,10 @@ macro_rules! add_int_varbl {
 
 #[cfg(feature = "git")]
 pub fn load_git_variables(env: &mut BuildEnvironment) -> Result<(), Error> {
-    let start_dir = std::env!("CARGO_MANIFEST_DIR");
-    let prefix = std::env!("CARGO_PKG_NAME");
+    let start_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
+    let start_dir = start_dir.as_str();
+    let prefix = std::env::var("CARGO_PKG_NAME").unwrap_or_default();
+    let prefix = prefix.as_str();
     let repo = irox_git_tools::discover_repo_or_worktree_at(start_dir)?;
 
     let head = irox_git_tools::get_head_for_repo(&repo)?;
