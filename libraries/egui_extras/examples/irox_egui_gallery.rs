@@ -34,7 +34,13 @@ pub fn main() {
         error!("{e:?}");
     };
 }
-
+#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Copy, Clone)]
+enum AboutTabs {
+    #[default]
+    Important,
+    Grouped,
+    All,
+}
 pub struct TestApp {
     log_plot: BasicPlot,
     log_plot2: BasicPlot,
@@ -44,6 +50,7 @@ pub struct TestApp {
     show_visuals: bool,
     show_plot: bool,
     show_about: bool,
+    about_tabs: AboutTabs,
 }
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
@@ -84,6 +91,7 @@ impl TestApp {
             show_about: false,
             show_visuals: false,
             show_plot: true,
+            about_tabs: Default::default(),
         }
     }
 }
@@ -153,7 +161,23 @@ impl App for TestApp {
                 .default_width(500.)
                 .open(&mut self.show_about)
                 .show(ctx, |ui| {
-                    AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
+                    // AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
+                    ui.horizontal_top(|ui| {
+                        ui.radio_value(&mut self.about_tabs, AboutTabs::Important, "Important");
+                        ui.radio_value(&mut self.about_tabs, AboutTabs::Grouped, "Grouped");
+                        ui.radio_value(&mut self.about_tabs, AboutTabs::All, "All");
+                    });
+                    match self.about_tabs {
+                        AboutTabs::Important => {
+                            AboutWindow::show_important(irox_egui_extras::build::get_ALL_ITEMS, ui);
+                        }
+                        AboutTabs::Grouped => {
+                            AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
+                        }
+                        AboutTabs::All => {
+                            AboutWindow::show(irox_egui_extras::build::get_ALL_ITEMS, ui);
+                        }
+                    }
                 });
         }
 
