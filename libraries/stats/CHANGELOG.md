@@ -1,7 +1,39 @@
 
 
 
+## v0.2.7 (2024-10-29)
+
+### Chore
+
+ - <csr-id-2747f689e2206435cdd1ee8bab43ad9442415f20/> update deps
+
+### New Features
+
+ - <csr-id-b21947ab6d854b37712535f92681beed2759c7a2/> new Summary struct and one second streaming windows stats
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 5 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New Summary struct and one second streaming windows stats ([`b21947a`](https://github.com/spmadden/irox/commit/b21947ab6d854b37712535f92681beed2759c7a2))
+    - Update deps ([`2747f68`](https://github.com/spmadden/irox/commit/2747f689e2206435cdd1ee8bab43ad9442415f20))
+</details>
+
 ## v0.2.6 (2024-10-24)
+
+<csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/>
 
 ### Chore
 
@@ -24,7 +56,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release.
+ - 10 commits contributed to the release.
  - 159 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -36,6 +68,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.6 ([`9f599be`](https://github.com/spmadden/irox/commit/9f599bea75ab85beab95f646358fdb4074dcc1c5))
     - Remove unused tdigest module ([`58b51d5`](https://github.com/spmadden/irox/commit/58b51d507bb1722c0dd2896a734a8ba6dfe884f2))
     - Release irox-bits v0.2.0 ([`3ed7b85`](https://github.com/spmadden/irox/commit/3ed7b850a87bfc670ce18f5c824008f09b0af7b4))
     - Fix stats tests ([`e8ef0ac`](https://github.com/spmadden/irox/commit/e8ef0ace18ba71f7aedb871040488b6a5ecaa680))
