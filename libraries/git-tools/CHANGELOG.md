@@ -1,6 +1,33 @@
 
 
+## 0.2.1 (2024-10-29)
+
+### Chore
+
+ - <csr-id-976ac6c154c5b5ef4c73613c5acc93662305b7cb/> bump version of git-tools to capture the new dep versions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 290 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version of git-tools to capture the new dep versions ([`976ac6c`](https://github.com/spmadden/irox/commit/976ac6c154c5b5ef4c73613c5acc93662305b7cb))
+</details>
+
 ## 0.2.0 (2024-01-13)
+
+<csr-id-419be2e8158e3f2bf81858af89e57b4ace2247b1/>
 
 ### Chore
 
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 18 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-git-tools v0.2.0 ([`2685d06`](https://github.com/spmadden/irox/commit/2685d06b54ce1c4649829c6dad7c00c50e256298))
     - Tweak git-tools changelog ([`419be2e`](https://github.com/spmadden/irox/commit/419be2e8158e3f2bf81858af89e57b4ace2247b1))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
