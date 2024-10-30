@@ -1,5 +1,39 @@
 
 
+## v0.2.4 (2024-10-29)
+
+### New Features
+
+ - <csr-id-1c8e35227a0b025b2fa42eb2268d9eb43f2c7410/> add linux sysinfo
+ - <csr-id-958387fb18f926d2d0c23bae0b89c297620ff185/> add new Build Host variables
+
+### Bug Fixes
+
+ - <csr-id-aaf72c79829324964936928b418cd5efc77b1892/> fix typo in build varbl name
+ - <csr-id-d3f6efd4182fa4ce757f379af26ee8fc8ffb414b/> fix using the wrong runtime/build macro for git env vars
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 112 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix typo in build varbl name ([`aaf72c7`](https://github.com/spmadden/irox/commit/aaf72c79829324964936928b418cd5efc77b1892))
+    - Add linux sysinfo ([`1c8e352`](https://github.com/spmadden/irox/commit/1c8e35227a0b025b2fa42eb2268d9eb43f2c7410))
+    - Add new Build Host variables ([`958387f`](https://github.com/spmadden/irox/commit/958387fb18f926d2d0c23bae0b89c297620ff185))
+    - Fix using the wrong runtime/build macro for git env vars ([`d3f6efd`](https://github.com/spmadden/irox/commit/d3f6efd4182fa4ce757f379af26ee8fc8ffb414b))
+</details>
+
 ## v0.2.3 (2024-07-09)
 
 ### Bug Fixes
@@ -10,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-build-rs v0.2.3 ([`d52d01e`](https://github.com/spmadden/irox/commit/d52d01e01e221aa172cec5d6dd4b35dda666e779))
     - Don't die if git fails ([`4aa20cb`](https://github.com/spmadden/irox/commit/4aa20cb7195857a495457abdc08e62d3b296edbd))
 </details>
 
@@ -38,7 +73,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 2 calendar days.
+ - 3 commits contributed to the release.
  - 127 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -67,7 +102,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 6 calendar days.
+ - 2 commits contributed to the release.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -115,7 +150,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 1 calendar day.
+ - 4 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
