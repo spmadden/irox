@@ -1,5 +1,32 @@
 
 
+## v0.4.4 (2024-10-29)
+
+### New Features
+
+ - <csr-id-c82f01017326a42f6ce1a407848e7c4fb2ccbae5/> add easier formats for UTCDateTime
+ - <csr-id-3dcbeef18538f0f96f24cf5a3e7fb74476c14271/> Re-align different time epochs for Ord,Eq,etc.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 5 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add easier formats for UTCDateTime ([`c82f010`](https://github.com/spmadden/irox/commit/c82f01017326a42f6ce1a407848e7c4fb2ccbae5))
+    - Re-align different time epochs for Ord,Eq,etc. ([`3dcbeef`](https://github.com/spmadden/irox/commit/3dcbeef18538f0f96f24cf5a3e7fb74476c14271))
+</details>
+
 ## v0.4.3 (2024-10-24)
 
 ### New Features
@@ -13,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 235 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.3 ([`52d88b6`](https://github.com/spmadden/irox/commit/52d88b620c40d829c41b9b564cd1e1c8fe1864a8))
     - Impl default for Time64 ([`d2e07da`](https://github.com/spmadden/irox/commit/d2e07dabab880102043e70b02825ae1f8d27811c))
     - Pivot Time32/64/128 over to using fixedmath ([`15e836b`](https://github.com/spmadden/irox/commit/15e836b755e9f60d10d89b8523d99a3ea68701cc))
     - Add more conversions for TimeXX ([`6331e8d`](https://github.com/spmadden/irox/commit/6331e8d75f7e2651ba25cc5d0d55e59e99f89b82))
