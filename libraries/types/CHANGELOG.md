@@ -1,6 +1,31 @@
 
 
 
+## v0.4.4 (2024-10-29)
+
+### New Features
+
+ - <csr-id-7263abdd9e0eec30dd24c7ab7dcebc5d5f6e4f11/> Primitives can go to and from u8 now.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Primitives can go to and from u8 now. ([`7263abd`](https://github.com/spmadden/irox/commit/7263abdd9e0eec30dd24c7ab7dcebc5d5f6e4f11))
+</details>
+
 ## v0.4.3 (2024-10-24)
 
 ### New Features
@@ -17,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 118 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -29,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.4.3 ([`d729ed9`](https://github.com/spmadden/irox/commit/d729ed97cff8ccd01e684798b109c9e88185c7cc))
     - Require FloatExt for 'AnyFloat' ([`cc71438`](https://github.com/spmadden/irox/commit/cc714380db2c733153ccf938df2ec939c4c8ddd4))
     - Impl Into<PrimitiveValue> for lots of stuff ([`4219710`](https://github.com/spmadden/irox/commit/421971094cd6b1b3288c71c3452931e211df7696))
     - Cleaning up the NumberTraits to remove a bunch of lifetimes dicking with intended uses. ([`1a87db6`](https://github.com/spmadden/irox/commit/1a87db6fda93f333ff81c62080ef1c9859bc4dbf))
