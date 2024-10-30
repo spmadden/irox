@@ -1,7 +1,35 @@
 
 
 
+## v0.6.6 (2024-10-29)
+
+### Chore
+
+ - <csr-id-84d13eff3a81f03f343719ea3695df03de0e4f37/> bump irox to 0.6.6
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox to 0.6.6 ([`84d13ef`](https://github.com/spmadden/irox/commit/84d13eff3a81f03f343719ea3695df03de0e4f37))
+    - Release irox-egui-extras v0.5.0 ([`bbe46e7`](https://github.com/spmadden/irox/commit/bbe46e765791861109871c6e201bbf8f8a0e8c0e))
+</details>
+
 ## v0.6.5 (2024-10-24)
+
+<csr-id-7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7/>
 
 ### Chore
 
@@ -15,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 84 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.5 ([`f868000`](https://github.com/spmadden/irox/commit/f8680000c7f525a842738e53726f6c2178726627))
     - Bump irox version for release ([`7a50d13`](https://github.com/spmadden/irox/commit/7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7))
     - Release irox-tools v0.9.0 ([`7e9a935`](https://github.com/spmadden/irox/commit/7e9a935d9d1060f712e6ec2c5cacff048cbb1036))
     - Release irox-bits v0.2.0 ([`3ed7b85`](https://github.com/spmadden/irox/commit/3ed7b850a87bfc670ce18f5c824008f09b0af7b4))
