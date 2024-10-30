@@ -1,7 +1,34 @@
 
 
 
+## v0.9.1 (2024-10-29)
+
+### New Features
+
+ - <csr-id-f4f2cb5289f2cb311f583a2af1af10699c20ef6b/> add hexarray function and nibble_to_hex_char
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add hexarray function and nibble_to_hex_char ([`f4f2cb5`](https://github.com/spmadden/irox/commit/f4f2cb5289f2cb311f583a2af1af10699c20ef6b))
+</details>
+
 ## v0.9.0 (2024-10-24)
+
+<csr-id-03011089653d97ae0c6ec0624aec627285d3c19a/>
 
 ### New Features
 
@@ -43,7 +70,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 24 commits contributed to the release.
+ - 25 commits contributed to the release.
  - 37 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -55,6 +82,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.9.0 ([`7e9a935`](https://github.com/spmadden/irox/commit/7e9a935d9d1060f712e6ec2c5cacff048cbb1036))
     - Fix issue where MultiStream would return garbage if the stream didn't end on a block boundary ([`93fb4fb`](https://github.com/spmadden/irox/commit/93fb4fb43b97cfb6bdc6d3258862a3a2fdb3b125))
     - Add 'limit' capability to RoundU8Buffer to artificially limit the output ([`c3fcecc`](https://github.com/spmadden/irox/commit/c3fceccc71f1617c4376c684029e89f2da4c4630))
     - Fix issue in RoundU8Buffer where the head pointer wouldn't increment if the buffer was full ([`6e48657`](https://github.com/spmadden/irox/commit/6e48657b59c217477e65bc2066ac87b08df7ef1c))
