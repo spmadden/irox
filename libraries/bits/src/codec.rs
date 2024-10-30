@@ -271,3 +271,76 @@ impl WriteToBEBits for i128 {
         bits.write_be_i128(*self)
     }
 }
+
+/// compile time u64x2 to u128 conversion
+pub const fn u64_to_u128(val: [u64; 2]) -> u128 {
+    let [a, b] = val;
+    u128::from_be_bytes(array_concat_8(u64::to_be_bytes(a), u64::to_be_bytes(b)))
+}
+/// compile time u32x2 to u64 conversion
+pub const fn u32_to_u64(val: [u32; 2]) -> u64 {
+    let [a, b] = val;
+    u64::from_be_bytes(array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b)))
+}
+/// compile time u32x4 to u128 conversion
+pub const fn u32_to_u128(val: [u32; 4]) -> u128 {
+    let [a, b, c, d] = val;
+    u64_to_u128([u32_to_u64([a, b]), u32_to_u64([c, d])])
+}
+/// compile time u16x2 to u32 conversion
+pub const fn u16_to_u32(val: [u16; 2]) -> u32 {
+    let [a, b] = val;
+    u32::from_be_bytes(array_concat_2(u16::to_be_bytes(a), u16::to_be_bytes(b)))
+}
+/// compile time u16 to u64 conversion
+pub const fn u16_to_u64(val: [u16; 4]) -> u64 {
+    let [a, b, c, d] = val;
+    u32_to_u64([u16_to_u32([a, b]), u16_to_u32([c, d])])
+}
+/// compile time u16 to u128 conversion
+pub const fn u16_to_u128(val: [u16; 8]) -> u128 {
+    let [a, b, c, d, e, f, g, h] = val;
+    u64_to_u128([u16_to_u64([a, b, c, d]), u16_to_u64([e, f, g, h])])
+}
+
+/// compile time u128 to u64 conversion
+pub const fn u128_to_u64(val: u128) -> [u64; 2] {
+    let a = val as u64;
+    let b = (val >> 64) as u64;
+    [b, a]
+}
+/// compile time u64 to u32 conversion
+pub const fn u64_to_u32(val: u64) -> [u32; 2] {
+    let a = val as u32;
+    let b = (val >> 32) as u32;
+    [b, a]
+}
+/// compile time u32 to u16 conversion
+pub const fn u32_to_u16(val: u32) -> [u16; 2] {
+    let a = val as u16;
+    let b = (val >> 16) as u16;
+    [b, a]
+}
+/// compile time u128 to u32 conversion
+pub const fn u128_to_u32(val: u128) -> [u32; 4] {
+    let [a, b] = u128_to_u64(val);
+    let [c, d] = u64_to_u32(a);
+    let [e, f] = u64_to_u32(b);
+    [c, d, e, f]
+}
+/// compile time u64 to u16 conversion
+pub const fn u64_to_u16(val: u64) -> [u16; 4] {
+    let [a, b] = u64_to_u32(val);
+    let [c, d] = u32_to_u16(a);
+    let [e, f] = u32_to_u16(b);
+    [c, d, e, f]
+}
+/// compile-time u128 to u16 conversion
+pub const fn u128_to_u16(val: u128) -> [u16; 8] {
+    let [a, b, c, d] = u128_to_u32(val);
+    let [e, f] = u32_to_u16(a);
+    let [g, h] = u32_to_u16(b);
+    let [i, j] = u32_to_u16(c);
+    let [k, l] = u32_to_u16(d);
+    [e, f, g, h, i, j, k, l]
+}
