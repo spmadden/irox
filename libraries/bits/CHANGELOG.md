@@ -1,5 +1,30 @@
 
 
+## v0.2.1 (2024-10-29)
+
+### New Features
+
+ - <csr-id-913fb3149cf855466ff2dd05845e132546c44023/> add const unsigned primitive conversions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 5 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add const unsigned primitive conversions ([`913fb31`](https://github.com/spmadden/irox/commit/913fb3149cf855466ff2dd05845e132546c44023))
+</details>
+
 ## v0.2.0 (2024-10-24)
 
 ### New Features
@@ -24,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release.
+ - 10 commits contributed to the release.
  - 84 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -36,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.2.0 ([`3ed7b85`](https://github.com/spmadden/irox/commit/3ed7b850a87bfc670ce18f5c824008f09b0af7b4))
     - Breaking: refactor BitsWrapper to have an owned and borrowed variant. ([`d256059`](https://github.com/spmadden/irox/commit/d256059f37bcfc75dc8ba556e35343cb3cb18add))
     - Fix warning from alloc ([`223f172`](https://github.com/spmadden/irox/commit/223f172cdf729543c8f08c7ad34bce22e04ef1a9))
     - Impl Bits and MutBits for TcpStream ([`6e758ee`](https://github.com/spmadden/irox/commit/6e758eeead6cad3c16a8ce60e86ba4984f19514b))
