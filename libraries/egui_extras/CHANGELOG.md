@@ -1,6 +1,36 @@
 
 
 
+## v0.5.0 (2024-10-29)
+
+### New Features
+
+ - <csr-id-042f09d4a5463123b9ad02f2bb17b9226df11990/> update about window with build host variables.
+
+### Chore (BREAKING)
+
+ - <csr-id-bf43c95acb312542bb94ca647366f0c23a692f19/> upgrade to latest libraries, including egui 0.29.1
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 42 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Upgrade to latest libraries, including egui 0.29.1 ([`bf43c95`](https://github.com/spmadden/irox/commit/bf43c95acb312542bb94ca647366f0c23a692f19))
+    - Update about window with build host variables. ([`042f09d`](https://github.com/spmadden/irox/commit/042f09d4a5463123b9ad02f2bb17b9226df11990))
+</details>
+
 ## v0.4.6 (2024-09-17)
 
 ### Bug Fixes
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.4.6 ([`c501b0a`](https://github.com/spmadden/irox/commit/c501b0a4da16c8aaf816ba3f25381f3f78d0d263))
     - Adding required Send trait to formatter function ([`53ee70d`](https://github.com/spmadden/irox/commit/53ee70d68dfcebe2fdf134d5a7d0b6c860e346cb))
 </details>
 
