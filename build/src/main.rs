@@ -277,6 +277,11 @@ fn deny() -> Result<(), Error> {
 
 fn release(in_args: Vec<String>) -> Result<(), Error> {
     logstart("release");
+    let pkg = if let Some(pkg) = in_args.first() {
+        pkg.clone()
+    } else {
+        "irox".to_string()
+    };
     let mut rgs = Vec::from_iter([
         "smart-release",
         "--no-conservative-pre-release-version-handling",
@@ -284,6 +289,9 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
         "-u",
         "--verbose",
     ]);
+    if in_args.is_empty() {
+        rgs.push(pkg.as_str())
+    }
     for v in &in_args {
         rgs.push(v.as_str());
     }
@@ -297,6 +305,16 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
             "--color=always",
         ],
     )?;
+
+    exec_passthru(
+        "cargo",
+        &[
+            "package",
+            "-p",
+            pkg.as_str(),
+        ]
+    )?;
+
     exec_passthru("cargo", &rgs)?;
     logend();
     Ok(())
