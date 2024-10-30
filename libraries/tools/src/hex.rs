@@ -76,6 +76,17 @@ impl<S: AsRef<[u8]>> HexDump for S {
     }
 }
 
+/// Prints the values in the slice as a static rust-type array
+pub fn to_hex_array(value: &[u8]) -> alloc::string::String {
+    let mut out = alloc::vec::Vec::new();
+    for v in value {
+        out.push(format!("0x{:02X}", v));
+    }
+    let joined = out.join(",");
+
+    format!("[{joined}]")
+}
+
 pub const fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
     Ok(match ch {
         '0' => 0,
@@ -94,6 +105,28 @@ pub const fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
         'd' | 'D' => 0xD,
         'e' | 'E' => 0xE,
         'f' | 'F' => 0xF,
+        _ => return ErrorKind::InvalidData.err("Invalid hex character"),
+    })
+}
+/// Static equivalent of `format!("{:X}", val);`
+pub const fn nibble_to_hex_char(val: u8) -> Result<char, Error> {
+    Ok(match val {
+        0x0 => '0',
+        0x1 => '1',
+        0x2 => '2',
+        0x3 => '3',
+        0x4 => '4',
+        0x5 => '5',
+        0x6 => '6',
+        0x7 => '7',
+        0x8 => '8',
+        0x9 => '9',
+        0xA => 'A',
+        0xB => 'B',
+        0xC => 'C',
+        0xD => 'D',
+        0xE => 'E',
+        0xF => 'F',
         _ => return ErrorKind::InvalidData.err("Invalid hex character"),
     })
 }
