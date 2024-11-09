@@ -11,14 +11,14 @@ pub enum ErrorKind {
 #[derive(Debug, Clone)]
 pub struct Error {
     pub msg: String,
-    pub kind: ErrorKind
+    pub kind: ErrorKind,
 }
 
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Self {
             msg: format!("IOError: {value}"),
-            kind: ErrorKind::IOError
+            kind: ErrorKind::IOError,
         }
     }
 }

@@ -14,6 +14,7 @@ repository = "https://github.com/spmadden/irox"
 
 [dependencies]
 clap = { version = "^4.5", features = ["derive", "wrap_help", "string", "cargo", "env"] }
+irox-log = {version = "^0"}
 
 [workspace]
 

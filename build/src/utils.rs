@@ -2,12 +2,14 @@
 // Copyright 2024 IROX Contributors
 //
 
+use std::fmt::Arguments;
+use crate::error::{Error, ErrorKind};
+use irox_log::log::warn;
 use std::fs::OpenOptions;
 use std::io::{BufRead, Read, Write};
 use std::process::Stdio;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use crate::error::{Error, ErrorKind};
+use std::sync::Arc;
 
 pub fn is_github_action() -> bool {
     let Ok(val) = std::env::var("GITHUB_ACTIONS") else {
@@ -37,37 +39,41 @@ pub fn exec(cmd: &str, args: &[&str]) -> Result<(), Error> {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     let mut stdout = child.stdout.take().expect("Unable to take stdout");
     let mut stderr = child.stderr.take().expect("Unable to take stderr");
     let run = Arc::new(AtomicBool::new(true));
     let run2 = run.clone();
     let run3 = run.clone();
-    let stdout_hnd = std::thread::spawn(move || while run2.load(Ordering::Relaxed) {
-        let mut buf = [0u8; 4096];
-        match stdout.read(&mut buf) {
-            Ok(len) => {
-                if len == 0 {
+    let stdout_hnd = std::thread::spawn(move || {
+        while run2.load(Ordering::Relaxed) {
+            let mut buf = [0u8; 4096];
+            match stdout.read(&mut buf) {
+                Ok(len) => {
+                    if len == 0 {
+                        break;
+                    }
+                    let _ = std::io::stdout().write_all(&buf[..len]);
+                }
+                Err(_e) => {
                     break;
                 }
-                let _ = std::io::stdout().write_all(&buf[..len]);
-            }
-            Err(_e) => {
-                break;
             }
         }
     });
-    let stderr_hnd = std::thread::spawn(move || while run3.load(Ordering::Relaxed) {
-        let mut buf = [0u8; 4096];
-        match stderr.read(&mut buf) {
-            Ok(len) => {
-                if len == 0 {
+    let stderr_hnd = std::thread::spawn(move || {
+        while run3.load(Ordering::Relaxed) {
+            let mut buf = [0u8; 4096];
+            match stderr.read(&mut buf) {
+                Ok(len) => {
+                    if len == 0 {
+                        break;
+                    }
+                    let _ = std::io::stderr().write_all(&buf[..len]);
+                }
+                Err(_e) => {
                     break;
                 }
-                let _ = std::io::stderr().write_all(&buf[..len]);
-            }
-            Err(_e) => {
-                break;
             }
         }
     });
@@ -101,7 +107,7 @@ pub fn exec_stdout_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Error>
     let output = std::process::Command::new(cmd)
         .args(args)
         .output()
-        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     match output.status.code() {
         Some(c) => {
             if c != 0 {
@@ -118,7 +124,7 @@ pub fn exec_stdout_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Error>
             });
         }
     }
-    let lines : Vec<String> = output.stdout.lines().map_while(Result::ok).collect();
+    let lines: Vec<String> = output.stdout.lines().map_while(Result::ok).collect();
     Ok(lines)
 }
 
@@ -128,7 +134,7 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     let mut stdout = child.stdout.take().expect("Unable to take stdout");
     let mut stderr = child.stderr.take().expect("Unable to take stderr");
     let run = Arc::new(AtomicBool::new(true));
@@ -141,30 +147,33 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
         .open(file)?;
     let stdout_hnd = std::thread::spawn(move || {
         while run2.load(Ordering::Relaxed) {
-        let mut buf = [0u8; 4096];
-        match stdout.read(&mut buf) {
-            Ok(len) => {
-                if len == 0 {
+            let mut buf = [0u8; 4096];
+            match stdout.read(&mut buf) {
+                Ok(len) => {
+                    if len == 0 {
+                        break;
+                    }
+                    let _ = file.write_all(&buf[..len]);
+                }
+                Err(_e) => {
                     break;
                 }
-                let _ = file.write_all(&buf[..len]);
-            }
-            Err(_e) => {
-                break;
             }
         }
-    }});
-    let stderr_hnd = std::thread::spawn(move || while run3.load(Ordering::Relaxed) {
-        let mut buf = [0u8; 4096];
-        match stderr.read(&mut buf) {
-            Ok(len) => {
-                if len == 0 {
+    });
+    let stderr_hnd = std::thread::spawn(move || {
+        while run3.load(Ordering::Relaxed) {
+            let mut buf = [0u8; 4096];
+            match stderr.read(&mut buf) {
+                Ok(len) => {
+                    if len == 0 {
+                        break;
+                    }
+                    let _ = std::io::stderr().write(&buf[..len]);
+                }
+                Err(_e) => {
                     break;
                 }
-                let _ = std::io::stderr().write(&buf[..len]);
-            }
-            Err(_e) => {
-                break;
             }
         }
     });
@@ -201,7 +210,7 @@ pub fn exec_passthru(cmd: &str, args: &[&str]) -> Result<(), Error> {
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .spawn()
-        .unwrap_or_else(|_|panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
     let status = child.wait()?;
     match status.code() {
         Some(c) => {
@@ -221,4 +230,16 @@ pub fn exec_passthru(cmd: &str, args: &[&str]) -> Result<(), Error> {
     }
 
     Ok(())
+}
+
+pub fn install_update(tool: &str) {
+    if let Err(e) = exec("cargo", &["install", "--locked", tool, "--color=always"]) {
+        warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
+    };
+}
+
+pub fn ignore_errors<'a, T: Into<Arguments<'a>>>(cmd: &str, args: &[&str], msg: T) {
+    if let Err(e) = exec(cmd, args) {
+        warn!("{}.  Error was: {e:?}", msg.into());
+    }
 }

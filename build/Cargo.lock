@@ -121,10 +121,95 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
+name = "irox-bits"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c86282ca3c0b4a247831b3cd23863fdf6d05da590cd4ddd0d9065e4e545dd82"
+
+[[package]]
 name = "irox-builder"
 version = "0.3.0"
 dependencies = [
  "clap",
+ "irox-log",
+]
+
+[[package]]
+name = "irox-derive-helpers"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d208706b78af9b7f64733e9eb10abd9cfc5f6d2222206083e246d0d97cc8c441"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
+name = "irox-enums"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac9e2ef0ec6807c038e3067d3644e8284fbe3f8626c0d6469edf3499af716b7a"
+dependencies = [
+ "irox-enums_derive",
+]
+
+[[package]]
+name = "irox-enums_derive"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "380e2c38ebe968f2c0881c39413df16a9774058aa95315d98b420779bd8db9ef"
+dependencies = [
+ "irox-derive-helpers",
+ "syn",
+]
+
+[[package]]
+name = "irox-fixedmath"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a5ff9a3fe6f37c4368e191cf6bad3fa44c6c040803f6c0366ba67715cd22ff3"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
+name = "irox-log"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "55a1bbad3eb932d3165159caa1988a8b480f6f7d1755fe4de842c9401321d672"
+dependencies = [
+ "irox-time",
+ "irox-tools",
+ "log",
+]
+
+[[package]]
+name = "irox-time"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e5c40d44a57f2f93786f6d22fbbbec34c7600b0ce325985fc1dc642782d37bba"
+dependencies = [
+ "irox-enums",
+ "irox-fixedmath",
+ "irox-tools",
+ "irox-units",
+]
+
+[[package]]
+name = "irox-tools"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b6a91aa31d615d4856cbbddab005bc1b719f770b219436605688e8939289de5"
+dependencies = [
+ "irox-bits",
+]
+
+[[package]]
+name = "irox-units"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "513017ee9b7cd9cfc7d8a5dda8edbc539d1b9590c30fd0d2f547b76511f80676"
+dependencies = [
+ "irox-tools",
 ]
 
 [[package]]
@@ -144,6 +229,12 @@ name = "linux-raw-sys"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
+
+[[package]]
+name = "log"
+version = "0.4.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
 name = "proc-macro2"

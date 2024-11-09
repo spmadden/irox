@@ -77,6 +77,7 @@ struct Args {
 }
 
 fn main() -> Result<(), Error> {
+    irox_log::init_console_from_env("RUST_LOG");
     let args = Args::parse();
 
     match args.commands.unwrap_or_default() {
@@ -92,7 +93,12 @@ fn main() -> Result<(), Error> {
         Commands::About => about()?,
         Commands::Doc => doc()?,
         Commands::Check => check_all()?,
-        Commands::Release { args } => release(args)?,
+        Commands::Release { args } => release(
+            args.iter()
+                .map(String::as_str)
+                .collect::<Vec<_>>()
+                .as_slice(),
+        )?,
         Commands::New { dest } => new(&dest)?,
         Commands::BuildPerf => buildperf()?,
         Commands::Package => package()?,
@@ -207,10 +213,7 @@ fn lints_deny() -> Result<(), Error> {
 
 fn upgrade() -> Result<(), Error> {
     logstart("upgrade");
-    exec(
-        "cargo",
-        &["install", "--locked", "cargo-edit", "--color=always"],
-    )?;
+    install_update("cargo-edit");
     exec("cargo", &["upgrade", "--dry-run", "--pinned", "-i"])?;
     logend();
     Ok(())
@@ -269,22 +272,20 @@ fn format_check() -> Result<(), Error> {
 
 fn deny() -> Result<(), Error> {
     logstart("deny");
-    exec(
+    install_update("cargo-deny");
+    ignore_errors(
         "cargo",
-        &["install", "--locked", "cargo-deny", "--color=always"],
-    )?;
-    exec("cargo", &["deny", "check"])?;
+        &["deny", "fetch"],
+        format_args!("Unable to fetch resources from network"),
+    );
+    exec("cargo", &["deny", "--offline", "check"])?;
     logend();
     Ok(())
 }
 
-fn release(in_args: Vec<String>) -> Result<(), Error> {
+fn release(in_args: &[&str]) -> Result<(), Error> {
     logstart("release");
-    let pkg = if let Some(pkg) = in_args.first() {
-        pkg.clone()
-    } else {
-        "irox".to_string()
-    };
+    let pkg = in_args.first().unwrap_or(&"irox");
     let mut rgs = Vec::from_iter([
         "smart-release",
         "--no-conservative-pre-release-version-handling",
@@ -293,11 +294,12 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
         "--verbose",
     ]);
     if in_args.is_empty() {
-        rgs.push(pkg.as_str())
+        rgs.push(pkg)
     }
-    for v in &in_args {
-        rgs.push(v.as_str());
+    for v in in_args {
+        rgs.push(v);
     }
+    install_update("cargo-smart-release");
 
     exec(
         "cargo",
@@ -309,7 +311,7 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
         ],
     )?;
 
-    exec_passthru("cargo", &["package", "-p", pkg.as_str()])?;
+    exec_passthru("cargo", &["package", "-p", pkg])?;
 
     exec_passthru("cargo", &rgs)?;
     logend();
@@ -317,10 +319,7 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
 }
 
 fn new(dest: &str) -> Result<(), Error> {
-    exec(
-        "cargo",
-        &["install", "--locked", "cargo-generate", "--color=always"],
-    )?;
+    install_update("cargo-generate");
     std::fs::create_dir_all(dest)?;
     let pwd = std::env::current_dir()?;
     let path = format!("{}/{dest}", pwd.display());
