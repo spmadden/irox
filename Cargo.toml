@@ -122,7 +122,7 @@ irox-units = { version = "^0", path = "libraries/units" }
 opt-level = 1
 
 
-# Lints last updated for Rust 1.79.0
+# Lints last updated for Rust 1.82.0
 [workspace.lints.rust]
 unsafe_code = "forbid"
 
@@ -200,6 +200,7 @@ option_as_ref_cloned = "warn"
 option_option = "warn"
 panic = "warn"
 panic_in_result_fn = "warn"
+pathbuf_init_then_push = "warn"
 print_stderr = "warn"
 print_stdout = "warn"
 pub_underscore_fields = "warn"
@@ -227,6 +228,7 @@ unnecessary_join = "warn"
 unnecessary_wraps = "warn"
 unreachable = "warn"
 unused_async = "warn"
+unused_result_ok = "warn"
 unused_self = "warn"
 unwrap_in_result = "warn"
 unwrap_used = "warn"
