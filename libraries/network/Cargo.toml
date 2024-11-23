@@ -18,6 +18,8 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde"]
+websockets = []
+std = []
 
 [dependencies]
 serde = {workspace = true, optional = true}

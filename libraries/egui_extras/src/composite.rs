@@ -49,13 +49,6 @@ impl App for CompositeApp {
         }
     }
 
-    #[cfg(feature = "eframe/glow")]
-    fn on_exit(&mut self, gl: Option<&eframe::glow::Context>) {
-        for app in &mut self.apps {
-            app.on_exit(gl)
-        }
-    }
-
     fn auto_save_interval(&self) -> Duration {
         let min = self.apps.iter().map(|app| app.auto_save_interval()).min();
         if let Some(min) = min {

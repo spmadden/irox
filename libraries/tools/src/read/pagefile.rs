@@ -21,6 +21,7 @@ impl Pagefile {
             .read(true)
             .write(true)
             .create(true)
+            .truncate(false)
             // .attributes(
             //     FILE_FLAG_NO_BUFFERING
             //         | FILE_FLAG_WRITE_THROUGH

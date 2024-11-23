@@ -9,20 +9,20 @@ use std::io::{Error, Read, Write};
 
 pub use conv::*;
 pub use counting::*;
-#[cfg(feature = "bits/std")]
+#[cfg(feature = "std")]
 pub use pagefile::*;
 pub use readerator::*;
 
 crate::cfg_feature_std! {
     pub use buffer::*;
     mod buffer;
-    
+
     mod multi_stream;
     pub use multi_stream::*;
 }
 mod conv;
 mod counting;
-#[cfg(feature = "bits/std")]
+#[cfg(feature = "std")]
 mod pagefile;
 mod readerator;
 

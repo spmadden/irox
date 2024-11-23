@@ -416,5 +416,4 @@ impl<T: Debug + Display + Clone + PartialOrd> Display for InsideRangeError<T> {
         ))
     }
 }
-#[cfg(feature = "std_errors")]
-impl<T: Debug + Display + Clone + PartialOrd> std::error::Error for InsideRangeError<T> {}
+impl<T: Debug + Display + Clone + PartialOrd> core::error::Error for InsideRangeError<T> {}

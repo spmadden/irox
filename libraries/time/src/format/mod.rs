@@ -69,8 +69,7 @@ impl Display for FormatError {
     }
 }
 
-#[cfg(feature = "std_errors")]
-impl std::error::Error for FormatError {}
+impl core::error::Error for FormatError {}
 
 impl FormatError {
     /// Creates a new format error

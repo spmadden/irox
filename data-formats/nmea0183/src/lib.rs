@@ -111,7 +111,7 @@ impl PacketBuilder<Frame> for NMEAParser {
         let raw = String::from_utf8_lossy(&packet).to_string();
         trace!("PKT: {}", raw);
 
-        let key = packet.as_slice().read_until(&[b','])?;
+        let key = packet.as_slice().read_until(b",")?;
         let mut pkt = packet.as_slice();
         let payload = if key.ends_with("GGA".as_bytes()) {
             FramePayload::GGA(GGABuilder::new().build_from(&mut pkt)?)
@@ -155,14 +155,14 @@ impl<T: Bits> Packetization<T> for NMEAPacketizer {
         }
 
         let mut packet: Vec<u8> = vec![b'$'];
-        packet.append(&mut source.read_until(&[b'\r', b'\n'])?);
+        packet.append(&mut source.read_until(b"\r\n")?);
         Ok(packet)
     }
 }
 
 pub fn calculate_checksum<T: AsRef<[u8]>>(data: &T) -> u8 {
     let mut sl = data.as_ref();
-    if sl.starts_with(&[b'$']) {
+    if sl.starts_with(b"$") {
         (_, sl) = sl.split_at(1);
     }
 
