@@ -222,7 +222,10 @@ fn about() -> Result<(), Error> {
         "cargo",
         &["install", "--locked", "cargo-about", "--color=always"],
     )?;
-    exec_stdout_file("cargo", &["about", "generate", "about.hbs"], "about.html")?;
+    exec_passthru(
+        "cargo",
+        &["about", "generate", "about.hbs", "-o", "about.html"],
+    )?;
     logend();
     Ok(())
 }
@@ -306,14 +309,7 @@ fn release(in_args: Vec<String>) -> Result<(), Error> {
         ],
     )?;
 
-    exec_passthru(
-        "cargo",
-        &[
-            "package",
-            "-p",
-            pkg.as_str(),
-        ]
-    )?;
+    exec_passthru("cargo", &["package", "-p", pkg.as_str()])?;
 
     exec_passthru("cargo", &rgs)?;
     logend();

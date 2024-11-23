@@ -9,13 +9,13 @@ accepted = [
     "BSD-2-Clause",
     "Zlib",
     "OpenSSL",
-    "Unicode-DFS-2016",
+    "Unicode-3.0",
     "MPL-2.0",
     "NOASSERTION",
     "CC0-1.0",
 ]
 no-clearly-defined = true
-workarounds = ["ring"]
+workarounds = ["ring", "unicode-ident"]
 
 [epaint.clarify]
 license = "(MIT OR Apache-2.0) AND OFL-1.1 AND LicenseRef-UFL-1.0"
