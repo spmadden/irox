@@ -388,3 +388,37 @@ impl NamedPrimitiveValue {
         &self.value
     }
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct PrimitiveField {
+    pub name: String,
+    pub inner: PrimitiveFieldInner,
+}
+impl PrimitiveField {
+    pub fn new_unset(name: &str, primitive: Primitives) -> Self {
+        Self {
+            name: name.to_string(),
+            inner: PrimitiveFieldInner::Unset(primitive),
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq)]
+pub enum PrimitiveFieldInner {
+    Unset(Primitives),
+    Set(PrimitiveValue),
+}
+impl PrimitiveFieldInner {
+    pub fn primitive(&self) -> Primitives {
+        match self {
+            PrimitiveFieldInner::Unset(v) => *v,
+            PrimitiveFieldInner::Set(v) => v.primitive(),
+        }
+    }
+    pub fn value(&self) -> Option<&PrimitiveValue> {
+        if let PrimitiveFieldInner::Set(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+}
