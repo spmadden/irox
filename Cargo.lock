@@ -2571,6 +2571,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-app-helpers"
+version = "0.1.0"
+dependencies = [
+ "irox-tools",
+ "irox-types",
+]
+
+[[package]]
 name = "irox-bits"
 version = "0.2.1"
 
