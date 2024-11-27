@@ -10,6 +10,7 @@ use irox_units::units::length::Length;
 
 use crate::coordinate::Latitude;
 use crate::geo::ellipse::Ellipse;
+use crate::geo::standards::wgs84::WGS84_ELLIPSOID;
 use crate::geo::EllipticalShape;
 
 impl From<Ellipse> for Ellipsoid {
@@ -66,6 +67,12 @@ pub struct Ellipsoid {
 
     /// Second derivation of the eccentricity squared
     pub(crate) second_eccentricity_squared: f64,
+}
+
+impl Default for Ellipsoid {
+    fn default() -> Self {
+        WGS84_ELLIPSOID
+    }
 }
 
 impl From<Ellipsoid> for EllipticalShape {

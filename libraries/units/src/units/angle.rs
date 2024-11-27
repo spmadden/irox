@@ -139,6 +139,23 @@ impl Angle {
         let min = (val - deg as f64) * 60.;
         (deg * sign, min)
     }
+
+    #[cfg(feature = "std")]
+    pub fn sin(&self) -> f64 {
+        self.as_radians().value.sin()
+    }
+    #[cfg(feature = "std")]
+    pub fn asin(&self) -> f64 {
+        self.as_radians().value.asin()
+    }
+    #[cfg(feature = "std")]
+    pub fn cos(&self) -> f64 {
+        self.as_radians().value.cos()
+    }
+    #[cfg(feature = "std")]
+    pub fn acos(&self) -> f64 {
+        self.as_radians().value.acos()
+    }
 }
 
 impl Display for Angle {

@@ -4,8 +4,6 @@
 //!
 //! Latitude, Longitude, Elevation, and associated Coordinate types, Elliptical and Cartesian
 
-use std::fmt::{Display, Formatter};
-
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_units::shapes::circular::CircularDimension;
@@ -13,6 +11,8 @@ use irox_units::shapes::Ellipse;
 use irox_units::units::angle::{Angle, AngleUnits};
 use irox_units::units::compass::Azimuth;
 use irox_units::units::length::Length;
+use std::fmt::{Display, Formatter};
+use std::ops::Deref;
 
 use crate::altitude::Altitude;
 use crate::error::ConvertError;
@@ -46,10 +46,22 @@ pub enum RelativeCoordinateType {
 /// Forcing type for Latitude
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Latitude(pub Angle);
+impl Deref for Latitude {
+    type Target = Angle;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 /// Forcing type for Longitude
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Longitude(pub Angle);
+impl Deref for Longitude {
+    type Target = Angle;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 /// Forcing type for Elevation, the angle above the local horizontal
 #[derive(Debug, Clone, Copy, Default, PartialEq)]

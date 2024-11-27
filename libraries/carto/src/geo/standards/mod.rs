@@ -6,6 +6,7 @@ use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::standards::airy::AIRY_PARAMS;
 use crate::geo::standards::grs80::GRS80_PARAMS;
 use crate::geo::standards::hayford_international::INTERNATIONAL_PARAMS;
+use crate::geo::standards::nad::CLARKE_1866_PARAMS;
 use crate::geo::standards::wgs84::{
     WGS84_EQUAL_AREA_SPHERE_PARAMS, WGS84_EQUAL_VOLUME_SPHERE_PARAMS, WGS84_MEAN_RADIUS_PARAMS,
     WGS84_PARAMS,
@@ -15,6 +16,7 @@ use crate::geo::EllipticalShape;
 pub mod airy;
 pub mod grs80;
 pub mod hayford_international;
+pub mod nad;
 pub mod wgs84;
 
 #[allow(non_camel_case_types)]
@@ -44,6 +46,10 @@ pub enum StandardShapes {
 
     /// Navioncs uses the Hayford International ellipsoid
     NavionicsMercator,
+
+    Clarke1866,
+    NAD27, // same as Clarke1866
+    NAD83, // same as GRS80
 }
 
 impl From<&StandardShapes> for Ellipse {
@@ -58,7 +64,8 @@ impl From<&StandardShapes> for Ellipse {
                 INTERNATIONAL_PARAMS
             }
             StandardShapes::Airy => AIRY_PARAMS,
-            StandardShapes::GRS80 => GRS80_PARAMS,
+            StandardShapes::GRS80 | StandardShapes::NAD83 => GRS80_PARAMS,
+            StandardShapes::Clarke1866 | StandardShapes::NAD27 => CLARKE_1866_PARAMS,
         }
     }
 }

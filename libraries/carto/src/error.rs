@@ -33,3 +33,8 @@ impl Display for ConvertError {
 }
 
 impl Error for ConvertError {}
+
+#[derive(Debug, Clone)]
+pub enum ParseError {
+    Error,
+}

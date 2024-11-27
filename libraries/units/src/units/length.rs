@@ -161,6 +161,8 @@ impl Unit<LengthUnits> for Length {
 ///
 /// Represents a discrete quantity of 'Length' as defined in NIST 811.2008
 impl Length {
+    pub const ZERO: Length = Self::new_meters(0.0);
+
     #[must_use]
     pub const fn new_meters(value: f64) -> Length {
         Self {

@@ -15,8 +15,12 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[features]
+default = []
+std = ["irox-tools/std"]
+
 [dependencies]
-irox-units.workspace = true
+irox-units = {workspace = true, features = ["std"]}
 irox-tools.workspace = true
 irox-enums.workspace = true
 irox-time.workspace = true
