@@ -30,8 +30,6 @@ fn get_endian_method_for_prim(ty: Primitives, read: bool, big_endian: bool) -> S
     let base = match ty {
         Primitives::u8 | Primitives::bool | Primitives::char => "u8".to_string(),
         Primitives::i8 => "i8".to_string(),
-        Primitives::f32 => "f32".to_string(),
-        Primitives::f64 => "f64".to_string(),
 
         _ => {
             format!("{be}_{ty:?}")

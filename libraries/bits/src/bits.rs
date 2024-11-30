@@ -33,6 +33,13 @@ macro_rules! next_and_shift {
     }};
 }
 
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum ByteOrder {
+    LittleEndian,
+    #[default]
+    BigEndian,
+}
+
 ///
 /// Read methods for the primitive types
 ///
@@ -225,23 +232,33 @@ pub trait Bits {
     }
 
     /// Reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding
-    fn read_f32(&mut self) -> Result<f32, Error> {
+    fn read_be_f32(&mut self) -> Result<f32, Error> {
         Ok(f32::from_bits(self.read_be_u32()?))
     }
 
+    /// Reads a single [`f32`], 4 bytes.  Specified byte ordering.
+    fn read_f32(&mut self, order: ByteOrder) -> Result<f32, Error> {
+        Ok(f32::from_bits(self.read_u32(order)?))
+    }
+
     /// Optionally reads a single [`f32`], 4 bytes.  Standard IEEE754 encoding
-    fn next_f32(&mut self) -> Result<Option<f32>, Error> {
+    fn next_be_f32(&mut self) -> Result<Option<f32>, Error> {
         Ok(self.next_be_u32()?.map(f32::from_bits))
     }
 
     /// Reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
-    fn read_f64(&mut self) -> Result<f64, Error> {
+    fn read_be_f64(&mut self) -> Result<f64, Error> {
         Ok(f64::from_bits(self.read_be_u64()?))
     }
 
     /// Optionally reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
-    fn next_f64(&mut self) -> Result<Option<f64>, Error> {
+    fn next_be_f64(&mut self) -> Result<Option<f64>, Error> {
         Ok(self.next_be_u64()?.map(f64::from_bits))
+    }
+
+    /// Reads a single [`f64`], 8 bytes.  Specified byte ordering.
+    fn read_f64(&mut self, order: ByteOrder) -> Result<f64, Error> {
+        Ok(f64::from_bits(self.read_u64(order)?))
     }
 
     /// Reads a single [`i16`] in big-endian order, 2 bytes, MSB first.
@@ -302,6 +319,26 @@ pub trait Bits {
     /// Optionally reads a single [`i64`] in little-endian order, 8 bytes, LSB first.
     fn next_le_i64(&mut self) -> Result<Option<i64>, Error> {
         Ok(self.next_be_u64()?.map(|v| v.swap_bytes() as i64))
+    }
+
+    /// Reads a single [`i128`] in little-endian order, 8 bytes, LSB first.
+    fn read_le_i128(&mut self) -> Result<i128, Error> {
+        Ok(self.read_be_i128()?.swap_bytes())
+    }
+
+    /// Optionally reads a single [`i64`] in little-endian order, 8 bytes, LSB first.
+    fn next_le_i128(&mut self) -> Result<Option<i128>, Error> {
+        Ok(self.next_be_u128()?.map(|v| v.swap_bytes() as i128))
+    }
+
+    /// Reads a single [`u128`] in little-endian order, 8 bytes, LSB first.
+    fn read_le_u128(&mut self) -> Result<u128, Error> {
+        Ok(self.read_be_u128()?.swap_bytes())
+    }
+
+    /// Optionally reads a single [`i64`] in little-endian order, 8 bytes, LSB first.
+    fn next_le_u128(&mut self) -> Result<Option<u128>, Error> {
+        Ok(self.next_be_u128()?.map(u128::swap_bytes))
     }
 
     /// Advances the stream by at most 'len' bytes.  The actual amount of bytes advanced may be
@@ -512,6 +549,63 @@ pub trait Bits {
         }
         Ok(read)
     }
+
+    /// Reads a single [`u16`] in the specified order order, 2 bytes.
+    fn read_u16(&mut self, order: ByteOrder) -> Result<u16, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_u16(),
+            ByteOrder::BigEndian => self.read_be_u16(),
+        }
+    }
+    /// Reads a single [`u32`] in the specified order order, 4 bytes.
+    fn read_u32(&mut self, order: ByteOrder) -> Result<u32, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_u32(),
+            ByteOrder::BigEndian => self.read_be_u32(),
+        }
+    }
+    /// Reads a single [`u64`] in the specified order order, 8 bytes.
+    fn read_u64(&mut self, order: ByteOrder) -> Result<u64, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_u64(),
+            ByteOrder::BigEndian => self.read_be_u64(),
+        }
+    }
+    /// Reads a single [`u128`] in the specified order order, 16 bytes.
+    fn read_u128(&mut self, order: ByteOrder) -> Result<u128, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_u128(),
+            ByteOrder::BigEndian => self.read_be_u128(),
+        }
+    }
+    /// Reads a single [`i16`] in the specified order order, 2 bytes.
+    fn read_i16(&mut self, order: ByteOrder) -> Result<i16, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_i16(),
+            ByteOrder::BigEndian => self.read_be_i16(),
+        }
+    }
+    /// Reads a single [`i32`] in the specified order order, 4 bytes.
+    fn read_i32(&mut self, order: ByteOrder) -> Result<i32, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_i32(),
+            ByteOrder::BigEndian => self.read_be_i32(),
+        }
+    }
+    /// Reads a single [`i64`] in the specified order order, 4 bytes.
+    fn read_i64(&mut self, order: ByteOrder) -> Result<i64, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_i64(),
+            ByteOrder::BigEndian => self.read_be_i64(),
+        }
+    }
+    /// Reads a single [`i128`] in the specified order order, 16 bytes.
+    fn read_i128(&mut self, order: ByteOrder) -> Result<i128, Error> {
+        match order {
+            ByteOrder::LittleEndian => self.read_le_i128(),
+            ByteOrder::BigEndian => self.read_be_i128(),
+        }
+    }
 }
 
 #[allow(unused_macros)]
@@ -564,11 +658,11 @@ pub fn read_be_u64<T: Bits>(mut data: T) -> Result<u64, Error> {
 }
 /// Calls [`Bits::read_f32()`].  Provided for type-elusion purposes.
 pub fn read_f32<T: Bits>(mut data: T) -> Result<f32, Error> {
-    data.read_f32()
+    data.read_be_f32()
 }
 /// Calls [`Bits::read_f64()`].  Provided for type-elusion purposes.
 pub fn read_f64<T: Bits>(mut data: T) -> Result<f64, Error> {
-    data.read_f64()
+    data.read_be_f64()
 }
 
 ///

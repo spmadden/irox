@@ -270,12 +270,12 @@ impl WriteToBEBits for u128 {
 }
 impl WriteToBEBits for f32 {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_f32(*self)
+        bits.write_be_f32(*self)
     }
 }
 impl WriteToBEBits for f64 {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_f64(*self)
+        bits.write_be_f64(*self)
     }
 }
 impl WriteToBEBits for i8 {

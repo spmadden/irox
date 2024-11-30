@@ -65,11 +65,11 @@ pub trait MutBits {
     }
 
     /// Writes a single [`f32`] in standard IEEE754 format, 4 bytes
-    fn write_f32(&mut self, val: f32) -> Result<(), Error> {
+    fn write_be_f32(&mut self, val: f32) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
     /// Writes a single [`u16`] in standard IEEE754 format, 8 bytes
-    fn write_f64(&mut self, val: f64) -> Result<(), Error> {
+    fn write_be_f64(&mut self, val: f64) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
 

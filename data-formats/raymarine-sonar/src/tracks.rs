@@ -87,7 +87,7 @@ impl<'a> Track<'a> {
             return Ok(());
         };
         let mut data = data.deref();
-        let first = data.read_f64()?;
+        let first = data.read_be_f64()?;
         info!("{first}");
         Ok(())
     }
