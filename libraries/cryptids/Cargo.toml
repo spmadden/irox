@@ -1,0 +1,23 @@
+[package]
+name = "irox-crypids"
+description = "IROX Cryptographic Primitives - probably very hazardous"
+keywords = ["irox", "crypto", "hazmat", "dragons"]
+categories = ["cryptography"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-bits = {workspace = true}
+irox-tools = {workspace = true}
+
+[dev-dependencies]
+irox-tools = {workspace = true, features = ["std"]}

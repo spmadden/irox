@@ -27,6 +27,7 @@ members = [
     "libraries/bits",
     "libraries/build-rs",
     "libraries/carto",
+    "libraries/cryptids",
     "libraries/derive-helpers",
     "libraries/egui_extras",
     "libraries/enums",
@@ -100,6 +101,7 @@ irox-app-helpers = { version = "^0", path = "libraries/app-helpers" }
 irox-bits = { version = "^0", path = "libraries/bits" }
 irox-build-rs = { version = "^0", path = "libraries/build-rs", features = ["git"] }
 irox-carto = { version = "^0", path = "libraries/carto" }
+irox-cryptids = { version = "^0", path = "libraries/cryptids" }
 irox-derive-helpers = { version = "^0", path = "libraries/derive-helpers" }
 irox-egui-extras = { version = "^0", path = "libraries/egui_extras" }
 irox-enums = { version = "^0", path = "libraries/enums" }
@@ -121,7 +123,7 @@ irox-types = { version = "^0", path = "libraries/types" }
 irox-units = { version = "^0", path = "libraries/units" }
 
 [profile.test]
-opt-level = 1
+# opt-level = 1
 
 
 # Lints last updated for Rust 1.82.0

@@ -2614,6 +2614,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-crypids"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-csv"
 version = "0.5.1"
 dependencies = [
