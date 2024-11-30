@@ -4,11 +4,13 @@
 
 //! More complex synchronization primitives than in the STD.
 
+use crate::cfg_feature_std;
 pub use eventual::*;
 pub use flags::*;
-//pub use once::*;
 pub use optional::*;
 mod eventual;
-mod once;
-mod optional;
+cfg_feature_std! {
+    mod once;
+}
 mod flags;
+mod optional;
