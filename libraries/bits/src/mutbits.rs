@@ -186,8 +186,8 @@ pub trait MutBits {
 
     /// Writes all the bytes in order
     fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
-        for val in val {
-            self.write_u8(*val)?;
+        for v in val {
+            self.write_u8(*v)?;
         }
         Ok(())
     }

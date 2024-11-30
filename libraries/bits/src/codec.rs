@@ -5,7 +5,7 @@
 //!
 //! Bits encoding and decoding functions
 
-use crate::{Error, MutBits};
+use crate::{BitsWrapper, Error, MutBits};
 
 /// Splits the input into two equal sized arrays.
 pub const fn array_concat_2(a: [u8; 2], b: [u8; 2]) -> [u8; 4] {
@@ -94,10 +94,29 @@ impl ToBEBytes<4> for u32 {
     }
 }
 
-impl ToBEBytes<8> for [u32; 2] {
-    fn to_be_bytes(&self) -> [u8; 8] {
-        let [a, b] = *self;
-        array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b))
+// impl ToBEBytes<8> for [u32; 2] {
+//     fn to_be_bytes(&self) -> [u8; 8] {
+//         let [a, b] = *self;
+//         array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b))
+//     }
+// }
+// impl ToBEBytes<16> for [u32; 4] {
+//     fn to_be_bytes(&self) -> [u8; 16] {
+//         let [a, b, c, d] = *self;
+//         array_concat_8(
+//             array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b)),
+//             array_concat_4(u32::to_be_bytes(c), u32::to_be_bytes(d)),
+//         )
+//     }
+// }
+impl<const N: usize, const Y: usize> ToBEBytes<Y> for [u32; N] {
+    fn to_be_bytes(&self) -> [u8; Y] {
+        let mut out = [0u8; Y];
+        let mut wr = BitsWrapper::Owned(out.as_mut_slice());
+        for v in self {
+            let _ = wr.write_be_u32(*v);
+        }
+        out
     }
 }
 
@@ -110,6 +129,19 @@ impl FromBEBytes<8> for [u32; 2] {
     fn from_be_bytes(bytes: [u8; 8]) -> [u32; 2] {
         let (a, b) = array_split_4(bytes);
         [u32::from_be_bytes(a), u32::from_be_bytes(b)]
+    }
+}
+impl FromBEBytes<16> for [u32; 4] {
+    fn from_be_bytes(bytes: [u8; 16]) -> [u32; 4] {
+        let (a, b) = array_split_8(bytes);
+        let (c, d) = array_split_4(b);
+        let (a, b) = array_split_4(a);
+        [
+            u32::from_be_bytes(a),
+            u32::from_be_bytes(b),
+            u32::from_be_bytes(c),
+            u32::from_be_bytes(d),
+        ]
     }
 }
 impl ToBEBytes<4> for f32 {
