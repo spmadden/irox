@@ -59,6 +59,18 @@ mod macros {
             )*
         }
     }
+
+    /// Enables feature-specific code.
+    /// Use this macro instead of `cfg(feature = "std")` to generate docs properly.
+    macro_rules! cfg_feature_std {
+        ($($item:item)*) => {
+            $(
+                #[cfg(any(all(doc, docsrs), feature = "std"))]
+                #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+                $item
+            )*
+        }
+    }
 }
 
 pub use bits::*;
@@ -76,7 +88,9 @@ mod codec;
 mod error;
 mod mutbits;
 mod seek;
-#[cfg(feature = "std")]
-mod stdimpls;
+
+cfg_feature_std! {
+    mod stdimpls;
+}
 mod stdwrappers;
 pub mod utf;
