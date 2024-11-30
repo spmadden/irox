@@ -60,7 +60,7 @@ macro_rules! impl_from_error {
     ($ErrorName:ident,$source:ty,$ty:expr) => {
         impl From<$source> for $ErrorName {
             fn from(value: $source) -> Self {
-                Error {
+                Self {
                     error_type: $ty,
                     msg: value.to_string(),
                 }
