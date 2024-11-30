@@ -2756,7 +2756,11 @@ dependencies = [
 name = "irox-imagery"
 version = "0.1.0"
 dependencies = [
+ "irox-bits",
  "irox-carto",
+ "irox-log",
+ "irox-tools",
+ "irox-types",
  "irox-units",
 ]
 

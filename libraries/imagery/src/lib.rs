@@ -2,18 +2,20 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//!
+//! Image processing, manipulation, formats
 //!
 
 #![forbid(unsafe_code)]
 
-pub use pixel::*;
 pub use color::*;
 pub use error::*;
+pub use pixel::*;
+pub use tiff::*;
 
-mod pixel;
 mod color;
 mod error;
+mod pixel;
+mod tiff;
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub enum ImageSpace {
@@ -22,7 +24,7 @@ pub enum ImageSpace {
 
     WORLD,
 
-    OTHER(&'static str)
+    OTHER(&'static str),
 }
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
@@ -32,7 +34,7 @@ pub struct ImageDimensions<T> {
 }
 
 pub trait Image {
-    type DimType; 
+    type DimType;
 
     fn get_dimensions(&self, space: ImageSpace) -> Self::DimType;
 
@@ -44,5 +46,5 @@ pub trait Image {
 }
 
 pub trait ImageMut {
-    fn set_pixel_value(&self, x: u32, y:u32, color: Color) -> Result<(), ImageError>;
+    fn set_pixel_value(&self, x: u32, y: u32, color: Color) -> Result<(), ImageError>;
 }

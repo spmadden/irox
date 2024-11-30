@@ -2,7 +2,6 @@
 // Copyright 2023 IROX Contributors
 //
 
-
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct RGBColor {
     pub red: u8,
@@ -26,12 +25,11 @@ pub struct HSVColor {
 }
 
 pub enum Color<'a> {
-
     RGB(RGBColor),
 
     ARGB(ARGBColor),
 
     HSV(HSVColor),
 
-    Raw(&'a[u8])
+    Raw(&'a [u8]),
 }

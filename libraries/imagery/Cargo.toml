@@ -3,7 +3,7 @@ name = "irox-imagery"
 description = "Image processing, manipulation, formats"
 keywords = ["irox", "imagery"]
 categories = ["graphics", "encoding", "parsing"]
-version= "0.1.0"
+version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -16,5 +16,9 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+irox-log = { workspace = true }
+irox-bits = { workspace = true, features = ["std"] }
+irox-tools = { workspace = true, features = ["std"] }
 irox-units.workspace = true
 irox-carto.workspace = true
+irox-types.workspace = true

@@ -2,6 +2,4 @@
 // Copyright 2023 IROX Contributors
 //
 
-pub struct Pixel {
-    
-}
+pub struct Pixel;
