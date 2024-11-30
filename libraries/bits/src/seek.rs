@@ -3,6 +3,34 @@
 //
 use crate::Error;
 
+/// Enum to indicate how to move a read/write pointer.
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum SeekFrom {
+    Start(u64),
+    End(i64),
+    Current(i64),
+}
+
+cfg_feature_std! {
+    impl From<SeekFrom> for std::io::SeekFrom {
+        fn from(fr: SeekFrom) -> Self {
+            match fr {
+                SeekFrom::Start(n) => std::io::SeekFrom::Start(n),
+                SeekFrom::End(n) => std::io::SeekFrom::End(n),
+                SeekFrom::Current(n) => std::io::SeekFrom::Current(n),
+            }
+        }
+    }
+}
+
+///
+/// Trait to move the current read/write position of a stream.  
+///
+/// There's no reason this trait should have been in std and not core.  
+pub trait Seek {
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error>;
+}
+
 ///
 /// Trait to permit an atomic Seek+Read operation
 pub trait SeekRead {
