@@ -27,6 +27,7 @@ members = [
     "libraries/bits",
     "libraries/build-rs",
     "libraries/carto",
+    "libraries/compression",
     "libraries/cryptids",
     "libraries/derive-helpers",
     "libraries/egui_extras",
@@ -102,6 +103,7 @@ irox-app-helpers = { version = "^0", path = "libraries/app-helpers" }
 irox-bits = { version = "^0", path = "libraries/bits" }
 irox-build-rs = { version = "^0", path = "libraries/build-rs", features = ["git"] }
 irox-carto = { version = "^0", path = "libraries/carto" }
+irox-compression = { version = "^0", path = "libraries/compression" }
 irox-cryptids = { version = "^0", path = "libraries/cryptids" }
 irox-derive-helpers = { version = "^0", path = "libraries/derive-helpers" }
 irox-egui-extras = { version = "^0", path = "libraries/egui_extras" }

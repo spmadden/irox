@@ -2614,6 +2614,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-compression"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
+]
+
+[[package]]
 name = "irox-crypids"
 version = "0.1.0"
 dependencies = [
