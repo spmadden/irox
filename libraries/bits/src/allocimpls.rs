@@ -81,3 +81,14 @@ impl_push!(char, &mut String);
 impl_push!(char, String);
 impl_push!(u8, Vec<u8>);
 impl_push!(u8, &mut Vec<u8>);
+
+impl<T: Bits> Bits for alloc::boxed::Box<T> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        T::next_u8(self)
+    }
+}
+impl<T: MutBits> MutBits for alloc::boxed::Box<T> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        T::write_u8(self, val)
+    }
+}
