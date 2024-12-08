@@ -131,7 +131,7 @@ cfg_feature_miniz! {
     impl<'a, T: MutBits> CompressStream<'a, T> {
         pub fn new(writer: BitsWrapper<'a, T>) -> Self {
             let mut compressor = CompressorOxide::default();
-            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::BestCompression as u8);
+            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::BestSpeed as u8);
             Self {
                 writer,
                 inbuf: VecDeque::with_capacity(4096),
@@ -143,8 +143,15 @@ cfg_feature_miniz! {
                 &mut self, value: V) -> Result<(), Error> {
             // println!("writing {value:08X}");
             WriteToBEBits::write_be_to(&value, &mut self.inbuf)?;
-
-            let v = self.inbuf.make_contiguous();
+            if self.inbuf.len() < 4000 {
+                return Ok(())
+            }
+            let (a,b) = self.inbuf.as_slices();
+            let v = if a.is_empty() {
+                b
+            } else  {
+                a
+            };
 
             let (status, size) = compress_to_output(&mut self.compressor, v, TDEFLFlush::None, |out| {
                 self.writer.write_all_bytes(out).is_ok()
@@ -235,7 +242,7 @@ cfg_feature_miniz! {
 #[cfg(all(test, feature = "miniz", feature = "std"))]
 mod test {
     use crate::streams::{BitsWrapper, DeltaCompressStream};
-    use irox_bits::{Error, MutBitsArray};
+    use irox_bits::Error;
     use irox_time::Time64;
     use irox_units::units::duration::Duration;
     use std::time::Instant;
@@ -244,12 +251,11 @@ mod test {
     /// Writes out 8*1M = 8MB to the underlying stream.
     #[test]
     pub fn test1() -> Result<(), Error> {
-        let mut buf = [0u8; 4096];
+        let mut buf = Vec::with_capacity(32768);
         let mut input = 0;
         let start = Instant::now();
         let written = {
-            let mut arr: MutBitsArray<4096> = (&mut buf).into();
-            let wrapper = BitsWrapper::Borrowed(&mut arr);
+            let wrapper = BitsWrapper::Borrowed(&mut buf);
             let mut vbout = DeltaCompressStream::<u64, _>::new(wrapper);
 
             for i in 0..4_000_000 {
@@ -258,7 +264,7 @@ mod test {
             }
             vbout.flush()?;
             drop(vbout);
-            arr.len()
+            buf.len()
         };
         let end = start.elapsed();
         // irox_tools::hex::HexDump::hexdump(&buf);
@@ -271,14 +277,13 @@ mod test {
 
     #[test]
     pub fn test_nanos() -> Result<(), Error> {
-        let mut buf = [0u8; 16384];
+        let mut buf = Vec::with_capacity(32768);
         let mut input = Time64::now();
         let incr = Duration::from_millis(100);
         let start = Instant::now();
         let count = 2_000_000;
         let written = {
-            let mut arr: MutBitsArray<16384> = (&mut buf).into();
-            let wrapper = BitsWrapper::Borrowed(&mut arr);
+            let wrapper = BitsWrapper::Borrowed(&mut buf);
             let mut vbout = DeltaCompressStream::new(wrapper);
 
             for _ in 0..count {
@@ -287,7 +292,7 @@ mod test {
             }
             vbout.flush()?;
             drop(vbout);
-            arr.len()
+            buf.len()
         };
         let count = count * 8;
         let end = start.elapsed();
