@@ -11,6 +11,8 @@ mod round;
 pub use fixed::*;
 
 mod fixed;
+pub use fixed_u8::*;
+mod fixed_u8;
 mod str;
 pub use round_u8::*;
 mod round_u8;
