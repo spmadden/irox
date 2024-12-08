@@ -23,9 +23,9 @@ impl Sample64 {
 
 pub struct TimeSeriesFloatDataFileWriter<'a> {
     writer: Arc<MultiStreamWriter>,
-    time_stream: DeltaCompressStream<'a, u64, StreamWriter>,
-    exponent_stream: CompressStream<'a, StreamWriter>,
-    mantissa_stream: CompressStream<'a, StreamWriter>,
+    time_stream: Box<DeltaCompressStream<'a, u64, StreamWriter>>,
+    exponent_stream: Box<CompressStream<'a, StreamWriter>>,
+    mantissa_stream: Box<CompressStream<'a, StreamWriter>>,
     last_value: f64,
 }
 
@@ -40,9 +40,9 @@ impl<'a> TimeSeriesFloatDataFileWriter<'a> {
         let time_stream = writer.new_stream();
         let value_stream = writer.new_stream();
         let mantissa_stream = writer.new_stream();
-        let time_stream = DeltaCompressStream::new(BitsWrapper::Owned(time_stream));
-        let exponent_stream = CompressStream::new(BitsWrapper::Owned(value_stream));
-        let mantissa_stream = CompressStream::new(BitsWrapper::Owned(mantissa_stream));
+        let time_stream = Box::new(DeltaCompressStream::new(BitsWrapper::Owned(time_stream)));
+        let exponent_stream = Box::new(CompressStream::new(BitsWrapper::Owned(value_stream)));
+        let mantissa_stream = Box::new(CompressStream::new(BitsWrapper::Owned(mantissa_stream)));
         Ok(TimeSeriesFloatDataFileWriter {
             writer,
             time_stream,
