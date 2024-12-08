@@ -16,8 +16,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-serial = { workspace = true }
-
+serial2 = {version = "0.2", features = []}
 human-panic = { workspace = true }
 env_logger.workspace = true
 clap.workspace = true

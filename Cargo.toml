@@ -76,7 +76,6 @@ windows = { version = "^0.58", features = ["Devices_Geolocation", "Foundation"] 
 rusqlite = { version = "^0.32", features = ["bundled", "bundled-windows"] }
 miniz_oxide = { version = "^0.8", features = [] }
 xml = { version = "^0.8", features = [] }
-serial = { version = "^0.4", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.19.0", features = ["vendored-openssl", "vendored-libgit2"] }

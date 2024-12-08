@@ -8,7 +8,6 @@ use log::{error, info};
 
 use config::{GPSdConfig, Transport};
 use error::GPSdError;
-use irox_bits::BitsWrapper;
 use output::FrameGenerator;
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};
@@ -75,7 +74,6 @@ pub fn start_serial(
             return Err(e.0);
         }
     };
-    let mut port = BitsWrapper::Borrowed(&mut port);
     let mut framebuilder = FrameGenerator::new(encoding, &mut port);
     while !shouldquit.load(Ordering::Relaxed) {
         let frame = framebuilder.build_from();
