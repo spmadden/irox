@@ -1,8 +1,8 @@
 [package]
 name = "irox-compression"
-description = ""
-keywords = ["irox"]
-categories = []
+description = "Compression Algorithms"
+keywords = ["irox", "compression", "no-std"]
+categories = ["algorithms", "compression", "no-std"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -14,6 +14,10 @@ readme = "README.md"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true, features = ["std"]}
 
 [dependencies]
 irox-bits.workspace = true
