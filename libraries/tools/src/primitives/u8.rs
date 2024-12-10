@@ -5,6 +5,8 @@
 //! A collection of utilities for the u8 built-in
 //!
 
+use crate::{WrappingAdd, WrappingMul, WrappingSub};
+
 ///
 /// Finds the minimum and maximum value in the provided iterator.
 /// Example:
@@ -26,4 +28,35 @@ pub fn min_max(iter: &[u8]) -> (u8, u8) {
     }
 
     (min, max)
+}
+
+impl WrappingAdd for u8 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        u8::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingAdd for i8 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        i8::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingSub for u8 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        u8::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingSub for i8 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        i8::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingMul for u8 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        u8::wrapping_mul(*self, rhs)
+    }
+}
+impl WrappingMul for i8 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        i8::wrapping_mul(*self, rhs)
+    }
 }

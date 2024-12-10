@@ -4,10 +4,14 @@
 
 pub mod f32;
 pub mod f64;
+mod u128;
 pub mod u16;
 pub mod u32;
 pub mod u64;
 pub mod u8;
+mod wrapping;
+
+pub use wrapping::*;
 
 ///
 /// An integer!

@@ -2,6 +2,8 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
+use crate::{WrappingAdd, WrappingMul, WrappingSub};
+
 ///
 /// Converts the specified primitive to a big-endian [`[u32;T]`]
 pub trait ToU32Array<const T: usize> {
@@ -57,5 +59,36 @@ impl FromU32Array<2> for u64 {
         let b: u64 = b as u64;
 
         a | b
+    }
+}
+
+impl WrappingAdd for u32 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        u32::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingAdd for i32 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        i32::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingSub for u32 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        u32::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingSub for i32 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        i32::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingMul for u32 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        u32::wrapping_mul(rhs, *self)
+    }
+}
+impl WrappingMul for i32 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        i32::wrapping_mul(*self, rhs)
     }
 }

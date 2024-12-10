@@ -5,6 +5,8 @@
 //! A collection of utilities for the u64 built-in
 //!
 
+use crate::{WrappingAdd, WrappingMul, WrappingSub};
+
 ///
 /// Finds the minimum and maximum value in the provided iterator.
 /// Example:
@@ -26,4 +28,35 @@ pub fn min_max(iter: &[u64]) -> (u64, u64) {
     }
 
     (min, max)
+}
+
+impl WrappingAdd for u64 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        u64::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingSub for u64 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        u64::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingMul for u64 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        u64::wrapping_mul(*self, rhs)
+    }
+}
+impl WrappingAdd for i64 {
+    fn wrapping_add(&self, rhs: Self) -> Self {
+        i64::wrapping_add(*self, rhs)
+    }
+}
+impl WrappingSub for i64 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        i64::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingMul for i64 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        i64::wrapping_mul(*self, rhs)
+    }
 }

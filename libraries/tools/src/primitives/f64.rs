@@ -5,6 +5,8 @@
 //! A collection of utilities for the f64 built-in
 //!
 
+use crate::WrappingSub;
+
 ///
 /// Finds the minimum and maximum value in the provided iterator.
 /// Example:
@@ -251,6 +253,12 @@ impl FloatExt for f64 {
 
     fn significand(self) -> Self::Size {
         self.to_bits() & 0xF_FFFF_FFFF_FFFF
+    }
+}
+
+impl WrappingSub for f64 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        self - rhs
     }
 }
 

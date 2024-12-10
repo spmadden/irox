@@ -2,6 +2,8 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
+use crate::{WrappingAdd, WrappingMul, WrappingSub};
+
 ///
 /// Converts the specified primitive to a big-endian [`[u16;T]`]
 pub trait ToU16Array<const T: usize> {
@@ -88,5 +90,37 @@ impl FromU16Array<2> for u32 {
         let b: u32 = b as u32;
 
         a | b
+    }
+}
+
+impl WrappingAdd for u16 {
+    fn wrapping_add(&self, other: u16) -> u16 {
+        u16::wrapping_add(*self, other)
+    }
+}
+impl WrappingAdd for i16 {
+    fn wrapping_add(&self, other: i16) -> i16 {
+        i16::wrapping_add(*self, other)
+    }
+}
+
+impl WrappingSub for u16 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        u16::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingSub for i16 {
+    fn wrapping_sub(&self, rhs: Self) -> Self {
+        i16::wrapping_sub(*self, rhs)
+    }
+}
+impl WrappingMul for u16 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        u16::wrapping_mul(*self, rhs)
+    }
+}
+impl WrappingMul for i16 {
+    fn wrapping_mul(&self, rhs: Self) -> Self {
+        i16::wrapping_mul(*self, rhs)
     }
 }
