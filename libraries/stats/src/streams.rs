@@ -10,17 +10,68 @@ use core::fmt::UpperHex;
 use core::ops::Sub;
 use irox_bits::{Error, MutBits, WriteToBEBits};
 use irox_tools::codec::vbyte::EncodeVByteTo;
+use irox_tools::WrappingSub;
+extern crate alloc;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 
-pub trait Streamable: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> {}
-impl<T> Streamable for T where T: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits>
-{}
+pub trait Streamable:
+    Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> + WrappingSub
+{
+}
+impl<T> Streamable for T where
+    T: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> + WrappingSub
+{
+}
 pub trait StreamableVByte:
-    Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo
+    Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo + WrappingSub
 {
 }
 impl<T> StreamableVByte for T where
-    T: Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo
+    T: Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo + WrappingSub
 {
+}
+pub trait ValueOperation<'a, T> {
+    fn encode(&'a mut self, value: &T) -> Result<T, Error>;
+}
+pub struct CompositeStream<'a, T: Streamable, B: MutBits> {
+    writer: &'a mut B,
+    operations: Vec<Box<dyn ValueOperation<'a, T>>>,
+}
+impl<'a, T: Streamable, B: MutBits> CompositeStream<'a, T, B> {
+    pub fn new(writer: &'a mut B) -> CompositeStream<'a, T, B> {
+        Self {
+            writer,
+            operations: Vec::new(),
+        }
+    }
+    pub fn and_then<V: ValueOperation<'a, T> + 'static>(&mut self, value: Box<V>) {
+        self.operations.push(value);
+    }
+    pub fn write_value(&'a mut self, value: T) -> Result<(), Error> {
+        let mut v = value;
+        for op in &mut self.operations {
+            v = op.encode(&v)?;
+        }
+        WriteToBEBits::write_be_to(&value, self.writer)
+    }
+}
+
+pub struct DeltaOperation<T> {
+    last_value: T,
+}
+impl<'a, T: Sub<T, Output = T> + Copy> ValueOperation<'a, T> for DeltaOperation<T> {
+    fn encode(&'a mut self, value: &T) -> Result<T, Error> {
+        let out = *value - self.last_value;
+        self.last_value = out;
+        Ok(out)
+    }
+}
+pub struct VByteOperation;
+impl<'a, T: Sub<T, Output = T> + Copy> ValueOperation<'a, T> for VByteOperation {
+    fn encode(&'a mut self, _value: &T) -> Result<T, Error> {
+        todo!()
+    }
 }
 
 ///
@@ -127,15 +178,17 @@ cfg_feature_miniz! {
         writer: BitsWrapper<'a, T>,
         inbuf: VecDeque<u8>,
         compressor: CompressorOxide,
+        written: u64,
     }
     impl<'a, T: MutBits> CompressStream<'a, T> {
         pub fn new(writer: BitsWrapper<'a, T>) -> Self {
             let mut compressor = CompressorOxide::default();
-            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::BestSpeed as u8);
+            compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::DefaultCompression as u8);
             Self {
                 writer,
                 inbuf: VecDeque::with_capacity(4096),
-                compressor
+                compressor,
+                written: 0,
             }
         }
 
@@ -154,6 +207,7 @@ cfg_feature_miniz! {
             };
 
             let (status, size) = compress_to_output(&mut self.compressor, v, TDEFLFlush::None, |out| {
+                self.written = self.written.wrapping_add(out.len() as u64);
                 self.writer.write_all_bytes(out).is_ok()
             });
             if status != TDEFLStatus::Okay {
@@ -167,6 +221,7 @@ cfg_feature_miniz! {
             loop {
                 let v = self.inbuf.make_contiguous();
                 let (status, size) = compress_to_output(&mut self.compressor, v, TDEFLFlush::Finish, |out| {
+                    self.written = self.written.wrapping_add(out.len() as u64);
                     self.writer.write_all_bytes(out).is_ok()
                 });
                 self.inbuf.drain(0..size);
@@ -187,6 +242,9 @@ cfg_feature_miniz! {
             }
             Ok(())
         }
+        pub fn written(&self) -> u64 {
+            self.written
+        }
     }
     impl<'a, B: MutBits> Drop for CompressStream<'a, B> {
         /// Make sure the buffer is fully flushed on drop
@@ -202,11 +260,11 @@ cfg_feature_miniz! {
     /// A stream impl that writes the deflated, varint-encoded difference between
     /// the last value and the current value to the provided [`MutBits`] writer.
     /// The previous value is initialized to 0.
-    pub struct DeltaCompressStream<'a, T: StreamableVByte, B: MutBits> {
+    pub struct DeltaCompressStream<'a, T: Streamable, B: MutBits> {
         last_value: T,
         compressor: CompressStream<'a, B>
     }
-    impl<'a, T: StreamableVByte, B: MutBits> DeltaCompressStream<'a, T, B> {
+    impl<'a, T: Streamable, B: MutBits> DeltaCompressStream<'a, T, B> {
         /// Create a new stream
         pub fn new(writer: BitsWrapper<'a, B>) -> DeltaCompressStream<'a, T, B> {
             DeltaCompressStream {
@@ -218,11 +276,12 @@ cfg_feature_miniz! {
         ///
         /// Encodes & writes the value out.
         pub fn write_value(&mut self, value: T) -> Result<(), Error> {
-            let delta = value - self.last_value;
+
+            let delta = value; //value.wrapping_sub(self.last_value);
             self.last_value = value;
             // println!("Delta: {delta:08X}");
-            EncodeVByteTo::encode_vbyte_to(&delta, &mut self.compressor)?;
-
+            // EncodeVByteTo::encode_vbyte_to(&delta, &mut self.compressor)?;
+            self.compressor.write_value(delta)?;
             Ok(())
         }
 
@@ -230,8 +289,12 @@ cfg_feature_miniz! {
             self.compressor.flush()
         }
 
+        pub fn written(&self) -> u64 {
+            self.compressor.written()
+        }
+
     }
-    impl<'a, T: StreamableVByte, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
+    impl<'a, T: Streamable, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
         /// Make sure the buffer is fully flushed on drop
         fn drop(&mut self) {
             let _ = self.flush();
