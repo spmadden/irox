@@ -41,7 +41,11 @@ pub const X_POSITION: TiffTagType = TiffTagType::new("XPositive", 286, TiffTagFo
 pub const Y_POSITION: TiffTagType = TiffTagType::new("YPosition", 287, TiffTagFormat::Rational, 1);
 
 pub const RESOLUTION_UNIT: TiffTagType =
-    TiffTagType::new("Resolution", 296, TiffTagFormat::Short, 1);
+    TiffTagType::new("ResolutionUnit", 296, TiffTagFormat::Short, 1);
+
+pub const SOFTWARE: TiffTagType = TiffTagType::new("Software", 305, TiffTagFormat::Ascii, 0);
+pub const DATE_TIME: TiffTagType = TiffTagType::new("DateTime", 306, TiffTagFormat::Ascii, 20);
+
 pub const PREDICTOR: TiffTagType = TiffTagType::new("Predictor", 317, TiffTagFormat::Short, 1);
 pub const COLOR_MAP: TiffTagType = TiffTagType::new("ColorMap", 320, TiffTagFormat::Short, 0);
 pub const TILE_WIDTH: TiffTagType = TiffTagType::new("TileWidth", 322, TiffTagFormat::Long, 1);
@@ -91,6 +95,8 @@ pub static KNOWN_TAG_TYPES: &[TiffTagType] = &[
     Y_POSITION,
     RESOLUTION_UNIT,
     PREDICTOR,
+    SOFTWARE,
+    DATE_TIME,
     COLOR_MAP,
     TILE_WIDTH,
     TILE_LENGTH,
@@ -169,6 +175,26 @@ pub const PROJ_FALSE_EASTING: TiffTagType =
     TiffTagType::new("ProjectionFalseEasting", 3082, TiffTagFormat::Double, 1);
 pub const PROJ_FALSE_NORTHING: TiffTagType =
     TiffTagType::new("ProjectionFalseNorthing", 3083, TiffTagFormat::Double, 1);
+pub const PROJ_FALSE_ORIGIN_LONG: TiffTagType =
+    TiffTagType::new("ProjectionFalseOriginLon", 3084, TiffTagFormat::Double, 1);
+pub const PROJ_FALSE_ORIGIN_LAT: TiffTagType =
+    TiffTagType::new("ProjectionFalseOriginLat", 3085, TiffTagFormat::Double, 1);
+pub const PROJ_FALSE_ORIGIN_EASTING: TiffTagType = TiffTagType::new(
+    "ProjectionFalseOriginEasting",
+    3086,
+    TiffTagFormat::Double,
+    1,
+);
+pub const PROJ_FALSE_ORIGIN_NORTHING: TiffTagType = TiffTagType::new(
+    "ProjectionFalseOriginNorthing",
+    3087,
+    TiffTagFormat::Double,
+    1,
+);
+pub const PROJ_CENTER_LONG: TiffTagType =
+    TiffTagType::new("ProjectionCenterLon", 3088, TiffTagFormat::Double, 1);
+pub const PROJ_CENTER_LAT: TiffTagType =
+    TiffTagType::new("ProjectionCenterLat", 3089, TiffTagFormat::Double, 1);
 
 pub static GEO_KEY_DIR_TAGS: &[TiffTagType] = &[
     GT_MODEL_TYPE,
@@ -200,6 +226,12 @@ pub static GEO_KEY_DIR_TAGS: &[TiffTagType] = &[
     PROJ_NAT_ORIGIN_LAT,
     PROJ_FALSE_EASTING,
     PROJ_FALSE_NORTHING,
+    PROJ_FALSE_ORIGIN_LONG,
+    PROJ_FALSE_ORIGIN_LAT,
+    PROJ_FALSE_ORIGIN_EASTING,
+    PROJ_FALSE_ORIGIN_NORTHING,
+    PROJ_CENTER_LONG,
+    PROJ_CENTER_LAT,
 ];
 
 static_init!(get_geokey_directory_tags, BTreeMap<u16, TiffTagType>, {

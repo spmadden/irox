@@ -6,7 +6,9 @@ use crate::tags::{get_geokey_directory_tags, GEO_KEY_DIRECTORY, KNOWN_TAG_TYPES}
 use crate::tiff::geo::GeoKeyDirectory;
 use crate::{ImageError, ImageErrorType};
 use core::cmp::Ordering;
+use core::fmt::Debug;
 use irox_bits::{Bits, BitsError, ByteOrder, Seek, SeekFrom};
+use irox_log::log::{debug, warn};
 use std::collections::BTreeMap;
 
 pub mod geo;
@@ -18,6 +20,24 @@ pub struct TiffImage {
 impl TiffImage {
     pub fn ifd(&self) -> &BTreeMap<u16, TiffTag> {
         &self.ifd
+    }
+}
+impl Debug for TiffImage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut str = f.debug_struct("TiffImage");
+        for v in self.ifd.values() {
+            let name = if let Some(tag) = &v.identified_tag {
+                format!("{}({})", tag.name, tag.tag_id)
+            } else {
+                format!("UNK({})", v.tag)
+            };
+            if let TiffTagValue::ParsedAscii(val) = &v.value {
+                str.field(&name, val);
+            } else {
+                str.field(&name, &format!("{:?}", v.value));
+            }
+        }
+        str.finish()
     }
 }
 
@@ -215,28 +235,50 @@ impl TiffTag {
         if size <= 4 {
             #[allow(clippy::match_same_arms)]
             match self.field_type {
-                TiffTagFormat::Byte => {}
-                TiffTagFormat::Ascii => {}
+                TiffTagFormat::Byte => {
+                    todo!()
+                }
+                TiffTagFormat::Ascii => {
+                    todo!()
+                }
                 TiffTagFormat::Short => {
                     self.value = TiffTagValue::ParsedShort(offset as u16);
                 }
                 TiffTagFormat::Long => {
                     self.value = TiffTagValue::ParsedLong(offset);
                 }
-                TiffTagFormat::Rational => {}
-                TiffTagFormat::SByte => {}
-                TiffTagFormat::Undefined => {}
-                TiffTagFormat::SShort => {}
-                TiffTagFormat::SLong => {}
-                TiffTagFormat::SRational => {}
-                TiffTagFormat::Float => {}
-                TiffTagFormat::Double => {}
+                TiffTagFormat::Rational => {
+                    todo!()
+                }
+                TiffTagFormat::SByte => {
+                    todo!()
+                }
+                TiffTagFormat::Undefined => {
+                    todo!()
+                }
+                TiffTagFormat::SShort => {
+                    todo!()
+                }
+                TiffTagFormat::SLong => {
+                    todo!()
+                }
+                TiffTagFormat::SRational => {
+                    todo!()
+                }
+                TiffTagFormat::Float => {
+                    todo!()
+                }
+                TiffTagFormat::Double => {
+                    todo!()
+                }
             }
         } else {
             source.seek(SeekFrom::Start(offset as u64))?;
             if let TiffTagFormat::Ascii = self.field_type {
-                let s = source.read_str_sized_lossy(self.value_count as usize)?;
+                let size = (self.value_count as usize).saturating_sub(1);
+                let s = source.read_str_sized_lossy(size)?;
                 self.value = TiffTagValue::ParsedAscii(s);
+                return Ok(());
             }
             match self.field_type {
                 TiffTagFormat::Short => {
@@ -267,7 +309,26 @@ impl TiffTag {
                     }
                     self.value = TiffTagValue::ParsedDoubles(out);
                 }
-                _ => for _ in 0..self.value_count {},
+                TiffTagFormat::Rational => {
+                    let mut out = Vec::new();
+                    for _ in 0..self.value_count {
+                        let v = (source.read_u32(order)?, source.read_u32(order)?);
+                        out.push(v);
+                    }
+                    if out.len() == 1 {
+                        let v = out.pop().unwrap_or_default();
+                        if v.1 == 1 {
+                            self.value = TiffTagValue::ParsedLong(v.0);
+                            return Ok(());
+                        }
+                    }
+                    self.value = TiffTagValue::ParsedRational(out);
+                }
+                _ => {
+                    for _ in 0..self.value_count {
+                        todo!("{:?}", self.field_type)
+                    }
+                }
             }
         };
 
@@ -307,6 +368,7 @@ impl TiffImageReader {
                 let dir = GeoKeyDirectory::parse_from(shorts)?;
                 for key in &dir.keys {
                     let Some(ent) = get_geokey_directory_tags().get(&key.id) else {
+                        warn!("Cannot find ID {} in known geokey tags", key.id);
                         continue;
                     };
                     if key.location == 0 {
@@ -328,6 +390,64 @@ impl TiffImageReader {
                         );
                     } else {
                         // find some other tag.
+                        let Some(deref) = ifd.get(&key.location) else {
+                            warn!("Cannot find location {} in known ifd tags", key.location);
+                            continue;
+                        };
+                        match deref.field_type {
+                            TiffTagFormat::Ascii => {
+                                let TiffTagValue::ParsedAscii(val) = &deref.value else {
+                                    warn!(
+                                        "Expected a parsed ascii value, but was: {:#?}",
+                                        &deref.value
+                                    );
+                                    continue;
+                                };
+                                let start = key.value_offset as usize;
+                                let end = start + key.count as usize - 1;
+                                let val = val.get(start..end).unwrap_or_default();
+                                ifd.insert(
+                                    key.id,
+                                    TiffTag {
+                                        field_type: TiffTagFormat::Ascii,
+                                        tag: key.id,
+                                        value_count: 1,
+                                        identified_tag: Some(*ent),
+                                        value: TiffTagValue::ParsedAscii(val.to_string()),
+                                    },
+                                );
+                            }
+                            TiffTagFormat::Double => {
+                                debug!("{:#?} {:#?}", key, ent);
+                                let TiffTagValue::ParsedDoubles(val) = &deref.value else {
+                                    warn!(
+                                        "Expected a parsed double values, but was: {:#?}",
+                                        &deref.value
+                                    );
+                                    continue;
+                                };
+                                let start = key.value_offset as usize;
+                                if key.count == 1 {
+                                    let val = val.get(start).copied().unwrap_or_default();
+                                    ifd.insert(
+                                        key.id,
+                                        TiffTag {
+                                            field_type: TiffTagFormat::Double,
+                                            tag: key.id,
+                                            value_count: 1,
+                                            identified_tag: Some(*ent),
+                                            value: TiffTagValue::ParsedDouble(val),
+                                        },
+                                    );
+                                    continue;
+                                }
+
+                                todo!()
+                            }
+                            _ => {
+                                warn!("Unsupported GKD field type: {:?}", deref.field_type);
+                            }
+                        }
                     }
                 }
             };
@@ -340,17 +460,20 @@ impl TiffImageReader {
 mod test {
     use crate::tiff::TiffImageReader;
     use crate::ImageError;
+    use irox_log::log::Level;
     use std::fs::OpenOptions;
 
     #[test]
     pub fn test() -> Result<(), ImageError> {
-        let path = "assets/test.tif";
+        irox_log::init_console_level(Level::Debug);
+        let path = "E:/charts/FAA_Charts/New_York/New York SEC.tif";
         let file = OpenOptions::new()
             .read(true)
             .create(false)
             .open(path)
             .unwrap();
-        TiffImageReader::read(file)?;
+        let img = TiffImageReader::read(file)?;
+        println!("{:#?}", img);
 
         Ok(())
     }
