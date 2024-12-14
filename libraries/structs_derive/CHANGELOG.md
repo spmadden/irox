@@ -1,6 +1,31 @@
 
 
 
+## v0.4.0 (2024-12-13)
+
+### New Features (BREAKING)
+
+ - <csr-id-a9800369d86f46905c1309ca4e790220195807ec/> add new dynamic byte ordering support in Bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 168 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
+</details>
+
 ## v0.3.2 (2024-06-28)
 
 ### New Features
@@ -12,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 37 calendar days.
+ - 3 commits contributed to the release.
  - 68 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.3.2 ([`bfd40ea`](https://github.com/spmadden/irox/commit/bfd40eace98e42707aeab8b9ea1b5ca6955f94cb))
     - Drop proc_macro2 as an internal dep ([`036bba9`](https://github.com/spmadden/irox/commit/036bba99979a49bf015c8355533b8a69ca09511f))
     - New proc_macro derive-helpers module ([`2099764`](https://github.com/spmadden/irox/commit/2099764e9e5811d11ce4280558ec280fb9a9dbcc))
 </details>
@@ -82,7 +108,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 1 calendar day.
+ - 4 commits contributed to the release.
  - 123 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -116,7 +142,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 9 calendar days.
+ - 3 commits contributed to the release.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -133,7 +159,7 @@
     - Derive the new Primitive blob types ([`29987c2`](https://github.com/spmadden/irox/commit/29987c2492e82336d874a5f0cc2082d565faa5bf))
 </details>
 
-## v0.2.2 (2023-10-30)
+## v0.2.2 (2023-10-29)
 
 ### Bug Fixes
 
@@ -159,7 +185,7 @@
     - Bump version to 0.2.2 ([`c608a4c`](https://github.com/spmadden/irox/commit/c608a4c0995d087749df00ff3b3053b25edffcec))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 <csr-id-9725e632a2d780013e1ac3b58449c4be9ffd951d/>
 
@@ -188,7 +214,7 @@
     - Locking deps to current versions ([`9725e63`](https://github.com/spmadden/irox/commit/9725e632a2d780013e1ac3b58449c4be9ffd951d))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -218,7 +244,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release over the course of 21 calendar days.
+ - 8 commits contributed to the release.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
