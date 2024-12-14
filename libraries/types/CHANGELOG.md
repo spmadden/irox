@@ -1,6 +1,36 @@
 
 
 
+## v0.5.0 (2024-12-13)
+
+### New Features
+
+ - <csr-id-0da999c97c6c1a2c08b182f535eb4ec2f6b19963/> new Field class of struct with an optional settable value
+
+### New Features (BREAKING)
+
+ - <csr-id-a9800369d86f46905c1309ca4e790220195807ec/> add new dynamic byte ordering support in Bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 44 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
+    - New Field class of struct with an optional settable value ([`0da999c`](https://github.com/spmadden/irox/commit/0da999c97c6c1a2c08b182f535eb4ec2f6b19963))
+</details>
+
 ## v0.4.4 (2024-10-29)
 
 ### New Features
@@ -11,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.4.4 ([`c6e88fe`](https://github.com/spmadden/irox/commit/c6e88fe0b6e19c777b658e5207eb5aaff7ae1134))
     - Primitives can go to and from u8 now. ([`7263abd`](https://github.com/spmadden/irox/commit/7263abdd9e0eec30dd24c7ab7dcebc5d5f6e4f11))
 </details>
 
