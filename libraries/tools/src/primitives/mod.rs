@@ -57,3 +57,9 @@ impl_from_integer!(u32, IntegerValue::U32);
 impl_from_integer!(i32, IntegerValue::I32);
 impl_from_integer!(u64, IntegerValue::U64);
 impl_from_integer!(i64, IntegerValue::I64);
+impl_from_integer!(u128, IntegerValue::U128);
+impl_from_integer!(i128, IntegerValue::I128);
+
+pub trait ToF64 {
+    fn to_f64(&self) -> f64;
+}

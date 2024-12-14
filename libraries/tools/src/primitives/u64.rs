@@ -5,7 +5,7 @@
 //! A collection of utilities for the u64 built-in
 //!
 
-use crate::{WrappingAdd, WrappingMul, WrappingSub};
+use crate::{ToF64, WrappingAdd, WrappingMul, WrappingSub};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -58,5 +58,16 @@ impl WrappingSub for i64 {
 impl WrappingMul for i64 {
     fn wrapping_mul(&self, rhs: Self) -> Self {
         i64::wrapping_mul(*self, rhs)
+    }
+}
+
+impl ToF64 for u64 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
+    }
+}
+impl ToF64 for i64 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
     }
 }

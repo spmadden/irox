@@ -2,7 +2,7 @@
 // Copyright 2024 IROX Contributors
 //
 
-use crate::{WrappingAdd, WrappingMul, WrappingSub};
+use crate::{ToF64, WrappingAdd, WrappingMul, WrappingSub};
 
 impl WrappingAdd for u128 {
     fn wrapping_add(&self, rhs: Self) -> Self {
@@ -32,5 +32,15 @@ impl WrappingSub for i128 {
 impl WrappingMul for i128 {
     fn wrapping_mul(&self, rhs: Self) -> Self {
         i128::wrapping_mul(*self, rhs)
+    }
+}
+impl ToF64 for i128 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
+    }
+}
+impl ToF64 for u128 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
     }
 }

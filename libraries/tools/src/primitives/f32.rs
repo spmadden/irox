@@ -6,6 +6,8 @@
 //! A collection of utilities for the f32 built-in
 //!
 
+use crate::ToF64;
+
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
     type Size = u32;
@@ -128,6 +130,12 @@ impl crate::f64::FloatExt for f32 {
 
     fn significand(self) -> Self::Size {
         self.to_bits() & 0x7FFFFF
+    }
+}
+
+impl ToF64 for f32 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
     }
 }
 

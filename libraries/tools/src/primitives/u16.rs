@@ -2,7 +2,7 @@
 // Copyright ${YEAR} IROX Contributors
 //
 
-use crate::{WrappingAdd, WrappingMul, WrappingSub};
+use crate::{ToF64, WrappingAdd, WrappingMul, WrappingSub};
 
 ///
 /// Converts the specified primitive to a big-endian [`[u16;T]`]
@@ -122,5 +122,16 @@ impl WrappingMul for u16 {
 impl WrappingMul for i16 {
     fn wrapping_mul(&self, rhs: Self) -> Self {
         i16::wrapping_mul(*self, rhs)
+    }
+}
+
+impl ToF64 for i16 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
+    }
+}
+impl ToF64 for u16 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
     }
 }

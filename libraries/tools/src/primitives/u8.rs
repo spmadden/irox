@@ -5,7 +5,7 @@
 //! A collection of utilities for the u8 built-in
 //!
 
-use crate::{WrappingAdd, WrappingMul, WrappingSub};
+use crate::{ToF64, WrappingAdd, WrappingMul, WrappingSub};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -58,5 +58,15 @@ impl WrappingMul for u8 {
 impl WrappingMul for i8 {
     fn wrapping_mul(&self, rhs: Self) -> Self {
         i8::wrapping_mul(*self, rhs)
+    }
+}
+impl ToF64 for u8 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
+    }
+}
+impl ToF64 for i8 {
+    fn to_f64(&self) -> f64 {
+        *self as f64
     }
 }
