@@ -1,6 +1,31 @@
 
 
 
+## v0.5.4 (2024-12-13)
+
+### New Features
+
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 50 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.5.3 (2024-10-24)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 118 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-nmea0183 v0.5.3 ([`91aacb5`](https://github.com/spmadden/irox/commit/91aacb5f31b5866ba00a24264beb8e7efcdd56f2))
     - Basic RMC support ([`88dac86`](https://github.com/spmadden/irox/commit/88dac868ff81d6f0f7466318f141a6959a829c59))
 </details>
 
