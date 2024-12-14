@@ -2649,6 +2649,7 @@ dependencies = [
  "egui",
  "egui_plot",
  "irox-build-rs",
+ "irox-imagery",
  "irox-tools",
  "log",
  "ron",

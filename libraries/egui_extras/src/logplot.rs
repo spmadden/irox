@@ -5,16 +5,35 @@
 //!
 //! Log plotting widgets.
 
+use crate::fonts;
+use crate::fonts::FontSet;
+use crate::fonts::BOLD;
 use egui::epaint::TextShape;
 use egui::{
-    pos2, Align, Align2, Color32, Painter, Pos2, Rect, Response, Rounding, Sense, Shape, Stroke,
-    TextStyle, Ui, Vec2,
+    pos2, Align, Align2, Color32, Context, FontFamily, FontId, Painter, Pos2, Rect, Response,
+    Rounding, Sense, Shape, Stroke, TextStyle, Ui, Vec2,
 };
 use egui_plot::PlotPoint;
+use irox_imagery::colormaps::CLASSIC_20;
+use irox_imagery::Color;
+use irox_tools::static_init;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
 pub type FormatterFn = dyn Fn(f64) -> String + Send;
+
+trait IntoColor32 {
+    fn into_color32(self) -> Color32;
+}
+impl IntoColor32 for Color {
+    fn into_color32(self) -> Color32 {
+        let [a, r, g, b] = self.argb_values();
+        Color32::from_rgba_unmultiplied(r, g, b, a)
+    }
+}
+static DEFAULT_COLORMAP: &[Color] = CLASSIC_20;
+
+static_init!(init_fonts, (), {});
 
 /// A tracking struct for an user interaction with a plot.
 ///
@@ -82,13 +101,20 @@ impl PlotInteraction {
     }
 }
 
+#[derive(Default)]
+pub struct Line {
+    pub name: Arc<String>,
+    pub data: Arc<Vec<PlotPoint>>,
+    pub stroke: Stroke,
+}
+
 ///
 /// Basic plot, with ability to switch between linear and log axes.  This widget
 /// tracks state and is meant to be saved across multiple frames.
 #[derive(Default)]
 pub struct BasicPlot {
     /// The data to plot each frame.
-    pub data: Arc<Vec<PlotPoint>>,
+    pub lines: Vec<Line>,
     pub name: Arc<String>,
     /// The X-axis settings
     pub x_axis: Axis,
@@ -101,11 +127,15 @@ pub struct BasicPlot {
 }
 
 impl BasicPlot {
-    pub fn new(data: Arc<Vec<PlotPoint>>) -> BasicPlot {
-        BasicPlot {
-            data,
-            ..Default::default()
-        }
+    pub fn new(ctx: &Context) -> BasicPlot {
+        fonts::load_fonts(
+            FontSet {
+                ubuntu_bold: true,
+                ..Default::default()
+            },
+            ctx,
+        );
+        Default::default()
     }
     #[must_use]
     pub fn with_title<T: AsRef<str>>(mut self, title: T) -> Self {
@@ -131,6 +161,25 @@ impl BasicPlot {
     pub fn with_y_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
         self.y_axis.axis_formatter = Some(fmtr);
         self
+    }
+    #[must_use]
+    pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<Vec<PlotPoint>>) -> Self {
+        self.add_line(name, data);
+        self
+    }
+    pub fn add_line<T: AsRef<str>>(&mut self, name: T, data: Arc<Vec<PlotPoint>>) {
+        let idx = self.lines.len() % DEFAULT_COLORMAP.len();
+        let color = DEFAULT_COLORMAP
+            .get(idx)
+            .copied()
+            .unwrap_or_default()
+            .into_color32();
+        let stroke = Stroke::new(1.5, color);
+        self.lines.push(Line {
+            name: Arc::new(name.as_ref().to_string()),
+            data,
+            stroke,
+        })
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         if let Some(area) = self.interaction.zoom_area.take() {
@@ -272,10 +321,14 @@ impl BasicPlot {
         self.y_axis.screen_range = x_axis_y_offset - y_axis_y_min;
         self.y_axis.incr_sign = -1.0;
 
-        let points = &self.data;
+        let points = self
+            .lines
+            .iter()
+            .map(|v| v.data.as_slice())
+            .collect::<Vec<&[PlotPoint]>>();
         // update and rescale the data based on this frame's painting window.
-        self.x_axis.update_range(points, |p| p.x);
-        self.y_axis.update_range(points, |p| p.y);
+        self.x_axis.update_range(points.as_slice(), |p| p.x);
+        self.y_axis.update_range(points.as_slice(), |p| p.y);
 
         // draw the info across the bottom of the x axis
         for detent in &self.x_axis.detents {
@@ -351,25 +404,38 @@ impl BasicPlot {
         );
 
         // draw the points as individual line segments
-        for pnt in points.windows(2) {
-            let Some(first) = pnt.first() else {
-                continue;
-            };
-            let Some(second) = pnt.get(1) else {
-                continue;
-            };
-            let Some(first) = self.scale_point(first) else {
-                draw_log_warning = true;
-                self.draw_yellow_err_line(&mut painter, first, ui);
-                continue;
-            };
-            let Some(second) = self.scale_point(second) else {
-                draw_log_warning = true;
-                self.draw_yellow_err_line(&mut painter, second, ui);
-                continue;
-            };
-            // draw the actual line
-            painter.line_segment([first, second], major_stroke);
+        let mut start_text = rect.left_bottom();
+        for line in &self.lines {
+            let points = &line.data;
+            let stroke = &line.stroke;
+            for pnt in points.windows(2) {
+                let Some(first) = pnt.first() else {
+                    continue;
+                };
+                let Some(second) = pnt.get(1) else {
+                    continue;
+                };
+                let Some(first) = self.scale_point(first) else {
+                    draw_log_warning = true;
+                    self.draw_yellow_err_line(&mut painter, first, ui);
+                    continue;
+                };
+                let Some(second) = self.scale_point(second) else {
+                    draw_log_warning = true;
+                    self.draw_yellow_err_line(&mut painter, second, ui);
+                    continue;
+                };
+                // draw the actual line
+                painter.line_segment([first, second], *stroke);
+            }
+            let used = painter.text(
+                start_text,
+                Align2::LEFT_BOTTOM,
+                line.name.as_str(),
+                FontId::new(10., FontFamily::Name(BOLD.into())),
+                stroke.color,
+            );
+            start_text.x += used.width() + 10.;
         }
 
         self.draw_cursor(ui, &mut response, &mut painter);
@@ -514,24 +580,26 @@ pub struct Axis {
 }
 
 impl Axis {
-    pub fn update_range<F: Fn(&PlotPoint) -> f64>(&mut self, vals: &[PlotPoint], accessor: F) {
+    pub fn update_range<F: Fn(&PlotPoint) -> f64>(&mut self, vals: &[&[PlotPoint]], accessor: F) {
         self.draw_log_clip_warning = false;
         self.min_val = f64::INFINITY;
         self.max_val = f64::NEG_INFINITY;
-        for val in vals {
-            let v = match self.scale_mode {
-                ScaleMode::Linear => accessor(val),
-                ScaleMode::Log10 | ScaleMode::DBScale => {
-                    let v = accessor(val);
-                    if v <= 0.0 {
-                        self.draw_log_clip_warning = true;
-                        continue;
+        for arr in vals {
+            for val in *arr {
+                let v = match self.scale_mode {
+                    ScaleMode::Linear => accessor(val),
+                    ScaleMode::Log10 | ScaleMode::DBScale => {
+                        let v = accessor(val);
+                        if v <= 0.0 {
+                            self.draw_log_clip_warning = true;
+                            continue;
+                        }
+                        v
                     }
-                    v
-                }
-            };
-            self.min_val = self.min_val.min(v);
-            self.max_val = self.max_val.max(v);
+                };
+                self.min_val = self.min_val.min(v);
+                self.max_val = self.max_val.max(v);
+            }
         }
         if self.scale_mode == ScaleMode::DBScale {
             if self.min_val <= 0.0 {

@@ -58,12 +58,27 @@ impl TestApp {
         let mut pts = Vec::with_capacity(1000);
         let mut pts2 = Vec::with_capacity(1000);
         let mut pts3 = Vec::with_capacity(1000);
+        let mut phases: [Vec<PlotPoint>; 5] = [
+            Vec::with_capacity(1000),
+            Vec::with_capacity(1000),
+            Vec::with_capacity(1000),
+            Vec::with_capacity(1000),
+            Vec::with_capacity(1000),
+        ];
         for x in 0..=1000 {
             t = (x as f64 / 1000. * 6. * TAU).sin() + 1.;
             pts.push(PlotPoint {
                 x: x as f64,
                 y: t, // / 1000. + 1000.,
             });
+            let phase_offset = 14.;
+            let mut p = phase_offset;
+            for phase in phases.as_mut() {
+                let a = x as f64 + p;
+                let y = t;
+                phase.push(PlotPoint { x: a, y });
+                p += phase_offset;
+            }
             pts2.push(PlotPoint {
                 x: x as f64,
                 y: t / 1000. + 1000.,
@@ -73,14 +88,22 @@ impl TestApp {
                 y: t * 100.,
             });
         }
-        let log_plot = BasicPlot::new(Arc::new(pts))
+        let mut log_plot = BasicPlot::new(&_cc.egui_ctx)
+            .with_line("line", Arc::new(pts))
             .with_title("log plot 1")
             .with_x_axis_label("x axis label for 1")
             .with_y_axis_label("y axis label for 1")
             .with_y_axis_formatter(Box::new(|val| format!("{val:.3}")))
             .with_x_axis_formatter(Box::new(|val| format!("{val:.1}")));
-        let log_plot2 = BasicPlot::new(Arc::new(pts2)).with_title("log plot 2");
-        let log_plot3 = BasicPlot::new(Arc::new(pts3)).with_title("log plot 3");
+        for phase in phases {
+            log_plot.add_line("phase", Arc::new(phase));
+        }
+        let log_plot2 = BasicPlot::new(&_cc.egui_ctx)
+            .with_line("line", Arc::new(pts2))
+            .with_title("log plot 2");
+        let log_plot3 = BasicPlot::new(&_cc.egui_ctx)
+            .with_line("line", Arc::new(pts3))
+            .with_title("log plot 3");
 
         TestApp {
             log_plot,
