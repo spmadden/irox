@@ -1,5 +1,30 @@
 
 
+## v0.4.1 (2024-12-14)
+
+### Bug Fixes
+
+ - <csr-id-091e86dd80a05abd833cbd7460c542bc777871fa/> fix dependency interaction for egui::Widget impl
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 134 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix dependency interaction for egui::Widget impl ([`091e86d`](https://github.com/spmadden/irox/commit/091e86dd80a05abd833cbd7460c542bc777871fa))
+</details>
+
 ## v0.4.0 (2024-08-01)
 
 ### New Features (BREAKING)
@@ -10,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 10 calendar days.
+ - 2 commits contributed to the release.
  - 73 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.4.0 ([`b0fa7bd`](https://github.com/spmadden/irox/commit/b0fa7bda5e953cadb25563a153e4dfd988fbb871))
     - Update egui to 0.28.0 ([`dfa11be`](https://github.com/spmadden/irox/commit/dfa11be274b8e5a61a40c9965096208d64e1fdba))
 </details>
 
@@ -97,7 +123,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 1 calendar day.
+ - 5 commits contributed to the release.
  - 48 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -126,7 +152,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 35 calendar days.
+ - 2 commits contributed to the release.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -152,7 +178,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 2 calendar days.
+ - 3 commits contributed to the release.
  - 37 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -169,7 +195,7 @@
     - Refactor random to have PRNG trait, impl new random algorithm ([`59aa3f6`](https://github.com/spmadden/irox/commit/59aa3f65a355740f793ea3db923629833fc0053c))
 </details>
 
-## v0.2.1 (2023-12-06)
+## v0.2.1 (2023-12-05)
 
 ### New Features
 
@@ -221,7 +247,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 23 calendar days.
+ - 6 commits contributed to the release.
  - 27 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -295,7 +321,7 @@
     - Overhaul with Reader/Writers and infinite progress ([`c103035`](https://github.com/spmadden/irox/commit/c1030356909f880ba93d1e8ca8e533a2344a3760))
 </details>
 
-## v0.1.0 (2023-10-30)
+## v0.1.0 (2023-10-29)
 
 ### New Features
 
