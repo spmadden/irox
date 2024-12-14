@@ -1,6 +1,33 @@
 
 
 
+## v0.4.2 (2024-12-13)
+
+### New Features
+
+ - <csr-id-83c359bd88322ed9c130c54501550544803886de/> basic lcc impl - needs more tests
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 131 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Basic lcc impl - needs more tests ([`83c359b`](https://github.com/spmadden/irox/commit/83c359bd88322ed9c130c54501550544803886de))
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.4.1 (2024-08-04)
 
 ### New Features
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 77 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.1 ([`5e0f8f5`](https://github.com/spmadden/irox/commit/5e0f8f5da7d565c5b4d01a3cb12adbf7c9a2da85))
     - Add US Survey Foot to Length, finish impl ([`611541e`](https://github.com/spmadden/irox/commit/611541ee1f65329c7800099c9faa9525e9f1c5b2))
 </details>
 
@@ -141,7 +169,7 @@
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
 </details>
 
-## v0.3.3 (2023-11-29)
+## v0.3.3 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
@@ -157,7 +185,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 9 calendar days.
+ - 3 commits contributed to the release.
  - 20 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -200,7 +228,7 @@
     - Impl Add, AddAssign for Date, UTCDateTime ([`2cbc2e1`](https://github.com/spmadden/irox/commit/2cbc2e1cdbdb5d211b48ef1b113ff67732450ef9))
 </details>
 
-## v0.3.1 (2023-10-30)
+## v0.3.1 (2023-10-29)
 
 <csr-id-f374b5ef4a7f69938753223712d28c52353bbb92/>
 
@@ -219,7 +247,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 9 calendar days.
+ - 6 commits contributed to the release.
  - 14 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -239,7 +267,7 @@
     - Allow bounds errors to upconvert primitives ([`ebf4d59`](https://github.com/spmadden/irox/commit/ebf4d595e6758d5451a951734354cda51ff1ef16))
 </details>
 
-## v0.3.0 (2023-10-16)
+## v0.3.0 (2023-10-15)
 
 <csr-id-90e274aabca747c30b3a32823940fec6225f0a07/>
 
@@ -295,7 +323,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 34 commits contributed to the release over the course of 5 calendar days.
+ - 34 commits contributed to the release.
  - 27 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -343,7 +371,7 @@
     - New Duration struct and unit ([`9fd5a87`](https://github.com/spmadden/irox/commit/9fd5a87095e3645e82561f11d436611db55a637a))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -415,7 +443,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 41 commits contributed to the release over the course of 62 calendar days.
+ - 41 commits contributed to the release.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
