@@ -1,5 +1,43 @@
 
 
+## v0.3.0 (2024-12-13)
+
+### New Features
+
+ - <csr-id-067e6e3d3f0fce2f2667e8f2065a28e23083c6c7/> new bitstream struct for reading/writing a stream of individual bits
+ - <csr-id-ca74e7d801a4f42d111987d2b2ee9d29e0bb0db4/> impl Bits and MutBits for Box<Bits> and Box<MutBits>
+ - <csr-id-f6ebfe16cb12ee4716a6715bafa72b339f8f23d5/> pull in new 'cfg_feature_std macro'
+ - <csr-id-a404f0528148edd9768d0206a8e39390ce1d4757/> Make no-std copy of 'Seek' and 'SeekFrom' types, impl for 'File'
+ - <csr-id-ca66e3de64f1f9bb43b207d547ccf33b3d74155c/> rework a more generic array conversion logic.
+
+### New Features (BREAKING)
+
+ - <csr-id-a9800369d86f46905c1309ca4e790220195807ec/> add new dynamic byte ordering support in Bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release.
+ - 44 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New bitstream struct for reading/writing a stream of individual bits ([`067e6e3`](https://github.com/spmadden/irox/commit/067e6e3d3f0fce2f2667e8f2065a28e23083c6c7))
+    - Impl Bits and MutBits for Box<Bits> and Box<MutBits> ([`ca74e7d`](https://github.com/spmadden/irox/commit/ca74e7d801a4f42d111987d2b2ee9d29e0bb0db4))
+    - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
+    - Pull in new 'cfg_feature_std macro' ([`f6ebfe1`](https://github.com/spmadden/irox/commit/f6ebfe16cb12ee4716a6715bafa72b339f8f23d5))
+    - Make no-std copy of 'Seek' and 'SeekFrom' types, impl for 'File' ([`a404f05`](https://github.com/spmadden/irox/commit/a404f0528148edd9768d0206a8e39390ce1d4757))
+    - Rework a more generic array conversion logic. ([`ca66e3d`](https://github.com/spmadden/irox/commit/ca66e3de64f1f9bb43b207d547ccf33b3d74155c))
+</details>
+
 ## v0.2.1 (2024-10-29)
 
 ### New Features
@@ -10,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.2.1 ([`aa85502`](https://github.com/spmadden/irox/commit/aa855025191bd9d019b42e4012e28be24c0ffbdc))
     - Add const unsigned primitive conversions ([`913fb31`](https://github.com/spmadden/irox/commit/913fb3149cf855466ff2dd05845e132546c44023))
 </details>
 
