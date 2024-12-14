@@ -1,7 +1,38 @@
 
 
 
+## v0.5.1 (2024-12-13)
+
+### New Features
+
+ - <csr-id-208e170334ed6ce08cbcd86cd503feb36ca18024/> multiple lines in plots, and colors!
+ - <csr-id-759c0b9b0d0b6ba037afca7f69d6851df4e9722d/> adding additional fonts
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 44 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Multiple lines in plots, and colors! ([`208e170`](https://github.com/spmadden/irox/commit/208e170334ed6ce08cbcd86cd503feb36ca18024))
+    - Adding additional fonts ([`759c0b9`](https://github.com/spmadden/irox/commit/759c0b9b0d0b6ba037afca7f69d6851df4e9722d))
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.5.0 (2024-10-29)
+
+<csr-id-bf43c95acb312542bb94ca647366f0c23a692f19/>
 
 ### New Features
 
@@ -15,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 42 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.0 ([`bbe46e7`](https://github.com/spmadden/irox/commit/bbe46e765791861109871c6e201bbf8f8a0e8c0e))
     - Upgrade to latest libraries, including egui 0.29.1 ([`bf43c95`](https://github.com/spmadden/irox/commit/bf43c95acb312542bb94ca647366f0c23a692f19))
     - Update about window with build host variables. ([`042f09d`](https://github.com/spmadden/irox/commit/042f09d4a5463123b9ad02f2bb17b9226df11990))
 </details>
