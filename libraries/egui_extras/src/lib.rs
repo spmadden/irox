@@ -19,6 +19,7 @@ pub mod about;
 /// A customization of [`egui::widgets::ProgressBar`]
 pub mod progressbar;
 
+pub mod fonts;
 #[cfg(feature = "plots")]
 pub mod logplot;
 #[cfg(feature = "serde")]
