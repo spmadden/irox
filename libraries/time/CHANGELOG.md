@@ -1,5 +1,30 @@
 
 
+## v0.4.5 (2024-12-13)
+
+### New Features
+
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 44 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.4.4 (2024-10-29)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 5 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.4 ([`01acf9d`](https://github.com/spmadden/irox/commit/01acf9d078a51f0b92aa7624e7c35cbc7be1eaf4))
     - Add easier formats for UTCDateTime ([`c82f010`](https://github.com/spmadden/irox/commit/c82f01017326a42f6ce1a407848e7c4fb2ccbae5))
     - Re-align different time epochs for Ord,Eq,etc. ([`3dcbeef`](https://github.com/spmadden/irox/commit/3dcbeef18538f0f96f24cf5a3e7fb74476c14271))
 </details>
