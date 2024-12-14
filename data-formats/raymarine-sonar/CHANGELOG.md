@@ -1,5 +1,30 @@
 
 
+## v0.6.0 (2024-12-13)
+
+### New Features (BREAKING)
+
+ - <csr-id-a9800369d86f46905c1309ca4e790220195807ec/> add new dynamic byte ordering support in Bits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 209 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
+</details>
+
 ## v0.5.1 (2024-05-18)
 
 ### Bug Fixes
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 28 calendar days.
+ - 5 commits contributed to the release.
  - 47 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.5.1 ([`bfa7b6e`](https://github.com/spmadden/irox/commit/bfa7b6e05e0004cd12eccb678bbed649841630ef))
     - Include bits/std ([`c7d4d20`](https://github.com/spmadden/irox/commit/c7d4d2049d199ed7d7745ee6456db64601340734))
     - Release irox-raymarine-sonar v0.5.1 ([`31c4987`](https://github.com/spmadden/irox/commit/31c49871be286d144210bde472452fc27783533e))
     - Release irox-raymarine-sonar v0.5.1 ([`6bb635f`](https://github.com/spmadden/irox/commit/6bb635f197f3465dee1a8f8f5e8fc821e20e6741))
@@ -39,7 +65,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 79 calendar days.
+ - 3 commits contributed to the release.
  - 123 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -75,7 +101,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 23 calendar days.
+ - 6 commits contributed to the release.
  - 30 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -95,7 +121,7 @@
     - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 <csr-id-3840427bd226f4fea576053351b0244bf817e55b/>
 
@@ -115,7 +141,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 9 calendar days.
+ - 5 commits contributed to the release.
  - 14 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -134,7 +160,7 @@
     - Pivot to using irox_time ([`ebe68cb`](https://github.com/spmadden/irox/commit/ebe68cb801f6af77b4782cdba0827bdda802db1d))
 </details>
 
-## v0.2.0 (2023-10-16)
+## v0.2.0 (2023-10-15)
 
 ### New Features
 
@@ -161,7 +187,7 @@
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
 </details>
 
-## v0.1.0 (2023-10-08)
+## v0.1.0 (2023-10-07)
 
 <csr-id-8b615cc2bb578961c2cd8895814932c9d84ee294/>
 <csr-id-6044deb9138bcdad7cf892d1fe25e6ee84d4db04/>
@@ -189,7 +215,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release over the course of 8 calendar days.
+ - 8 commits contributed to the release.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
