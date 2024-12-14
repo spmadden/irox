@@ -1,7 +1,38 @@
 
 
 
+## v0.7.0 (2024-12-13)
+
+### Chore
+
+ - <csr-id-81c0d07f525d7fa99029b274fab49d66143dac84/> bump irox to 0.7.0
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 44 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox to 0.7.0 ([`81c0d07`](https://github.com/spmadden/irox/commit/81c0d07f525d7fa99029b274fab49d66143dac84))
+    - Release irox-raymarine-sonar v0.6.0 ([`b5b95bc`](https://github.com/spmadden/irox/commit/b5b95bce478e99783c62def1002f0fa9787380a1))
+    - Release irox-structs_derive v0.4.0 ([`c09cf6a`](https://github.com/spmadden/irox/commit/c09cf6a256ad7abdd5abf8d7376dd6ffcf6d0433))
+    - Release irox-types v0.5.0 ([`dbc8fe8`](https://github.com/spmadden/irox/commit/dbc8fe897650fabdf0038fa1eb1badf26511a932))
+    - Release irox-bits v0.3.0 ([`32e7b8d`](https://github.com/spmadden/irox/commit/32e7b8dbcb854c7eaebe3473145cbe2a4ad35ac0))
+</details>
+
 ## v0.6.6 (2024-10-29)
+
+<csr-id-84d13eff3a81f03f343719ea3695df03de0e4f37/>
 
 ### Chore
 
@@ -11,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.6.6 ([`2ab7f8b`](https://github.com/spmadden/irox/commit/2ab7f8bceb79a2e6c1bcfd66fe15667597750a4e))
     - Bump irox to 0.6.6 ([`84d13ef`](https://github.com/spmadden/irox/commit/84d13eff3a81f03f343719ea3695df03de0e4f37))
     - Release irox-egui-extras v0.5.0 ([`bbe46e7`](https://github.com/spmadden/irox/commit/bbe46e765791861109871c6e201bbf8f8a0e8c0e))
 </details>
