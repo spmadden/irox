@@ -13,6 +13,7 @@ pub use pixel::*;
 pub use tiff::*;
 
 mod color;
+pub mod colormaps;
 mod error;
 mod pixel;
 mod tiff;
