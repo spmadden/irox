@@ -1,7 +1,34 @@
 
 
 
+## v0.6.2 (2024-12-13)
+
+### New Features
+
+ - <csr-id-83c359bd88322ed9c130c54501550544803886de/> basic lcc impl - needs more tests
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 285 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Basic lcc impl - needs more tests ([`83c359b`](https://github.com/spmadden/irox/commit/83c359bd88322ed9c130c54501550544803886de))
+</details>
+
 ## v0.6.1 (2024-03-03)
+
+<csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
 
 ### Chore
 
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 6 calendar days.
+ - 2 commits contributed to the release.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +50,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.6.1 ([`08211f8`](https://github.com/spmadden/irox/commit/08211f8152a1b9108f33f2ca371a34f3a791d98b))
     - Clean up new lints for 1.75 ([`300356f`](https://github.com/spmadden/irox/commit/300356f119c976f98a230fc37ce7c43e6bd1a9e0))
 </details>
 
@@ -55,7 +83,7 @@
     - Fixup newline formatting ([`0fc37b1`](https://github.com/spmadden/irox/commit/0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39))
 </details>
 
-## v0.5.0 (2023-11-29)
+## v0.5.0 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
@@ -79,7 +107,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 23 calendar days.
+ - 7 commits contributed to the release.
  - 30 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -100,7 +128,7 @@
     - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
 </details>
 
-## v0.4.0 (2023-10-30)
+## v0.4.0 (2023-10-29)
 
 ### New Features
 
@@ -114,7 +142,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 9 calendar days.
+ - 4 commits contributed to the release.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -132,7 +160,7 @@
     - Pivot carto to use irox_time ([`03c0d13`](https://github.com/spmadden/irox/commit/03c0d132037144838952b786b2ac49acb5c177d8))
 </details>
 
-## v0.3.0 (2023-10-16)
+## v0.3.0 (2023-10-15)
 
 ### Documentation
 
@@ -164,7 +192,7 @@
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
 </details>
 
-## v0.2.1 (2023-10-08)
+## v0.2.1 (2023-10-07)
 
 ### New Features
 
@@ -182,7 +210,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 19 calendar days.
+ - 7 commits contributed to the release.
  - 19 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -203,7 +231,7 @@
     - Don't get clever in EllipticCoordinate::Display for timestamp ([`c5154ce`](https://github.com/spmadden/irox/commit/c5154cecff96fb98c77c9e9a7d1948f38bd5fe18))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -275,7 +303,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 43 commits contributed to the release over the course of 62 calendar days.
+ - 43 commits contributed to the release.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
