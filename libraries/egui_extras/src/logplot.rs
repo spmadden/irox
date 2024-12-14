@@ -810,16 +810,29 @@ impl Axis {
     pub fn describe_screen_pos(&self, val: f32) -> String {
         let v = self.screen_to_model(val);
         match self.scale_mode {
-            ScaleMode::Linear => format!("{}", PrettyDec(v)),
+            ScaleMode::Linear => {
+                if let Some(f) = &self.axis_formatter {
+                    f(v)
+                } else {
+                    format!("{}", PrettyDec(v))
+                }
+            }
             ScaleMode::Log10 => {
                 let orig = self.log_unscale(v);
-                // let scaled = orig.log10();
-                format!("{orig}")
+                if let Some(f) = &self.axis_formatter {
+                    f(orig)
+                } else {
+                    format!("{orig}")
+                }
             }
             ScaleMode::DBScale => {
                 let orig = self.db_unscale(v);
-                let scaled = 10. * orig.log10();
-                format!("{}={} dB", PrettyDec(orig), PrettyDec(scaled))
+                if let Some(f) = &self.axis_formatter {
+                    f(orig)
+                } else {
+                    let scaled = 10. * orig.log10();
+                    format!("{}={} dB", PrettyDec(orig), PrettyDec(scaled))
+                }
             }
         }
     }
