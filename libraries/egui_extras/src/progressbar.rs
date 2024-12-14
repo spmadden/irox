@@ -111,10 +111,8 @@ impl ProgressBar {
             ..self
         }
     }
-}
 
-impl Widget for ProgressBar {
-    fn ui(self, ui: &mut Ui) -> Response {
+    pub fn ui(self, ui: &mut Ui) -> Response {
         let ProgressBar {
             progress,
             desired_width,
@@ -225,5 +223,11 @@ impl Widget for ProgressBar {
         }
 
         response
+    }
+}
+
+impl Widget for ProgressBar {
+    fn ui(self, ui: &mut Ui) -> Response {
+        ProgressBar::ui(self, ui)
     }
 }

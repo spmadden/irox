@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Layout, Vec2, ViewportBuilder, Widget, Window};
+use egui::{CentralPanel, Context, Layout, Vec2, ViewportBuilder, Window};
 use egui_plot::PlotPoint;
 use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::logplot::BasicPlot;

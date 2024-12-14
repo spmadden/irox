@@ -8,7 +8,7 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 
 use egui::collapsing_header::CollapsingState;
-use egui::{Align, Context, CursorIcon, Layout, Ui, Widget};
+use egui::{Align, Context, CursorIcon, Layout, Ui};
 
 use irox_time::format::iso8601::ISO8601Duration;
 use irox_time::format::Format;
