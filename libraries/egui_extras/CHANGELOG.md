@@ -1,6 +1,30 @@
 
 
 
+## v0.5.2 (2024-12-14)
+
+### Bug Fixes
+
+ - <csr-id-091e86dd80a05abd833cbd7460c542bc777871fa/> fix dependency interaction for egui::Widget impl
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix dependency interaction for egui::Widget impl ([`091e86d`](https://github.com/spmadden/irox/commit/091e86dd80a05abd833cbd7460c542bc777871fa))
+</details>
+
 ## v0.5.1 (2024-12-13)
 
 ### New Features
@@ -13,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 44 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.1 ([`67d16d5`](https://github.com/spmadden/irox/commit/67d16d505e7cebc942a7f99d8c7e88ebcb102299))
     - Multiple lines in plots, and colors! ([`208e170`](https://github.com/spmadden/irox/commit/208e170334ed6ce08cbcd86cd503feb36ca18024))
     - Adding additional fonts ([`759c0b9`](https://github.com/spmadden/irox/commit/759c0b9b0d0b6ba037afca7f69d6851df4e9722d))
     - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
