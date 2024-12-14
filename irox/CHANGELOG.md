@@ -1,7 +1,33 @@
 
 
 
+## v0.7.1 (2024-12-14)
+
+### Chore
+
+ - <csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/> bump irox to 0.7.1
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox to 0.7.1 ([`093baea`](https://github.com/spmadden/irox/commit/093baea4c7f602e9692b7caaca99619aa0d96472))
+</details>
+
 ## v0.7.0 (2024-12-13)
+
+<csr-id-81c0d07f525d7fa99029b274fab49d66143dac84/>
 
 ### Chore
 
@@ -11,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 6 commits contributed to the release.
  - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.7.0 ([`8021e3a`](https://github.com/spmadden/irox/commit/8021e3ab27f8577db4d608f24a2b750aacfe6fe6))
     - Bump irox to 0.7.0 ([`81c0d07`](https://github.com/spmadden/irox/commit/81c0d07f525d7fa99029b274fab49d66143dac84))
     - Release irox-raymarine-sonar v0.6.0 ([`b5b95bc`](https://github.com/spmadden/irox/commit/b5b95bce478e99783c62def1002f0fa9787380a1))
     - Release irox-structs_derive v0.4.0 ([`c09cf6a`](https://github.com/spmadden/irox/commit/c09cf6a256ad7abdd5abf8d7376dd6ffcf6d0433))
