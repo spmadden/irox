@@ -1,7 +1,43 @@
 
 
 
+## v0.2.8 (2024-12-13)
+
+### New Features
+
+ - <csr-id-472f1c98d523299552677374e3d07778688a71a9/> pivot to SPDP encoding scheme for tsdf
+ - <csr-id-e82a848777e2f524482fa92915a99e503bc0231e/> pivot to using 'bestspeed' rather than 'bestcompression' because there's only a 5% gain but a massive perf hit.
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Bug Fixes
+
+ - <csr-id-eb1707c86468b410415aab2e42fde0bf68b87a0b/> stackoverflow with too many compressors on the stack
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 44 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot to SPDP encoding scheme for tsdf ([`472f1c9`](https://github.com/spmadden/irox/commit/472f1c98d523299552677374e3d07778688a71a9))
+    - Stackoverflow with too many compressors on the stack ([`eb1707c`](https://github.com/spmadden/irox/commit/eb1707c86468b410415aab2e42fde0bf68b87a0b))
+    - Pivot to using 'bestspeed' rather than 'bestcompression' because there's only a 5% gain but a massive perf hit. ([`e82a848`](https://github.com/spmadden/irox/commit/e82a848777e2f524482fa92915a99e503bc0231e))
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.2.7 (2024-10-29)
+
+<csr-id-2747f689e2206435cdd1ee8bab43ad9442415f20/>
 
 ### Chore
 
@@ -15,7 +51,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 5 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +63,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.7 ([`d68794a`](https://github.com/spmadden/irox/commit/d68794a47d7000db6caef04aa995ff19eda240f3))
     - New Summary struct and one second streaming windows stats ([`b21947a`](https://github.com/spmadden/irox/commit/b21947ab6d854b37712535f92681beed2759c7a2))
     - Update deps ([`2747f68`](https://github.com/spmadden/irox/commit/2747f689e2206435cdd1ee8bab43ad9442415f20))
 </details>
