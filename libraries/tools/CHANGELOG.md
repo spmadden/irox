@@ -1,6 +1,44 @@
 
 
 
+## v0.9.2 (2024-12-13)
+
+### New Features
+
+ - <csr-id-0ac28bf47dd59480b3c7b840f2876d7c44bbcd0f/> new 'ToF64' trait
+ - <csr-id-55d1a9ad0e2d94780baf7c85ff9b43b93c2da0db/> new WrappingAdd/Sub/Mul for the primitives.
+ - <csr-id-a02debb360ce750c741a940eac1fedb25a4900e0/> new FixedU8Buf with optimizations for a straight u8
+ - <csr-id-a85828d283e6a0a2528140562bfe94ad6776aeaa/> re-pull in the 'once' module behind the std feature flag
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Bug Fixes
+
+ - <csr-id-7893feb3e314ef7b6f8dc61d42edf07bf86f7a2d/> fix assumption that error types are called 'Error'
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release.
+ - 44 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New 'ToF64' trait ([`0ac28bf`](https://github.com/spmadden/irox/commit/0ac28bf47dd59480b3c7b840f2876d7c44bbcd0f))
+    - New WrappingAdd/Sub/Mul for the primitives. ([`55d1a9a`](https://github.com/spmadden/irox/commit/55d1a9ad0e2d94780baf7c85ff9b43b93c2da0db))
+    - New FixedU8Buf with optimizations for a straight u8 ([`a02debb`](https://github.com/spmadden/irox/commit/a02debb360ce750c741a940eac1fedb25a4900e0))
+    - Re-pull in the 'once' module behind the std feature flag ([`a85828d`](https://github.com/spmadden/irox/commit/a85828d283e6a0a2528140562bfe94ad6776aeaa))
+    - Fix assumption that error types are called 'Error' ([`7893feb`](https://github.com/spmadden/irox/commit/7893feb3e314ef7b6f8dc61d42edf07bf86f7a2d))
+    - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
+</details>
+
 ## v0.9.1 (2024-10-29)
 
 ### New Features
@@ -11,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.9.1 ([`233bb8f`](https://github.com/spmadden/irox/commit/233bb8f8eefe006b06264940f5a5493118a373dc))
     - Add hexarray function and nibble_to_hex_char ([`f4f2cb5`](https://github.com/spmadden/irox/commit/f4f2cb5289f2cb311f583a2af1af10699c20ef6b))
 </details>
 
