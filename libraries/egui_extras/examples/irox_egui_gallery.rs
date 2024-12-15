@@ -8,14 +8,14 @@ use std::sync::Arc;
 
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Layout, Vec2, ViewportBuilder, Window};
-use egui_plot::PlotPoint;
+use egui::{CentralPanel, Context, Layout, Pos2, Shape, Vec2, ViewportBuilder, Window};
 use irox_egui_extras::about::AboutWindow;
-use irox_egui_extras::logplot::BasicPlot;
+use irox_egui_extras::logplot::{BasicPlot, IntoColor32, PlotPoint};
 use irox_egui_extras::progressbar::ProgressBar;
 use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_egui_extras::visuals::VisualsWindow;
+use irox_imagery::Color;
 use log::error;
 use serde::Serialize;
 
@@ -96,7 +96,16 @@ impl TestApp {
             .with_y_axis_formatter(Box::new(|val| format!("{val:.3}")))
             .with_x_axis_formatter(Box::new(|val| format!("{val:.1}")));
         for phase in phases {
-            log_plot.add_line("phase", Arc::new(phase));
+            let phase = Arc::new(phase);
+            log_plot.add_line(move |line| {
+                line.name = Arc::new("phase".to_string());
+                line.data = phase.clone();
+                line.sample_marker = Some(Shape::circle_filled(
+                    Pos2::default(),
+                    1.,
+                    Color::rgb_hex(0xFFFFFF).into_color32(),
+                ));
+            });
         }
         let log_plot2 = BasicPlot::new(&_cc.egui_ctx)
             .with_line("line", Arc::new(pts2))

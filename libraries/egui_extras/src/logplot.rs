@@ -8,21 +8,39 @@
 use crate::fonts;
 use crate::fonts::FontSet;
 use crate::fonts::BOLD;
+use crate::profile_scope;
 use egui::epaint::TextShape;
 use egui::{
     pos2, Align, Align2, Color32, Context, FontFamily, FontId, Painter, Pos2, Rect, Response,
     Rounding, Sense, Shape, Stroke, TextStyle, Ui, Vec2,
 };
-use egui_plot::PlotPoint;
 use irox_imagery::colormaps::CLASSIC_20;
 use irox_imagery::Color;
+use irox_stats::rects::Rect2D;
 use irox_tools::static_init;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
+#[derive(Debug, Default, Copy, Clone)]
+pub struct PlotPoint {
+    pub x: f64,
+    pub y: f64,
+}
+impl PlotPoint {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+}
+impl From<[f64; 2]> for PlotPoint {
+    fn from(p: [f64; 2]) -> Self {
+        let [x, y] = p;
+        Self { x, y }
+    }
+}
+
 pub type FormatterFn = dyn Fn(f64) -> String + Send;
 
-trait IntoColor32 {
+pub trait IntoColor32 {
     fn into_color32(self) -> Color32;
 }
 impl IntoColor32 for Color {
@@ -125,6 +143,9 @@ pub struct BasicPlot {
     pub interaction: PlotInteraction,
     /// Optional title for this plot.
     pub title: Option<String>,
+
+    data_updated: bool,
+    last_render_size: Rect2D,
 }
 
 impl BasicPlot {
@@ -169,9 +190,10 @@ impl BasicPlot {
             line.name = Arc::new(name.as_ref().to_string());
             line.data = data.clone();
         });
+        self.data_updated = true;
         self
     }
-    pub fn add_line<T: Fn(&mut Line)>(&mut self, func: T) {
+    pub fn add_line<T: FnMut(&mut Line)>(&mut self, mut func: T) {
         let idx = self.lines.len() % DEFAULT_COLORMAP.len();
         let color = DEFAULT_COLORMAP
             .get(idx)
@@ -185,8 +207,10 @@ impl BasicPlot {
         };
         func(&mut line);
         self.lines.push(line);
+        self.data_updated = true;
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
+        profile_scope!("check_zoom", self.name.as_str());
         if let Some(area) = self.interaction.zoom_area.take() {
             let min_x = self.x_axis.unscale_value(area.min.x);
             let max_x = self.x_axis.unscale_value(area.max.x);
@@ -216,6 +240,7 @@ impl BasicPlot {
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
+        profile_scope!("basicplot.show", self.name.as_str());
         let major_stroke = Stroke::new(2.0, ui.visuals().widgets.inactive.fg_stroke.color);
         let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
         let caution_color = ui.visuals().warn_fg_color;
@@ -326,14 +351,21 @@ impl BasicPlot {
         self.y_axis.screen_range = x_axis_y_offset - y_axis_y_min;
         self.y_axis.incr_sign = -1.0;
 
-        let points = self
-            .lines
-            .iter()
-            .map(|v| v.data.as_slice())
-            .collect::<Vec<&[PlotPoint]>>();
-        // update and rescale the data based on this frame's painting window.
-        self.x_axis.update_range(points.as_slice(), |p| p.x);
-        self.y_axis.update_range(points.as_slice(), |p| p.y);
+        let lr = rect.into();
+        if lr != self.last_render_size || self.data_updated {
+            profile_scope!("update range", self.name.as_str());
+            let points = self
+                .lines
+                .iter()
+                .map(|v| v.data.as_slice())
+                .collect::<Vec<&[PlotPoint]>>();
+            // update and rescale the data based on this frame's painting window.
+            self.x_axis.update_range(points.as_slice(), |p| p.x);
+            self.y_axis.update_range(points.as_slice(), |p| p.y);
+
+            self.last_render_size = lr;
+            self.data_updated = false;
+        }
 
         // draw the info across the bottom of the x axis
         for detent in &self.x_axis.detents {
@@ -411,45 +443,33 @@ impl BasicPlot {
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
+            profile_scope!("draw line", line.name.as_str());
             let points = &line.data;
             let stroke = &line.line_stroke;
-            for pnt in points.windows(2) {
-                let Some(first) = pnt.first() else {
-                    continue;
-                };
-                let Some(second) = pnt.get(1) else {
-                    continue;
-                };
-                let Some(first) = self.scale_point(first) else {
+            let mut lineout = Vec::<Pos2>::with_capacity(points.len());
+
+            for pnt in points.iter() {
+                let Some(pnt) = self.scale_point(pnt) else {
                     draw_log_warning = true;
-                    self.draw_yellow_err_line(&mut painter, first, ui);
+                    self.draw_yellow_err_line(&mut painter, pnt, ui);
                     continue;
                 };
-                let Some(second) = self.scale_point(second) else {
-                    draw_log_warning = true;
-                    self.draw_yellow_err_line(&mut painter, second, ui);
-                    continue;
-                };
-                // draw the actual line
-                painter.line_segment([first, second], *stroke);
+                lineout.push(pnt);
                 if let Some(shp) = &line.sample_marker {
                     let mut shp = shp.clone();
-                    let mut shp2 = shp.clone();
-                    shp.translate(Vec2::new(first.x, first.y));
+                    shp.translate(Vec2::new(pnt.x, pnt.y));
                     painter.add(shp);
-                    shp2.translate(Vec2::new(second.x, second.y));
-                    painter.add(shp2);
                 }
-
                 if let Some(pos) = response.hover_pos() {
-                    let dx = (pos.x - first.x).abs();
-                    let dy = (pos.y - first.y).abs();
+                    let dx = (pos.x - pnt.x).abs();
+                    let dy = (pos.y - pnt.y).abs();
                     let dist = (dx * dx + dy * dy).sqrt();
                     if dist <= 10.0 {
-                        closest_hover = Some(first);
+                        closest_hover = Some(pnt);
                     }
                 }
             }
+            painter.add(Shape::line(lineout, *stroke));
             let used = painter.text(
                 start_text,
                 Align2::LEFT_BOTTOM,

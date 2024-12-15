@@ -18,17 +18,19 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde", "egui/serde", "dep:irox-tools"]
-plots = ["dep:egui_plot"]
+plots = ["dep:irox-tools"]
+profiling = ["dep:puffin", "egui/puffin"]
 
 [dependencies]
 egui.workspace = true
-egui_plot = { workspace = true, optional = true }
 eframe = { workspace = true, features = ["x11", "wayland"] }
 ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-tools = { workspace = true, optional = true, features = ["std"] }
 irox-imagery = { workspace = true }
+irox-stats = { workspace = true, features = ["emath"] }
 log.workspace = true
+puffin = { workspace = true, optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 eframe = { workspace = true, features = ["glow"] }

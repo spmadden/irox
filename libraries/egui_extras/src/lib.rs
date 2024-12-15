@@ -5,6 +5,18 @@
 //! Stuff that should have been in [`egui`], but isn't.
 //!
 
+#[macro_export]
+macro_rules! profile_scope {
+    ($name:expr) => {
+        #[cfg(feature = "profiling")]
+        puffin::profile_scope!($name);
+    };
+    ($name:expr, $data:expr) => {
+        #[cfg(feature = "profiling")]
+        puffin::profile_scope!($name, $data);
+    };
+}
+
 /// Historical frame rendering statistics
 pub mod frame_history;
 
