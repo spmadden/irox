@@ -1,5 +1,35 @@
 
 
+## v0.4.6 (2024-12-15)
+
+### New Features
+
+ - <csr-id-4fbdda81df4bab66572325250fbe12367a67f5ec/> eliminate default feature 'std' for irox-time
+
+### Bug Fixes
+
+ - <csr-id-f984af97328b18ad30c7ec7da77332906e2eb107/> fixup no_std compliance in time
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 day passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixup no_std compliance in time ([`f984af9`](https://github.com/spmadden/irox/commit/f984af97328b18ad30c7ec7da77332906e2eb107))
+    - Eliminate default feature 'std' for irox-time ([`4fbdda8`](https://github.com/spmadden/irox/commit/4fbdda81df4bab66572325250fbe12367a67f5ec))
+</details>
+
 ## v0.4.5 (2024-12-13)
 
 ### New Features
@@ -10,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.5 ([`e2de71c`](https://github.com/spmadden/irox/commit/e2de71c6f67833e78d706fbcb789806d66f6245b))
     - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
 </details>
 
