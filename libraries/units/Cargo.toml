@@ -20,4 +20,5 @@ irox-tools = {version = "^0", path = "../tools", default-features = false}
 
 [features]
 default = []
-std = []
+alloc = []
+std = ["alloc"]
