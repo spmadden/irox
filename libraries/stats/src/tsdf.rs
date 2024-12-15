@@ -163,12 +163,10 @@ impl<'a> TimeSeriesFloatDataFileWriter<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::streams::CompressStream;
     use crate::tsdf::Sample64;
     use crate::tsdf::TimeSeriesFloatDataFileWriter;
-    use irox_bits::{BitsWrapper, Error};
+    use irox_bits::Error;
     use irox_time::Time64;
-    use irox_tools::buf::UnlimitedBuffer;
     use irox_tools::random::{Random, PRNG};
     use irox_units::units::duration::Duration;
     use std::time::Instant;
