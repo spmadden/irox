@@ -3,7 +3,7 @@
 //
 
 use core::cmp::Ordering;
-use irox_tools::{cfg_feature_alloc, ToF64};
+use irox_tools::cfg_feature_alloc;
 
 #[derive(Debug, Copy, Clone)]
 pub struct SIPrefix {
@@ -61,11 +61,11 @@ impl SIPrefix {
     }
 
     cfg_feature_alloc! {
-        pub fn format<T: ToF64>(&self, t: &T) -> String {
+        pub fn format<T: irox_tools::ToF64>(&self, t: &T) -> String {
             let val = t.to_f64() / self.scale_factor;
             format!("{val:.3}{}", self.symbol)
         }
-        pub fn format_args<T: ToF64>(&self, fmt: PrefixFormat, t: &T) -> String {
+        pub fn format_args<T: irox_tools::ToF64>(&self, fmt: PrefixFormat, t: &T) -> String {
             let val = t.to_f64() / self.scale_factor;
 
             format!("{val:precision$.width$}{}", self.symbol, width = fmt.width, precision = fmt.precision)
@@ -148,28 +148,30 @@ impl PrefixSet {
             Self::Common => COMMON_PREFIXES,
         }
     }
-    pub fn best_prefix_for<T: ToF64>(&self, t: &T) -> Option<SIPrefix> {
-        let e = t.to_f64().log10();
-        if (0. ..1.).contains(&e) {
-            return None;
-        }
-        let mut last_matched = None;
-        let fixes: &'static [SIPrefix] = self.prefixes();
-        for prefix in fixes {
-            let exp = prefix.base_exponent as f64;
-
-            last_matched = Some(*prefix);
-            if exp <= e {
-                break;
-            }
-        }
-        if let Some(lm) = last_matched {
-            let var = e - lm.base_exponent as f64;
-            if !(0. ..3.).contains(&var) {
+    cfg_feature_alloc! {
+        pub fn best_prefix_for<T: irox_tools::ToF64>(&self, t: &T) -> Option<SIPrefix> {
+            let e = t.to_f64().log10();
+            if (0. ..1.).contains(&e) {
                 return None;
             }
+            let mut last_matched = None;
+            let fixes: &'static [SIPrefix] = self.prefixes();
+            for prefix in fixes {
+                let exp = prefix.base_exponent as f64;
+
+                last_matched = Some(*prefix);
+                if exp <= e {
+                    break;
+                }
+            }
+            if let Some(lm) = last_matched {
+                let var = e - lm.base_exponent as f64;
+                if !(0. ..3.).contains(&var) {
+                    return None;
+                }
+            }
+            last_matched
         }
-        last_matched
     }
 }
 
