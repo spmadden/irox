@@ -1,6 +1,30 @@
 
 
 
+## v0.5.4 (2024-12-15)
+
+### New Features
+
+ - <csr-id-42724120f69243ffb0f93a1524986dc48c79091e/> expose data changed flag in plot
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Expose data changed flag in plot ([`4272412`](https://github.com/spmadden/irox/commit/42724120f69243ffb0f93a1524986dc48c79091e))
+</details>
+
 ## v0.5.3 (2024-12-15)
 
 ### New Features
@@ -15,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 6 commits contributed to the release.
  - 1 day passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.3 ([`eb50a9c`](https://github.com/spmadden/irox/commit/eb50a9c91bab1d3ed56554081614dd6ca5ac9aad))
     - Cleaning up some deps for wasm ([`f2302e1`](https://github.com/spmadden/irox/commit/f2302e18dd620eba54e66732e402acca14523afb))
     - Plot speed improvements, drop egui_plot dep. ([`22defec`](https://github.com/spmadden/irox/commit/22defec5feec02f5b4555a66a39aa6e97c9e4d35))
     - Add ability to draw shapes on exact plot points ([`b46e848`](https://github.com/spmadden/irox/commit/b46e8489365045efc963e137c324da44c71be5aa))
