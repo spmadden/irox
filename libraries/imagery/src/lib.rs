@@ -9,14 +9,18 @@
 
 pub use color::*;
 pub use error::*;
+use irox_tools::cfg_feature_std;
 pub use pixel::*;
+
+cfg_feature_std! {
 pub use tiff::*;
+mod tiff;
+}
 
 mod color;
 pub mod colormaps;
 mod error;
 mod pixel;
-mod tiff;
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub enum ImageSpace {

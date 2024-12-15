@@ -12,13 +12,17 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[features]
+default = []
+std = ["irox-bits/std", "irox-tools/std"]
+
 [lints]
 workspace = true
 
 [dependencies]
 irox-log = { workspace = true }
-irox-bits = { workspace = true, features = ["std"] }
-irox-tools = { workspace = true, features = ["std"] }
+irox-bits = { workspace = true }
+irox-tools = { workspace = true }
 irox-units.workspace = true
 irox-carto.workspace = true
 irox-types.workspace = true

@@ -11,7 +11,7 @@ use log::error;
 use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::logplot::BasicPlot;
 use irox_egui_extras::styles::StylePersistingApp;
-use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
+use irox_egui_extras::toolframe::ToolApp;
 use irox_stats::Distribution;
 
 use crate::run::Run;
@@ -43,17 +43,26 @@ fn main() {
         Box::new(|cc| {
             let mut comp = CompositeApp::default();
             comp.add(Box::new(StylePersistingApp::new(cc)));
-            comp.add(Box::new(ToolFrame::new(
+            comp.add(Box::new(irox_egui_extras::toolframe::ToolFrame::new(
                 cc,
                 Box::new(HalflifesApp::new(cc)),
             )));
 
             Ok(Box::new(comp))
+            // Ok(Box::new(HalflifesApp::new(cc)))
         }),
     ) {
         error!("{e:?}");
     };
 }
+#[cfg(target_arch = "wasm32")]
+fn get_canvas_element_by_id(canvas_id: &str) -> Option<eframe::web_sys::HtmlCanvasElement> {
+    use eframe::wasm_bindgen::JsCast;
+    let document = eframe::web_sys::window()?.document()?;
+    let canvas = document.get_element_by_id(canvas_id)?;
+    canvas.dyn_into::<eframe::web_sys::HtmlCanvasElement>().ok()
+}
+
 #[cfg(target_arch = "wasm32")]
 fn main() {
     // Redirect `log` message to `console.log` and friends:
@@ -61,17 +70,16 @@ fn main() {
 
     let web_options = eframe::WebOptions::default();
 
+    let canvas = get_canvas_element_by_id("the_canvas_id").expect("canvas");
     wasm_bindgen_futures::spawn_local(async {
         eframe::WebRunner::new()
             .start(
-                "the_canvas_id", // hardcode it
+                canvas,
                 web_options,
                 Box::new(|cc| {
-                    let mut comp = CompositeApp::default();
-                    comp.add(Box::new(StylePersistingApp::new(cc)));
-                    comp.add(Box::new(HalflifesApp::new(cc)));
-
-                    Box::new(comp)
+                    // let mut comp = CompositeApp::default();
+                    // comp.add(Box::new(StylePersistingApp::new(cc)));
+                    Ok(Box::new(HalflifesApp::new(cc)))
                 }),
             )
             .await

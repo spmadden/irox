@@ -17,7 +17,6 @@ use egui::{
 use irox_imagery::colormaps::CLASSIC_20;
 use irox_imagery::Color;
 use irox_stats::rects::Rect2D;
-use irox_tools::static_init;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
@@ -50,8 +49,6 @@ impl IntoColor32 for Color {
     }
 }
 static DEFAULT_COLORMAP: &[Color] = CLASSIC_20;
-
-static_init!(init_fonts, (), {});
 
 /// A tracking struct for an user interaction with a plot.
 ///
