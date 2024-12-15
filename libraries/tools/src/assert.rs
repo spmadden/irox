@@ -23,6 +23,33 @@ macro_rules! assert_eq_eps {
         }
     };
 }
+///
+/// Assert equal w/ hex value slices, for slices of floating-point elements
+#[macro_export]
+macro_rules! assert_eq_eps_slice {
+    ($left:expr, $right:expr, $eps:expr) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                let left_len = left_val.len();
+                let right_len = right_val.len();
+                if left_len != right_len {
+                    panic!("Assertion failed, left len ({left_len}) != right len ({right_len})");
+                }
+                for idx in 0..left_len {
+                    let lv = left_val[idx];
+                    let rv = right_val[idx];
+                    let delta = (lv - rv).abs();
+                    if !(delta <= $eps) {
+                        panic!(
+                            "Assertion failed, {} - {} = {} > {} at index {idx}",
+                            &lv, &rv, delta, $eps
+                        )
+                    }
+                }
+            }
+        }
+    };
+}
 
 ///
 /// Assert equal w/ hex value, for elements that implement [`core::fmt::UpperHex`]
