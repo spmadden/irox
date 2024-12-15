@@ -1,6 +1,31 @@
 
 
 
+## v0.9.3 (2024-12-15)
+
+### New Features
+
+ - <csr-id-d72868b00c3b8ae018badf809dce12584a1186a5/> new assert_eq_eps_slice! macro for testing slices of floating points to within epsilon values
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 day passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - New assert_eq_eps_slice! macro for testing slices of floating points to within epsilon values ([`d72868b`](https://github.com/spmadden/irox/commit/d72868b00c3b8ae018badf809dce12584a1186a5))
+</details>
+
 ## v0.9.2 (2024-12-13)
 
 ### New Features
@@ -19,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 7 commits contributed to the release.
  - 44 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.9.2 ([`219aa3a`](https://github.com/spmadden/irox/commit/219aa3ac7b7265fbf636a9d4d25d475a86d5122a))
     - New 'ToF64' trait ([`0ac28bf`](https://github.com/spmadden/irox/commit/0ac28bf47dd59480b3c7b840f2876d7c44bbcd0f))
     - New WrappingAdd/Sub/Mul for the primitives. ([`55d1a9a`](https://github.com/spmadden/irox/commit/55d1a9ad0e2d94780baf7c85ff9b43b93c2da0db))
     - New FixedU8Buf with optimizations for a straight u8 ([`a02debb`](https://github.com/spmadden/irox/commit/a02debb360ce750c741a940eac1fedb25a4900e0))
