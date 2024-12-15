@@ -1,17 +1,18 @@
 
 
 
-## v0.7.1 (2024-12-14)
+## v0.7.2 (2024-12-15)
 
 ### Chore
 
- - <csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/> bump irox to 0.7.1
+ - <csr-id-f6b726c3a992b31af94754aa093eb970ab10538f/> bump irox to 0.7.2 for release
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 1 commit contributed to the release.
+ - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +23,33 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Bump irox to 0.7.2 for release ([`f6b726c`](https://github.com/spmadden/irox/commit/f6b726c3a992b31af94754aa093eb970ab10538f))
+</details>
+
+## v0.7.1 (2024-12-14)
+
+<csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/>
+
+### Chore
+
+ - <csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/> bump irox to 0.7.1
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox v0.7.1 ([`2330c88`](https://github.com/spmadden/irox/commit/2330c880a0d81439073092854a469096e220917e))
     - Bump irox to 0.7.1 ([`093baea`](https://github.com/spmadden/irox/commit/093baea4c7f602e9692b7caaca99619aa0d96472))
 </details>
 
