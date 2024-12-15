@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2023 IROX Contributors
 
+use std::sync::Arc;
 use std::time::Duration;
 
 use eframe::{self, Frame};
 use egui::{CentralPanel, Context};
-use egui_plot::{Line, Plot, PlotPoints};
 use log::error;
 
 use irox_egui_extras::composite::CompositeApp;
+use irox_egui_extras::logplot::BasicPlot;
 use irox_egui_extras::styles::StylePersistingApp;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_stats::Distribution;
@@ -23,6 +24,19 @@ fn main() {
         multisampling: 0,
         ..Default::default()
     };
+
+    // let server_addr = format!("127.0.0.1:{}", puffin_http::DEFAULT_PORT);
+    // let _puffin_server = puffin_http::Server::new(&server_addr).unwrap();
+    // eprintln!("Run this to view profiling data:  puffin_viewer {server_addr}");
+    // puffin::set_scopes_on(true);
+    // std::process::Command::new("puffin_viewer")
+    //     .arg("--url")
+    //     .arg(server_addr)
+    //     .spawn()
+    //     .ok();
+    // #[allow(clippy::mem_forget)]
+    // std::mem::forget(_puffin_server);
+
     if let Err(e) = eframe::run_native(
         "irox-halflifes",
         native_options,
@@ -66,7 +80,7 @@ fn main() {
 }
 
 struct HalflifesApp {
-    data: Vec<Vec<[f64; 2]>>,
+    plot: BasicPlot,
 }
 
 impl HalflifesApp {
@@ -93,17 +107,20 @@ impl HalflifesApp {
         });
         runs.push(combined);
 
-        let data = runs
-            .iter()
-            .map(|f| {
-                f.iter()
-                    .enumerate()
-                    .map(|(idx, v)| [idx as f64, *v])
-                    .collect()
+        let mut plot = BasicPlot::new(&_cc.egui_ctx);
+        for run in runs.iter().map(|f| {
+            f.iter()
+                .enumerate()
+                .map(|(idx, v)| [idx as f64, *v].into())
+                .collect::<Vec<_>>()
+        }) {
+            let run = Arc::new(run);
+            plot.add_line(move |line| {
+                line.data = run.clone();
             })
-            .collect();
+        }
 
-        HalflifesApp { data }
+        HalflifesApp { plot }
     }
 }
 
@@ -129,21 +146,7 @@ impl eframe::App for HalflifesApp {
         CentralPanel::default().show(ctx, |ui| {
             // ui.add(egui::Slider::new(&mut self.first, 0.0..=10.0).text("first"));
             // ui.add(egui::Slider::new(&mut self.second, 0.0..=10.0).text("second"));
-            Plot::new("my_plot")
-                // .view_aspect(2.0)
-                // .allow_drag(true)
-                // .allow_scroll(true)
-                .allow_boxed_zoom(true)
-                // .allow_double_click_reset(true)
-                // .allow_zoom(AxisBools { x: true, y: false })
-                // .data_aspect(1.0)
-                // .center_y_axis(true)
-                // .height(1.0)
-                .show(ui, |plot_ui| {
-                    for data in &self.data {
-                        plot_ui.line(Line::new(PlotPoints::new(data.clone())));
-                    }
-                });
+            self.plot.show(ui);
         });
     }
 }

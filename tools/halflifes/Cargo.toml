@@ -16,12 +16,14 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-eframe = {workspace = true, features = ["glow", "default_fonts"]}
+eframe = { workspace = true, features = ["glow", "default_fonts"] }
 egui = {workspace = true, features = ["persistence"]}
-egui_plot.workspace = true
 log.workspace = true
-irox-egui-extras = {workspace = true, features = ["serde"]}
+irox-egui-extras = { workspace = true, features = ["serde", "plots", "profiling"] }
 irox-stats.workspace = true
+puffin_http = { workspace = true }
+puffin = { workspace = true }
 
 [target.'cfg(target_arch="wasm32")'.dependencies]
 wasm-bindgen-futures.workspace = true
+
