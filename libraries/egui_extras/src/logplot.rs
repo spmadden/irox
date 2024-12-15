@@ -206,6 +206,9 @@ impl BasicPlot {
         self.lines.push(line);
         self.data_updated = true;
     }
+    pub fn mark_data_updated(&mut self) {
+        self.data_updated = true;
+    }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         profile_scope!("check_zoom", self.name.as_str());
         if let Some(area) = self.interaction.zoom_area.take() {
