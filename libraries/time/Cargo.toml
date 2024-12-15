@@ -22,5 +22,5 @@ irox-tools = { version = "^0", path = "../tools", default-features = false }
 irox-enums.workspace = true
 
 [features]
-default = ["std"]
+default = []
 std = []

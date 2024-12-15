@@ -18,4 +18,4 @@ workspace = true
 [dependencies]
 log = { workspace = true }
 irox-tools = { workspace = true }
-irox-time = { workspace = true }
+irox-time = { workspace = true, features = ["std"] }
