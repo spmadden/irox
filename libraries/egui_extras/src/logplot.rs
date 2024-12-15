@@ -402,7 +402,7 @@ impl BasicPlot {
             ],
             major_stroke,
         );
-
+        let mut closest_hover: Option<Pos2> = None;
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
@@ -427,6 +427,14 @@ impl BasicPlot {
                 };
                 // draw the actual line
                 painter.line_segment([first, second], *stroke);
+                if let Some(pos) = response.hover_pos() {
+                    let dx = (pos.x - first.x).abs();
+                    let dy = (pos.y - first.y).abs();
+                    let dist = (dx * dx + dy * dy).sqrt();
+                    if dist <= 10.0 {
+                        closest_hover = Some(first);
+                    }
+                }
             }
             let used = painter.text(
                 start_text,
@@ -438,7 +446,7 @@ impl BasicPlot {
             start_text.x += used.width() + 10.;
         }
 
-        self.draw_cursor(ui, &mut response, &mut painter);
+        self.draw_cursor(ui, &mut response, &mut painter, closest_hover);
 
         if draw_log_warning {
             painter.text(
@@ -496,45 +504,56 @@ impl BasicPlot {
         }
     }
 
-    fn draw_cursor(&mut self, ui: &mut Ui, response: &mut Response, painter: &mut Painter) {
+    fn draw_cursor(
+        &mut self,
+        ui: &mut Ui,
+        response: &mut Response,
+        painter: &mut Painter,
+        closest_point: Option<Pos2>,
+    ) {
         // draw the hover cursors
-        if let Some(hover) = response.hover_pos() {
-            let rect = response.rect;
-            let xrng = rect.min.x..=rect.max.x;
-            let yrng = rect.min.y..=rect.max.y;
-            let color = ui.visuals().widgets.noninteractive.fg_stroke;
-            // paint the crosshair lines
-            painter.hline(xrng, hover.y, color);
-            painter.vline(hover.x, yrng, color);
+        let draw_pos = if let Some(closest_point) = closest_point {
+            closest_point
+        } else if let Some(hover) = response.hover_pos() {
+            hover
+        } else {
+            return;
+        };
+        let rect = response.rect;
+        let xrng = rect.min.x..=rect.max.x;
+        let yrng = rect.min.y..=rect.max.y;
+        let color = ui.visuals().widgets.noninteractive.fg_stroke;
+        // paint the crosshair lines
+        painter.hline(xrng, draw_pos.y, color);
+        painter.vline(draw_pos.x, yrng, color);
 
-            // paint the text
-            let mod_x = self.x_axis.describe_screen_pos(hover.x);
-            let mod_y = self.y_axis.describe_screen_pos(hover.y);
-            let text = format!("x: {mod_x}\ny: {mod_y}");
-            let color = ui.visuals().text_cursor.stroke.color;
-            let font_id = TextStyle::Monospace.resolve(ui.style());
-            let mut align = Align2::LEFT_BOTTOM;
+        // paint the text
+        let mod_x = self.x_axis.describe_screen_pos(draw_pos.x);
+        let mod_y = self.y_axis.describe_screen_pos(draw_pos.y);
+        let text = format!("x: {mod_x}\ny: {mod_y}");
+        let color = ui.visuals().text_cursor.stroke.color;
+        let font_id = TextStyle::Monospace.resolve(ui.style());
+        let mut align = Align2::LEFT_BOTTOM;
 
-            // figure out if it extends out past the rectangle
-            let galley = painter.layout_no_wrap(text.to_string(), font_id.clone(), color);
-            let txtrect = align.anchor_size(hover, galley.size());
+        // figure out if it extends out past the rectangle
+        let galley = painter.layout_no_wrap(text.to_string(), font_id.clone(), color);
+        let txtrect = align.anchor_size(draw_pos, galley.size());
 
-            if txtrect.max.x >= rect.max.x {
-                // flip the x dimension
-                let [_, v] = align.0;
-                align.0 = [Align::Max, v];
-            }
-            if txtrect.min.y <= rect.min.y {
-                // flip the y dimension
-                let [h, _] = align.0;
-                align.0 = [h, Align::Min];
-            }
-            let galley = painter.layout_no_wrap(text, font_id, color);
-            let rect = align.anchor_size(hover, galley.size());
-
-            painter.rect_filled(rect, 0.0, Color32::from_white_alpha(32));
-            painter.galley(rect.min, galley, color);
+        if txtrect.max.x >= rect.max.x {
+            // flip the x dimension
+            let [_, v] = align.0;
+            align.0 = [Align::Max, v];
         }
+        if txtrect.min.y <= rect.min.y {
+            // flip the y dimension
+            let [h, _] = align.0;
+            align.0 = [h, Align::Min];
+        }
+        let galley = painter.layout_no_wrap(text, font_id, color);
+        let rect = align.anchor_size(draw_pos, galley.size());
+
+        painter.rect_filled(rect, 0.0, Color32::from_white_alpha(32));
+        painter.galley(rect.min, galley, color);
     }
 }
 #[derive(Default, Debug, Copy, Clone, Eq, PartialEq, Hash)]
