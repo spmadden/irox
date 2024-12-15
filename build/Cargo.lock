@@ -128,7 +128,7 @@ checksum = "8c86282ca3c0b4a247831b3cd23863fdf6d05da590cd4ddd0d9065e4e545dd82"
 
 [[package]]
 name = "irox-builder"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "clap",
  "irox-log",
