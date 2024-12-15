@@ -215,7 +215,7 @@ impl FormatParser<Time> for BasicTimeOfDay {
         let seconds = f64::from_str(String::from_iter(second_string).as_str())?;
 
         let second_of_day = hours * 3600 + minutes * 60 + seconds as u32;
-        let nanoseconds = (seconds.fract() * SEC_TO_NANOS) as u32;
+        let nanoseconds = (irox_tools::f64::FloatExt::fract(seconds) * SEC_TO_NANOS) as u32;
 
         Ok(Time {
             second_of_day,

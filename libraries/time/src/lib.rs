@@ -113,7 +113,7 @@ impl Time {
         LessThanValue::new(24u8).check_value_is_valid(&hours)?;
         LessThanValue::new(60u8).check_value_is_valid(&minutes)?;
         LessThanValue::new(60f64).check_value_is_valid(&seconds)?;
-        let nanoseconds = (seconds.fract() * SEC_TO_NANOS) as u32;
+        let nanoseconds = (irox_tools::f64::FloatExt::fract(seconds) * SEC_TO_NANOS) as u32;
         let second_of_day = hours as u32 * 3600 + minutes as u32 * 60 + seconds as u32;
         Ok(Time {
             second_of_day,
