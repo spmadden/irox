@@ -109,8 +109,7 @@ pub fn random_keys() -> ([u8; 32], [u8; 32]) {
 mod tests {
     use crate::{random_data, random_keys, Error, HomeBase, RoadWarrior};
     use irox_tools::assert_eq_hex_slice;
-    use irox_tools::hex::{to_hex_array, HexDump};
-    use irox_tools::vec::PrettyVec;
+    use irox_tools::hex::HexDump;
 
     #[test]
     pub fn test() -> Result<(), Error> {
