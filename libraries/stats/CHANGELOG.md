@@ -1,6 +1,36 @@
 
 
 
+## v0.2.9 (2024-12-15)
+
+### Chore
+
+ - <csr-id-f0cb38d6ad407000405cecc9d94ed9157d639faa/> clean up lints in stats
+
+### New Features
+
+ - <csr-id-ba92c8669b749a681057904e57c2697c70b7a250/> Samples, Points, Rects, Windows, and some graphing
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 day passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Samples, Points, Rects, Windows, and some graphing ([`ba92c86`](https://github.com/spmadden/irox/commit/ba92c8669b749a681057904e57c2697c70b7a250))
+    - Clean up lints in stats ([`f0cb38d`](https://github.com/spmadden/irox/commit/f0cb38d6ad407000405cecc9d94ed9157d639faa))
+</details>
+
 ## v0.2.8 (2024-12-13)
 
 ### New Features
@@ -17,7 +47,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release.
  - 44 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -29,6 +59,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.8 ([`5915cd4`](https://github.com/spmadden/irox/commit/5915cd42068cde35622aed1d34bc172a53e168ba))
     - Pivot to SPDP encoding scheme for tsdf ([`472f1c9`](https://github.com/spmadden/irox/commit/472f1c98d523299552677374e3d07778688a71a9))
     - Stackoverflow with too many compressors on the stack ([`eb1707c`](https://github.com/spmadden/irox/commit/eb1707c86468b410415aab2e42fde0bf68b87a0b))
     - Pivot to using 'bestspeed' rather than 'bestcompression' because there's only a 5% gain but a massive perf hit. ([`e82a848`](https://github.com/spmadden/irox/commit/e82a848777e2f524482fa92915a99e503bc0231e))
