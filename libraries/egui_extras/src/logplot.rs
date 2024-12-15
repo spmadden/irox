@@ -105,7 +105,8 @@ impl PlotInteraction {
 pub struct Line {
     pub name: Arc<String>,
     pub data: Arc<Vec<PlotPoint>>,
-    pub stroke: Stroke,
+    pub line_stroke: Stroke,
+    pub sample_marker: Option<Shape>,
 }
 
 ///
@@ -164,22 +165,26 @@ impl BasicPlot {
     }
     #[must_use]
     pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<Vec<PlotPoint>>) -> Self {
-        self.add_line(name, data);
+        self.add_line(move |line| {
+            line.name = Arc::new(name.as_ref().to_string());
+            line.data = data.clone();
+        });
         self
     }
-    pub fn add_line<T: AsRef<str>>(&mut self, name: T, data: Arc<Vec<PlotPoint>>) {
+    pub fn add_line<T: Fn(&mut Line)>(&mut self, func: T) {
         let idx = self.lines.len() % DEFAULT_COLORMAP.len();
         let color = DEFAULT_COLORMAP
             .get(idx)
             .copied()
             .unwrap_or_default()
             .into_color32();
-        let stroke = Stroke::new(1.5, color);
-        self.lines.push(Line {
-            name: Arc::new(name.as_ref().to_string()),
-            data,
-            stroke,
-        })
+        let stroke = Stroke::new(0.75, color);
+        let mut line = Line {
+            line_stroke: stroke,
+            ..Default::default()
+        };
+        func(&mut line);
+        self.lines.push(line);
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         if let Some(area) = self.interaction.zoom_area.take() {
@@ -407,7 +412,7 @@ impl BasicPlot {
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
             let points = &line.data;
-            let stroke = &line.stroke;
+            let stroke = &line.line_stroke;
             for pnt in points.windows(2) {
                 let Some(first) = pnt.first() else {
                     continue;
@@ -427,6 +432,15 @@ impl BasicPlot {
                 };
                 // draw the actual line
                 painter.line_segment([first, second], *stroke);
+                if let Some(shp) = &line.sample_marker {
+                    let mut shp = shp.clone();
+                    let mut shp2 = shp.clone();
+                    shp.translate(Vec2::new(first.x, first.y));
+                    painter.add(shp);
+                    shp2.translate(Vec2::new(second.x, second.y));
+                    painter.add(shp2);
+                }
+
                 if let Some(pos) = response.hover_pos() {
                     let dx = (pos.x - first.x).abs();
                     let dy = (pos.y - first.y).abs();
