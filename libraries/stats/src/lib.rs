@@ -24,11 +24,14 @@ pub mod lttb;
 mod macros;
 pub mod points;
 pub mod pyramid;
+pub mod rects;
+pub mod sampling;
 pub mod streaming;
 pub mod streams;
-#[cfg(any(all(doc, docsrs), all(feature = "std", feature = "time")))]
-#[cfg_attr(docsrs, doc(cfg(all(feature = "std", feature = "time"))))]
+#[cfg(any(all(doc, docsrs), feature = "std"))]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 pub mod tsdf;
+pub mod windows;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DistributionParams {

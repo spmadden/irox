@@ -2,6 +2,8 @@
 // Copyright 2024 IROX Contributors
 //
 
+use crate::rects::Rect2D;
+use core::cmp::Ordering;
 ///
 /// Geometric Cartesian Coordinate Spaces
 use core::ops::Add;
@@ -32,15 +34,61 @@ pub trait EncodablePoint2D<const N: usize>: Point2D {
 }
 
 /// Geometric point in Cartesian 2D Space.  X and Y values. Backed by two [`f64`]'s
-#[derive(Default, Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct Double2D {
     pub x: f64,
     pub y: f64,
+}
+impl Double2D {
+    #[must_use]
+    pub fn new(x: f64, y: f64) -> Self {
+        Double2D { x, y }
+    }
+    #[must_use]
+    pub fn new_f64(x: f64, y: f64) -> Self {
+        Double2D { x, y }
+    }
+    #[must_use]
+    pub fn get_x(&self) -> f64 {
+        self.x
+    }
+    #[must_use]
+    pub fn get_y(&self) -> f64 {
+        self.y
+    }
+
+    #[must_use]
+    pub fn translate(&self, vec: &Vec2D) -> Double2D {
+        Self {
+            x: self.x + vec.x,
+            y: self.y + vec.y,
+        }
+    }
+
+    pub fn translate_mut(&mut self, vec: &Vec2D) {
+        self.x += vec.x;
+        self.y += vec.y;
+    }
 }
 impl From<[f64; 2]> for Double2D {
     fn from(val: [f64; 2]) -> Double2D {
         let [x, y] = val;
         Double2D { x, y }
+    }
+}
+impl Eq for Double2D {}
+impl PartialOrd for Double2D {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for Double2D {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let x = self.x.total_cmp(&other.x);
+        if x != Ordering::Equal {
+            return x;
+        }
+        self.y.total_cmp(&other.y)
     }
 }
 
@@ -140,5 +188,80 @@ impl EncodablePoint2D<16> for Quad2D {
 
     fn decode(val: [u8; 16]) -> Self {
         <[u64; 2]>::from_be_bytes(val).into()
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Vec2D {
+    pub x: f64,
+    pub y: f64,
+}
+impl Default for Vec2D {
+    fn default() -> Self {
+        Vec2D { x: 1.0, y: 1.0 }
+    }
+}
+impl Eq for Vec2D {}
+impl PartialOrd for Vec2D {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for Vec2D {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let x = self.x.total_cmp(&other.x);
+        if x != Ordering::Equal {
+            return x;
+        }
+        self.y.total_cmp(&other.y)
+    }
+}
+impl Vec2D {
+    #[must_use]
+    pub fn new(x: f64, y: f64) -> Self {
+        Vec2D { x, y }
+    }
+    #[must_use]
+    pub fn get_x(&self) -> f64 {
+        self.x
+    }
+    #[must_use]
+    pub fn get_y(&self) -> f64 {
+        self.y
+    }
+
+    #[must_use]
+    pub fn with_origin(&self, origin: Double2D) -> Rect2D {
+        Rect2D {
+            origin,
+            size: *self,
+        }
+    }
+}
+#[cfg(feature = "emath")]
+impl From<emath::Vec2> for Vec2D {
+    fn from(pos: emath::Vec2) -> Self {
+        Self {
+            x: pos.x as f64,
+            y: pos.y as f64,
+        }
+    }
+}
+#[cfg(feature = "emath")]
+impl From<emath::Pos2> for Double2D {
+    fn from(pos: emath::Pos2) -> Self {
+        Self {
+            x: pos.x as f64,
+            y: pos.y as f64,
+        }
+    }
+}
+#[cfg(feature = "emath")]
+impl From<Double2D> for emath::Pos2 {
+    fn from(value: Double2D) -> Self {
+        Self {
+            x: value.x as f32,
+            y: value.y as f32,
+        }
     }
 }

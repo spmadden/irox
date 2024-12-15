@@ -486,12 +486,12 @@ where
         self.mean.get_num_samples()
     }
 }
-#[cfg(all(feature = "time", feature = "std"))]
+#[cfg(feature = "std")]
 pub struct OneSecondWindows {
     epoch: irox_time::epoch::Epoch,
     windows: alloc::collections::BTreeMap<irox_time::Time64, Summary<f64>>,
 }
-#[cfg(all(feature = "time", feature = "std"))]
+#[cfg(feature = "std")]
 impl OneSecondWindows {
     pub fn new(epoch: irox_time::epoch::Epoch) -> Self {
         Self {

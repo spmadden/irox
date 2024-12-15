@@ -15,7 +15,7 @@ repository.workspace = true
 [features]
 default = []
 std = []
-time = ["dep:irox-time"]
+emath = ["dep:emath"]
 miniz = ["dep:miniz_oxide"]
 
 [lints]
@@ -25,8 +25,9 @@ workspace = true
 irox-tools.workspace = true
 irox-bits.workspace = true
 irox-types.workspace = true
-irox-time = {workspace = true, optional = true}
+irox-time = { workspace = true }
 miniz_oxide = {workspace = true, optional = true}
+emath = { workspace = true, optional = true }
 
 
 [dev-dependencies]
@@ -34,3 +35,7 @@ irox-time.workspace = true
 irox-units = {workspace = true}
 irox-bits = {workspace = true, features = ["std"]}
 irox-tools = {workspace = true, features = ["std"]}
+irox-egui-extras = { workspace = true, features = ["plots"] }
+irox-log = { workspace = true }
+eframe = { workspace = true, default-features = true }
+egui = { workspace = true, default-features = true }
