@@ -1,6 +1,36 @@
 
 
 
+## v0.4.3 (2024-12-15)
+
+### New Features
+
+ - <csr-id-3d7d1bff4b37383c1746119894431ee9afdb5288/> SI Prefixes and Quantities
+
+### Bug Fixes
+
+ - <csr-id-b5810ecb0c9e3736e3a5261d33827be8e8d416f2/> guard log10 behind alloc
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 day passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Guard log10 behind alloc ([`b5810ec`](https://github.com/spmadden/irox/commit/b5810ecb0c9e3736e3a5261d33827be8e8d416f2))
+    - SI Prefixes and Quantities ([`3d7d1bf`](https://github.com/spmadden/irox/commit/3d7d1bff4b37383c1746119894431ee9afdb5288))
+</details>
+
 ## v0.4.2 (2024-12-13)
 
 ### New Features
@@ -12,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 131 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.2 ([`84f868b`](https://github.com/spmadden/irox/commit/84f868bae21e13fb6966af1678a2caf60a4d4c84))
     - Basic lcc impl - needs more tests ([`83c359b`](https://github.com/spmadden/irox/commit/83c359bd88322ed9c130c54501550544803886de))
     - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
 </details>
