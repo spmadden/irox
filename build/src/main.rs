@@ -130,12 +130,9 @@ fn ci() -> Result<(), Error> {
 }
 
 fn quick_checks() -> Result<(), Error> {
-    deny()?;
-    format_check()?;
     lints_deny()?;
-    about()?;
-    doc()?;
-    upgrade()?;
+    format_check()?;
+    deny()?;
     Ok(())
 }
 
