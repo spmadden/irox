@@ -1,6 +1,39 @@
 
 
 
+## v0.5.3 (2024-12-15)
+
+### New Features
+
+ - <csr-id-f2302e18dd620eba54e66732e402acca14523afb/> cleaning up some deps for wasm
+ - <csr-id-22defec5feec02f5b4555a66a39aa6e97c9e4d35/> Plot speed improvements, drop egui_plot dep.
+ - <csr-id-b46e8489365045efc963e137c324da44c71be5aa/> add ability to draw shapes on exact plot points
+ - <csr-id-d3c8dff38f9b68843636ecb660c60af71891b1ff/> add snapping to graph mouseover
+ - <csr-id-df5cccda93d8929266b682c1a3624a09e7482d45/> plots mouseover now use value formatters
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 1 day passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleaning up some deps for wasm ([`f2302e1`](https://github.com/spmadden/irox/commit/f2302e18dd620eba54e66732e402acca14523afb))
+    - Plot speed improvements, drop egui_plot dep. ([`22defec`](https://github.com/spmadden/irox/commit/22defec5feec02f5b4555a66a39aa6e97c9e4d35))
+    - Add ability to draw shapes on exact plot points ([`b46e848`](https://github.com/spmadden/irox/commit/b46e8489365045efc963e137c324da44c71be5aa))
+    - Add snapping to graph mouseover ([`d3c8dff`](https://github.com/spmadden/irox/commit/d3c8dff38f9b68843636ecb660c60af71891b1ff))
+    - Plots mouseover now use value formatters ([`df5cccd`](https://github.com/spmadden/irox/commit/df5cccda93d8929266b682c1a3624a09e7482d45))
+</details>
+
 ## v0.5.2 (2024-12-14)
 
 ### Bug Fixes
@@ -11,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.2 ([`edab4ba`](https://github.com/spmadden/irox/commit/edab4ba46190aae8315e102bb1439c3cfc473d4b))
     - Fix dependency interaction for egui::Widget impl ([`091e86d`](https://github.com/spmadden/irox/commit/091e86dd80a05abd833cbd7460c542bc777871fa))
 </details>
 
