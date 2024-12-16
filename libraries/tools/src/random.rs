@@ -23,7 +23,7 @@ const INCREMENT_128: u128 = 0x5851F42D4C957F2D14057B7EF767814Fu128;
 
 pub type Random = PcgXshRR;
 ///
-/// Basic Random Number Generator based on the `PCG-XSH-RR`
+/// Basic Random Number Generator based on the `PCG-XSH-RR`.  64 bit state, 32 bit output.
 pub struct PcgXshRR {
     state: u64,
 }
@@ -215,6 +215,24 @@ pub trait PRNG {
                 }
             }
         }
+    }
+
+    ///
+    /// Gets a random number in the range `[0..=1]`
+    fn next_unit_f64(&mut self) -> f64 {
+        self.next_u64() as f64 / u64::MAX as f64
+    }
+    ///
+    /// Gets a random number in the range `[min..=max]`
+    fn next_in_range(&mut self, min: f64, max: f64) -> f64 {
+        let off = (max - min) * self.next_unit_f64();
+        min + off
+    }
+    ///
+    /// Gets a random number in the range `center +/- (range/2)`
+    fn next_in_distribution(&mut self, center: f64, range: f64) -> f64 {
+        let off = (self.next_unit_f64() - 0.5) * range;
+        center + off
     }
 }
 
