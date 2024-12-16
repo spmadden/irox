@@ -150,7 +150,8 @@ impl PrefixSet {
     }
     cfg_feature_alloc! {
         pub fn best_prefix_for<T: irox_tools::ToF64>(&self, t: &T) -> Option<SIPrefix> {
-            let e = t.to_f64().log10();
+            let v = t.to_f64().abs();
+            let e = v.log10();
             if (0. ..1.).contains(&e) {
                 return None;
             }
@@ -211,7 +212,9 @@ mod test {
             (Some(NANO), 1e-8, Some(NANO)),
             (Some(NANO), 1e-7, Some(NANO)),
             (Some(MICRO), 1e-6, Some(MICRO)),
+            (Some(MICRO), -1e-6, Some(MICRO)),
             (Some(MICRO), 1e-5, Some(MICRO)),
+            (Some(MICRO), -1e-5, Some(MICRO)),
             (Some(MICRO), 1e-4, Some(MICRO)),
             (Some(MILLI), 1e-3, Some(MILLI)),
             (Some(MILLI), 1e-2, Some(CENTI)),
@@ -253,7 +256,7 @@ mod test {
             assert_eq!(*com, PrefixSet::Common.best_prefix_for(v), "{v:e}");
             assert_eq!(*all, PrefixSet::All.best_prefix_for(v), "{v:e}");
 
-            let v: f64 = *v;
+            let v: f64 = (*v as f64).abs();
             let f = 10f64.powf(v.log10() + 0.3);
             assert_eq!(*com, PrefixSet::Common.best_prefix_for(&f), "{v:e} {f:e}");
             let f = 10f64.powf(v.log10() + 0.7);
