@@ -5,9 +5,9 @@
 //! Contains [`Duration`] and [`DurationUnit`], a Physical Quantity of amount of Time passed.
 //!
 
-use core::fmt::{Display, Formatter};
-
 use crate::units::{FromUnits, Unit};
+use core::cmp::Ordering;
+use core::fmt::{Display, Formatter};
 
 ///
 /// Represents a specific duration unit - SI or otherwise.
@@ -197,6 +197,13 @@ from_units_duration!(u64);
 from_units_duration!(i64);
 from_units_duration!(f32);
 from_units_duration!(f64);
+
+impl Eq for Duration {}
+impl Ord for Duration {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.value.total_cmp(&other.as_unit(self.units).value)
+    }
+}
 
 impl Unit<DurationUnit> for Duration {
     fn as_unit(&self, units: DurationUnit) -> Self {
