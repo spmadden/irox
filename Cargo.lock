@@ -1633,6 +1633,7 @@ dependencies = [
  "nohash-hasher",
  "parking_lot",
  "puffin",
+ "rayon",
  "serde",
 ]
 
@@ -2668,7 +2669,9 @@ dependencies = [
  "irox-build-rs",
  "irox-imagery",
  "irox-stats",
+ "irox-time",
  "irox-tools",
+ "irox-units",
  "log",
  "puffin",
  "ron",

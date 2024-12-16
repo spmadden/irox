@@ -41,10 +41,18 @@ wasm-bindgen-futures.workspace = true
 
 [dev-dependencies]
 eframe = { workspace = true, features = ["default"] }
+egui = { workspace = true, features = ["rayon"] }
+irox-time = { workspace = true, features = ["std"] }
+irox-tools = { workspace = true, features = ["std"] }
+
 
 [[example]]
 name = "irox_egui_gallery"
 required-features = ["serde", "plots"]
+
+[[example]]
+name = "plotsperf"
+required-features = ["plots"]
 
 [build-dependencies]
 irox-build-rs.workspace = true
