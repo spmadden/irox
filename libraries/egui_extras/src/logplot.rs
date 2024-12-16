@@ -21,9 +21,11 @@ use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::format::iso8601::EXTENDED_TIME_FORMAT;
 use irox_time::Duration;
+use irox_tools::sync::Exchanger;
 use irox_units::quantities::Units;
 use irox_units::units::duration::DurationUnit;
 use std::fmt::{Display, Formatter, LowerExp};
+use std::ops::Deref;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -130,6 +132,24 @@ pub struct Line {
     pub data: Arc<Vec<PlotPoint>>,
     pub line_stroke: Stroke,
     pub sample_marker: Option<Shape>,
+    pub line_exchanger: LineDataExchanger,
+}
+impl Line {
+    pub fn set_name<T: AsRef<str>>(&mut self, name: T) {
+        self.name = Arc::new(name.as_ref().to_owned());
+    }
+}
+
+#[derive(Default, Clone)]
+pub struct LineDataExchanger {
+    exchanger: Exchanger<Arc<Vec<PlotPoint>>>,
+}
+impl Deref for LineDataExchanger {
+    type Target = Exchanger<Arc<Vec<PlotPoint>>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.exchanger
+    }
 }
 pub fn y_axis_units_formatter(unit: Units) -> Box<FormatterFn> {
     Box::new(move |x| unit.format(&x))
@@ -160,7 +180,6 @@ pub struct BasicPlot {
     /// Optional title for this plot.
     pub title: Option<String>,
 
-    data_updated: bool,
     last_render_size: Rect2D,
 }
 
@@ -206,10 +225,9 @@ impl BasicPlot {
             line.name = Arc::new(name.as_ref().to_string());
             line.data = data.clone();
         });
-        self.data_updated = true;
         self
     }
-    pub fn add_line<T: FnMut(&mut Line)>(&mut self, mut func: T) {
+    pub fn add_line<T: FnMut(&mut Line)>(&mut self, mut func: T) -> LineDataExchanger {
         let idx = self.lines.len() % DEFAULT_COLORMAP.len();
         let color = DEFAULT_COLORMAP
             .get(idx)
@@ -223,11 +241,10 @@ impl BasicPlot {
             ..Default::default()
         };
         func(&mut line);
+        let exch = line.line_exchanger.clone();
+        line.line_exchanger.set_data_changed();
         self.lines.push(line);
-        self.data_updated = true;
-    }
-    pub fn mark_data_updated(&mut self) {
-        self.data_updated = true;
+        exch
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         profile_scope!("check_zoom", self.name.as_str());
@@ -257,6 +274,20 @@ impl BasicPlot {
         }
         if response.double_clicked() {
             self.x_axis.zoomed_range = None;
+        }
+    }
+    fn any_lines_changed(&self) -> bool {
+        let mut changed = false;
+        for line in &self.lines {
+            changed |= line.line_exchanger.new_data_available();
+        }
+        changed
+    }
+    fn update_line_data(&mut self) {
+        for line in &mut self.lines {
+            if let Some(data) = line.line_exchanger.take_data() {
+                line.data = data;
+            }
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
@@ -376,8 +407,9 @@ impl BasicPlot {
         );
 
         let lr = rect.into();
-        if lr != self.last_render_size || self.data_updated {
+        if lr != self.last_render_size || self.any_lines_changed() {
             profile_scope!("update range", self.name.as_str());
+            self.update_line_data();
             let points = self
                 .lines
                 .iter()
