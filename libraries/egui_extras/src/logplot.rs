@@ -24,6 +24,7 @@ use irox_time::Duration;
 use irox_units::quantities::Units;
 use irox_units::units::duration::DurationUnit;
 use std::fmt::{Display, Formatter, LowerExp};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 #[derive(Debug, Default, Copy, Clone)]
@@ -125,6 +126,7 @@ impl PlotInteraction {
 #[derive(Default)]
 pub struct Line {
     pub name: Arc<String>,
+    pub visible: AtomicBool,
     pub data: Arc<Vec<PlotPoint>>,
     pub line_stroke: Stroke,
     pub sample_marker: Option<Shape>,
@@ -217,6 +219,7 @@ impl BasicPlot {
         let stroke = Stroke::new(0.75, color);
         let mut line = Line {
             line_stroke: stroke,
+            visible: AtomicBool::new(true),
             ..Default::default()
         };
         func(&mut line);
@@ -374,6 +377,7 @@ impl BasicPlot {
             let points = self
                 .lines
                 .iter()
+                .filter(|v| v.visible.load(Ordering::Relaxed))
                 .map(|v| v.data.as_slice())
                 .collect::<Vec<&[PlotPoint]>>();
             // update and rescale the data based on this frame's painting window.
@@ -461,9 +465,13 @@ impl BasicPlot {
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
             profile_scope!("draw line", line.name.as_str());
-            let points = &line.data;
-            let stroke = &line.line_stroke;
-            let mut lineout = Vec::<Pos2>::with_capacity(points.len());
+            let visible = line.visible.load(Ordering::Relaxed);
+            let mut color = Color32::BLACK;
+            if visible {
+                let stroke = &line.line_stroke;
+                color = stroke.color;
+                let points = &line.data;
+                let mut lineout = Vec::<Pos2>::with_capacity(points.len());
 
             for pnt in points.iter() {
                 let Some(pnt) = self.scale_point(pnt) else {
@@ -494,6 +502,30 @@ impl BasicPlot {
                 FontId::new(10., FontFamily::Name(BOLD.into())),
                 stroke.color,
             );
+                for pnt in points.iter() {
+                    let Some(pnt) = self.scale_point(pnt) else {
+                        draw_log_warning = true;
+                        self.draw_yellow_err_line(&mut painter, pnt, ui);
+                        continue;
+                    };
+                    lineout.push(pnt);
+                    if let Some(shp) = &line.sample_marker {
+                        let mut shp = shp.clone();
+                        shp.translate(Vec2::new(pnt.x, pnt.y));
+                        painter.add(shp);
+                    }
+                    if let Some(pos) = response.hover_pos() {
+                        let dx = (pos.x - pnt.x).abs();
+                        let dy = (pos.y - pnt.y).abs();
+                        let dist = (dx * dx + dy * dy).sqrt();
+                        if dist <= 10.0 {
+                            closest_hover = Some(pnt);
+                        }
+                    }
+                }
+
+                painter.add(Shape::line(lineout, *stroke));
+            }
             start_text.x += used.width() + 10.;
         }
 
