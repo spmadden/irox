@@ -35,6 +35,9 @@ bench = false
 [[bench]]
 name = "random"
 harness = false
+[[bench]]
+name = "atomics"
+harness = false
 
 [package.metadata.docs.rs]
 all-features = true
