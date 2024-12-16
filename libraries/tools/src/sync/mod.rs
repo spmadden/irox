@@ -11,6 +11,8 @@ pub use optional::*;
 mod eventual;
 cfg_feature_std! {
     mod once;
+    pub use exchange::*;
+    mod exchange;
 }
 mod flags;
 mod optional;
