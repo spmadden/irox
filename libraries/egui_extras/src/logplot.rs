@@ -131,6 +131,7 @@ pub struct Line {
     pub visible: AtomicBool,
     pub data: Arc<Vec<PlotPoint>>,
     pub line_stroke: Stroke,
+    pub text_font: FontId,
     pub sample_marker: Option<Shape>,
     pub line_exchanger: LineDataExchanger,
 }
@@ -238,6 +239,7 @@ impl BasicPlot {
         let mut line = Line {
             line_stroke: stroke,
             visible: AtomicBool::new(true),
+            text_font: FontId::new(10., FontFamily::Name(BOLD.into())),
             ..Default::default()
         };
         func(&mut line);
@@ -384,11 +386,25 @@ impl BasicPlot {
             .unwrap_or(width * 0.1)
             + y_label_additional_width;
 
+        let text_label_offset_y = self
+            .lines
+            .iter()
+            .map(|line| {
+                let galley = painter.layout_no_wrap(
+                    line.name.as_str().to_string(),
+                    line.text_font.clone(),
+                    Color32::default(),
+                );
+                galley.size().y
+            })
+            .reduce(f32::max)
+            .unwrap_or(width * 0.1);
+
         let y_offset = 0.0 + x_label_additional_width;
 
         let y_axis_x_offset = rect.min.x + x_offset + 5.;
         let y_axis_y_min = rect.min.y + height * 0.05;
-        let y_axis_y_max = rect.min.y + height * 0.95;
+        let y_axis_y_max = rect.min.y + height * 0.95 - text_label_offset_y;
         let x_axis_x_min = y_axis_x_offset;
         let x_axis_x_max = rect.min.x + width * 0.98;
         let x_axis_y_offset = y_axis_y_max - y_offset;
@@ -421,7 +437,6 @@ impl BasicPlot {
             self.y_axis.update_range(points.as_slice(), |p| p.y);
 
             self.last_render_size = lr;
-            self.data_updated = false;
         }
 
         // draw the info across the bottom of the x axis
@@ -509,35 +524,6 @@ impl BasicPlot {
                 let points = &line.data;
                 let mut lineout = Vec::<Pos2>::with_capacity(points.len());
 
-            for pnt in points.iter() {
-                let Some(pnt) = self.scale_point(pnt) else {
-                    draw_log_warning = true;
-                    self.draw_yellow_err_line(&mut painter, pnt, ui);
-                    continue;
-                };
-                lineout.push(pnt);
-                if let Some(shp) = &line.sample_marker {
-                    let mut shp = shp.clone();
-                    shp.translate(Vec2::new(pnt.x, pnt.y));
-                    painter.add(shp);
-                }
-                if let Some(pos) = response.hover_pos() {
-                    let dx = (pos.x - pnt.x).abs();
-                    let dy = (pos.y - pnt.y).abs();
-                    let dist = (dx * dx + dy * dy).sqrt();
-                    if dist <= 10.0 {
-                        closest_hover = Some(pnt);
-                    }
-                }
-            }
-            painter.add(Shape::line(lineout, *stroke));
-            let used = painter.text(
-                start_text,
-                Align2::LEFT_BOTTOM,
-                line.name.as_str(),
-                FontId::new(10., FontFamily::Name(BOLD.into())),
-                stroke.color,
-            );
                 for pnt in points.iter() {
                     let Some(pnt) = self.scale_point(pnt) else {
                         draw_log_warning = true;
@@ -562,6 +548,22 @@ impl BasicPlot {
 
                 painter.add(Shape::line(lineout, *stroke));
             }
+            let galley =
+                painter.layout_no_wrap(line.name.to_string(), line.text_font.clone(), color);
+            let used = Align2::LEFT_BOTTOM.anchor_size(start_text, galley.size());
+            if let Some(pos) = response.hover_pos() {
+                if used.contains(pos) {
+                    let hvr = ui.visuals().widgets.hovered;
+                    let fill = hvr.bg_fill;
+                    let rnd = hvr.rounding;
+                    let strk = hvr.bg_stroke;
+                    painter.rect(used, rnd, fill, strk);
+                    if response.clicked() {
+                        line.visible.swap(!visible, Ordering::Relaxed);
+                    }
+                }
+            }
+            painter.galley(used.min, galley, color);
             start_text.x += used.width() + 10.;
         }
 
