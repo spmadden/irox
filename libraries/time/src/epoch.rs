@@ -8,9 +8,9 @@
 //! A [`Timestamp`] is a [`Duration`], a physical amount of time measured against an [`Epoch`]
 //!
 
+use core::cmp::Ordering;
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Sub, SubAssign};
-
 use irox_units::units::duration::Duration;
 
 use crate::gregorian::Date;
@@ -30,7 +30,7 @@ impl Epoch {
 
 ///
 /// Represents a [`Duration`] offset from a particular [`Epoch`]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Timestamp<T> {
     epoch: Epoch,
     offset: Duration,
@@ -59,6 +59,26 @@ impl<T> Timestamp<T> {
     #[must_use]
     pub fn get_offset(&self) -> Duration {
         self.offset
+    }
+}
+impl<T> PartialEq for Timestamp<T> {
+    fn eq(&self, other: &Self) -> bool {
+        if self.epoch != other.epoch {
+            return false;
+        }
+        self.offset.eq(&other.offset)
+    }
+}
+impl<T> Eq for Timestamp<T> {}
+
+impl<T> PartialOrd for Timestamp<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.offset.cmp(&other.offset))
+    }
+}
+impl<T> Ord for Timestamp<T> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.offset.cmp(&other.offset)
     }
 }
 
