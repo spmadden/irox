@@ -17,6 +17,12 @@ use egui::{
 use irox_imagery::colormaps::CLASSIC_20;
 use irox_imagery::Color;
 use irox_stats::rects::Rect2D;
+use irox_time::datetime::UTCDateTime;
+use irox_time::epoch::UnixTimestamp;
+use irox_time::format::iso8601::EXTENDED_TIME_FORMAT;
+use irox_time::Duration;
+use irox_units::quantities::Units;
+use irox_units::units::duration::DurationUnit;
 use std::fmt::{Display, Formatter, LowerExp};
 use std::sync::Arc;
 
@@ -122,6 +128,17 @@ pub struct Line {
     pub data: Arc<Vec<PlotPoint>>,
     pub line_stroke: Stroke,
     pub sample_marker: Option<Shape>,
+}
+pub fn y_axis_units_formatter(unit: Units) -> Box<FormatterFn> {
+    Box::new(move |x| unit.format(&x))
+}
+pub fn x_axis_time_millis_formatter() -> Box<FormatterFn> {
+    Box::new(|x: f64| {
+        let val = DurationUnit::Millisecond.as_seconds(x).round() as u64;
+        let ts = UnixTimestamp::from_offset(Duration::from_seconds(val));
+        let dt = UTCDateTime::from(ts);
+        dt.get_time().format(&EXTENDED_TIME_FORMAT)
+    })
 }
 
 ///
