@@ -370,6 +370,10 @@ impl BasicPlot {
         self.y_axis.screen_limit = x_axis_y_offset;
         self.y_axis.screen_range = x_axis_y_offset - y_axis_y_min;
         self.y_axis.incr_sign = -1.0;
+        let grid_bounds = Rect::from_min_max(
+            Pos2::new(x_axis_x_min, y_axis_y_min),
+            Pos2::new(x_axis_x_max, y_axis_y_max),
+        );
 
         let lr = rect.into();
         if lr != self.last_render_size || self.data_updated {
@@ -529,7 +533,7 @@ impl BasicPlot {
             start_text.x += used.width() + 10.;
         }
 
-        self.draw_cursor(ui, &mut response, &mut painter, closest_hover);
+        self.draw_cursor(ui, &mut response, &mut painter, closest_hover, &grid_bounds);
 
         if draw_log_warning {
             painter.text(
@@ -593,6 +597,7 @@ impl BasicPlot {
         response: &mut Response,
         painter: &mut Painter,
         closest_point: Option<Pos2>,
+        grid_bounds: &Rect,
     ) {
         // draw the hover cursors
         let draw_pos = if let Some(closest_point) = closest_point {
@@ -602,6 +607,9 @@ impl BasicPlot {
         } else {
             return;
         };
+        if !grid_bounds.contains(draw_pos) {
+            return;
+        }
         let rect = response.rect;
         let xrng = rect.min.x..=rect.max.x;
         let yrng = rect.min.y..=rect.max.y;
