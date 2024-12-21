@@ -226,7 +226,7 @@ impl Projection for TransverseMercator {
 
         let scaled_axis = self.shape.semi_major_axis;
         let phi0 = self.center.get_latitude().0.as_radians().value();
-        let mut phi_prime = (northing - &self.false_northing) / scaled_axis + phi0;
+        let mut phi_prime = (northing - self.false_northing) / scaled_axis + phi0;
         loop {
             let dphi = phi_prime - phi0;
             let m = MeridianCalculators::DeakinHunterKarney
@@ -234,11 +234,11 @@ impl Projection for TransverseMercator {
                 .meridional_arc_distance(&Angle::new_radians(dphi))
                 * k0;
 
-            let phip_eps = northing - &self.false_northing - m;
+            let phip_eps = northing - self.false_northing - m;
             if phip_eps.as_meters().value().abs() < phi_eps {
                 break;
             }
-            phi_prime += (northing - &self.false_northing - m) / scaled_axis;
+            phi_prime += (northing - self.false_northing - m) / scaled_axis;
         }
 
         let phiplat = Latitude(Angle::new_radians(phi_prime));
@@ -257,7 +257,7 @@ impl Projection for TransverseMercator {
             .as_meters()
             .value();
 
-        let de = (easting - &self.false_easting).as_meters().value();
+        let de = (easting - self.false_easting).as_meters().value();
         let de2 = de.powi(2);
         let de3 = de.powi(3);
         let de4 = de.powi(4);
