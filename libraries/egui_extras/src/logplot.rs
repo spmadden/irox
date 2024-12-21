@@ -136,7 +136,7 @@ pub enum YAxisSide {
 pub struct Line {
     pub name: Arc<String>,
     pub visible: AtomicBool,
-    pub data: Arc<Vec<PlotPoint>>,
+    pub data: Arc<[PlotPoint]>,
     pub yaxis_side: YAxisSide,
     pub line_stroke: Stroke,
     pub text_font: FontId,
@@ -151,10 +151,10 @@ impl Line {
 
 #[derive(Default, Clone)]
 pub struct LineDataExchanger {
-    exchanger: Exchanger<Arc<Vec<PlotPoint>>>,
+    exchanger: Exchanger<Arc<[PlotPoint]>>,
 }
 impl Deref for LineDataExchanger {
-    type Target = Exchanger<Arc<Vec<PlotPoint>>>;
+    type Target = Exchanger<Arc<[PlotPoint]>>;
 
     fn deref(&self) -> &Self::Target {
         &self.exchanger
@@ -230,7 +230,7 @@ impl BasicPlot {
         self
     }
     #[must_use]
-    pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<Vec<PlotPoint>>) -> Self {
+    pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<[PlotPoint]>) -> Self {
         self.add_line(move |line| {
             line.name = Arc::new(name.as_ref().to_string());
             line.data = data.clone();
@@ -316,13 +316,21 @@ impl BasicPlot {
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
         response.context_menu(|ui| {
             if ui
-                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::Linear, "Y-Linear")
+                .selectable_value(
+                    &mut self.y_axis_left.scale_mode,
+                    ScaleMode::Linear,
+                    "Y-Linear",
+                )
                 .clicked()
             {
                 ui.close_menu();
             }
             if ui
-                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::Log10, "Y-Log10")
+                .selectable_value(
+                    &mut self.y_axis_left.scale_mode,
+                    ScaleMode::Log10,
+                    "Y-Log10",
+                )
                 .clicked()
             {
                 ui.close_menu();
@@ -439,24 +447,27 @@ impl BasicPlot {
                 .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
-                .map(|v| v.data.as_slice())
+                .map(|v| v.data.as_ref())
                 .collect::<Vec<&[PlotPoint]>>();
             // update and rescale the data based on this frame's painting window.
             self.x_axis.update_range(all_points.as_slice(), |p| p.x);
 
-            let left_points = self.lines
+            let left_points = self
+                .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
                 .filter(|v| v.yaxis_side == YAxisSide::LeftAxis)
-                .map(|v| v.data.as_slice())
+                .map(|v| v.data.as_ref())
                 .collect::<Vec<&[PlotPoint]>>();
-            self.y_axis_left.update_range(left_points.as_slice(), |p| p.y);
+            self.y_axis_left
+                .update_range(left_points.as_slice(), |p| p.y);
             if let Some(y_axis_rt) = &mut self.y_axis_right {
-                let rt_points = self.lines
+                let rt_points = self
+                    .lines
                     .iter()
                     .filter(|v| v.visible.load(Ordering::Relaxed))
                     .filter(|v| v.yaxis_side == YAxisSide::RightAxis)
-                    .map(|v| v.data.as_slice())
+                    .map(|v| v.data.as_ref())
                     .collect::<Vec<&[PlotPoint]>>();
                 y_axis_rt.update_range(rt_points.as_slice(), |p| p.y);
             }
@@ -655,15 +666,23 @@ impl BasicPlot {
         })
     }
 
-    fn draw_yellow_err_line(&self, painter: &mut Painter, point: &PlotPoint, yaxis_side: YAxisSide, ui: &mut Ui) {
+    fn draw_yellow_err_line(
+        &self,
+        painter: &mut Painter,
+        point: &PlotPoint,
+        yaxis_side: YAxisSide,
+        ui: &mut Ui,
+    ) {
         let caution_color = ui.visuals().warn_fg_color;
         let axis = match yaxis_side {
             YAxisSide::LeftAxis => &self.y_axis_left,
-            YAxisSide::RightAxis => if let Some(rt) = &self.y_axis_right {
-                rt
-            } else {
-                return;
-            },
+            YAxisSide::RightAxis => {
+                if let Some(rt) = &self.y_axis_right {
+                    rt
+                } else {
+                    return;
+                }
+            }
         };
         if point.y > 0.0 {
             // y is fine, horizontal at Y
@@ -713,10 +732,12 @@ impl BasicPlot {
         }
         let y_axis = match side {
             YAxisSide::LeftAxis => &mut self.y_axis_left,
-            YAxisSide::RightAxis => if let Some(ax) = &self.y_axis_right {
-                ax
-            } else {
-                return;
+            YAxisSide::RightAxis => {
+                if let Some(ax) = &self.y_axis_right {
+                    ax
+                } else {
+                    return;
+                }
             }
         };
         let rect = response.rect;

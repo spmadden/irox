@@ -9,7 +9,7 @@ use egui::{CentralPanel, Context};
 use log::error;
 
 use irox_egui_extras::composite::CompositeApp;
-use irox_egui_extras::logplot::BasicPlot;
+use irox_egui_extras::logplot::{BasicPlot, PlotPoint};
 use irox_egui_extras::styles::StylePersistingApp;
 use irox_egui_extras::toolframe::ToolApp;
 use irox_stats::Distribution;
@@ -122,10 +122,10 @@ impl HalflifesApp {
                 .map(|(idx, v)| [idx as f64, *v].into())
                 .collect::<Vec<_>>()
         }) {
-            let run = Arc::new(run);
+            let run = Arc::<[PlotPoint]>::from(run);
             plot.add_line(move |line| {
                 line.data = run.clone();
-            })
+            });
         }
 
         HalflifesApp { plot }

@@ -43,7 +43,7 @@ impl TestApp {
         for (name, wind) in windows {
             log_plot.add_line(|line| {
                 line.name = Arc::new((*name).to_string());
-                line.data = Arc::new(
+                line.data = Arc::from(
                     (-40..=40)
                         .map(|v| {
                             PlotPoint::new(v as f64 / 10., wind.get_kernel_value(v as f64 / 10.))
