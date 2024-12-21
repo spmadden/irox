@@ -383,14 +383,14 @@ impl BasicPlot {
             if let Some(errors) = errors {
                 let nval = errors.as_ref().len();
                 let mut mesh = Mesh::default();
-                mesh.reserve_vertices(nval);
-                mesh.reserve_triangles((nval - 1) * 2);
+                mesh.reserve_vertices(nval * 3);
+                mesh.reserve_triangles((nval - 1) * 4);
 
                 let fill_color = Rgba::from(stroke.color)
                     // .to_opaque()
-                    .multiply(0.50)
+                    .multiply(0.40)
                     .into();
-
+                let mut added_triangles = 0;
                 for (x, summary) in errors.as_ref() {
                     let i = mesh.vertices.len() as u32;
                     let Some(max) = summary.max() else {
@@ -411,17 +411,45 @@ impl BasicPlot {
                     let Some(minpos) = scale_point!(self, minpnt, line.yaxis_side) else {
                         continue;
                     };
-                    mesh.colored_vertex(maxpos, fill_color);
-                    mesh.colored_vertex(minpos, fill_color);
-                    mesh.add_triangle(i, i + 1, i + 2);
-                    mesh.add_triangle(i + 1, i + 2, i + 3);
+
+                    let upper_quad = PlotPoint {
+                        x: *x,
+                        y: bounds.upper_left_quadrant().center().y,
+                    };
+                    let Some(uqpos) = scale_point!(self, upper_quad, line.yaxis_side) else {
+                        continue;
+                    };
+                    let lower_quad = PlotPoint {
+                        x: *x,
+                        y: bounds.lower_left_quadrant().center().y,
+                    };
+                    let Some(lqpos) = scale_point!(self, lower_quad, line.yaxis_side) else {
+                        continue;
+                    };
+                    mesh.colored_vertex(maxpos, fill_color); // a
+                    mesh.colored_vertex(uqpos, Color32::TRANSPARENT); // b
+                    mesh.colored_vertex(lqpos, Color32::TRANSPARENT); // c
+                    mesh.colored_vertex(minpos, fill_color); // d
+                    let a = i;
+                    let b = i + 1;
+                    let c = i + 2;
+                    let d = i + 3;
+
+                    let e = i + 4;
+                    let f = i + 5;
+                    let g = i + 6;
+                    let h = i + 7;
+
+                    if added_triangles < (nval - 1) {
+                        mesh.add_triangle(a, b, e);
+                        mesh.add_triangle(b, e, f);
+
+                        mesh.add_triangle(c, d, g);
+                        mesh.add_triangle(d, g, h);
+
+                        added_triangles += 1;
+                    }
                 }
-                mesh.indices.pop();
-                mesh.indices.pop();
-                mesh.indices.pop();
-                mesh.indices.pop();
-                mesh.indices.pop();
-                mesh.indices.pop();
 
                 line.meshes = vec![Shape::mesh(mesh)];
             }
