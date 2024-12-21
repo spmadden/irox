@@ -2,6 +2,12 @@
 // Copyright 2024 IROX Contributors
 //
 
+extern crate alloc;
+use crate::sampling::Sample;
+use alloc::collections::BTreeMap;
+use irox_time::epoch::Timestamp;
+use irox_time::Duration;
+
 /// A convolution kernel generator.
 pub trait KernelGenerator {
     ///
@@ -45,6 +51,18 @@ impl KernelGenerator for SavitszkyGolaySmoother23 {
 
     fn get_kernel_value(&self, offset: f64) -> f64 {
         SavitszkyGolaySmoother23::get_kernel_value(self, offset)
+    }
+}
+pub struct SavitszkyGolaySmoother24Builder;
+impl KernelBuilder for SavitszkyGolaySmoother24Builder {
+    type Output = SavitszkyGolaySmoother23;
+
+    fn generate_kernel(&self, num_samples: usize) -> Option<Self::Output> {
+        (num_samples >= self.minimum_samples()).then(|| SavitszkyGolaySmoother23::new(num_samples))
+    }
+
+    fn minimum_samples(&self) -> usize {
+        3
     }
 }
 macro_rules! make_fn {
@@ -142,6 +160,134 @@ make_fn!(make_savitskygolay_1d2, SavitskyGolay1DerivOrder2);
 pub const SAVINSKY_GOLAY_1D_2_5: [f64; 5] = make_savitskygolay_1d2::<5>();
 pub const SAVINSKY_GOLAY_1D_2_7: [f64; 7] = make_savitskygolay_1d2::<7>();
 pub const SAVINSKY_GOLAY_1D_2_9: [f64; 9] = make_savitskygolay_1d2::<9>();
+
+pub struct TimeWindow<T> {
+    values: BTreeMap<Timestamp<T>, f64>,
+    window_duration: Duration,
+}
+impl<T: Copy> TimeWindow<T> {
+    pub fn new(window_duration: Duration) -> Self {
+        Self {
+            window_duration,
+            values: BTreeMap::<Timestamp<T>, f64>::new(),
+        }
+    }
+    pub fn insert(&mut self, timestamp: Timestamp<T>, value: f64) {
+        self.values.insert(timestamp, value);
+        let Some(last) = self.values.last_key_value() else {
+            return;
+        };
+        let window_start = last.0 - self.window_duration;
+        self.values = self.values.split_off(&window_start);
+    }
+
+    pub fn add_sample(&mut self, samp: Sample<T>) {
+        self.insert(samp.time, samp.value);
+    }
+
+    #[must_use]
+    pub fn first_key_value(&self) -> Option<(&Timestamp<T>, &f64)> {
+        self.values.first_key_value()
+    }
+    #[must_use]
+    pub fn last_key_value(&self) -> Option<(&Timestamp<T>, &f64)> {
+        self.values.last_key_value()
+    }
+
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.values.len()
+    }
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    #[must_use]
+    pub fn data(&self) -> Vec<f64> {
+        self.values.values().copied().collect()
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&Timestamp<T>, &f64)> {
+        self.values.iter()
+    }
+
+    #[must_use]
+    pub fn map_data<V, F: Fn((&Timestamp<T>, &f64)) -> V>(&self, fun: F) -> Vec<V> {
+        let mut out = Vec::with_capacity(self.len());
+        for v in &self.values {
+            out.push(fun(v));
+        }
+        out
+    }
+}
+
+///
+/// How to choose the output timestamp of the window'ed function.
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
+pub enum WindowBinStrategy {
+    /// The lower value of the window (min)
+    Lower,
+    /// The center value of the window `(max-min)/2`
+    #[default]
+    Center,
+    /// The upper value of the window (max)
+    Upper,
+}
+pub trait KernelBuilder {
+    type Output: KernelGenerator;
+    fn generate_kernel(&self, num_samples: usize) -> Option<Self::Output>;
+    fn minimum_samples(&self) -> usize;
+}
+pub struct TimedWindowFilter<T, K: KernelGenerator> {
+    values: TimeWindow<T>,
+    bin_strategy: WindowBinStrategy,
+    kernel_generator: Box<dyn KernelBuilder<Output = K>>,
+}
+impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
+    pub fn new(
+        window_duration: Duration,
+        bin_strategy: WindowBinStrategy,
+        kernel_generator: Box<dyn KernelBuilder<Output = K>>,
+    ) -> Self {
+        Self {
+            bin_strategy,
+            kernel_generator,
+            values: TimeWindow::new(window_duration),
+        }
+    }
+    pub fn insert(&mut self, time: Timestamp<T>, value: f64) -> Option<Sample<T>> {
+        self.values.insert(time, value);
+
+        if self.kernel_generator.minimum_samples() > self.values.len() {
+            // not enough samples to meet the requirements of the kernel.
+            return None;
+        }
+        let latest = self.values.last_key_value()?;
+        let last = *latest.0;
+        let window_start = last - self.values.window_duration;
+
+        let numvals = self.values.len();
+        let filter = self.kernel_generator.generate_kernel(numvals)?;
+        let center_time = window_start + self.values.window_duration / 2.;
+        // convolve!
+        let mut tally = 0f64;
+        let mut out = 0f64;
+        for (time, val) in self.values.iter() {
+            let idx = (*time - center_time) / self.values.window_duration;
+            let kernel = filter.get_kernel_value(idx);
+            tally += kernel;
+            out += kernel * val;
+        }
+        out /= tally;
+        let out_time = match self.bin_strategy {
+            WindowBinStrategy::Lower => window_start,
+            WindowBinStrategy::Center => center_time,
+            WindowBinStrategy::Upper => last,
+        };
+        Some(Sample::new(out, out_time))
+    }
+}
 
 #[cfg(test)]
 mod tests {
