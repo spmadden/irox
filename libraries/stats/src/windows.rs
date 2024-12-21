@@ -4,9 +4,14 @@
 
 extern crate alloc;
 use crate::sampling::Sample;
+use crate::streaming::Summary;
 use alloc::collections::BTreeMap;
+use core::fmt::Debug;
+use core::ops::Deref;
+use core::ops::{Add, Div, Mul, Sub};
 use irox_time::epoch::Timestamp;
 use irox_time::Duration;
+use irox_tools::f64::FloatExt;
 
 /// A convolution kernel generator.
 pub trait KernelGenerator {
@@ -161,6 +166,10 @@ pub const SAVINSKY_GOLAY_1D_2_5: [f64; 5] = make_savitskygolay_1d2::<5>();
 pub const SAVINSKY_GOLAY_1D_2_7: [f64; 7] = make_savitskygolay_1d2::<7>();
 pub const SAVINSKY_GOLAY_1D_2_9: [f64; 9] = make_savitskygolay_1d2::<9>();
 
+///
+/// This struct is a rolling time window for the provided data.  It will automatically "throw out"
+/// data that falls outside (older) than the most recent data provided.  It does NOT do any
+/// downsampling or processing of the data.   
 pub struct TimeWindow<T> {
     values: BTreeMap<Timestamp<T>, f64>,
     window_duration: Duration,
@@ -180,20 +189,26 @@ impl<T: Copy> TimeWindow<T> {
         let window_start = last.0 - self.window_duration;
         self.values = self.values.split_off(&window_start);
     }
+    pub fn clear(&mut self) {
+        self.values.clear();
+    }
 
     pub fn add_sample(&mut self, samp: Sample<T>) {
         self.insert(samp.time, samp.value);
     }
 
+    /// returns the first (earliest, oldest) sample provided
     #[must_use]
     pub fn first_key_value(&self) -> Option<(&Timestamp<T>, &f64)> {
         self.values.first_key_value()
     }
+    /// returns the last (latest, newest) sample provided
     #[must_use]
     pub fn last_key_value(&self) -> Option<(&Timestamp<T>, &f64)> {
         self.values.last_key_value()
     }
 
+    /// number of samples currently stored.
     #[must_use]
     pub fn len(&self) -> usize {
         self.values.len()
@@ -203,6 +218,7 @@ impl<T: Copy> TimeWindow<T> {
         self.len() == 0
     }
 
+    /// Copies the set of the data out
     #[must_use]
     pub fn data(&self) -> Vec<f64> {
         self.values.values().copied().collect()
@@ -239,8 +255,13 @@ pub trait KernelBuilder {
     fn generate_kernel(&self, num_samples: usize) -> Option<Self::Output>;
     fn minimum_samples(&self) -> usize;
 }
+///
+/// Time-series data downsampling based on a convolution kernel.  Stores up to 2x the time window
+/// for nyquist sampling reasons.  Once it has a full time window duration, will run the kernel and
+/// provide the result of the convolution operation.
 pub struct TimedWindowFilter<T, K: KernelGenerator> {
     values: TimeWindow<T>,
+    window_duration: Duration,
     bin_strategy: WindowBinStrategy,
     kernel_generator: Box<dyn KernelBuilder<Output = K>>,
 }
@@ -251,11 +272,15 @@ impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
         kernel_generator: Box<dyn KernelBuilder<Output = K>>,
     ) -> Self {
         Self {
+            window_duration,
             bin_strategy,
             kernel_generator,
-            values: TimeWindow::new(window_duration),
+            values: TimeWindow::new(window_duration * 2.0),
         }
     }
+    ///
+    /// Push a new sample into the filter.  If there's sufficient data to run the downsampling,
+    /// will run and return the result.
     pub fn insert(&mut self, time: Timestamp<T>, value: f64) -> Option<Sample<T>> {
         self.values.insert(time, value);
 
@@ -263,18 +288,24 @@ impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
             // not enough samples to meet the requirements of the kernel.
             return None;
         }
+        let earliest = self.values.first_key_value()?;
         let latest = self.values.last_key_value()?;
+        let stored_range = latest.0 - earliest.0;
+        if stored_range <= self.window_duration {
+            // collect more datas.
+            return None;
+        }
         let last = *latest.0;
-        let window_start = last - self.values.window_duration;
+        let window_start = last - self.window_duration;
 
         let numvals = self.values.len();
         let filter = self.kernel_generator.generate_kernel(numvals)?;
-        let center_time = window_start + self.values.window_duration / 2.;
+        let center_time = window_start + self.window_duration / 2.;
         // convolve!
         let mut tally = 0f64;
         let mut out = 0f64;
         for (time, val) in self.values.iter() {
-            let idx = (*time - center_time) / self.values.window_duration;
+            let idx = (*time - center_time) / self.window_duration;
             let kernel = filter.get_kernel_value(idx);
             tally += kernel;
             out += kernel * val;
@@ -285,7 +316,104 @@ impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
             WindowBinStrategy::Center => center_time,
             WindowBinStrategy::Upper => last,
         };
+        self.values.clear();
         Some(Sample::new(out, out_time))
+    }
+}
+///
+/// An individual timed bin.  Has a start time, a width, and the min/mean/max summary of the data
+/// within that bin.
+#[derive()]
+pub struct WindowBin<V, I, R> {
+    pub width: R,
+    pub start: I,
+    pub summary: Summary<V>,
+}
+impl<V: Default, I, R> WindowBin<V, I, R> {
+    pub fn new(width: R, start: I) -> Self {
+        Self {
+            width,
+            start,
+            summary: Summary::default(),
+        }
+    }
+}
+impl<
+        T: Sub<T, Output = T>
+            + PartialOrd
+            + Copy
+            + Default
+            + Div<f64, Output = T>
+            + Add<T, Output = T>
+            + Mul<f64, Output = T>
+            + Mul<T, Output = T>
+            + FloatExt<Type = T>,
+        I,
+        R,
+    > WindowBin<T, I, R>
+{
+    pub fn insert(&mut self, value: T) {
+        self.summary.add_sample(value);
+    }
+}
+impl<V, I, R> Deref for WindowBin<V, I, R> {
+    type Target = Summary<V>;
+    fn deref(&self) -> &Self::Target {
+        &self.summary
+    }
+}
+///
+/// Time series data binning.  Initialize it with a bin width and it will downsample/re-bin
+/// your data providing each bin as a [`WindowBin`]
+pub struct BinStatistics<V, I, R> {
+    pub bin_width: R,
+    pub bins: BTreeMap<i64, WindowBin<V, I, R>>,
+    pub anchor: Option<I>,
+}
+
+impl<T: Copy> BinStatistics<f64, Timestamp<T>, Duration> {
+    pub fn new(bin_width: Duration) -> Self {
+        Self {
+            bin_width,
+            bins: Default::default(),
+            anchor: None,
+        }
+    }
+    fn bindex(&mut self, timestamp: Timestamp<T>) -> i64 {
+        let anchor = *self.anchor.get_or_insert(timestamp);
+        ((timestamp - anchor) / self.bin_width).round() as i64
+    }
+    ///
+    /// Process and insert a sample into it's bin.  Returns a reference to the bin in which
+    /// it was inserted with the latest data.
+    pub fn insert(
+        &mut self,
+        timestamp: Timestamp<T>,
+        value: f64,
+    ) -> &WindowBin<f64, Timestamp<T>, Duration> {
+        let bin_index = self.bindex(timestamp);
+        let bin = self.bins.entry(bin_index).or_insert_with(|| {
+            let anchor = *self.anchor.get_or_insert(timestamp);
+            let start = anchor + bin_index as f64 * self.bin_width;
+            WindowBin::new(self.bin_width, start)
+        });
+        bin.insert(value);
+        bin
+    }
+    ///
+    /// Garbage collection - remove all data older than the specified timestamp's bin.
+    pub fn remove_data_before(&mut self, timestamp: Timestamp<T>) {
+        let bin_index = self.bindex(timestamp) - 1;
+        self.bins = self.bins.split_off(&bin_index);
+    }
+    pub fn len(&self) -> usize {
+        self.bins.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.bins.is_empty()
+    }
+    pub fn iter(&self) -> impl Iterator<Item = (&i64, &WindowBin<f64, Timestamp<T>, Duration>)> {
+        self.bins.iter()
     }
 }
 

@@ -3,7 +3,7 @@ name = "irox-stats"
 description = "Various mathematical and statistics utilities"
 keywords = ["irox", "mathematics", "statistics", "library", "distributions"]
 categories = ["mathematics", "no-std"]
-version= "0.2.9"
+version = "0.2.9"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -26,15 +26,16 @@ irox-tools.workspace = true
 irox-bits.workspace = true
 irox-types.workspace = true
 irox-time = { workspace = true }
-miniz_oxide = {workspace = true, optional = true}
+irox-units = { workspace = true }
+miniz_oxide = { workspace = true, optional = true }
 emath = { workspace = true, optional = true }
 
 
 [dev-dependencies]
 irox-time.workspace = true
-irox-units = {workspace = true}
-irox-bits = {workspace = true, features = ["std"]}
-irox-tools = {workspace = true, features = ["std"]}
+irox-units = { workspace = true }
+irox-bits = { workspace = true, features = ["std"] }
+irox-tools = { workspace = true, features = ["std"] }
 irox-egui-extras = { workspace = true, features = ["plots"] }
 irox-log = { workspace = true }
 eframe = { workspace = true, default-features = true }
