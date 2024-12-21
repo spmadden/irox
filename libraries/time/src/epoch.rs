@@ -175,6 +175,14 @@ impl<T> Sub<Duration> for Timestamp<T> {
         Self::new(self.epoch, offset)
     }
 }
+impl<T> Sub<Duration> for &Timestamp<T> {
+    type Output = Timestamp<T>;
+
+    fn sub(self, rhs: Duration) -> Self::Output {
+        let offset = self.offset - rhs;
+        Timestamp::new(self.epoch, offset)
+    }
+}
 
 impl<T> SubAssign<Duration> for Timestamp<T> {
     fn sub_assign(&mut self, rhs: Duration) {
