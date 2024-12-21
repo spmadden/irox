@@ -165,10 +165,15 @@ macro_rules! basic_unit {
 
         impl core::cmp::PartialOrd<$struct_type> for $struct_type {
             fn partial_cmp(&self, rhs: &$struct_type) -> Option<core::cmp::Ordering> {
-                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
-                self.value().partial_cmp(&val)
+                Some(self.cmp(rhs))
             }
         }
+        impl core::cmp::Ord for $struct_type {
+            fn cmp(&self, other: &Self) -> core::cmp::Ordering {
+                self.value.total_cmp(&other.as_unit(self.units).value)
+            }
+        }
+        impl core::cmp::Eq for $struct_type {}
 
         impl core::cmp::PartialEq<$struct_type> for $struct_type {
             fn eq(&self, rhs: &$struct_type) -> bool {
