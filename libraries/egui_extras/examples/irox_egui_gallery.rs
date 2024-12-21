@@ -89,7 +89,7 @@ impl TestApp {
             });
         }
         let mut log_plot = BasicPlot::new(&_cc.egui_ctx)
-            .with_line("line", Arc::from(pts))
+            // .with_line("line", Arc::from(pts))
             .with_title("log plot 1")
             .with_x_axis_label("x axis label for 1")
             .with_y_axis_label("y axis label for 1")
@@ -97,22 +97,28 @@ impl TestApp {
             .with_x_axis_formatter(Box::new(|val| format!("{val:.1}")));
         for phase in phases {
             let phase = Arc::<[PlotPoint]>::from(phase);
-            log_plot.add_line(move |line| {
+            let data = log_plot.add_line(move |line| {
                 line.name = Arc::from("phase".to_string());
-                line.data = phase.clone();
                 line.sample_marker = Some(Shape::circle_filled(
                     Pos2::default(),
                     1.,
                     Color::rgb_hex(0xFFFFFF).into_color32(),
                 ));
             });
+            data.replace_data(phase);
         }
-        let log_plot2 = BasicPlot::new(&_cc.egui_ctx)
-            .with_line("line", Arc::from(pts2))
-            .with_title("log plot 2");
-        let log_plot3 = BasicPlot::new(&_cc.egui_ctx)
-            .with_line("line", Arc::from(pts3))
-            .with_title("log plot 3");
+        let mut log_plot2 = BasicPlot::new(&_cc.egui_ctx).with_title("log plot 2");
+        log_plot2
+            .add_line(|line| {
+                line.name = Arc::new("line".to_string());
+            })
+            .replace_data(Arc::from(pts2));
+        let mut log_plot3 = BasicPlot::new(&_cc.egui_ctx).with_title("log plot 3");
+        log_plot3
+            .add_line(|line| {
+                line.name = Arc::new("line".to_string());
+            })
+            .replace_data(Arc::from(pts3));
 
         TestApp {
             log_plot,

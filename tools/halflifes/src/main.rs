@@ -123,9 +123,8 @@ impl HalflifesApp {
                 .collect::<Vec<_>>()
         }) {
             let run = Arc::<[PlotPoint]>::from(run);
-            plot.add_line(move |line| {
-                line.data = run.clone();
-            });
+            let data = plot.add_line(move |line| line.set_name("line"));
+            data.replace_data(run);
         }
 
         HalflifesApp { plot }

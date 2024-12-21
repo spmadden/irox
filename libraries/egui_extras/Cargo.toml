@@ -19,7 +19,7 @@ workspace = true
 default = []
 serde = ["dep:serde", "egui/serde", "dep:irox-tools", "dep:irox-bits"]
 plots = ["dep:irox-tools", "dep:irox-time", "dep:irox-units"]
-profiling = ["dep:puffin", "egui/puffin"]
+profiling = ["dep:puffin", "egui/puffin", "eframe/puffin"]
 
 [dependencies]
 egui.workspace = true
@@ -44,6 +44,7 @@ eframe = { workspace = true, features = ["default"] }
 egui = { workspace = true, features = ["rayon"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }
+puffin_http = { workspace = true }
 
 
 [[example]]

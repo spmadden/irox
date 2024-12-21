@@ -41,17 +41,15 @@ impl TestApp {
             ("SG1D2", Box::new(SavitskyGolay1DerivOrder2::new(m))),
         ];
         for (name, wind) in windows {
-            log_plot.add_line(|line| {
+            let data = log_plot.add_line(|line| {
                 line.name = Arc::new((*name).to_string());
-                line.data = Arc::from(
-                    (-40..=40)
-                        .map(|v| {
-                            PlotPoint::new(v as f64 / 10., wind.get_kernel_value(v as f64 / 10.))
-                        })
-                        .collect::<Vec<_>>(),
-                );
                 line.line_stroke.width = 2.;
             });
+            data.replace_data(Arc::from(
+                (-40..=40)
+                    .map(|v| PlotPoint::new(v as f64 / 10., wind.get_kernel_value(v as f64 / 10.)))
+                    .collect::<Vec<_>>(),
+            ));
         }
         Self { log_plot }
     }
