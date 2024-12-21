@@ -2,8 +2,9 @@
 // Copyright 2024 IROX Contributors
 //
 
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use alloc::sync::Arc;
+use core::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Mutex;
 
 ///
 /// Faster exchange operation than a simple mutex that uses a flag to indicate if new data is available.
