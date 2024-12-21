@@ -152,35 +152,9 @@ macro_rules! derive_timestamp_impl {
     };
 }
 
-impl<T> Add<Duration> for Timestamp<T> {
-    type Output = Timestamp<T>;
-
-    fn add(self, rhs: Duration) -> Self::Output {
-        let offset = self.offset + rhs;
-        Self::new(self.epoch, offset)
-    }
-}
-
 impl<T> AddAssign<Duration> for Timestamp<T> {
     fn add_assign(&mut self, rhs: Duration) {
         self.offset += rhs;
-    }
-}
-
-impl<T> Sub<Duration> for Timestamp<T> {
-    type Output = Timestamp<T>;
-
-    fn sub(self, rhs: Duration) -> Self::Output {
-        let offset = self.offset - rhs;
-        Self::new(self.epoch, offset)
-    }
-}
-impl<T> Sub<Duration> for &Timestamp<T> {
-    type Output = Timestamp<T>;
-
-    fn sub(self, rhs: Duration) -> Self::Output {
-        let offset = self.offset - rhs;
-        Timestamp::new(self.epoch, offset)
     }
 }
 
@@ -190,27 +164,9 @@ impl<T> SubAssign<Duration> for Timestamp<T> {
     }
 }
 
-impl<T> Add<&Duration> for Timestamp<T> {
-    type Output = Timestamp<T>;
-
-    fn add(self, rhs: &Duration) -> Self::Output {
-        let offset = self.offset + *rhs;
-        Self::new(self.epoch, offset)
-    }
-}
-
 impl<T> AddAssign<&Duration> for Timestamp<T> {
     fn add_assign(&mut self, rhs: &Duration) {
         self.offset += *rhs;
-    }
-}
-
-impl<T> Sub<&Duration> for Timestamp<T> {
-    type Output = Timestamp<T>;
-
-    fn sub(self, rhs: &Duration) -> Self::Output {
-        let offset = self.offset - *rhs;
-        Self::new(self.epoch, offset)
     }
 }
 
@@ -219,22 +175,62 @@ impl<T> SubAssign<&Duration> for Timestamp<T> {
         self.offset -= *rhs;
     }
 }
-
-impl<T> Sub<Timestamp<T>> for Timestamp<T> {
-    type Output = Duration;
-
-    fn sub(self, rhs: Timestamp<T>) -> Self::Output {
-        self.offset - rhs.offset
+impl<T> SubAssign<&mut Duration> for Timestamp<T> {
+    fn sub_assign(&mut self, rhs: &mut Duration) {
+        self.offset -= *rhs;
     }
 }
+macro_rules! impl_sub_timestamp {
+    ($($sub:ty)+, $($slf:ty)+) => {
+        impl<T> Sub<$($sub)+> for $($slf)+ {
+            type Output = Duration;
 
-impl<T> Sub<&Timestamp<T>> for Timestamp<T> {
-    type Output = Duration;
-
-    fn sub(self, rhs: &Timestamp<T>) -> Self::Output {
-        self.offset - rhs.offset
-    }
+            fn sub(self, rhs: $($sub)+) -> Self::Output {
+                self.offset - rhs.offset
+            }
+        }
+    };
 }
+macro_rules! impl_sub_duration {
+    ($($sub:ty)+, $($slf:ty)+) => {
+        impl<T> Sub<$($sub)+> for $($slf)+ {
+            type Output = Timestamp<T>;
+
+            fn sub(self, rhs: $($sub)+) -> Self::Output {
+                let offset = self.offset - rhs;
+                Timestamp::new(self.epoch, offset)
+            }
+        }
+    };
+}
+macro_rules! impl_add_timestamp {
+    ($($sub:ty)+, $($slf:ty)+) => {
+        impl<T> Add<$($sub)+> for $($slf)+ {
+            type Output = Timestamp<T>;
+
+            fn add(self, rhs: $($sub)+) -> Self::Output {
+                let offset = self.offset + rhs;
+                Timestamp::new(self.epoch, offset)
+            }
+        }
+    };
+}
+macro_rules! impl_op {
+    ($op:ident, $($operand:ty)+) => {
+        $op!($($operand)+, Timestamp<T>);
+        $op!($($operand)+, &Timestamp<T>);
+        $op!($($operand)+, &mut Timestamp<T>);
+        $op!(&$($operand)+, Timestamp<T>);
+        $op!(&$($operand)+, &Timestamp<T>);
+        $op!(&$($operand)+, &mut Timestamp<T>);
+        $op!(&mut $($operand)+, Timestamp<T>);
+        $op!(&mut $($operand)+, &Timestamp<T>);
+        $op!(&mut $($operand)+, &mut Timestamp<T>);
+    };
+}
+impl_op!(impl_sub_timestamp, Timestamp<T>);
+impl_op!(impl_add_timestamp, Duration);
+impl_op!(impl_sub_duration, Duration);
 
 impl UnixTimestamp {
     ///

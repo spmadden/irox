@@ -140,14 +140,14 @@ impl From<UnixTimestamp> for UTCDateTime {
 impl From<UTCDateTime> for UnixTimestamp {
     fn from(value: UTCDateTime) -> Self {
         let mut date_dur = value.date - UNIX_EPOCH.get_gregorian_date();
-        date_dur += value.time.into();
+        date_dur += Into::<Duration>::into(value.time);
         Self::from_offset(date_dur)
     }
 }
 impl From<&UTCDateTime> for UnixTimestamp {
     fn from(value: &UTCDateTime) -> Self {
         let mut date_dur = value.date - UNIX_EPOCH.get_gregorian_date();
-        date_dur += value.time.into();
+        date_dur += Into::<Duration>::into(value.time);
         Self::from_offset(date_dur)
     }
 }
