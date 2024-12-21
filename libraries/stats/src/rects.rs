@@ -89,6 +89,51 @@ impl Rect2D {
         self.far_point.x = self.far_point.x.max(x);
         self.far_point.y = self.far_point.y.max(y);
     }
+
+    #[must_use]
+    pub fn height(&self) -> f64 {
+        (self.far_point.y - self.origin.y).abs()
+    }
+    #[must_use]
+    pub fn width(&self) -> f64 {
+        (self.far_point.x - self.origin.x).abs()
+    }
+    #[must_use]
+    pub fn center(&self) -> Double2D {
+        let y = self.height() / 2. + self.origin.y;
+        let x = self.width() / 2. + self.origin.x;
+        Double2D::new(x, y)
+    }
+    #[must_use]
+    pub fn lower_left_quadrant(&self) -> Rect2D {
+        Rect2D {
+            origin: self.origin,
+            far_point: self.center(),
+        }
+    }
+    #[must_use]
+    pub fn upper_left_quadrant(&self) -> Rect2D {
+        let ctr = self.center();
+        Rect2D {
+            origin: Double2D::new(self.origin.x, ctr.y),
+            far_point: Double2D::new(ctr.x, self.far_point.y),
+        }
+    }
+    #[must_use]
+    pub fn upper_right_quadrant(&self) -> Rect2D {
+        Rect2D {
+            origin: self.center(),
+            far_point: self.far_point,
+        }
+    }
+    #[must_use]
+    pub fn lower_right_quadrant(&self) -> Rect2D {
+        let ctr = self.center();
+        Rect2D {
+            origin: Double2D::new(ctr.x, self.origin.y),
+            far_point: Double2D::new(self.far_point.x, ctr.y),
+        }
+    }
 }
 
 #[cfg(feature = "emath")]
