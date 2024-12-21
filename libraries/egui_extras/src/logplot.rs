@@ -11,12 +11,13 @@ use crate::fonts::BOLD;
 use crate::profile_scope;
 use egui::epaint::TextShape;
 use egui::{
-    pos2, Align, Align2, Color32, Context, FontFamily, FontId, Painter, Pos2, Rect, Response,
-    Rounding, Sense, Shape, Stroke, TextStyle, Ui, Vec2,
+    pos2, Align, Align2, Color32, Context, FontFamily, FontId, Mesh, Painter, Pos2, Rect, Response,
+    Rgba, Rounding, Sense, Shape, Stroke, TextStyle, Ui, Vec2,
 };
 use irox_imagery::colormaps::CLASSIC_20;
 use irox_imagery::Color;
 use irox_stats::rects::Rect2D;
+use irox_stats::streaming::Summary;
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::format::iso8601::EXTENDED_TIME_FORMAT;
@@ -136,16 +137,33 @@ pub enum YAxisSide {
 pub struct Line {
     pub name: Arc<String>,
     pub visible: AtomicBool,
-    pub data: Arc<[PlotPoint]>,
     pub yaxis_side: YAxisSide,
     pub line_stroke: Stroke,
     pub text_font: FontId,
     pub sample_marker: Option<Shape>,
     pub line_exchanger: LineDataExchanger,
+    pub error_bars_exchanger: ErrorBarsExchanger,
+
+    meshes: Vec<Shape>,
+    lines: Vec<Shape>,
+    points: Vec<Shape>,
+    bounds: Rect2D,
 }
 impl Line {
     pub fn set_name<T: AsRef<str>>(&mut self, name: T) {
         self.name = Arc::new(name.as_ref().to_owned());
+    }
+
+    fn bounds_as_points(&self) -> [PlotPoint; 2] {
+        let a = PlotPoint {
+            x: self.bounds.origin.x,
+            y: self.bounds.origin.y,
+        };
+        let b = PlotPoint {
+            x: self.bounds.far_point.x,
+            y: self.bounds.far_point.y,
+        };
+        [a, b]
     }
 }
 
@@ -155,6 +173,21 @@ pub struct LineDataExchanger {
 }
 impl Deref for LineDataExchanger {
     type Target = Exchanger<Arc<[PlotPoint]>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.exchanger
+    }
+}
+pub struct LineWithErrorBars {
+    pub line_data: Arc<[PlotPoint]>,
+    pub error_bars: Arc<[(f64, Summary<f64>)]>,
+}
+#[derive(Default, Clone)]
+pub struct ErrorBarsExchanger {
+    exchanger: Exchanger<LineWithErrorBars>,
+}
+impl Deref for ErrorBarsExchanger {
+    type Target = Exchanger<LineWithErrorBars>;
 
     fn deref(&self) -> &Self::Target {
         &self.exchanger
@@ -192,7 +225,38 @@ pub struct BasicPlot {
 
     last_render_size: Rect2D,
 }
-
+macro_rules! scale_y {
+    ($self:ident, $ax:ident,$pos:ident) => {{
+        if let Some(y) = $ax.scale_value($pos.y) {
+            scale_x!($self, $pos, y)
+        } else {
+            None
+        }
+    }};
+}
+macro_rules! scale_x {
+    ($self:ident, $pos:ident, $y:ident) => {{
+        if let Some(x) = $self.x_axis.scale_value($pos.x) {
+            Some(Pos2 { x, $y })
+        } else {
+            None
+        }
+    }};
+}
+macro_rules! scale_point {
+    ($self:ident, $pos: ident, $yaxis_side: expr) => {{
+        if $yaxis_side == YAxisSide::LeftAxis {
+            let ax = &$self.y_axis_left;
+            scale_y!($self, ax, $pos)
+        } else {
+            if let Some(ax) = &$self.y_axis_right {
+                scale_y!($self, ax, $pos)
+            } else {
+                None
+            }
+        }
+    }};
+}
 impl BasicPlot {
     pub fn new(ctx: &Context) -> BasicPlot {
         fonts::load_fonts(
@@ -229,15 +293,21 @@ impl BasicPlot {
         self.y_axis_left.axis_formatter = Some(fmtr);
         self
     }
-    #[must_use]
-    pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<[PlotPoint]>) -> Self {
-        self.add_line(move |line| {
-            line.name = Arc::new(name.as_ref().to_string());
-            line.data = data.clone();
-        });
-        self
+    // #[must_use]
+    // pub fn with_line<T: AsRef<str>>(mut self, name: T, data: Arc<[PlotPoint]>) -> Self {
+    //     self.add_line(move |line| {
+    //         line.name = Arc::new(name.as_ref().to_string());
+    //         line.data = data.clone();
+    //     });
+    //     self
+    // }
+    pub fn add_line<T: FnMut(&mut Line)>(&mut self, func: T) -> LineDataExchanger {
+        self.add_line_with_error_bars(func).0
     }
-    pub fn add_line<T: FnMut(&mut Line)>(&mut self, mut func: T) -> LineDataExchanger {
+    pub fn add_line_with_error_bars<T: FnMut(&mut Line)>(
+        &mut self,
+        mut func: T,
+    ) -> (LineDataExchanger, ErrorBarsExchanger) {
         let idx = self.lines.len() % DEFAULT_COLORMAP.len();
         let color = DEFAULT_COLORMAP
             .get(idx)
@@ -253,9 +323,11 @@ impl BasicPlot {
         };
         func(&mut line);
         let exch = line.line_exchanger.clone();
+        let errs = line.error_bars_exchanger.clone();
         line.line_exchanger.set_data_changed();
+        line.error_bars_exchanger.set_data_changed();
         self.lines.push(line);
-        exch
+        (exch, errs)
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         profile_scope!("check_zoom", self.name.as_str());
@@ -291,13 +363,98 @@ impl BasicPlot {
         let mut changed = false;
         for line in &self.lines {
             changed |= line.line_exchanger.new_data_available();
+            changed |= line.error_bars_exchanger.new_data_available();
         }
         changed
     }
     fn update_line_data(&mut self) {
         for line in &mut self.lines {
-            if let Some(data) = line.line_exchanger.take_data() {
-                line.data = data;
+            let stroke = &line.line_stroke;
+            let mut bounds = Rect2D::empty();
+            let mut errors = None;
+            let mut lines = None;
+            if let Some(errs) = line.error_bars_exchanger.take_data() {
+                errors = Some(errs.error_bars);
+                lines = Some(errs.line_data);
+            } else if let Some(ls) = line.line_exchanger.take_data() {
+                lines = Some(ls);
+            }
+
+            if let Some(errors) = errors {
+                let nval = errors.as_ref().len();
+                let mut mesh = Mesh::default();
+                mesh.reserve_vertices(nval);
+                mesh.reserve_triangles((nval - 1) * 2);
+
+                let fill_color = Rgba::from(stroke.color)
+                    // .to_opaque()
+                    .multiply(0.50)
+                    .into();
+
+                for (x, summary) in errors.as_ref() {
+                    let i = mesh.vertices.len() as u32;
+                    let Some(max) = summary.max() else {
+                        continue;
+                    };
+                    let maxpnt = PlotPoint { x: *x, y: max };
+                    let Some(maxpos) = scale_point!(self, maxpnt, line.yaxis_side) else {
+                        continue;
+                    };
+                    let Some(min) = summary.min() else {
+                        continue;
+                    };
+                    let minpnt = PlotPoint { x: *x, y: min };
+                    let range_buf = (max - min) * 0.05;
+
+                    bounds.add_point(minpnt.x, minpnt.y - range_buf);
+                    bounds.add_point(maxpnt.x, maxpnt.y + range_buf);
+                    let Some(minpos) = scale_point!(self, minpnt, line.yaxis_side) else {
+                        continue;
+                    };
+                    mesh.colored_vertex(maxpos, fill_color);
+                    mesh.colored_vertex(minpos, fill_color);
+                    mesh.add_triangle(i, i + 1, i + 2);
+                    mesh.add_triangle(i + 1, i + 2, i + 3);
+                }
+                mesh.indices.pop();
+                mesh.indices.pop();
+                mesh.indices.pop();
+                mesh.indices.pop();
+                mesh.indices.pop();
+                mesh.indices.pop();
+
+                line.meshes = vec![Shape::mesh(mesh)];
+            }
+            if let Some(data) = lines {
+                let points = data.as_ref();
+                let mut lineout = Vec::<Pos2>::with_capacity(points.len());
+                line.points.clear();
+                for pnt in points {
+                    bounds.add_point(pnt.x, pnt.y);
+                    let Some(pnt) = scale_point!(self, pnt, line.yaxis_side) else {
+                        // draw_log_warning = true;
+                        // self.draw_yellow_err_line(&mut painter, pnt, self.yaxis_side, ui);
+                        continue;
+                    };
+                    lineout.push(pnt);
+                    if let Some(shp) = &line.sample_marker {
+                        let mut shp = shp.clone();
+                        shp.translate(Vec2::new(pnt.x, pnt.y));
+                        line.points.push(shp);
+                    }
+                    // if let Some(pos) = response.hover_pos() {
+                    //     let dx = (pos.x - pnt.x).abs();
+                    //     let dy = (pos.y - pnt.y).abs();
+                    //     let dist = (dx * dx + dy * dy).sqrt();
+                    //     if dist <= 10.0 {
+                    //         closest_hover = Some((pnt, self.yaxis_side));
+                    //     }
+                    // }
+                }
+                line.lines = vec![Shape::line(lineout, *stroke)];
+            }
+            if bounds != Rect2D::empty() {
+                line.bounds = bounds;
             }
         }
     }
@@ -310,7 +467,7 @@ impl BasicPlot {
         let large_font = TextStyle::Heading.resolve(ui.style());
 
         let size = ui.available_size();
-        let mut draw_log_warning =
+        let draw_log_warning =
             self.y_axis_left.draw_log_clip_warning || self.x_axis.draw_log_clip_warning;
 
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
@@ -447,8 +604,8 @@ impl BasicPlot {
                 .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
-                .map(|v| v.data.as_ref())
-                .collect::<Vec<&[PlotPoint]>>();
+                .flat_map(Line::bounds_as_points)
+                .collect::<Vec<PlotPoint>>();
             // update and rescale the data based on this frame's painting window.
             self.x_axis.update_range(all_points.as_slice(), |p| p.x);
 
@@ -457,8 +614,8 @@ impl BasicPlot {
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
                 .filter(|v| v.yaxis_side == YAxisSide::LeftAxis)
-                .map(|v| v.data.as_ref())
-                .collect::<Vec<&[PlotPoint]>>();
+                .flat_map(Line::bounds_as_points)
+                .collect::<Vec<PlotPoint>>();
             self.y_axis_left
                 .update_range(left_points.as_slice(), |p| p.y);
             if let Some(y_axis_rt) = &mut self.y_axis_right {
@@ -467,8 +624,8 @@ impl BasicPlot {
                     .iter()
                     .filter(|v| v.visible.load(Ordering::Relaxed))
                     .filter(|v| v.yaxis_side == YAxisSide::RightAxis)
-                    .map(|v| v.data.as_ref())
-                    .collect::<Vec<&[PlotPoint]>>();
+                    .flat_map(Line::bounds_as_points)
+                    .collect::<Vec<PlotPoint>>();
                 y_axis_rt.update_range(rt_points.as_slice(), |p| p.y);
             }
 
@@ -577,42 +734,38 @@ impl BasicPlot {
             ],
             major_stroke,
         );
-        let mut closest_hover: Option<(Pos2, YAxisSide)> = None;
+        let closest_hover: Option<(Pos2, YAxisSide)> = None;
+
+        // collect meshes
+        for line in &self.lines {
+            profile_scope!("draw mesh", line.name.as_str());
+            if line.visible.load(Ordering::Relaxed) {
+                for mesh in &line.meshes {
+                    painter.add(mesh.clone());
+                }
+            }
+        }
+        // collect lines and points
+        for line in &self.lines {
+            profile_scope!("draw line", line.name.as_str());
+            if line.visible.load(Ordering::Relaxed) {
+                for line in &line.lines {
+                    painter.add(line.clone());
+                }
+                for point in &line.points {
+                    painter.add(point.clone());
+                }
+            }
+        }
+
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
-            profile_scope!("draw line", line.name.as_str());
+            profile_scope!("draw controls", line.name.as_str());
             let visible = line.visible.load(Ordering::Relaxed);
             let mut color = Color32::BLACK;
             if visible {
-                let stroke = &line.line_stroke;
-                color = stroke.color;
-                let points = &line.data;
-                let mut lineout = Vec::<Pos2>::with_capacity(points.len());
-
-                for pnt in points.iter() {
-                    let Some(pnt) = self.scale_point(pnt, line.yaxis_side) else {
-                        draw_log_warning = true;
-                        self.draw_yellow_err_line(&mut painter, pnt, line.yaxis_side, ui);
-                        continue;
-                    };
-                    lineout.push(pnt);
-                    if let Some(shp) = &line.sample_marker {
-                        let mut shp = shp.clone();
-                        shp.translate(Vec2::new(pnt.x, pnt.y));
-                        painter.add(shp);
-                    }
-                    if let Some(pos) = response.hover_pos() {
-                        let dx = (pos.x - pnt.x).abs();
-                        let dy = (pos.y - pnt.y).abs();
-                        let dist = (dx * dx + dy * dy).sqrt();
-                        if dist <= 10.0 {
-                            closest_hover = Some((pnt, line.yaxis_side));
-                        }
-                    }
-                }
-
-                painter.add(Shape::line(lineout, *stroke));
+                color = line.line_stroke.color;
             }
             let galley =
                 painter.layout_no_wrap(line.name.to_string(), line.text_font.clone(), color);
@@ -655,18 +808,7 @@ impl BasicPlot {
         }
     }
 
-    fn scale_point(&self, pos: &PlotPoint, yaxis_side: YAxisSide) -> Option<Pos2> {
-        let y = match yaxis_side {
-            YAxisSide::LeftAxis => self.y_axis_left.scale_value(pos.y)?,
-            YAxisSide::RightAxis => self.y_axis_right.as_ref()?.scale_value(pos.y)?,
-        };
-        Some(Pos2 {
-            x: self.x_axis.scale_value(pos.x)?,
-            y,
-        })
-    }
-
-    fn draw_yellow_err_line(
+    fn _draw_yellow_err_line(
         &self,
         painter: &mut Painter,
         point: &PlotPoint,
@@ -820,26 +962,24 @@ pub struct Axis {
 }
 
 impl Axis {
-    pub fn update_range<F: Fn(&PlotPoint) -> f64>(&mut self, vals: &[&[PlotPoint]], accessor: F) {
+    pub fn update_range<F: Fn(&PlotPoint) -> f64>(&mut self, vals: &[PlotPoint], accessor: F) {
         self.draw_log_clip_warning = false;
         self.min_val = f64::INFINITY;
         self.max_val = f64::NEG_INFINITY;
-        for arr in vals {
-            for val in *arr {
-                let v = match self.scale_mode {
-                    ScaleMode::Linear => accessor(val),
-                    ScaleMode::Log10 | ScaleMode::DBScale => {
-                        let v = accessor(val);
-                        if v <= 0.0 {
-                            self.draw_log_clip_warning = true;
-                            continue;
-                        }
-                        v
+        for val in vals {
+            let v = match self.scale_mode {
+                ScaleMode::Linear => accessor(val),
+                ScaleMode::Log10 | ScaleMode::DBScale => {
+                    let v = accessor(val);
+                    if v <= 0.0 {
+                        self.draw_log_clip_warning = true;
+                        continue;
                     }
-                };
-                self.min_val = self.min_val.min(v);
-                self.max_val = self.max_val.max(v);
-            }
+                    v
+                }
+            };
+            self.min_val = self.min_val.min(v);
+            self.max_val = self.max_val.max(v);
         }
         if self.scale_mode == ScaleMode::DBScale {
             if self.min_val <= 0.0 {
