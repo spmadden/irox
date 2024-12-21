@@ -49,15 +49,6 @@ basic_unit!(Speed, SpeedUnits, MetersPerSecond);
 from_units_speed!(f32);
 from_units_speed!(f64);
 
-impl Unit<SpeedUnits> for Speed {
-    fn as_unit(&self, units: SpeedUnits) -> Self {
-        Speed {
-            value: units.from(self.value, self.units),
-            units,
-        }
-    }
-}
-
 impl Speed {
     #[must_use]
     pub fn as_meters_per_second(&self) -> Speed {

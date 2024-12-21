@@ -149,15 +149,6 @@ impl LengthUnits {
     }
 }
 
-impl Unit<LengthUnits> for Length {
-    fn as_unit(&self, units: LengthUnits) -> Self {
-        Length {
-            value: units.from(self.value, self.units),
-            units,
-        }
-    }
-}
-
 ///
 /// Represents a discrete quantity of 'Length' as defined in NIST 811.2008
 impl Length {

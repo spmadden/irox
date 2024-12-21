@@ -4,6 +4,175 @@
 ///
 /// Matches (struct, units, default) to make a new basic struct
 
+macro_rules! impl_unitstruct {
+    ($struct_type:ident, $units_type: ident, $($slf:ty)+) => {
+        impl $crate::units::UnitStruct<$units_type> for $($slf)+ {
+            type Output = $struct_type;
+
+            fn new(value: f64, units: $units_type) -> $struct_type {
+                $struct_type { value, units }
+            }
+
+            fn value(&self) -> f64 {
+                self.value
+            }
+
+            fn units(&self) -> $units_type {
+                self.units
+            }
+        }
+        impl Unit<$units_type> for $($slf)+ {
+            type Output = $struct_type;
+            fn as_unit(&self, units: $units_type) -> $struct_type
+            where
+                Self: Sized,
+            {
+                $struct_type {
+                    value: units.from(self.value, self.units),
+                    units,
+                }
+            }
+        }
+    };
+}
+
+macro_rules! impl_sub {
+    ($($out:ty)+, $units_type:ident, $($sub:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::Sub<$($sub)+> for $($slf)+ {
+            type Output = $($out)+;
+
+            fn sub(self, rhs: $($sub)+) -> $($out)+ {
+                let val = <$($sub)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                <$($slf)+ as $crate::units::UnitStruct::<$units_type>>::new(self.value() - val, self.units())
+            }
+        }
+    };
+}
+macro_rules! impl_add {
+    ($($out:ty)+, $units_type:ident, $($add:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::Add<$($add)+> for $($slf)+ {
+            type Output = $($out)+;
+
+            fn add(self, rhs: $($add)+) -> $($out)+ {
+                let val = <$($add)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                <$($slf)+ as $crate::units::UnitStruct::<$units_type>>::new(self.value() + val, self.units())
+            }
+        }
+    };
+}
+macro_rules! impl_subassign {
+    ($($out:ty)+, $units_type:ident, $($sub:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::SubAssign<$($sub)+> for $($slf)+ {
+            fn sub_assign(&mut self, rhs: $($sub)+) {
+                let val = <$($sub)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                self.value -= val;
+            }
+
+        }
+    };
+}
+macro_rules! impl_addassign {
+    ($($out:ty)+, $units_type:ident, $($add:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::AddAssign<$($add)+> for $($slf)+ {
+            fn add_assign(&mut self, rhs: $($add)+) {
+                let val = <$($add)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                self.value += val;
+            }
+        }
+    };
+}
+macro_rules! impl_div {
+    ($($out:ty)+, $units_type:ident, $($div:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::Div<$($div)+> for $($slf)+ {
+            type Output = $($out)+ ;
+            fn div(self, rhs: $($div)+) -> $($out)+  {
+                <$($slf)+ as $crate::units::UnitStruct::<$units_type>>::new(self.value() / rhs, self.units())
+            }
+        }
+        impl<'a> core::ops::Div<$($slf)+> for $($slf)+ {
+            type Output = f64;
+            fn div(self, rhs: $($slf)+) -> Self::Output {
+                let upper = self.value();
+                let lower = <$($slf)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                upper / lower
+            }
+        }
+    };
+}
+
+macro_rules! impl_divassign {
+    ($($out:ty)+, $units_type:ident, $($div:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::DivAssign<$($div)+> for $($slf)+ {
+            fn div_assign(&mut self, rhs: $($div)+) {
+                self.value /= rhs;
+            }
+        }
+    };
+}
+
+macro_rules! impl_mul {
+    ($($out:ty)+, $units_type:ident, $($mul:ty)+, $($slf:ty)+) => {
+         impl<'a> core::ops::Mul<$($mul)+> for $($slf)+ {
+            type Output = $($out)+ ;
+            fn mul(self, rhs: $($mul)+) -> $($out)+  {
+                <$($slf)+ as $crate::units::UnitStruct::<$units_type>>::new(self.value() * rhs, self.units())
+            }
+        }
+        impl<'a> core::ops::Mul<$($slf)+> for $($slf)+ {
+            type Output = $($mul)+;
+            fn mul(self, rhs: $($slf)+) -> Self::Output {
+                let upper = self.value();
+                let lower = <$($slf)+ as $crate::units::Unit::<$units_type>>::as_unit(&rhs, self.units()).value();
+                upper * lower
+            }
+        }
+        impl<'a> core::ops::Mul<$($slf)+> for f64 {
+            type Output = $($out)+;
+            fn mul(self, rhs: $($slf)+) -> Self::Output {
+                rhs * self
+            }
+        }
+    };
+}
+macro_rules! impl_mulassign {
+    ($($out:ty)+, $units_type:ident, $($mul:ty)+, $($slf:ty)+) => {
+        impl<'a> core::ops::MulAssign<$($mul)+> for $($slf)+ {
+            fn mul_assign(&mut self, rhs: $($mul)+) {
+                self.value *= rhs;
+            }
+        }
+        // impl core::ops::MulAssign<f64> for $struct_type {
+        //     fn mul_assign(&mut self, rhs: f64) {
+        //         self.value *= rhs
+        //     }
+        // }
+    };
+}
+
+macro_rules! impl_op {
+    ($op:ident, $units_type:ident, $($operand:ty)+) => {
+        $op!($($operand)+, $units_type, $($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, $($operand)+, &$($operand)+);
+        $op!($($operand)+, $units_type, $($operand)+, &mut $($operand)+);
+        $op!($($operand)+, $units_type, &$($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, &$($operand)+, &$($operand)+);
+        $op!($($operand)+, $units_type, &$($operand)+, &mut $($operand)+);
+        $op!($($operand)+, $units_type, &mut $($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, &mut $($operand)+, &$($operand)+);
+        $op!($($operand)+, $units_type, &mut $($operand)+, &mut $($operand)+);
+    };
+}
+macro_rules! impl_mutop {
+    ($op:ident, $units_type:ident, $($operand:ty)+) => {
+        $op!($($operand)+, $units_type, $($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, $($operand)+, &mut $($operand)+);
+        $op!($($operand)+, $units_type, &$($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, &$($operand)+, &mut $($operand)+);
+        $op!($($operand)+, $units_type, &mut $($operand)+, $($operand)+);
+        $op!($($operand)+, $units_type, &mut $($operand)+, &mut $($operand)+);
+    };
+}
+
 #[macro_export]
 macro_rules! basic_unit {
     ($struct_type:ident, $units_type: ident, $default_units: ident) => {
@@ -30,138 +199,24 @@ macro_rules! basic_unit {
             }
         }
 
-        impl $crate::units::UnitStruct<$units_type> for $struct_type {
-            fn new(value: f64, units: $units_type) -> Self {
-                Self { value, units }
-            }
+        impl_unitstruct!($struct_type, $units_type, $struct_type);
+        impl_unitstruct!($struct_type, $units_type, &$struct_type);
+        impl_unitstruct!($struct_type, $units_type, &mut $struct_type);
 
-            fn value(&self) -> f64 {
-                self.value
-            }
-
-            fn units(&self) -> $units_type {
-                self.units
-            }
-        }
-
-        impl core::ops::Add for $struct_type {
-            type Output = $struct_type;
-
-            fn add(self, rhs: Self) -> Self::Output {
-                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
-            }
-        }
-
-        impl core::ops::Add for &$struct_type {
-            type Output = $struct_type;
-
-            fn add(self, rhs: Self) -> Self::Output {
-                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
-                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
-            }
-        }
-
-        impl core::ops::Add<&Self> for &$struct_type {
-            type Output = $struct_type;
-
-            fn add(self, rhs: &Self) -> Self::Output {
-                let val = $crate::units::Unit::<$units_type>::as_unit(*rhs, self.units()).value();
-                $crate::units::UnitStruct::<$units_type>::new(self.value() + val, self.units())
-            }
-        }
-
-        impl core::ops::AddAssign for $struct_type {
-            fn add_assign(&mut self, rhs: Self) {
-                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                self.value += val;
-            }
-        }
-
-        impl core::ops::Sub for $struct_type {
-            type Output = $struct_type;
-
-            fn sub(self, rhs: Self) -> Self::Output {
-                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                $crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
-            }
-        }
-
-        impl<'a> core::ops::Sub<&'a $struct_type> for &'a $struct_type {
-            type Output = $struct_type;
-
-            fn sub(self, rhs: Self) -> Self::Output {
-                let val = $crate::units::Unit::<$units_type>::as_unit(rhs, self.units()).value();
-                $crate::units::UnitStruct::<$units_type>::new(self.value() - val, self.units())
-            }
-        }
-
-        impl core::ops::SubAssign for $struct_type {
-            fn sub_assign(&mut self, rhs: Self) {
-                let val = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                self.value -= val;
-            }
-        }
-
-        impl core::ops::Div<f64> for $struct_type {
-            type Output = $struct_type;
-
-            fn div(self, rhs: f64) -> Self::Output {
-                $crate::units::UnitStruct::<$units_type>::new(self.value() / rhs, self.units())
-            }
-        }
-
-        impl core::ops::Div for $struct_type {
-            type Output = f64;
-
-            fn div(self, rhs: Self) -> Self::Output {
-                let upper = self.value();
-                let lower = $crate::units::Unit::<$units_type>::as_unit(&rhs, self.units()).value();
-                upper / lower
-            }
-        }
-
-        impl core::ops::DivAssign<f64> for $struct_type {
-            fn div_assign(&mut self, rhs: f64) {
-                self.value /= rhs
-            }
-        }
-
-        impl core::ops::Mul<f64> for $struct_type {
-            type Output = $struct_type;
-
-            fn mul(self, rhs: f64) -> Self::Output {
-                $crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
-            }
-        }
-
-        impl core::ops::Mul<f64> for &$struct_type {
-            type Output = $struct_type;
-
-            fn mul(self, rhs: f64) -> Self::Output {
-                $crate::units::UnitStruct::<$units_type>::new(self.value() * rhs, self.units())
-            }
-        }
-        impl core::ops::Mul<&$struct_type> for f64 {
-            type Output = $struct_type;
-
-            fn mul(self, rhs: &$struct_type) -> Self::Output {
-                rhs * self
-            }
-        }
-        impl core::ops::Mul<$struct_type> for f64 {
-            type Output = $struct_type;
-
-            fn mul(self, rhs: $struct_type) -> Self::Output {
-                rhs * self
-            }
-        }
-
-        impl core::ops::MulAssign<f64> for $struct_type {
-            fn mul_assign(&mut self, rhs: f64) {
-                self.value *= rhs
-            }
-        }
+        impl_op!(impl_sub, $units_type, $struct_type);
+        impl_mutop!(impl_subassign, $units_type, $struct_type);
+        impl_op!(impl_add, $units_type, $struct_type);
+        impl_mutop!(impl_addassign, $units_type, $struct_type);
+        impl_div!($struct_type, $units_type, f64, $struct_type);
+        impl_div!($struct_type, $units_type, f64, &$struct_type);
+        impl_div!($struct_type, $units_type, f64, &mut $struct_type);
+        impl_divassign!($struct_type, $units_type, f64, $struct_type);
+        impl_divassign!($struct_type, $units_type, f64, &mut $struct_type);
+        impl_mul!($struct_type, $units_type, f64, $struct_type);
+        impl_mul!($struct_type, $units_type, f64, &$struct_type);
+        impl_mul!($struct_type, $units_type, f64, &mut $struct_type);
+        impl_mulassign!($struct_type, $units_type, f64, $struct_type);
+        impl_mulassign!($struct_type, $units_type, f64, &mut $struct_type);
 
         impl core::cmp::PartialOrd<$struct_type> for $struct_type {
             fn partial_cmp(&self, rhs: &$struct_type) -> Option<core::cmp::Ordering> {
@@ -198,10 +253,10 @@ pub trait FromUnits<T> {
 ///
 /// Represents a Value/Unit pairing
 pub trait UnitStruct<T>: Unit<T> {
+    type Output;
+
     /// Creates a new type
-    fn new(value: f64, units: T) -> Self
-    where
-        Self: Sized;
+    fn new(value: f64, units: T) -> <Self as UnitStruct<T>>::Output;
 
     /// Returns the value of this struct
     fn value(&self) -> f64;
@@ -213,8 +268,9 @@ pub trait UnitStruct<T>: Unit<T> {
 ///
 /// Trait to provide access to unit conversions
 pub trait Unit<T> {
+    type Output;
     #[must_use]
-    fn as_unit(&self, unit: T) -> Self
+    fn as_unit(&self, unit: T) -> Self::Output
     where
         Self: Sized;
 }

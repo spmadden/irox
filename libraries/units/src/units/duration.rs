@@ -197,15 +197,6 @@ from_units_duration!(i64);
 from_units_duration!(f32);
 from_units_duration!(f64);
 
-impl Unit<DurationUnit> for Duration {
-    fn as_unit(&self, units: DurationUnit) -> Self {
-        Duration {
-            value: units.from(self.value, self.units),
-            units,
-        }
-    }
-}
-
 impl From<core::time::Duration> for Duration {
     fn from(value: core::time::Duration) -> Self {
         Duration::new(value.as_secs_f64(), DurationUnit::Second)

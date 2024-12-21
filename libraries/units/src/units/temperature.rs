@@ -112,18 +112,6 @@ basic_unit!(Temperature, TemperatureUnits, Kelvin);
 from_units_length!(f32);
 from_units_length!(f64);
 
-impl Unit<TemperatureUnits> for Temperature {
-    fn as_unit(&self, units: TemperatureUnits) -> Self
-    where
-        Self: Sized,
-    {
-        Temperature {
-            value: units.from(self.value, self.units),
-            units,
-        }
-    }
-}
-
 impl Temperature {
     #[must_use]
     pub fn new_celsius(value: f64) -> Temperature {

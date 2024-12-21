@@ -99,16 +99,6 @@ from_units_datasize!(usize);
 
 basic_unit!(DataSize, DataSizeUnits, Bytes);
 
-impl Unit<DataSizeUnits> for DataSize {
-    fn as_unit(&self, units: DataSizeUnits) -> Self
-    where
-        Self: Sized,
-    {
-        let value: f64 = units.from(self.value, self.units);
-        DataSize { value, units }
-    }
-}
-
 impl DataSize {
     /// Creates a new DataSize quanitty
     #[must_use]

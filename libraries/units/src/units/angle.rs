@@ -73,18 +73,6 @@ basic_unit!(Angle, AngleUnits, Degrees);
 from_units_angle!(f32);
 from_units_angle!(f64);
 
-impl Unit<AngleUnits> for Angle {
-    fn as_unit(&self, units: AngleUnits) -> Self
-    where
-        Self: Sized,
-    {
-        Angle {
-            value: units.from(self.value, self.units),
-            units,
-        }
-    }
-}
-
 impl Angle {
     #[must_use]
     pub const fn new_radians(value: f64) -> Angle {
