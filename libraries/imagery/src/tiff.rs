@@ -464,6 +464,7 @@ mod test {
     use std::fs::OpenOptions;
 
     #[test]
+    #[ignore]
     pub fn test() -> Result<(), ImageError> {
         irox_log::init_console_level(Level::Debug);
         let path = "E:/charts/FAA_Charts/New_York/New York SEC.tif";
