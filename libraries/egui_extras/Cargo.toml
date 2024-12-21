@@ -31,7 +31,7 @@ irox-tools = { workspace = true, optional = true, features = ["std"] }
 irox-time = { workspace = true, optional = true }
 irox-units = { workspace = true, optional = true }
 irox-imagery = { workspace = true }
-irox-stats = { workspace = true, features = ["emath"] }
+irox-stats = { workspace = true, features = ["emath", "std"] }
 log.workspace = true
 puffin = { workspace = true, optional = true }
 
