@@ -23,15 +23,41 @@ pub struct ToolFrame {
     child: Box<dyn ToolApp>,
 }
 
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+pub struct ToolFrameOptions {
+    pub full_speed: bool,
+    pub show_rendering_stats: bool,
+}
+
 impl ToolFrame {
+    #[must_use]
     pub fn new(_cc: &CreationContext, child: Box<dyn ToolApp>) -> Self {
+        Self::new_opts(_cc, child, ToolFrameOptions::default())
+    }
+    #[must_use]
+    pub fn new_opts(
+        _cc: &CreationContext,
+        child: Box<dyn ToolApp>,
+        opts: ToolFrameOptions,
+    ) -> Self {
+        let ToolFrameOptions {
+            full_speed,
+            show_rendering_stats,
+        } = opts;
         Self {
             style_ui: false,
-            full_speed: false,
-            show_rendering_stats: false,
+            full_speed,
+            show_rendering_stats,
             frame_history: FrameHistory::default(),
             child,
         }
+    }
+
+    pub fn show_rendering_stats(&mut self, show: bool) {
+        self.show_rendering_stats = show;
+    }
+    pub fn full_speed(&mut self, full_speed: bool) {
+        self.full_speed = full_speed;
     }
 }
 
