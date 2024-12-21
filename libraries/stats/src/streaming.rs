@@ -30,15 +30,15 @@ pub trait StreamingStatistic {
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Mean<Type> {
     sample_count: u64,
-    last_sample: Type,
-    last_mean: Type,
+    last_sample: Option<Type>,
+    last_mean: Option<Type>,
 }
 
 impl<T> Mean<T>
 where
     T: Copy,
 {
-    pub fn get_mean(&self) -> T {
+    pub fn get_mean(&self) -> Option<T> {
         self.last_mean
     }
 }
@@ -52,23 +52,29 @@ pub type MeanF64 = Mean<f64>;
 
 impl<Type> StreamingStatistic for Mean<Type>
 where
-    Type: Sub<Type, Output = Type> + Copy + Div<f64, Output = Type> + Add<Type, Output = Type>,
+    Type: Sub<Type, Output = Type>
+        + Copy
+        + Div<f64, Output = Type>
+        + Add<Type, Output = Type>
+        + Default,
 {
     type Type = Type;
 
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         self.sample_count += 1;
-        let mean = self.last_mean + (sample - self.last_mean) / self.sample_count as f64;
-        self.last_mean = mean;
+        self.last_sample = Some(sample);
+        let last = self.last_mean.get_or_insert(sample);
+        let mean = *last + (sample - *last) / self.sample_count as f64;
+        *last = mean;
         mean
     }
 
     fn get_last_sample(&self) -> Self::Type {
-        self.last_sample
+        self.last_sample.unwrap_or_default()
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_mean
+        self.last_mean.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -170,10 +176,10 @@ pub struct UnweightedSumOfSquares<T> {
 
 impl<T> UnweightedSumOfSquares<T>
 where
-    T: Copy,
+    T: Copy + Default,
 {
     pub fn get_mean(&self) -> T {
-        self.means.last_mean
+        self.means.last_mean.unwrap_or_default()
     }
     pub fn get_unweighted_sum_of_squares(&self) -> T {
         self.last_ssq
@@ -184,6 +190,7 @@ impl<Type> StreamingStatistic for UnweightedSumOfSquares<Type>
 where
     Type: Sub<Type, Output = Type>
         + Copy
+        + Default
         + Div<f64, Output = Type>
         + Add<Type, Output = Type>
         + Mul<f64, Output = Type>
@@ -224,7 +231,7 @@ pub struct BiasedVariance<T> {
 
 impl<T> BiasedVariance<T>
 where
-    T: Copy,
+    T: Copy + Default,
 {
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
@@ -241,6 +248,7 @@ impl<T> StreamingStatistic for BiasedVariance<T>
 where
     T: Sub<T, Output = T>
         + Copy
+        + Default
         + Div<f64, Output = T>
         + Add<T, Output = T>
         + Mul<f64, Output = T>
@@ -279,7 +287,7 @@ pub struct UnbiasedVariance<T> {
 
 impl<T> UnbiasedVariance<T>
 where
-    T: Copy,
+    T: Copy + Default,
 {
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
@@ -296,6 +304,7 @@ impl<T> StreamingStatistic for UnbiasedVariance<T>
 where
     T: Sub<T, Output = T>
         + Copy
+        + Default
         + Div<f64, Output = T>
         + Add<T, Output = T>
         + Mul<f64, Output = T>
@@ -334,7 +343,7 @@ pub struct UnbiasedStandardDeviation<T> {
 
 impl<T> UnbiasedStandardDeviation<T>
 where
-    T: Copy,
+    T: Copy + Default,
 {
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
@@ -354,6 +363,7 @@ impl<T> StreamingStatistic for UnbiasedStandardDeviation<T>
 where
     T: Sub<T, Output = T>
         + Copy
+        + Default
         + Div<f64, Output = T>
         + Add<T, Output = T>
         + Mul<f64, Output = T>
@@ -392,7 +402,7 @@ pub struct BiasedStandardDeviation<T> {
 
 impl<T> BiasedStandardDeviation<T>
 where
-    T: Copy,
+    T: Copy + Default,
 {
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
@@ -412,6 +422,7 @@ impl<T> StreamingStatistic for BiasedStandardDeviation<T>
 where
     T: Sub<T, Output = T>
         + Copy
+        + Default
         + Div<f64, Output = T>
         + Add<T, Output = T>
         + Mul<f64, Output = T>
@@ -475,7 +486,7 @@ where
         self.mean.add_sample(value);
     }
     #[must_use]
-    pub fn mean(&self) -> T {
+    pub fn mean(&self) -> Option<T> {
         self.mean.get_mean()
     }
     #[must_use]
