@@ -7,12 +7,21 @@ use crate::points::{Double2D, Vec2D};
 #[derive(Copy, Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Rect2D {
     pub origin: Double2D,
-    pub size: Vec2D,
+    pub far_point: Double2D,
 }
 impl Rect2D {
+    pub const fn empty() -> Rect2D {
+        Self {
+            origin: Double2D::new(f64::INFINITY, f64::INFINITY),
+            far_point: Double2D::new(f64::NEG_INFINITY, f64::NEG_INFINITY),
+        }
+    }
     #[must_use]
     pub fn new(origin: Double2D, size: Vec2D) -> Self {
-        Self { origin, size }
+        Self {
+            origin,
+            far_point: origin.translate(&size),
+        }
     }
     #[must_use]
     pub fn origin(&self) -> Double2D {
@@ -20,18 +29,18 @@ impl Rect2D {
     }
     #[must_use]
     pub fn size(&self) -> Vec2D {
-        self.size
+        self.far_point - self.origin
     }
 
     #[must_use]
     pub fn far_point(&self) -> Double2D {
-        self.origin.translate(&self.size)
+        self.far_point
     }
 
     #[must_use]
     pub fn far_horiz(&self) -> Double2D {
         Double2D {
-            x: self.origin.x + self.size.x,
+            x: self.far_point.x,
             y: self.origin.y,
         }
     }
@@ -39,7 +48,7 @@ impl Rect2D {
     pub fn far_vert(&self) -> Double2D {
         Double2D {
             x: self.origin.x,
-            y: self.origin.y + self.size.y,
+            y: self.far_point.y,
         }
     }
 
@@ -73,6 +82,13 @@ impl Rect2D {
         }
         false
     }
+
+    pub fn add_point(&mut self, x: f64, y: f64) {
+        self.origin.x = self.origin.x.min(x);
+        self.origin.y = self.origin.y.min(y);
+        self.far_point.x = self.far_point.x.max(x);
+        self.far_point.y = self.far_point.y.max(y);
+    }
 }
 
 #[cfg(feature = "emath")]
@@ -80,7 +96,7 @@ impl From<emath::Rect> for Rect2D {
     fn from(rect: emath::Rect) -> Self {
         Self {
             origin: rect.min.into(),
-            size: rect.size().into(),
+            far_point: rect.max.into(),
         }
     }
 }
@@ -89,7 +105,7 @@ impl From<Rect2D> for emath::Rect {
     fn from(rect: Rect2D) -> Self {
         Self {
             min: rect.origin.into(),
-            max: rect.far_point().into(),
+            max: rect.far_point.into(),
         }
     }
 }

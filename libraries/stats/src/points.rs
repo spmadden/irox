@@ -41,7 +41,7 @@ pub struct Double2D {
 }
 impl Double2D {
     #[must_use]
-    pub fn new(x: f64, y: f64) -> Self {
+    pub const fn new(x: f64, y: f64) -> Self {
         Double2D { x, y }
     }
     #[must_use]
@@ -89,6 +89,15 @@ impl Ord for Double2D {
             return x;
         }
         self.y.total_cmp(&other.y)
+    }
+}
+impl core::ops::Sub for Double2D {
+    type Output = Vec2D;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let x = self.x - rhs.x;
+        let y = self.y - rhs.y;
+        Vec2D { x, y }
     }
 }
 
@@ -234,7 +243,7 @@ impl Vec2D {
     pub fn with_origin(&self, origin: Double2D) -> Rect2D {
         Rect2D {
             origin,
-            size: *self,
+            far_point: origin.translate(self),
         }
     }
 }

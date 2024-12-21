@@ -79,17 +79,17 @@ where
 /// Streaming maximum function
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Max<T> {
-    max_val: T,
-    last_sample: T,
+    max_val: Option<T>,
+    last_sample: Option<T>,
     num_samples: u64,
 }
 impl<T: Copy> Max<T> {
-    pub fn get_max_val(&self) -> T {
+    pub fn get_max_val(&self) -> Option<T> {
         self.max_val
     }
 }
 
-impl<T> StreamingStatistic for Max<T>
+impl<T: Default> StreamingStatistic for Max<T>
 where
     T: PartialOrd + Copy,
 {
@@ -97,18 +97,19 @@ where
 
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         self.num_samples += 1;
-        if sample.ge(&self.max_val) {
-            self.max_val = sample;
+        let mut max = self.max_val.get_or_insert(sample);
+        if sample.ge(max) {
+            max = self.max_val.insert(sample);
         }
-        self.max_val
+        *max
     }
 
     fn get_last_sample(&self) -> Self::Type {
-        self.last_sample
+        self.last_sample.unwrap_or_default()
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.max_val
+        self.max_val.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -119,18 +120,18 @@ where
 /// Streaming minimum function
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Min<T> {
-    min_val: T,
-    last_sample: T,
+    min_val: Option<T>,
+    last_sample: Option<T>,
     num_samples: u64,
 }
 
 impl<T: Copy> Min<T> {
-    pub fn get_min_val(&self) -> T {
+    pub fn get_min_val(&self) -> Option<T> {
         self.min_val
     }
 }
 
-impl<T> StreamingStatistic for Min<T>
+impl<T: Default> StreamingStatistic for Min<T>
 where
     T: PartialOrd + Copy,
 {
@@ -138,18 +139,19 @@ where
 
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         self.num_samples += 1;
-        if sample.le(&self.min_val) {
-            self.min_val = sample;
+        let mut min = self.min_val.get_or_insert(sample);
+        if sample.le(min) {
+            min = self.min_val.insert(sample);
         }
-        self.min_val
+        *min
     }
 
     fn get_last_sample(&self) -> Self::Type {
-        self.last_sample
+        self.last_sample.unwrap_or_default()
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.min_val
+        self.min_val.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -437,6 +439,7 @@ where
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Summary<T> {
     mean: Mean<T>,
     min: Min<T>,
@@ -458,6 +461,7 @@ where
     T: Sub<T, Output = T>
         + PartialOrd
         + Copy
+        + Default
         + Div<f64, Output = T>
         + Add<T, Output = T>
         + Mul<f64, Output = T>
@@ -470,18 +474,23 @@ where
         self.stdev.add_sample(value);
         self.mean.add_sample(value);
     }
+    #[must_use]
     pub fn mean(&self) -> T {
         self.mean.get_mean()
     }
-    pub fn min(&self) -> T {
+    #[must_use]
+    pub fn min(&self) -> Option<T> {
         self.min.get_min_val()
     }
-    pub fn max(&self) -> T {
+    #[must_use]
+    pub fn max(&self) -> Option<T> {
         self.max.get_max_val()
     }
+    #[must_use]
     pub fn stdev(&self) -> T {
         self.stdev.get_unbiased_stdev()
     }
+    #[must_use]
     pub fn num_samples(&self) -> u64 {
         self.mean.get_num_samples()
     }
