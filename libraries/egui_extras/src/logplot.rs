@@ -125,11 +125,19 @@ impl PlotInteraction {
     }
 }
 
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub enum YAxisSide {
+    #[default]
+    LeftAxis,
+    RightAxis,
+}
+
 #[derive(Default)]
 pub struct Line {
     pub name: Arc<String>,
     pub visible: AtomicBool,
     pub data: Arc<Vec<PlotPoint>>,
+    pub yaxis_side: YAxisSide,
     pub line_stroke: Stroke,
     pub text_font: FontId,
     pub sample_marker: Option<Shape>,
@@ -175,7 +183,8 @@ pub struct BasicPlot {
     /// The X-axis settings
     pub x_axis: Axis,
     /// The Y-axis settings
-    pub y_axis: Axis,
+    pub y_axis_left: Axis,
+    pub y_axis_right: Option<Axis>,
     /// The Interaction tracking of the plot
     pub interaction: PlotInteraction,
     /// Optional title for this plot.
@@ -207,7 +216,7 @@ impl BasicPlot {
     }
     #[must_use]
     pub fn with_y_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
-        self.y_axis.axis_label = Some(title.as_ref().to_string());
+        self.y_axis_left.axis_label = Some(title.as_ref().to_string());
         self
     }
     #[must_use]
@@ -217,7 +226,7 @@ impl BasicPlot {
     }
     #[must_use]
     pub fn with_y_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
-        self.y_axis.axis_formatter = Some(fmtr);
+        self.y_axis_left.axis_formatter = Some(fmtr);
         self
     }
     #[must_use]
@@ -302,24 +311,24 @@ impl BasicPlot {
 
         let size = ui.available_size();
         let mut draw_log_warning =
-            self.y_axis.draw_log_clip_warning || self.x_axis.draw_log_clip_warning;
+            self.y_axis_left.draw_log_clip_warning || self.x_axis.draw_log_clip_warning;
 
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
         response.context_menu(|ui| {
             if ui
-                .selectable_value(&mut self.y_axis.scale_mode, ScaleMode::Linear, "Y-Linear")
+                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::Linear, "Y-Linear")
                 .clicked()
             {
                 ui.close_menu();
             }
             if ui
-                .selectable_value(&mut self.y_axis.scale_mode, ScaleMode::Log10, "Y-Log10")
+                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::Log10, "Y-Log10")
                 .clicked()
             {
                 ui.close_menu();
             }
             if ui
-                .selectable_value(&mut self.y_axis.scale_mode, ScaleMode::DBScale, "Y-dB")
+                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::DBScale, "Y-dB")
                 .clicked()
             {
                 ui.close_menu();
@@ -338,7 +347,7 @@ impl BasicPlot {
 
         // setup the y-axis label (if it exists)
         let mut y_label_additional_width = 0.0;
-        if let Some(y_label) = &self.y_axis.axis_label {
+        if let Some(y_label) = &self.y_axis_left.axis_label {
             let galley = painter.layout_no_wrap(
                 y_label.to_string(),
                 large_font.clone(),
@@ -374,7 +383,7 @@ impl BasicPlot {
         // layout all the detents along the Y-axis to see how far we need to offset it from the
         // left side of the screen in the X-axis
         let x_offset = self
-            .y_axis
+            .y_axis_left
             .detents
             .iter()
             .map(|(_, str)| {
@@ -413,10 +422,10 @@ impl BasicPlot {
         self.x_axis.screen_limit = x_axis_x_max;
         self.x_axis.screen_range = x_axis_x_max - x_axis_x_min;
         self.x_axis.incr_sign = 1.0;
-        self.y_axis.screen_origin = y_axis_y_min;
-        self.y_axis.screen_limit = x_axis_y_offset;
-        self.y_axis.screen_range = x_axis_y_offset - y_axis_y_min;
-        self.y_axis.incr_sign = -1.0;
+        self.y_axis_left.screen_origin = y_axis_y_min;
+        self.y_axis_left.screen_limit = x_axis_y_offset;
+        self.y_axis_left.screen_range = x_axis_y_offset - y_axis_y_min;
+        self.y_axis_left.incr_sign = -1.0;
         let grid_bounds = Rect::from_min_max(
             Pos2::new(x_axis_x_min, y_axis_y_min),
             Pos2::new(x_axis_x_max, y_axis_y_max),
@@ -426,15 +435,31 @@ impl BasicPlot {
         if lr != self.last_render_size || self.any_lines_changed() {
             profile_scope!("update range", self.name.as_str());
             self.update_line_data();
-            let points = self
+            let all_points = self
                 .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
                 .map(|v| v.data.as_slice())
                 .collect::<Vec<&[PlotPoint]>>();
             // update and rescale the data based on this frame's painting window.
-            self.x_axis.update_range(points.as_slice(), |p| p.x);
-            self.y_axis.update_range(points.as_slice(), |p| p.y);
+            self.x_axis.update_range(all_points.as_slice(), |p| p.x);
+
+            let left_points = self.lines
+                .iter()
+                .filter(|v| v.visible.load(Ordering::Relaxed))
+                .filter(|v| v.yaxis_side == YAxisSide::LeftAxis)
+                .map(|v| v.data.as_slice())
+                .collect::<Vec<&[PlotPoint]>>();
+            self.y_axis_left.update_range(left_points.as_slice(), |p| p.y);
+            if let Some(y_axis_rt) = &mut self.y_axis_right {
+                let rt_points = self.lines
+                    .iter()
+                    .filter(|v| v.visible.load(Ordering::Relaxed))
+                    .filter(|v| v.yaxis_side == YAxisSide::RightAxis)
+                    .map(|v| v.data.as_slice())
+                    .collect::<Vec<&[PlotPoint]>>();
+                y_axis_rt.update_range(rt_points.as_slice(), |p| p.y);
+            }
 
             self.last_render_size = lr;
         }
@@ -468,7 +493,7 @@ impl BasicPlot {
             );
         }
         // draw the info up the y axis - note, painted inverted!
-        for detent in &self.y_axis.detents {
+        for detent in &self.y_axis_left.detents {
             let pos = Pos2 {
                 x: y_axis_x_offset - 5.,
                 y: detent.0,
@@ -495,6 +520,36 @@ impl BasicPlot {
                 minor_stroke,
             );
         }
+        if let Some(rt_y) = &self.y_axis_right {
+            // draw the info up the y axis - note, painted inverted!
+            for detent in &rt_y.detents {
+                let pos = Pos2 {
+                    x: x_axis_x_max + 5.,
+                    y: detent.0,
+                };
+                let anchor = Align2::RIGHT_CENTER;
+                painter.text(
+                    pos,
+                    anchor,
+                    &detent.1,
+                    small_font.clone(),
+                    ui.visuals().text_color(),
+                );
+                painter.line_segment(
+                    [
+                        Pos2 {
+                            x: x_axis_x_min,
+                            y: detent.0,
+                        },
+                        Pos2 {
+                            x: x_axis_x_max,
+                            y: detent.0,
+                        },
+                    ],
+                    minor_stroke,
+                );
+            }
+        }
         // paint vertical 'y' axis line
         painter.line_segment(
             [
@@ -511,7 +566,7 @@ impl BasicPlot {
             ],
             major_stroke,
         );
-        let mut closest_hover: Option<Pos2> = None;
+        let mut closest_hover: Option<(Pos2, YAxisSide)> = None;
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
         for line in &self.lines {
@@ -525,9 +580,9 @@ impl BasicPlot {
                 let mut lineout = Vec::<Pos2>::with_capacity(points.len());
 
                 for pnt in points.iter() {
-                    let Some(pnt) = self.scale_point(pnt) else {
+                    let Some(pnt) = self.scale_point(pnt, line.yaxis_side) else {
                         draw_log_warning = true;
-                        self.draw_yellow_err_line(&mut painter, pnt, ui);
+                        self.draw_yellow_err_line(&mut painter, pnt, line.yaxis_side, ui);
                         continue;
                     };
                     lineout.push(pnt);
@@ -541,7 +596,7 @@ impl BasicPlot {
                         let dy = (pos.y - pnt.y).abs();
                         let dist = (dx * dx + dy * dy).sqrt();
                         if dist <= 10.0 {
-                            closest_hover = Some(pnt);
+                            closest_hover = Some((pnt, line.yaxis_side));
                         }
                     }
                 }
@@ -589,18 +644,30 @@ impl BasicPlot {
         }
     }
 
-    fn scale_point(&self, pos: &PlotPoint) -> Option<Pos2> {
+    fn scale_point(&self, pos: &PlotPoint, yaxis_side: YAxisSide) -> Option<Pos2> {
+        let y = match yaxis_side {
+            YAxisSide::LeftAxis => self.y_axis_left.scale_value(pos.y)?,
+            YAxisSide::RightAxis => self.y_axis_right.as_ref()?.scale_value(pos.y)?,
+        };
         Some(Pos2 {
             x: self.x_axis.scale_value(pos.x)?,
-            y: self.y_axis.scale_value(pos.y)?,
+            y,
         })
     }
 
-    fn draw_yellow_err_line(&self, painter: &mut Painter, point: &PlotPoint, ui: &mut Ui) {
+    fn draw_yellow_err_line(&self, painter: &mut Painter, point: &PlotPoint, yaxis_side: YAxisSide, ui: &mut Ui) {
         let caution_color = ui.visuals().warn_fg_color;
+        let axis = match yaxis_side {
+            YAxisSide::LeftAxis => &self.y_axis_left,
+            YAxisSide::RightAxis => if let Some(rt) = &self.y_axis_right {
+                rt
+            } else {
+                return;
+            },
+        };
         if point.y > 0.0 {
             // y is fine, horizontal at Y
-            let Some(val) = self.y_axis.scale_value(point.y) else {
+            let Some(val) = axis.scale_value(point.y) else {
                 return;
             };
             painter.line_segment(
@@ -617,8 +684,8 @@ impl BasicPlot {
             };
             painter.line_segment(
                 [
-                    Pos2::new(val, self.y_axis.screen_origin),
-                    Pos2::new(val, self.y_axis.screen_limit),
+                    Pos2::new(val, axis.screen_origin),
+                    Pos2::new(val, axis.screen_limit),
                 ],
                 Stroke::new(1.0, caution_color),
             );
@@ -630,20 +697,28 @@ impl BasicPlot {
         ui: &mut Ui,
         response: &mut Response,
         painter: &mut Painter,
-        closest_point: Option<Pos2>,
+        closest_point: Option<(Pos2, YAxisSide)>,
         grid_bounds: &Rect,
     ) {
         // draw the hover cursors
-        let draw_pos = if let Some(closest_point) = closest_point {
+        let (draw_pos, side) = if let Some(closest_point) = closest_point {
             closest_point
         } else if let Some(hover) = response.hover_pos() {
-            hover
+            (hover, YAxisSide::LeftAxis)
         } else {
             return;
         };
         if !grid_bounds.contains(draw_pos) {
             return;
         }
+        let y_axis = match side {
+            YAxisSide::LeftAxis => &mut self.y_axis_left,
+            YAxisSide::RightAxis => if let Some(ax) = &self.y_axis_right {
+                ax
+            } else {
+                return;
+            }
+        };
         let rect = response.rect;
         let xrng = rect.min.x..=rect.max.x;
         let yrng = rect.min.y..=rect.max.y;
@@ -654,7 +729,7 @@ impl BasicPlot {
 
         // paint the text
         let mod_x = self.x_axis.describe_screen_pos(draw_pos.x);
-        let mod_y = self.y_axis.describe_screen_pos(draw_pos.y);
+        let mod_y = y_axis.describe_screen_pos(draw_pos.y);
         let text = format!("x: {mod_x}\ny: {mod_y}");
         let color = ui.visuals().text_cursor.stroke.color;
         let font_id = TextStyle::Monospace.resolve(ui.style());

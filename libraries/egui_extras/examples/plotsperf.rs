@@ -13,10 +13,9 @@ use irox_time::Duration;
 use irox_tools::random::PRNG;
 use irox_units::quantities::Units;
 use log::error;
-use std::char::MAX;
 use std::collections::BTreeMap;
 use std::sync::atomic::AtomicBool;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::thread::JoinHandle;
 
 pub fn main() {
