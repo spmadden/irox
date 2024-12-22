@@ -7,7 +7,7 @@ use egui::{CentralPanel, Context, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
     x_axis_time_millis_formatter, y_axis_units_formatter, BasicPlot, LineWithErrorBars, PlotPoint,
 };
-use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
+use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_stats::windows::{
     BinStatistics, SavitszkyGolaySmoother24Builder, TimeWindow, TimedWindowFilter,
     WindowBinStrategy,
@@ -44,15 +44,25 @@ pub fn main() {
         vsync: true,
         ..Default::default()
     };
+
     if let Err(e) = eframe::run_native(
         "plotz performance tester",
         native_options,
-        Box::new(|cc| Ok(Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc)))))),
+        Box::new(|cc| {
+            Ok(Box::new(ToolFrame::new_opts(
+                cc,
+                Box::new(TestApp::new(cc)),
+                ToolFrameOptions {
+                    show_rendering_stats: true,
+                    ..Default::default()
+                },
+            )))
+        }),
     ) {
         error!("{e:?}");
     };
 }
-const NUM_LINES_PER_PLOT: usize = 2;
+const NUM_LINES_PER_PLOT: usize = 4;
 const NUM_PLOTS: usize = 3;
 const DATA_RATE: Duration = Duration::from_millis(10); // 100 hz data
 const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(5);
@@ -60,7 +70,7 @@ const AVERAGING_WINDOW: Duration = Duration::from_seconds(1);
 const MAX_REPAINT_RATE: Duration = Duration::from_seconds_f64(1. / 20.); // 60hz
 const LINE_CTR: f64 = 5e-6;
 const LINE_JITTER: f64 = 1e-6;
-const LINE_INCR: f64 = 1e-7;
+const LINE_INCR: f64 = 1e-8;
 
 pub struct PlotOpts {
     running: Arc<AtomicBool>,
@@ -90,20 +100,22 @@ impl TestApp {
             t.feathering = false;
             // t.feathering_size_in_pixels = 0.0;
         });
+        let mut num_lines = NUM_LINES_PER_PLOT;
         for _pidx in 0..NUM_PLOTS {
-            plots.push(Self::spawn_thread(running.clone(), &cc.egui_ctx));
+            plots.push(Self::spawn_thread(running.clone(), &cc.egui_ctx, num_lines));
+            num_lines /= 2;
         }
 
         Self { plots, running }
     }
 
-    fn spawn_thread(running: Arc<AtomicBool>, ctx: &Context) -> PlotOpts {
+    fn spawn_thread(running: Arc<AtomicBool>, ctx: &Context, num_lines: usize) -> PlotOpts {
         let mut plot = BasicPlot::new(ctx)
             .with_x_axis_formatter(x_axis_time_millis_formatter())
             .with_y_axis_formatter(y_axis_units_formatter(Units::Volt));
         let mut handles = Vec::new();
         let mut line_off = LINE_CTR;
-        for lidx in 0..NUM_LINES_PER_PLOT {
+        for lidx in 0..num_lines {
             let running = running.clone();
 
             let (_, error_bars) = plot.add_line_with_error_bars(|line| {
