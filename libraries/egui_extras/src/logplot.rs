@@ -382,13 +382,16 @@ impl BasicPlot {
 
             if let Some(errors) = errors {
                 let nval = errors.as_ref().len();
+                let mut maxline = Vec::<Pos2>::with_capacity(nval);
+                let mut minline = Vec::<Pos2>::with_capacity(nval);
+
                 let mut mesh = Mesh::default();
                 mesh.reserve_vertices(nval * 3);
                 mesh.reserve_triangles((nval - 1) * 4);
 
                 let fill_color = Rgba::from(stroke.color)
                     // .to_opaque()
-                    .multiply(0.40)
+                    .multiply(1. / 16.)
                     .into();
                 let mut added_triangles = 0;
                 for (x, summary) in errors.as_ref() {
@@ -400,6 +403,7 @@ impl BasicPlot {
                     let Some(maxpos) = scale_point!(self, maxpnt, line.yaxis_side) else {
                         continue;
                     };
+                    maxline.push(maxpos);
                     let Some(min) = summary.min() else {
                         continue;
                     };
@@ -411,17 +415,19 @@ impl BasicPlot {
                     let Some(minpos) = scale_point!(self, minpnt, line.yaxis_side) else {
                         continue;
                     };
-
+                    minline.push(minpos);
+                    let upper_y = bounds.upper_left_quadrant().center().y.min(maxpnt.y);
                     let upper_quad = PlotPoint {
                         x: *x,
-                        y: bounds.upper_left_quadrant().center().y,
+                        y: upper_y,
                     };
                     let Some(uqpos) = scale_point!(self, upper_quad, line.yaxis_side) else {
                         continue;
                     };
+                    let lower_y = bounds.lower_left_quadrant().center().y.max(minpnt.y);
                     let lower_quad = PlotPoint {
                         x: *x,
-                        y: bounds.lower_left_quadrant().center().y,
+                        y: lower_y,
                     };
                     let Some(lqpos) = scale_point!(self, lower_quad, line.yaxis_side) else {
                         continue;
@@ -451,7 +457,7 @@ impl BasicPlot {
                     }
                 }
 
-                line.meshes = vec![Shape::mesh(mesh)];
+                line.meshes = vec![Shape::mesh(mesh), Shape::line(maxline, *stroke), Shape::line(minline, *stroke)];
             }
             if let Some(data) = lines {
                 let points = data.as_ref();

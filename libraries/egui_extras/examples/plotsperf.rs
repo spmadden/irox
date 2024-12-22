@@ -62,8 +62,8 @@ pub fn main() {
         error!("{e:?}");
     };
 }
-const NUM_LINES_PER_PLOT: usize = 4;
-const NUM_PLOTS: usize = 3;
+const NUM_LINES_PER_PLOT: usize = 16;
+const NUM_PLOTS: usize = 1;
 const DATA_RATE: Duration = Duration::from_millis(10); // 100 hz data
 const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(5);
 const AVERAGING_WINDOW: Duration = Duration::from_seconds(1);
@@ -71,6 +71,8 @@ const MAX_REPAINT_RATE: Duration = Duration::from_seconds_f64(1. / 20.); // 60hz
 const LINE_CTR: f64 = 5e-6;
 const LINE_JITTER: f64 = 1e-6;
 const LINE_INCR: f64 = 1e-8;
+const _LINE_EPOCH_CYCLE: Duration = Duration::from_minutes(1);
+const _LINE_EPOCH_BIAS: f64 = 1e-5;
 
 pub struct PlotOpts {
     running: Arc<AtomicBool>,
@@ -152,13 +154,15 @@ impl TestApp {
                     std::thread::sleep(diff.into());
                     last_run = UnixTimestamp::now();
 
+                    let olders = last_run - MAX_DATA_TO_KEEP;
+                    // let epoch = / LINE_EPOCH_CYCLE;
+
                     let new_val = rnd.next_in_distribution(line_off, LINE_JITTER);
                     error_data.insert(last_run, new_val);
                     if let Some(data) = average_filter.insert(last_run, new_val) {
                         average_data.add_sample(data);
                     }
 
-                    let olders = last_run - MAX_DATA_TO_KEEP;
                     error_data.remove_data_before(olders);
                     let data = error_data
                         .iter()
