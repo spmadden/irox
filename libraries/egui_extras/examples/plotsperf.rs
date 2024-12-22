@@ -3,7 +3,7 @@
 //
 
 use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
-use egui::{CentralPanel, Context, ThemePreference, Vec2, ViewportBuilder};
+use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
     x_axis_time_millis_formatter, y_axis_units_formatter, BasicPlot, LineWithErrorBars, PlotPoint,
 };
@@ -17,7 +17,7 @@ use irox_time::Duration;
 use irox_tools::random::PRNG;
 use irox_units::quantities::Units;
 use log::error;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread::JoinHandle;
 
@@ -64,7 +64,7 @@ pub fn main() {
     };
 }
 const NUM_LINES_PER_PLOT: usize = 16;
-const NUM_PLOTS: usize = 1;
+const NUM_PLOTS: usize = 3;
 const DATA_RATE: Duration = Duration::from_millis(10); // 100 hz data
 const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(5);
 const AVERAGING_WINDOW: Duration = Duration::from_seconds(1);
@@ -82,8 +82,7 @@ pub struct PlotOpts {
 }
 impl Drop for PlotOpts {
     fn drop(&mut self) {
-        self.running
-            .store(false, std::sync::atomic::Ordering::Relaxed);
+        self.running.store(false, Ordering::Relaxed);
         for handle in self.handles.drain(..) {
             let _ = handle.join();
         }
@@ -107,6 +106,7 @@ impl TestApp {
         for _pidx in 0..NUM_PLOTS {
             plots.push(Self::spawn_thread(running.clone(), &cc.egui_ctx, num_lines));
             num_lines /= 2;
+            // num_lines *= 2;
         }
 
         Self { plots, running }
@@ -116,6 +116,9 @@ impl TestApp {
         let mut plot = BasicPlot::new(ctx)
             .with_x_axis_formatter(x_axis_time_millis_formatter())
             .with_y_axis_formatter(y_axis_units_formatter(Units::Volt));
+        plot.line_highlight_focus_duration = Duration::from_seconds(1);
+        plot.rotate_line_highlights = true;
+
         let mut handles = Vec::new();
         let mut line_off = LINE_CTR;
         for lidx in 0..num_lines {
@@ -196,8 +199,7 @@ impl TestApp {
 }
 impl Drop for TestApp {
     fn drop(&mut self) {
-        self.running
-            .store(false, std::sync::atomic::Ordering::Relaxed);
+        self.running.store(false, Ordering::Relaxed);
     }
 }
 
@@ -215,4 +217,19 @@ impl App for TestApp {
         });
     }
 }
-impl ToolApp for TestApp {}
+impl ToolApp for TestApp {
+    fn bottom_bar(&mut self, ui: &mut Ui) {
+        let mut rotate_highlights = false;
+        for plot in &self.plots {
+            rotate_highlights |= plot.plot.rotate_line_highlights;
+        }
+        if ui
+            .checkbox(&mut rotate_highlights, "Cycle highlights")
+            .changed()
+        {
+            for plot in &mut self.plots {
+                plot.plot.rotate_line_highlights = rotate_highlights;
+            }
+        }
+    }
+}

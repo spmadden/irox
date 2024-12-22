@@ -225,6 +225,11 @@ pub struct BasicPlot {
     pub title: Option<String>,
 
     last_render_size: Rect2D,
+    pub rotate_line_highlights: bool,
+    pub line_highlight_focus_duration: Duration,
+    pause_line_highlight_for_hover: bool,
+    last_line_highlight_index: usize,
+    last_line_highlight_time: UnixTimestamp,
 }
 macro_rules! scale_y {
     ($self:ident, $ax:ident,$pos:ident) => {{
@@ -638,6 +643,23 @@ impl BasicPlot {
             Pos2::new(x_axis_x_max, y_axis_y_max),
         );
 
+        if self.rotate_line_highlights && !self.pause_line_highlight_for_hover {
+            let now = UnixTimestamp::now();
+            if now - self.line_highlight_focus_duration > self.last_line_highlight_time {
+                self.last_line_highlight_time = now;
+                self.last_line_highlight_index += 1;
+                if self.last_line_highlight_index >= self.lines.len() {
+                    self.last_line_highlight_index = 0;
+                }
+                for line in &mut self.lines {
+                    line.is_hovered = false;
+                }
+                if let Some(line) = self.lines.get_mut(self.last_line_highlight_index) {
+                    line.is_hovered = true;
+                }
+            }
+        }
+
         let lr = rect.into();
         if lr != self.last_render_size || self.any_lines_changed() {
             profile_scope!("update range", self.name.as_str());
@@ -815,6 +837,11 @@ impl BasicPlot {
 
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
+        let text_rect = Align2::LEFT_BOTTOM.anchor_size(
+            Pos2::new(start_text.x, start_text.y),
+            Vec2::new(rect.width(), 12.),
+        );
+        let mut any_hovered = false;
         for line in &mut self.lines {
             profile_scope!("draw controls", line.name.as_str());
             let visible = line.visible.load(Ordering::Relaxed);
@@ -825,26 +852,37 @@ impl BasicPlot {
             let galley =
                 painter.layout_no_wrap(line.name.to_string(), line.text_font.clone(), color);
             let used = Align2::LEFT_BOTTOM.anchor_size(start_text, galley.size());
-            let mut hovered = false;
             if let Some(pos) = response.hover_pos() {
+                let mut hovered = false;
+                let hvr = ui.visuals().widgets.hovered;
+                let fill = hvr.bg_fill;
+                let rnd = hvr.rounding;
+                let strk = hvr.bg_stroke;
                 if used.contains(pos) {
-                    let hvr = ui.visuals().widgets.hovered;
-                    let fill = hvr.bg_fill;
-                    let rnd = hvr.rounding;
-                    let strk = hvr.bg_stroke;
                     painter.rect(used, rnd, fill, strk);
 
                     hovered = true;
+                    any_hovered = true;
                     if response.clicked() {
                         line.visible.swap(!visible, Ordering::Relaxed);
                     }
                 }
-            }
-            if line.is_hovered != hovered {
-                line.is_hovered = hovered;
+                if text_rect.contains(pos) {
+                    any_hovered = true;
+                    line.is_hovered = hovered;
+                } else if !self.rotate_line_highlights {
+                    // clear off the automatic hovering (if left)
+                    line.is_hovered = false;
+                }
             }
             painter.galley(used.min, galley, color);
             start_text.x += used.width() + 10.;
+        }
+        self.pause_line_highlight_for_hover = any_hovered;
+        if !any_hovered && !self.rotate_line_highlights {
+            for line in &mut self.lines {
+                line.is_hovered = false;
+            }
         }
 
         self.draw_cursor(ui, &mut response, &mut painter, closest_hover, &grid_bounds);
