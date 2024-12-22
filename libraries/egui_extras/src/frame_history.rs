@@ -61,13 +61,16 @@ impl FrameHistory {
         let utilization =
             (1.0 - (mean_frame_interval - mean_frame_time).max(0.0) / mean_frame_interval) * 100.0;
 
-        ui.horizontal(|ui| {
-            ui.label("Frame Stats:");
-            ui.label(format!("Count {}", ui.ctx().cumulative_pass_nr())).on_hover_text("Total number of frames rendered");
-            ui.label(format!("Duration {mean_frame_time:.2} ms / frame")).on_hover_text("Single-thread CPU time for a single frame, excluding some GPU transfer times");
-            ui.label(format!("Avg FPS {avg_fps:.1}")).on_hover_text("Average frames per second. With VSync, will max out at the monitor's refresh rate, usually about 60 FPS");
-            ui.label(format!("Util: {utilization:.2}%")).on_hover_text("Single-thread CPU Render thread utilization, lower is better");
-        });
+        ui.label("Frame Stats:");
+        ui.label(format!("Count {}", ui.ctx().cumulative_pass_nr()))
+            .on_hover_text("Total number of frames rendered");
+        ui.label(format!("Duration {mean_frame_time:.2} ms / frame"))
+            .on_hover_text(
+                "Single-thread CPU time for a single frame, excluding some GPU transfer times",
+            );
+        ui.label(format!("Avg FPS {avg_fps:.1}")).on_hover_text("Average frames per second. With VSync, will max out at the monitor's refresh rate, usually about 60 FPS");
+        ui.label(format!("Util: {utilization:.2}%"))
+            .on_hover_text("Single-thread CPU Render thread utilization, lower is better");
     }
 
     pub fn graph(&mut self, ui: &mut egui::Ui) -> egui::Response {

@@ -105,11 +105,13 @@ impl App for ToolFrame {
         }
 
         TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
-            if self.show_rendering_stats {
-                self.frame_history.ui(ui);
-            }
+            ui.horizontal(|ui| {
+                if self.show_rendering_stats {
+                    self.frame_history.ui(ui);
+                }
 
-            self.child.bottom_bar(ui);
+                self.child.bottom_bar(ui);
+            });
         });
 
         self.child.update(ctx, frame);
