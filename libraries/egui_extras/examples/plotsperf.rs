@@ -3,7 +3,7 @@
 //
 
 use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
-use egui::{CentralPanel, Context, Vec2, ViewportBuilder};
+use egui::{CentralPanel, Context, ThemePreference, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
     x_axis_time_millis_formatter, y_axis_units_formatter, BasicPlot, LineWithErrorBars, PlotPoint,
 };
@@ -49,6 +49,7 @@ pub fn main() {
         "plotz performance tester",
         native_options,
         Box::new(|cc| {
+            cc.egui_ctx.set_theme(ThemePreference::Dark);
             Ok(Box::new(ToolFrame::new_opts(
                 cc,
                 Box::new(TestApp::new(cc)),

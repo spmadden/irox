@@ -148,6 +148,7 @@ pub struct Line {
     lines: Vec<Shape>,
     points: Vec<Shape>,
     bounds: Rect2D,
+    is_hovered: bool,
 }
 impl Line {
     pub fn set_name<T: AsRef<str>>(&mut self, name: T) {
@@ -368,8 +369,10 @@ impl BasicPlot {
         changed
     }
     fn update_line_data(&mut self) {
+        let nlines_frac = 1. / self.lines.len() as f32;
+        let any_lines_hovered = self.lines.iter().any(|l| l.is_hovered);
         for line in &mut self.lines {
-            let stroke = &line.line_stroke;
+            let mut stroke = line.line_stroke;
             let mut bounds = Rect2D::empty();
             let mut errors = None;
             let mut lines = None;
@@ -379,6 +382,17 @@ impl BasicPlot {
             } else if let Some(ls) = line.line_exchanger.take_data() {
                 lines = Some(ls);
             }
+            let mut fill_color = Rgba::from(stroke.color)
+                // .to_opaque()
+                .multiply(0.5 * nlines_frac)
+                .into();
+            if any_lines_hovered && !line.is_hovered {
+                fill_color = Rgba::from_luminance_alpha(0.3, 0.10 * nlines_frac).into();
+                stroke.color = Rgba::from_luminance_alpha(0.3, 0.25 * nlines_frac).into();
+            } else if line.is_hovered {
+                fill_color = Rgba::from(stroke.color).multiply(0.5).into();
+                stroke.width *= 1.5;
+            };
 
             if let Some(errors) = errors {
                 let nval = errors.as_ref().len();
@@ -389,10 +403,6 @@ impl BasicPlot {
                 mesh.reserve_vertices(nval * 3);
                 mesh.reserve_triangles((nval - 1) * 4);
 
-                let fill_color = Rgba::from(stroke.color)
-                    // .to_opaque()
-                    .multiply(1. / 16.)
-                    .into();
                 let mut added_triangles = 0;
                 for (x, summary) in errors.as_ref() {
                     let i = mesh.vertices.len() as u32;
@@ -417,18 +427,12 @@ impl BasicPlot {
                     };
                     minline.push(minpos);
                     let upper_y = bounds.upper_left_quadrant().center().y.min(maxpnt.y);
-                    let upper_quad = PlotPoint {
-                        x: *x,
-                        y: upper_y,
-                    };
+                    let upper_quad = PlotPoint { x: *x, y: upper_y };
                     let Some(uqpos) = scale_point!(self, upper_quad, line.yaxis_side) else {
                         continue;
                     };
                     let lower_y = bounds.lower_left_quadrant().center().y.max(minpnt.y);
-                    let lower_quad = PlotPoint {
-                        x: *x,
-                        y: lower_y,
-                    };
+                    let lower_quad = PlotPoint { x: *x, y: lower_y };
                     let Some(lqpos) = scale_point!(self, lower_quad, line.yaxis_side) else {
                         continue;
                     };
@@ -457,7 +461,11 @@ impl BasicPlot {
                     }
                 }
 
-                line.meshes = vec![Shape::mesh(mesh), Shape::line(maxline, *stroke), Shape::line(minline, *stroke)];
+                line.meshes = vec![
+                    Shape::mesh(mesh),
+                    Shape::line(maxline, stroke),
+                    Shape::line(minline, stroke),
+                ];
             }
             if let Some(data) = lines {
                 let points = data.as_ref();
@@ -485,7 +493,7 @@ impl BasicPlot {
                     //     }
                     // }
                 }
-                line.lines = vec![Shape::line(lineout, *stroke)];
+                line.lines = vec![Shape::line(lineout, stroke)];
             }
             if bounds != Rect2D::empty() {
                 line.bounds = bounds;
@@ -771,9 +779,14 @@ impl BasicPlot {
         let closest_hover: Option<(Pos2, YAxisSide)> = None;
 
         // collect meshes
+        let mut last_line: Vec<Shape> = Vec::new();
         for line in &self.lines {
             profile_scope!("draw mesh", line.name.as_str());
             if line.visible.load(Ordering::Relaxed) {
+                if line.is_hovered {
+                    last_line.append(&mut line.meshes.clone());
+                    continue;
+                }
                 for mesh in &line.meshes {
                     painter.add(mesh.clone());
                 }
@@ -783,6 +796,11 @@ impl BasicPlot {
         for line in &self.lines {
             profile_scope!("draw line", line.name.as_str());
             if line.visible.load(Ordering::Relaxed) {
+                if line.is_hovered {
+                    last_line.append(&mut line.lines.clone());
+                    last_line.append(&mut line.points.clone());
+                    continue;
+                }
                 for line in &line.lines {
                     painter.add(line.clone());
                 }
@@ -791,10 +809,13 @@ impl BasicPlot {
                 }
             }
         }
+        for shp in last_line {
+            painter.add(shp);
+        }
 
         // draw the points as individual line segments
         let mut start_text = rect.left_bottom();
-        for line in &self.lines {
+        for line in &mut self.lines {
             profile_scope!("draw controls", line.name.as_str());
             let visible = line.visible.load(Ordering::Relaxed);
             let mut color = Color32::BLACK;
@@ -804,6 +825,7 @@ impl BasicPlot {
             let galley =
                 painter.layout_no_wrap(line.name.to_string(), line.text_font.clone(), color);
             let used = Align2::LEFT_BOTTOM.anchor_size(start_text, galley.size());
+            let mut hovered = false;
             if let Some(pos) = response.hover_pos() {
                 if used.contains(pos) {
                     let hvr = ui.visuals().widgets.hovered;
@@ -811,10 +833,15 @@ impl BasicPlot {
                     let rnd = hvr.rounding;
                     let strk = hvr.bg_stroke;
                     painter.rect(used, rnd, fill, strk);
+
+                    hovered = true;
                     if response.clicked() {
                         line.visible.swap(!visible, Ordering::Relaxed);
                     }
                 }
+            }
+            if line.is_hovered != hovered {
+                line.is_hovered = hovered;
             }
             painter.galley(used.min, galley, color);
             start_text.x += used.width() + 10.;
