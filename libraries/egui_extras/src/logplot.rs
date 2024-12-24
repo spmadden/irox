@@ -422,7 +422,10 @@ impl BasicPlot {
                         continue;
                     };
                     let minpnt = PlotPoint { x: *x, y: min };
-                    let range_buf = (max - min) * 0.05;
+                    let range = max - min;
+                    let range_buf = range * 0.05;
+                    let first_quart = range * 0.2 + minpnt.y;
+                    let third_quart = range * 0.8 + minpnt.y;
 
                     bounds.add_point(minpnt.x, minpnt.y - range_buf);
                     bounds.add_point(maxpnt.x, maxpnt.y + range_buf);
@@ -430,12 +433,12 @@ impl BasicPlot {
                         continue;
                     };
                     minline.push(minpos);
-                    let upper_y = bounds.upper_left_quadrant().center().y.min(maxpnt.y);
+                    let upper_y = third_quart.min(maxpnt.y);
                     let upper_quad = PlotPoint { x: *x, y: upper_y };
                     let Some(uqpos) = scale_point!(self, upper_quad, line.yaxis_side) else {
                         continue;
                     };
-                    let lower_y = bounds.lower_left_quadrant().center().y.max(minpnt.y);
+                    let lower_y = first_quart.max(minpnt.y);
                     let lower_quad = PlotPoint { x: *x, y: lower_y };
                     let Some(lqpos) = scale_point!(self, lower_quad, line.yaxis_side) else {
                         continue;
