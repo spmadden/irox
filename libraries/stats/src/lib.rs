@@ -19,6 +19,7 @@ pub use gaussian as standard;
 
 pub mod decay;
 pub mod filter;
+pub mod fitting;
 pub mod gaussian;
 pub mod lttb;
 mod macros;

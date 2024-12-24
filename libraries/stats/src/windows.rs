@@ -3,6 +3,7 @@
 //
 
 extern crate alloc;
+use crate::fitting::LinearRegression;
 use crate::sampling::Sample;
 use crate::streaming::Summary;
 use alloc::collections::BTreeMap;
@@ -322,7 +323,7 @@ impl<T: Copy> TimeWindow<T> {
         self.values.values().copied().collect()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&Timestamp<T>, &f64)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&Timestamp<T>, &f64)> + Clone {
         self.values.iter()
     }
 
@@ -523,6 +524,55 @@ impl<T: Copy> BinStatistics<f64, Timestamp<T>, Duration> {
     }
     pub fn iter(&self) -> impl Iterator<Item = (&i64, &WindowBin<f64, Timestamp<T>, Duration>)> {
         self.bins.iter()
+    }
+}
+
+pub struct TimedLinearSlopeFilter<T> {
+    values: TimeWindow<T>,
+    window_duration: Duration,
+    bin_strategy: WindowBinStrategy,
+}
+impl<T: Copy> TimedLinearSlopeFilter<T> {
+    pub fn new(window_duration: Duration, bin_strategy: WindowBinStrategy) -> Self {
+        Self {
+            window_duration,
+            bin_strategy,
+            values: TimeWindow::new(window_duration),
+        }
+    }
+    pub fn add_sample(&mut self, sample: Sample<T>) -> Option<Sample<T>> {
+        self.insert(sample.time, sample.value)
+    }
+    ///
+    /// Push a new sample into the filter.  If there's sufficient data to run the downsampling,
+    /// will run and return the result.
+    pub fn insert(&mut self, time: Timestamp<T>, value: f64) -> Option<Sample<T>> {
+        self.values.insert(time, value);
+
+        let earliest = self.values.first_key_value()?;
+        let latest = self.values.last_key_value()?;
+        let last = *latest.0;
+        let stored_range = latest.0 - earliest.0;
+        let window_start = last - self.window_duration;
+        let center_time = window_start + self.window_duration / 2.;
+        if stored_range < (self.window_duration * 0.95) {
+            // collect more datas.
+            return None;
+        }
+
+        let reg = LinearRegression::from_data(
+            self.values.iter(),
+            |(t, _v)| t.get_offset().value(),
+            |(_t, v)| **v,
+        )?;
+        let out = reg.slope;
+        let out_time = match self.bin_strategy {
+            WindowBinStrategy::Lower => window_start,
+            WindowBinStrategy::Center => center_time,
+            WindowBinStrategy::Upper => last,
+        };
+        self.values.clear();
+        Some(Sample::new(out, out_time))
     }
 }
 
