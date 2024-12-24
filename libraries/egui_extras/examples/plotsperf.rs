@@ -5,12 +5,13 @@
 use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
-    x_axis_time_millis_formatter, y_axis_units_formatter, BasicPlot, LineWithErrorBars, PlotPoint,
+    x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, BasicPlot,
+    LineWithErrorBars, PlotPoint, YAxisSide,
 };
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_stats::windows::{
-    BinStatistics, SavitszkyGolaySmoother24Builder, TimeWindow, TimedWindowFilter,
-    WindowBinStrategy,
+    BinStatistics, SavitszkyGolaySmoother24Builder, SavitzkyGolay1DerivOrder2Builder, TimeWindow,
+    TimedWindowFilter, WindowBinStrategy,
 };
 use irox_time::epoch::UnixTimestamp;
 use irox_time::Duration;
@@ -49,7 +50,7 @@ pub fn main() {
         "plotz performance tester",
         native_options,
         Box::new(|cc| {
-            cc.egui_ctx.set_theme(ThemePreference::Dark);
+            cc.egui_ctx.set_theme(DEFAULT_THEME);
             Ok(Box::new(ToolFrame::new_opts(
                 cc,
                 Box::new(TestApp::new(cc)),
@@ -63,17 +64,19 @@ pub fn main() {
         error!("{e:?}");
     };
 }
-const NUM_LINES_PER_PLOT: usize = 16;
-const NUM_PLOTS: usize = 3;
+const NUM_LINES_PER_PLOT: usize = 1;
+const NUM_PLOTS: usize = 1;
 const DATA_RATE: Duration = Duration::from_millis(10); // 100 hz data
-const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(5);
-const AVERAGING_WINDOW: Duration = Duration::from_seconds(1);
+const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(1);
+const AVERAGING_WINDOW: Duration = Duration::from_seconds_f64(0.5);
 const MAX_REPAINT_RATE: Duration = Duration::from_seconds_f64(1. / 20.); // 60hz
 const LINE_CTR: f64 = 5e-6;
 const LINE_JITTER: f64 = 1e-6;
 const LINE_INCR: f64 = 1e-8;
-const _LINE_EPOCH_CYCLE: Duration = Duration::from_minutes(1);
+const LINE_EPOCH_CYCLE: Duration = Duration::from_minutes(1);
 const _LINE_EPOCH_BIAS: f64 = 1e-5;
+const DEFAULT_CYCLE: bool = false;
+const DEFAULT_THEME: ThemePreference = ThemePreference::Dark;
 
 pub struct PlotOpts {
     running: Arc<AtomicBool>,
@@ -97,9 +100,9 @@ impl TestApp {
     pub fn new(cc: &CreationContext) -> Self {
         let mut plots = Vec::new();
         let running = Arc::new(AtomicBool::new(true));
-        cc.egui_ctx.memory_mut(|mem| {
-            let t = &mut mem.options.tessellation_options;
-            t.feathering = false;
+        cc.egui_ctx.memory_mut(|_mem| {
+            // let t = &mut mem.options.tessellation_options;
+            // t.feathering = false;
             // t.feathering_size_in_pixels = 0.0;
         });
         let mut num_lines = NUM_LINES_PER_PLOT;
@@ -117,7 +120,7 @@ impl TestApp {
             .with_x_axis_formatter(x_axis_time_millis_formatter())
             .with_y_axis_formatter(y_axis_units_formatter(Units::Volt));
         plot.line_highlight_focus_duration = Duration::from_seconds(1);
-        plot.rotate_line_highlights = true;
+        plot.rotate_line_highlights = DEFAULT_CYCLE;
 
         let mut handles = Vec::new();
         let mut line_off = LINE_CTR;
@@ -127,6 +130,16 @@ impl TestApp {
             let (_, error_bars) = plot.add_line_with_error_bars(|line| {
                 line.set_name(format!("Line {}", lidx + 1));
             });
+            let troc_line = plot.add_line(|line| {
+                line.set_name(format!("Line {} TROC", lidx + 1));
+                line.yaxis_side = YAxisSide::RightAxis;
+            });
+            plot.y_axis_right = Some(Axis {
+                // alignment_mode: AxisAlignmentMode::CenterOnZeroWithOppsositeRange,
+                alignment_mode: AxisAlignmentMode::CenterOnZero,
+                axis_formatter: Some(y_axis_units_formatter(Units::Volt)),
+                ..Default::default()
+            });
             let ctx = ctx.clone();
             let hndl = std::thread::spawn(move || {
                 let mut last_run = UnixTimestamp::now();
@@ -135,8 +148,16 @@ impl TestApp {
                     WindowBinStrategy::Center,
                     Box::new(SavitszkyGolaySmoother24Builder),
                 );
-                let mut average_data = TimeWindow::new(MAX_DATA_TO_KEEP - AVERAGING_WINDOW / 2.);
-                let mut error_data = BinStatistics::new(AVERAGING_WINDOW / 4.);
+                let mut average_data = TimeWindow::new(MAX_DATA_TO_KEEP - AVERAGING_WINDOW);
+                let mut error_data = BinStatistics::new(AVERAGING_WINDOW);
+
+                let mut troc_filter = TimedWindowFilter::new(
+                    AVERAGING_WINDOW * 2.,
+                    WindowBinStrategy::Center,
+                    Box::new(SavitzkyGolay1DerivOrder2Builder),
+                );
+                let mut troc_data = TimeWindow::new(MAX_DATA_TO_KEEP - AVERAGING_WINDOW);
+
                 let mut rnd = irox_tools::random::PcgXshRR::default();
 
                 let now = UnixTimestamp::now();
@@ -147,28 +168,52 @@ impl TestApp {
                         error_data.insert(curiter, val);
                         if let Some(value) = average_filter.insert(curiter, val) {
                             average_data.add_sample(value);
+                            if let Some(value) = troc_filter.add_sample(value) {
+                                troc_data.add_sample(value);
+                            }
                         }
                         curiter += DATA_RATE;
                     }
+                    #[cfg(feature = "dump_csv")]
+                    if let Ok(file) = std::fs::OpenOptions::new()
+                        .write(true)
+                        .create(true)
+                        .truncate(true)
+                        .open("troc.csv")
+                    {
+                        let mut csv =
+                            irox_csv::CSVWriter::new(file).with_dialect(irox_csv::EXCEL_DIALECT);
+                        let _ = csv.write_header();
+                        troc_data.iter().for_each(|(k, v)| {
+                            let _ = csv.write_line(&[
+                                format!("{}", k.get_offset().as_millis()),
+                                format!("{v}"),
+                            ]);
+                        })
+                    }
                 }
 
+                let start_time = now;
                 let mut last_repaint = now;
-                while running.load(std::sync::atomic::Ordering::Relaxed) {
+                while running.load(Ordering::Relaxed) {
                     let diff = DATA_RATE - last_run.elapsed();
                     std::thread::sleep(diff.into());
                     last_run = UnixTimestamp::now();
 
                     let olders = last_run - MAX_DATA_TO_KEEP;
-                    // let epoch = / LINE_EPOCH_CYCLE;
+                    let epoch = ((last_run - start_time) / LINE_EPOCH_CYCLE).fract() * line_off;
 
-                    let new_val = rnd.next_in_distribution(line_off, LINE_JITTER);
+                    let new_val = rnd.next_in_distribution(line_off + epoch, LINE_JITTER);
                     error_data.insert(last_run, new_val);
                     if let Some(data) = average_filter.insert(last_run, new_val) {
                         average_data.add_sample(data);
+                        if let Some(data) = troc_filter.add_sample(data) {
+                            troc_data.add_sample(data);
+                        }
                     }
 
                     error_data.remove_data_before(olders);
-                    let data = error_data
+                    let eb_data = error_data
                         .iter()
                         .map(|(_idx, bin)| (bin.start.get_offset().as_millis() as f64, bin.summary))
                         .collect::<Vec<_>>();
@@ -176,10 +221,16 @@ impl TestApp {
                     let line_data = average_data
                         .map_data(|(t, v)| PlotPoint::new(t.get_offset().as_millis() as f64, *v));
 
+                    let tr_pts = troc_data
+                        .map_data(|(t, v)| PlotPoint::new(t.get_offset().as_millis() as f64, *v));
+
                     error_bars.replace_data(LineWithErrorBars {
                         line_data: Arc::from(line_data),
-                        error_bars: Arc::from(data),
+                        error_bars: Arc::from(eb_data),
                     });
+
+                    troc_line.replace_data(Arc::from(tr_pts));
+
                     if (last_run - last_repaint) > MAX_REPAINT_RATE {
                         last_repaint = last_run;
                         ctx.request_repaint();

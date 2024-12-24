@@ -2672,6 +2672,7 @@ dependencies = [
  "egui",
  "irox-bits",
  "irox-build-rs",
+ "irox-csv",
  "irox-imagery",
  "irox-stats",
  "irox-time",
