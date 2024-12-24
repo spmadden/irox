@@ -28,6 +28,13 @@ pub trait KernelGenerator {
     /// Calculates the value for the convolution kernel at the specified offset.  The range of valid
     /// offsets is [-offset_size, 0, offset_size]
     fn get_kernel_value(&self, offset: f64) -> f64;
+
+    ///
+    /// Returns the expected value of the kernel.  Most kernels will be 1.0 though
+    /// some (like first-derivative kernels) will be at zero.
+    fn expected_weighted_sum(&self) -> f64 {
+        1.0f64
+    }
 }
 pub struct SavitszkyGolaySmoother23 {
     m: usize,
@@ -89,9 +96,9 @@ macro_rules! make_fn {
     };
 }
 make_fn!(make_savitskygolay_23, SavitszkyGolaySmoother23);
-pub const SAVINSKY_GOLAY_SMOOTH_23_5: [f64; 5] = make_savitskygolay_23::<5>();
-pub const SAVINSKY_GOLAY_SMOOTH_23_7: [f64; 7] = make_savitskygolay_23::<7>();
-pub const SAVINSKY_GOLAY_SMOOTH_23_9: [f64; 9] = make_savitskygolay_23::<9>();
+pub const SAVITZKY_GOLAY_SMOOTH_23_5: [f64; 5] = make_savitskygolay_23::<5>();
+pub const SAVITZKY_GOLAY_SMOOTH_23_7: [f64; 7] = make_savitskygolay_23::<7>();
+pub const SAVITZKY_GOLAY_SMOOTH_23_9: [f64; 9] = make_savitskygolay_23::<9>();
 
 pub struct SavitszkyGolaySmoother45 {
     m: usize,
@@ -132,9 +139,9 @@ impl KernelGenerator for SavitszkyGolaySmoother45 {
     }
 }
 make_fn!(make_savitskygolay_45, SavitszkyGolaySmoother45);
-pub const SAVINSKY_GOLAY_SMOOTH_45_5: [f64; 5] = make_savitskygolay_45::<5>();
-pub const SAVINSKY_GOLAY_SMOOTH_45_7: [f64; 7] = make_savitskygolay_45::<7>();
-pub const SAVINSKY_GOLAY_SMOOTH_45_9: [f64; 9] = make_savitskygolay_45::<9>();
+pub const SAVITZKY_GOLAY_SMOOTH_45_5: [f64; 5] = make_savitskygolay_45::<5>();
+pub const SAVITZKY_GOLAY_SMOOTH_45_7: [f64; 7] = make_savitskygolay_45::<7>();
+pub const SAVITZKY_GOLAY_SMOOTH_45_9: [f64; 9] = make_savitskygolay_45::<9>();
 
 pub struct SavitskyGolay1DerivOrder2 {
     m: usize,
@@ -160,11 +167,101 @@ impl KernelGenerator for SavitskyGolay1DerivOrder2 {
     fn get_kernel_value(&self, offset: f64) -> f64 {
         SavitskyGolay1DerivOrder2::get_kernel_value(self, offset)
     }
+
+    fn expected_weighted_sum(&self) -> f64 {
+        0.0
+    }
 }
 make_fn!(make_savitskygolay_1d2, SavitskyGolay1DerivOrder2);
-pub const SAVINSKY_GOLAY_1D_2_5: [f64; 5] = make_savitskygolay_1d2::<5>();
-pub const SAVINSKY_GOLAY_1D_2_7: [f64; 7] = make_savitskygolay_1d2::<7>();
-pub const SAVINSKY_GOLAY_1D_2_9: [f64; 9] = make_savitskygolay_1d2::<9>();
+pub const SAVITZKY_GOLAY_1D_2_5: [f64; 5] = make_savitskygolay_1d2::<5>();
+pub const SAVITZKY_GOLAY_1D_2_7: [f64; 7] = make_savitskygolay_1d2::<7>();
+pub const SAVITZKY_GOLAY_1D_2_9: [f64; 9] = make_savitskygolay_1d2::<9>();
+
+pub struct SavitzkyGolay1DerivOrder2Builder;
+impl KernelBuilder for SavitzkyGolay1DerivOrder2Builder {
+    type Output = SavitskyGolay1DerivOrder2;
+
+    fn generate_kernel(&self, num_samples: usize) -> Option<Self::Output> {
+        (num_samples >= self.minimum_samples()).then(|| SavitskyGolay1DerivOrder2::new(num_samples))
+    }
+
+    fn minimum_samples(&self) -> usize {
+        3
+    }
+}
+
+pub struct SavitzkyGolay1DerivOrder34 {
+    m: usize,
+    denom: f64,
+    a: f64,
+    b: f64,
+}
+impl SavitzkyGolay1DerivOrder34 {
+    pub const fn new(m: usize) -> Self {
+        let mf = ((m - 1) / 2) as f64;
+
+        let mut denom: f64 = 2. * mf + 3.;
+        denom *= 2. * mf + 1.;
+        denom *= 2. * mf - 1.;
+        denom *= mf + 2.;
+        denom *= mf + 1.;
+        denom *= mf;
+        denom *= mf - 1.;
+
+        let mf2 = mf * mf;
+        let mf3 = mf2 * mf;
+        let mf4 = mf3 * mf;
+
+        let a = 3. * mf4 + 6. * mf3 - 3. * mf + 1.;
+        let b = 3. * mf2 + 3. * mf - 1.;
+
+        Self { m, denom, a, b }
+    }
+
+    pub const fn absolute_value_offset(&self) -> usize {
+        (self.m - 1) / 2
+    }
+    pub const fn get_kernel_value(&self, offset: f64) -> f64 {
+        let a = 5. * self.a * offset;
+        let o2 = offset * offset;
+        let o3 = o2 * offset;
+        let b = 7. * self.b * o3;
+
+        let top = 5. * (a - b);
+
+        top / self.denom
+    }
+}
+impl KernelGenerator for SavitzkyGolay1DerivOrder34 {
+    fn required_number_of_points(&self) -> usize {
+        self.m
+    }
+
+    fn get_kernel_value(&self, offset: f64) -> f64 {
+        SavitzkyGolay1DerivOrder34::get_kernel_value(self, offset)
+    }
+
+    fn expected_weighted_sum(&self) -> f64 {
+        0.0
+    }
+}
+pub struct SavitzkyGolay1DerivOrder34Builder;
+impl KernelBuilder for SavitzkyGolay1DerivOrder34Builder {
+    type Output = SavitzkyGolay1DerivOrder34;
+
+    fn generate_kernel(&self, num_samples: usize) -> Option<Self::Output> {
+        (num_samples >= self.minimum_samples())
+            .then(|| SavitzkyGolay1DerivOrder34::new(num_samples))
+    }
+
+    fn minimum_samples(&self) -> usize {
+        3
+    }
+}
+make_fn!(make_savitskygolay_1d34, SavitzkyGolay1DerivOrder34);
+pub const SAVITZKY_GOLAY_1D_3_5: [f64; 5] = make_savitskygolay_1d34::<5>();
+pub const SAVITZKY_GOLAY_1D_3_7: [f64; 7] = make_savitskygolay_1d34::<7>();
+pub const SAVITZKY_GOLAY_1D_3_9: [f64; 9] = make_savitskygolay_1d34::<9>();
 
 ///
 /// This struct is a rolling time window for the provided data.  It will automatically "throw out"
@@ -443,10 +540,10 @@ mod tests {
         for (idx, v) in (-4..4).enumerate() {
             assert_eq_eps!(values[idx], sv.get_kernel_value(v as f64), f64::EPSILON);
         }
-        assert_eq_eps_slice!(values, SAVINSKY_GOLAY_SMOOTH_23_9, f64::EPSILON);
+        assert_eq_eps_slice!(values, SAVITZKY_GOLAY_SMOOTH_23_9, f64::EPSILON);
         assert_eq_eps!(
             1.0,
-            SAVINSKY_GOLAY_SMOOTH_23_9.iter().sum::<f64>(),
+            SAVITZKY_GOLAY_SMOOTH_23_9.iter().sum::<f64>(),
             f64::EPSILON
         );
     }
@@ -472,10 +569,10 @@ mod tests {
         for (idx, v) in (-4..4).enumerate() {
             assert_eq_eps!(values[idx], sv.get_kernel_value(v as f64), 1e-15);
         }
-        assert_eq_eps_slice!(values, SAVINSKY_GOLAY_SMOOTH_45_9, f64::EPSILON);
+        assert_eq_eps_slice!(values, SAVITZKY_GOLAY_SMOOTH_45_9, f64::EPSILON);
         assert_eq_eps!(
             1.0,
-            SAVINSKY_GOLAY_SMOOTH_45_9.iter().sum::<f64>(),
+            SAVITZKY_GOLAY_SMOOTH_45_9.iter().sum::<f64>(),
             f64::EPSILON
         );
     }
@@ -501,7 +598,32 @@ mod tests {
         for (idx, v) in (-4..4).enumerate() {
             assert_eq_eps!(values[idx], sv.get_kernel_value(v as f64), 1e-15);
         }
-        assert_eq_eps_slice!(values, SAVINSKY_GOLAY_1D_2_9, f64::EPSILON);
-        assert_eq_eps!(0.0, SAVINSKY_GOLAY_1D_2_9.iter().sum::<f64>(), f64::EPSILON);
+        assert_eq_eps_slice!(values, SAVITZKY_GOLAY_1D_2_9, f64::EPSILON);
+        assert_eq_eps!(0.0, SAVITZKY_GOLAY_1D_2_9.iter().sum::<f64>(), f64::EPSILON);
+    }
+
+    #[test]
+    pub fn test_savitz_1d34() {
+        let sv = SavitzkyGolay1DerivOrder34::new(9);
+        assert_eq!(9, sv.required_number_of_points());
+        assert_eq!(4, sv.absolute_value_offset());
+
+        let values = [
+            86. / 1188.,
+            -142. / 1188.,
+            -193. / 1188.,
+            -126. / 1188.,
+            0.,
+            126. / 1188.,
+            193. / 1188.,
+            142. / 1188.,
+            -86. / 1188.,
+        ];
+
+        for (idx, v) in (-4..=4).enumerate() {
+            assert_eq_eps!(values[idx], sv.get_kernel_value(v as f64), 1e-15);
+        }
+        assert_eq_eps_slice!(values, SAVITZKY_GOLAY_1D_3_9, f64::EPSILON);
+        assert_eq_eps!(0.0, SAVITZKY_GOLAY_1D_3_9.iter().sum::<f64>(), f64::EPSILON);
     }
 }
