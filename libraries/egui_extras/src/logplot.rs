@@ -147,7 +147,7 @@ pub struct Line {
     meshes: Vec<Shape>,
     lines: Vec<Shape>,
     points: Vec<Shape>,
-    bounds: Rect2D,
+    bounds: Option<Rect2D>,
     is_hovered: bool,
 }
 impl Line {
@@ -155,16 +155,17 @@ impl Line {
         self.name = Arc::new(name.as_ref().to_owned());
     }
 
-    fn bounds_as_points(&self) -> [PlotPoint; 2] {
+    fn bounds_as_points(&self) -> Option<[PlotPoint; 2]> {
+        let bounds = self.bounds.as_ref()?;
         let a = PlotPoint {
-            x: self.bounds.origin.x,
-            y: self.bounds.origin.y,
+            x: bounds.origin.x,
+            y: bounds.origin.y,
         };
         let b = PlotPoint {
-            x: self.bounds.far_point.x,
-            y: self.bounds.far_point.y,
+            x: bounds.far_point.x,
+            y: bounds.far_point.y,
         };
-        [a, b]
+        Some([a, b])
     }
 }
 
@@ -330,8 +331,6 @@ impl BasicPlot {
         func(&mut line);
         let exch = line.line_exchanger.clone();
         let errs = line.error_bars_exchanger.clone();
-        line.line_exchanger.set_data_changed();
-        line.error_bars_exchanger.set_data_changed();
         self.lines.push(line);
         (exch, errs)
     }
@@ -498,10 +497,15 @@ impl BasicPlot {
                     //     }
                     // }
                 }
+                // let buf = bounds.height() * 0.05;
+                // let min = bounds.origin;
+                // let max = bounds.far_point;
+                // bounds.add_point(max.x, max.y + buf);
+                // bounds.add_point(min.x, min.y - buf);
                 line.lines = vec![Shape::line(lineout, stroke)];
             }
             if bounds != Rect2D::empty() {
-                line.bounds = bounds;
+                line.bounds = Some(bounds);
             }
         }
     }
@@ -638,6 +642,12 @@ impl BasicPlot {
         self.y_axis_left.screen_limit = x_axis_y_offset;
         self.y_axis_left.screen_range = x_axis_y_offset - y_axis_y_min;
         self.y_axis_left.incr_sign = -1.0;
+        if let Some(rt_ax) = &mut self.y_axis_right {
+            rt_ax.screen_origin = self.y_axis_left.screen_origin;
+            rt_ax.screen_limit = self.y_axis_left.screen_limit;
+            rt_ax.screen_range = self.y_axis_left.screen_range;
+            rt_ax.incr_sign = self.y_axis_left.incr_sign;
+        }
         let grid_bounds = Rect::from_min_max(
             Pos2::new(x_axis_x_min, y_axis_y_min),
             Pos2::new(x_axis_x_max, y_axis_y_max),
@@ -668,29 +678,36 @@ impl BasicPlot {
                 .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
-                .flat_map(Line::bounds_as_points)
+                .filter_map(Line::bounds_as_points)
+                .flatten()
                 .collect::<Vec<PlotPoint>>();
             // update and rescale the data based on this frame's painting window.
-            self.x_axis.update_range(all_points.as_slice(), |p| p.x);
+            self.x_axis
+                .update_range(all_points.as_slice(), |p| p.x, None);
 
             let left_points = self
                 .lines
                 .iter()
                 .filter(|v| v.visible.load(Ordering::Relaxed))
                 .filter(|v| v.yaxis_side == YAxisSide::LeftAxis)
-                .flat_map(Line::bounds_as_points)
+                .filter_map(Line::bounds_as_points)
+                .flatten()
                 .collect::<Vec<PlotPoint>>();
-            self.y_axis_left
-                .update_range(left_points.as_slice(), |p| p.y);
+            self.y_axis_left.update_range(
+                left_points.as_slice(),
+                |p| p.y,
+                self.y_axis_right.as_ref(),
+            );
             if let Some(y_axis_rt) = &mut self.y_axis_right {
                 let rt_points = self
                     .lines
                     .iter()
                     .filter(|v| v.visible.load(Ordering::Relaxed))
                     .filter(|v| v.yaxis_side == YAxisSide::RightAxis)
-                    .flat_map(Line::bounds_as_points)
+                    .filter_map(Line::bounds_as_points)
+                    .flatten()
                     .collect::<Vec<PlotPoint>>();
-                y_axis_rt.update_range(rt_points.as_slice(), |p| p.y);
+                y_axis_rt.update_range(rt_points.as_slice(), |p| p.y, Some(&self.y_axis_left));
             }
 
             self.last_render_size = lr;
@@ -992,7 +1009,12 @@ impl BasicPlot {
         // paint the text
         let mod_x = self.x_axis.describe_screen_pos(draw_pos.x);
         let mod_y = y_axis.describe_screen_pos(draw_pos.y);
-        let text = format!("x: {mod_x}\ny: {mod_y}");
+        let text: String = if let Some(rt) = &self.y_axis_right {
+            let rt_y = rt.describe_screen_pos(draw_pos.y);
+            format!("x: {mod_x}\nleft ax: {mod_y}\nrightax: {rt_y}")
+        } else {
+            format!("x: {mod_x}\ny: {mod_y}")
+        };
         let color = ui.visuals().text_cursor.stroke.color;
         let font_id = TextStyle::Monospace.resolve(ui.style());
         let mut align = Align2::LEFT_BOTTOM;
@@ -1024,6 +1046,14 @@ pub enum ScaleMode {
     Linear,
     Log10,
     DBScale,
+}
+
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+pub enum AxisAlignmentMode {
+    #[default]
+    Automatic,
+    CenterOnZero,
+    CenterOnZeroWithOppsositeRange,
 }
 #[derive(Default)]
 pub struct Axis {
@@ -1058,10 +1088,20 @@ pub struct Axis {
     /// Optional formatter for the detents on this axis, accepts the data value
     /// and returns a string as the detent.
     pub axis_formatter: Option<Box<FormatterFn>>,
+
+    pub alignment_mode: AxisAlignmentMode,
 }
 
 impl Axis {
-    pub fn update_range<F: Fn(&PlotPoint) -> f64>(&mut self, vals: &[PlotPoint], accessor: F) {
+    pub fn update_range<F: Fn(&PlotPoint) -> f64>(
+        &mut self,
+        vals: &[PlotPoint],
+        accessor: F,
+        opposite_axis: Option<&Axis>,
+    ) {
+        if vals.is_empty() {
+            return;
+        }
         self.draw_log_clip_warning = false;
         self.min_val = f64::INFINITY;
         self.max_val = f64::NEG_INFINITY;
@@ -1079,6 +1119,22 @@ impl Axis {
             };
             self.min_val = self.min_val.min(v);
             self.max_val = self.max_val.max(v);
+        }
+        match self.alignment_mode {
+            AxisAlignmentMode::CenterOnZero => {
+                let absval = self.max_val.abs().max(self.min_val.abs());
+                self.max_val = absval;
+                self.min_val = -absval;
+            }
+            AxisAlignmentMode::CenterOnZeroWithOppsositeRange => {
+                let Some(opposite_axis) = opposite_axis else {
+                    return;
+                };
+                let absval = opposite_axis.range.abs();
+                self.max_val = absval;
+                self.min_val = -absval;
+            }
+            _ => {}
         }
         if self.scale_mode == ScaleMode::DBScale {
             if self.min_val <= 0.0 {
