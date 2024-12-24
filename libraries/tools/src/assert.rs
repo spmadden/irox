@@ -15,11 +15,23 @@ macro_rules! assert_eq_eps {
                 let delta = (*left_val - *right_val).abs();
                 if !(delta <= $eps) {
                     panic!(
-                        "Assertion failed, {} - {} = {} > {}",
-                        &*left_val, &*right_val, delta, $eps
+                        "Assertion failed, {} - {} = {} > {} (error: {})",
+                        &*left_val,
+                        &*right_val,
+                        delta,
+                        $eps,
+                        delta - $eps
                     )
                 }
             }
+        }
+    };
+}
+#[macro_export]
+macro_rules! debug_assert_eq_eps {
+    ($left:expr, $right:expr, $eps:expr) => {
+        if cfg!(debug_assertions) {
+            $crate::assert_eq_eps!($left, $right, $eps)
         }
     };
 }
