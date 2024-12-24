@@ -658,7 +658,7 @@ impl BasicPlot {
             if now - self.line_highlight_focus_duration > self.last_line_highlight_time {
                 self.last_line_highlight_time = now;
                 self.last_line_highlight_index += 1;
-                if self.last_line_highlight_index >= self.lines.len() {
+                if self.last_line_highlight_index > self.lines.len() * 2 {
                     self.last_line_highlight_index = 0;
                 }
                 for line in &mut self.lines {
