@@ -11,6 +11,7 @@ use core::ops::Deref;
 use core::ops::{Add, Div, Mul, Sub};
 use irox_time::epoch::Timestamp;
 use irox_time::Duration;
+use irox_tools::debug_assert_eq_eps;
 use irox_tools::f64::FloatExt;
 
 /// A convolution kernel generator.
@@ -375,6 +376,9 @@ impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
             values: TimeWindow::new(window_duration * 2.0),
         }
     }
+    pub fn add_sample(&mut self, sample: Sample<T>) -> Option<Sample<T>> {
+        self.insert(sample.time, sample.value)
+    }
     ///
     /// Push a new sample into the filter.  If there's sufficient data to run the downsampling,
     /// will run and return the result.
@@ -392,22 +396,30 @@ impl<T: Copy, K: KernelGenerator> TimedWindowFilter<T, K> {
             // collect more datas.
             return None;
         }
+        let numvals = self.values.len();
+        if numvals & 0x01 == 0x00 {
+            // even # of samps, wait one.
+            return None;
+        }
         let last = *latest.0;
         let window_start = last - self.window_duration;
 
-        let numvals = self.values.len();
         let filter = self.kernel_generator.generate_kernel(numvals)?;
+
         let center_time = window_start + self.window_duration / 2.;
         // convolve!
-        let mut tally = 0f64;
         let mut out = 0f64;
-        for (time, val) in self.values.iter() {
-            let idx = (*time - center_time) / self.window_duration;
-            let kernel = filter.get_kernel_value(idx);
-            tally += kernel;
+        let mut tally = 0f64;
+        for (idx, (_time, val)) in self.values.iter().enumerate() {
+            let idx = idx as i32 - filter.absolute_value_offset() as i32;
+            // let idx = (*time - center_time) / self.window_duration * numvals as f64;
+            let kernel = filter.get_kernel_value(idx as f64);
             out += kernel * val;
+            tally += kernel;
         }
-        out /= tally;
+        let scale = 1.0 - (filter.expected_weighted_sum() - tally);
+        out /= scale;
+        debug_assert_eq_eps!(filter.expected_weighted_sum(), tally, 1e-15);
         let out_time = match self.bin_strategy {
             WindowBinStrategy::Lower => window_start,
             WindowBinStrategy::Center => center_time,
