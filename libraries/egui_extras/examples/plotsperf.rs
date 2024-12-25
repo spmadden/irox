@@ -5,9 +5,10 @@
 use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
-    x_axis_time_millis_formatter, y_axis_units_formatter, BasicPlot, LineWithErrorBars, PlotPoint,
+    x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, BasicPlot,
+    LineWithErrorBars, PlotPoint, YAxisSide,
 };
-use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
+use irox_egui_extras::toolframe::ToolApp;
 use irox_stats::windows::{
     BinStatistics, SavitszkyGolaySmoother24Builder, TimeWindow, TimedLinearSlopeFilter,
     TimedWindowFilter, WindowBinStrategy,
@@ -51,21 +52,22 @@ pub fn main() {
         native_options,
         Box::new(|cc| {
             cc.egui_ctx.set_theme(DEFAULT_THEME);
-            Ok(Box::new(ToolFrame::new_opts(
-                cc,
-                Box::new(TestApp::new(cc)),
-                ToolFrameOptions {
-                    show_rendering_stats: true,
-                    ..Default::default()
-                },
-            )))
+            Ok(
+                // Box::new(ToolFrame::new_opts(
+                // cc,
+                Box::new(TestApp::new(cc)), // ToolFrameOptions {
+                                            //     show_rendering_stats: true,
+                                            //     ..Default::default()
+                                            // },
+                                            // )
+            )
         }),
     ) {
         error!("{e:?}");
     };
 }
 const NUM_LINES_PER_PLOT: usize = 16;
-const NUM_PLOTS: usize = 3;
+const NUM_PLOTS: usize = 1;
 const DATA_RATE: Duration = Duration::from_millis(10); // 100 hz data
 const MAX_DATA_TO_KEEP: Duration = Duration::from_minutes(5);
 const AVERAGING_WINDOW: Duration = Duration::from_seconds_f64(0.5);
@@ -75,9 +77,10 @@ const LINE_JITTER: f64 = 1e-6;
 const LINE_INCR: f64 = 1e-8;
 const LINE_EPOCH_CYCLE: Duration = Duration::from_minutes(1);
 const LINE_EPOCH_BIAS: f64 = 1e-6;
-const DEFAULT_CYCLE: bool = true;
+const DEFAULT_CYCLE: bool = false;
 const DEFAULT_THEME: ThemePreference = ThemePreference::Dark;
-const DO_TROC: bool = false;
+const DO_TROC: bool = true;
+const TROC_OVERLAY: bool = false;
 
 pub struct PlotOpts {
     running: Arc<AtomicBool>,
@@ -137,16 +140,22 @@ impl TestApp {
             let (_, error_bars) = data_plot.add_line_with_error_bars(|line| {
                 line.set_name(format!("Line {}", lidx + 1));
             });
-            let troc_line = troc_plot.add_line(|line| {
-                line.set_name(format!("Line {} TROC", lidx + 1));
-                // line.yaxis_side = YAxisSide::RightAxis;
-            });
-            // data_plot.y_axis_right = Some(Axis {
-            // alignment_mode: AxisAlignmentMode::CenterOnZeroWithOppsositeRange,
-            // alignment_mode: AxisAlignmentMode::CenterOnZero,
-            // axis_formatter: Some(y_axis_units_formatter(Units::Volt)),
-            // ..Default::default()
-            // });
+            let troc_line = if TROC_OVERLAY {
+                data_plot.y_axis_right = Some(Axis {
+                    // alignment_mode: AxisAlignmentMode::CenterOnZeroWithOppsositeRange,
+                    alignment_mode: AxisAlignmentMode::CenterOnZero,
+                    axis_formatter: Some(y_axis_units_formatter(Units::Volt)),
+                    ..Default::default()
+                });
+                data_plot.add_line(|line| {
+                    line.set_name(format!("Line {} TROC", lidx + 1));
+                    line.yaxis_side = YAxisSide::RightAxis;
+                })
+            } else {
+                troc_plot.add_line(|line| {
+                    line.set_name(format!("Line {} TROC", lidx + 1));
+                })
+            };
             let ctx = ctx.clone();
             let hndl = std::thread::spawn(move || {
                 let mut last_run = UnixTimestamp::now();
@@ -251,7 +260,7 @@ impl TestApp {
             line_off += LINE_INCR;
             // line_off *= -1.;
         }
-        if DO_TROC {
+        if DO_TROC && !TROC_OVERLAY {
             PlotOpts {
                 running,
                 plots: vec![data_plot, troc_plot],
