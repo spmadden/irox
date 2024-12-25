@@ -38,5 +38,5 @@ irox-bits = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }
 irox-egui-extras = { workspace = true, features = ["plots"] }
 irox-log = { workspace = true }
-eframe = { workspace = true, default-features = true }
-egui = { workspace = true, default-features = true }
+eframe = { workspace = true, features = ["glow", "default_fonts"] }
+egui = { workspace = true, features = ["default_fonts"]}
