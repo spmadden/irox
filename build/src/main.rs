@@ -71,6 +71,10 @@ enum Commands {
     /// Runs an optimized x86_64 release build
     #[clap(visible_alias("rb"))]
     ReleaseBuild,
+
+    /// Runs cargo-bloat to check what's bloating your binary
+    #[clap(visible_alias("bc"))]
+    BloatCheck { args: Vec<String> },
 }
 
 #[derive(Debug, Default, Parser)]
@@ -108,6 +112,14 @@ fn main() -> Result<(), Error> {
         Commands::Unused => unused()?,
         Commands::QuickChecks => quick_checks()?,
         Commands::ReleaseBuild => rbuild()?,
+        Commands::BloatCheck { args } => {
+            bloat(
+                args.iter()
+                    .map(String::as_str)
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+            )?;
+        }
     }
     Ok(())
 }
@@ -163,9 +175,10 @@ fn build() -> Result<(), Error> {
 fn test() -> Result<(), Error> {
     logstart("test");
     for feature in FEATURE_ARGS {
-        exec_passthru(
+        exec_passthru_env(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
+            [("RUSTFLAGS", "-Copt-level=1")]
         )?;
     }
     logend();
@@ -241,11 +254,11 @@ fn doc() -> Result<(), Error> {
     Ok(())
 }
 
-fn check(pkg: &str) -> Result<(), Error> {
-    logstart(&format!("check-{pkg}"));
-    exec("rustup", &["target", "add", pkg])?;
+fn check(target: &str) -> Result<(), Error> {
+    logstart(&format!("check-{target}"));
+    exec_passthru("rustup", &["target", "add", target])?;
     cleanlocal()?;
-    exec("cargo", &["check", "--target", pkg, "--color=always"])?;
+    exec_passthru("cargo", &["check", "--target", target, "--color=always", "--all-targets"])?;
     logend();
     Ok(())
 }
@@ -399,10 +412,28 @@ fn rbuild() -> Result<(), Error> {
         "-Cpanic=abort",
     ]
     .join(" ");
-    exec_env(
+    exec_passthru_env(
         "cargo",
         &["build", "--release", "--examples"],
         [("RUSTFLAGS", rustc_args)],
     )?;
+    Ok(())
+}
+
+fn bloat(args: &[&str]) -> Result<(), Error> {
+    install_update("cargo-bloat");
+    let rustc_args = &[
+        "-Ctarget-cpu=x86-64-v3",
+        "-Cstrip=symbols",
+        "-Copt-level=s",
+        "-Ccodegen-units=1",
+        "-Ccontrol-flow-guard=yes",
+        "-Cpanic=abort",
+    ]
+    .join(" ");
+
+    let args = (&[&["bloat", "--release"], args]).concat();
+
+    exec_env("cargo", &args, [("RUSTFLAGS", rustc_args)])?;
     Ok(())
 }

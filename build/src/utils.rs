@@ -211,10 +211,18 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
 
     Ok(())
 }
-
 pub fn exec_passthru(cmd: &str, args: &[&str]) -> Result<(), Error> {
+    exec_passthru_env::<_, &str, &str>(cmd, args, [])
+}
+pub fn exec_passthru_env<I, K, V>(cmd: &str, args: &[&str], vars: I) -> Result<(), Error>
+where
+    I: IntoIterator<Item = (K, V)>,
+    K: AsRef<OsStr>,
+    V: AsRef<OsStr>,
+{
     let mut child = std::process::Command::new(cmd)
         .args(args)
+        .envs(vars)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
