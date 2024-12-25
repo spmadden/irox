@@ -9,11 +9,11 @@
 macro_rules! profile_scope {
     ($name:expr) => {
         #[cfg(feature = "profiling")]
-        puffin::profile_scope!($name);
+        profiling::scope!($name);
     };
     ($name:expr, $data:expr) => {
         #[cfg(feature = "profiling")]
-        puffin::profile_scope!($name, $data);
+        profiling::scope!($name, $data);
     };
 }
 

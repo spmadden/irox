@@ -57,9 +57,10 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0.29", default-features = false }
-eframe = { version = "^0.29", default-features = false }
-emath = { version = "^0.29", default-features = false }
+egui = { version = "^0.30", default-features = false }
+eframe = { version = "^0.30", default-features = false }
+emath = { version = "^0.30", default-features = false }
+profiling = {version = "^1.0", features = ["profile-with-puffin"]}
 puffin = { version = "^0.19", features = [] }
 puffin_http = { version = "^0.16", features = [] }
 ron = { version = "^0.8", features = ["integer128"] }

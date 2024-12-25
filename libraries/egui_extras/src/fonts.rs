@@ -5,6 +5,8 @@
 use eframe::epaint::text::FontData;
 use egui::{Context, FontDefinitions, FontFamily};
 
+extern crate alloc;
+
 pub const UBUNTU: &[u8] = include_bytes!("../fonts/Ubuntu-R.ttf");
 pub const UBUNTU_BOLD: &[u8] = include_bytes!("../fonts/Ubuntu-B.ttf");
 pub const UBUNTU_ITALIC: &[u8] = include_bytes!("../fonts/Ubuntu-RI.ttf");
@@ -55,9 +57,10 @@ pub struct FontSet {
 }
 macro_rules! load_instance {
     ($fonts:ident, $str:ident, $font:ident) => {
-        $fonts
-            .font_data
-            .insert($str.to_string(), FontData::from_static($font));
+        $fonts.font_data.insert(
+            $str.to_string(),
+            alloc::sync::Arc::new(FontData::from_static($font)),
+        );
         $fonts
             .families
             .insert(FontFamily::Name($str.into()), vec![$str.into()]);
