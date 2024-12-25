@@ -195,6 +195,14 @@ macro_rules! impl_unsigned_flops {
                 **self = **self + rhs;
             }
         }
+        impl core::ops::Sub<f64> for $typ {
+            type Output = Self;
+
+            fn sub(self, rhs: f64) -> Self::Output {
+                let v = <$typ>::from(rhs);
+                self - v
+            }
+        }
         impl irox_tools::f64::FloatExt for $typ {
             type Type = Self;
             type Size = $prim;
