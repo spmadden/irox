@@ -68,6 +68,9 @@ enum Commands {
     /// Runs quick checks, `ci` without the actual builds/checks
     #[clap(visible_alias("qc"))]
     QuickChecks,
+    /// Runs an optimized x86_64 release build
+    #[clap(visible_alias("rb"))]
+    ReleaseBuild,
 }
 
 #[derive(Debug, Default, Parser)]
@@ -104,6 +107,7 @@ fn main() -> Result<(), Error> {
         Commands::Package => package()?,
         Commands::Unused => unused()?,
         Commands::QuickChecks => quick_checks()?,
+        Commands::ReleaseBuild => rbuild()?,
     }
     Ok(())
 }
@@ -381,5 +385,24 @@ fn package() -> Result<(), Error> {
         &["package", "-pirox", "--all-features", "--color=always"],
     )?;
     logend();
+    Ok(())
+}
+
+fn rbuild() -> Result<(), Error> {
+    exec("cargo", &["clean"])?;
+    let rustc_args = &[
+        "-Ctarget-cpu=x86-64-v3",
+        "-Cstrip=symbols",
+        "-Copt-level=s",
+        "-Ccodegen-units=1",
+        "-Ccontrol-flow-guard=yes",
+        "-Cpanic=abort",
+    ]
+    .join(" ");
+    exec_env(
+        "cargo",
+        &["build", "--release", "--examples"],
+        [("RUSTFLAGS", rustc_args)],
+    )?;
     Ok(())
 }

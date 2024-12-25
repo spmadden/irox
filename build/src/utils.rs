@@ -2,9 +2,10 @@
 // Copyright 2024 IROX Contributors
 //
 
-use std::fmt::Arguments;
 use crate::error::{Error, ErrorKind};
 use irox_log::log::warn;
+use std::ffi::OsStr;
+use std::fmt::Arguments;
 use std::fs::OpenOptions;
 use std::io::{BufRead, Read, Write};
 use std::process::Stdio;
@@ -32,10 +33,18 @@ pub fn logend() {
     }
     println!("::endgroup::");
 }
-
 pub fn exec(cmd: &str, args: &[&str]) -> Result<(), Error> {
+    exec_env::<_, &str, &str>(cmd, args, [])
+}
+pub fn exec_env<I, K, V>(cmd: &str, args: &[&str], vars: I) -> Result<(), Error>
+where
+    I: IntoIterator<Item = (K, V)>,
+    K: AsRef<OsStr>,
+    V: AsRef<OsStr>,
+{
     let mut child = std::process::Command::new(cmd)
         .args(args)
+        .envs(vars)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
