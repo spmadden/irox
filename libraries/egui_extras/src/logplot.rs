@@ -514,8 +514,7 @@ impl BasicPlot {
     }
     pub fn show(&mut self, ui: &mut Ui) {
         profile_scope!("basicplot.show", self.name.as_str());
-        let major_stroke = Stroke::new(2.0, ui.visuals().widgets.inactive.fg_stroke.color);
-        let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
+
         let caution_color = ui.visuals().warn_fg_color;
         let small_font = TextStyle::Small.resolve(ui.style());
         let large_font = TextStyle::Heading.resolve(ui.style());
@@ -715,109 +714,7 @@ impl BasicPlot {
 
             self.last_render_size = lr;
         }
-
-        // draw the info across the bottom of the x axis
-        for detent in &self.x_axis.detents {
-            let pos = Pos2 {
-                x: detent.0,
-                y: x_axis_y_offset + 2.,
-            };
-            let anchor = Align2::CENTER_TOP;
-            painter.text(
-                pos,
-                anchor,
-                &detent.1,
-                small_font.clone(),
-                ui.visuals().text_color(),
-            );
-            painter.line_segment(
-                [
-                    Pos2 {
-                        x: detent.0,
-                        y: y_axis_y_min,
-                    },
-                    Pos2 {
-                        x: detent.0,
-                        y: x_axis_y_offset,
-                    },
-                ],
-                minor_stroke,
-            );
-        }
-        // draw the info up the y axis - note, painted inverted!
-        for detent in &self.y_axis_left.detents {
-            let pos = Pos2 {
-                x: y_axis_x_offset - 5.,
-                y: detent.0,
-            };
-            let anchor = Align2::RIGHT_CENTER;
-            painter.text(
-                pos,
-                anchor,
-                &detent.1,
-                small_font.clone(),
-                ui.visuals().text_color(),
-            );
-            painter.line_segment(
-                [
-                    Pos2 {
-                        x: x_axis_x_min,
-                        y: detent.0,
-                    },
-                    Pos2 {
-                        x: x_axis_x_max,
-                        y: detent.0,
-                    },
-                ],
-                minor_stroke,
-            );
-        }
-        if let Some(rt_y) = &self.y_axis_right {
-            // draw the info up the y axis - note, painted inverted!
-            for detent in &rt_y.detents {
-                let pos = Pos2 {
-                    x: x_axis_x_max + 5.,
-                    y: detent.0,
-                };
-                let anchor = Align2::RIGHT_CENTER;
-                painter.text(
-                    pos,
-                    anchor,
-                    &detent.1,
-                    small_font.clone(),
-                    ui.visuals().text_color(),
-                );
-                painter.line_segment(
-                    [
-                        Pos2 {
-                            x: x_axis_x_min,
-                            y: detent.0,
-                        },
-                        Pos2 {
-                            x: x_axis_x_max,
-                            y: detent.0,
-                        },
-                    ],
-                    minor_stroke,
-                );
-            }
-        }
-        // paint vertical 'y' axis line
-        painter.line_segment(
-            [
-                Pos2::new(y_axis_x_offset, y_axis_y_min),
-                Pos2::new(y_axis_x_offset, x_axis_y_offset),
-            ],
-            major_stroke,
-        );
-        // paint horiz 'x' axis line
-        painter.line_segment(
-            [
-                Pos2::new(x_axis_x_min, x_axis_y_offset),
-                Pos2::new(x_axis_x_max, x_axis_y_offset),
-            ],
-            major_stroke,
-        );
+        self.draw_structure(ui, &mut painter);
         let closest_hover: Option<(Pos2, YAxisSide)> = None;
 
         // collect meshes
@@ -970,6 +867,115 @@ impl BasicPlot {
                 Stroke::new(1.0, caution_color),
             );
         }
+    }
+
+    fn draw_structure(&mut self, ui: &mut Ui, painter: &mut Painter) {
+        let major_stroke = Stroke::new(2.0, ui.visuals().widgets.inactive.fg_stroke.color);
+        let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
+        let small_font = TextStyle::Small.resolve(ui.style());
+
+        // draw the info across the bottom of the x axis
+        for detent in &self.x_axis.detents {
+            let pos = Pos2 {
+                x: detent.0,
+                y: self.y_axis_left.screen_limit + 2.,
+            };
+            let anchor = Align2::CENTER_TOP;
+            painter.text(
+                pos,
+                anchor,
+                &detent.1,
+                small_font.clone(),
+                ui.visuals().text_color(),
+            );
+            painter.line_segment(
+                [
+                    Pos2 {
+                        x: detent.0,
+                        y: self.y_axis_left.screen_origin,
+                    },
+                    Pos2 {
+                        x: detent.0,
+                        y: self.y_axis_left.screen_limit,
+                    },
+                ],
+                minor_stroke,
+            );
+        }
+        // draw the info up the y axis - note, painted inverted!
+        for detent in &self.y_axis_left.detents {
+            let pos = Pos2 {
+                x: self.y_axis_left.screen_limit - 5.,
+                y: detent.0,
+            };
+            let anchor = Align2::RIGHT_CENTER;
+            painter.text(
+                pos,
+                anchor,
+                &detent.1,
+                small_font.clone(),
+                ui.visuals().text_color(),
+            );
+            painter.line_segment(
+                [
+                    Pos2 {
+                        x: self.x_axis.screen_origin,
+                        y: detent.0,
+                    },
+                    Pos2 {
+                        x: self.x_axis.screen_limit,
+                        y: detent.0,
+                    },
+                ],
+                minor_stroke,
+            );
+        }
+        if let Some(rt_y) = &self.y_axis_right {
+            // draw the info up the y axis - note, painted inverted!
+            for detent in &rt_y.detents {
+                let pos = Pos2 {
+                    x: self.x_axis.screen_limit + 5.,
+                    y: detent.0,
+                };
+                let anchor = Align2::RIGHT_CENTER;
+                painter.text(
+                    pos,
+                    anchor,
+                    &detent.1,
+                    small_font.clone(),
+                    ui.visuals().text_color(),
+                );
+                painter.line_segment(
+                    [
+                        Pos2 {
+                            x: self.x_axis.screen_origin,
+                            y: detent.0,
+                        },
+                        Pos2 {
+                            x: self.x_axis.screen_limit,
+                            y: detent.0,
+                        },
+                    ],
+                    minor_stroke,
+                );
+            }
+        }
+        // paint vertical 'y' axis line
+        painter.line_segment(
+            [
+                Pos2::new(self.x_axis.screen_origin, self.y_axis_left.screen_origin),
+                Pos2::new(self.x_axis.screen_origin, self.y_axis_left.screen_limit),
+            ],
+            major_stroke,
+        );
+        // paint horiz 'x' axis line
+        painter.line_segment(
+            [
+                Pos2::new(self.x_axis.screen_origin, self.y_axis_left.screen_limit),
+                Pos2::new(self.x_axis.screen_limit, self.y_axis_left.screen_limit),
+            ],
+            major_stroke,
+        );
     }
 
     fn draw_cursor(
