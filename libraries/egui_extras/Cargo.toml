@@ -49,6 +49,8 @@ irox-tools = { workspace = true, features = ["std"] }
 puffin_http = { workspace = true }
 irox-csv = { workspace = true }
 
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+eframe = { workspace = true, features = ["x11", "wayland"] }
 
 [[example]]
 name = "irox_egui_gallery"
