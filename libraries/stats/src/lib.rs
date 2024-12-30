@@ -17,6 +17,7 @@ use alloc::vec::Vec;
 
 pub use gaussian as standard;
 
+pub mod abg;
 pub mod decay;
 pub mod filter;
 pub mod fitting;
