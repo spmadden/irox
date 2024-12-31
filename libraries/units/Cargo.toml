@@ -22,3 +22,7 @@ irox-tools = {version = "^0", path = "../tools", default-features = false}
 default = []
 alloc = []
 std = ["alloc"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

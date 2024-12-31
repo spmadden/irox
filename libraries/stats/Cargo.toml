@@ -40,3 +40,7 @@ irox-egui-extras = { workspace = true, features = ["plots"] }
 irox-log = { workspace = true }
 eframe = { workspace = true, features = ["glow", "default_fonts"] }
 egui = { workspace = true, features = ["default_fonts"]}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
