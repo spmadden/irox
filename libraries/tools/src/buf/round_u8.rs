@@ -45,6 +45,12 @@ impl<const N: usize> RoundU8Buffer<N> {
         Some(out)
     }
 
+    ///
+    /// Returns the free space (capacity) in this buffer.
+    pub const fn available_capacity(&self) -> usize {
+        N - self.size
+    }
+
     /// Provides the function with a mutable ref to the inner buffer.  The function
     /// MUST return the updated "used" size of the buffer.
     pub fn as_ref_mut<F: FnMut(usize, &mut [u8]) -> Result<usize, BitsError>>(
@@ -56,18 +62,92 @@ impl<const N: usize> RoundU8Buffer<N> {
         Ok(())
     }
 
+    pub fn as_ref_used(&self) -> (&[u8], &[u8]) {
+        let a_start = self.head;
+        let a_end = (a_start + self.size).min(N);
+        let a_used = a_end - a_start;
+        let b_start = 0;
+        let b_end = b_start + self.size - a_used;
+        let a = self.buf.get(a_start..a_end).unwrap_or_default();
+        let b = self.buf.get(b_start..b_end).unwrap_or_default();
+        (a, b)
+    }
+
+    pub fn as_ref_mut_available(&mut self) -> &mut [u8] {
+        if self.is_full() {
+            return &mut [];
+        } else if self.is_empty() {
+            self.clear();
+            return &mut self.buf;
+        }
+        if self.tail > self.head {
+            // no wrap.
+            let a_start = (self.tail + 1).min(N);
+            let a_end = N;
+            let a_avail = a_end - a_start;
+            if a_avail > 0 {
+                return self.buf.get_mut(a_start..a_end).unwrap_or_default();
+            }
+            return self.buf.get_mut(0..self.head).unwrap_or_default();
+        }
+        // probably wraps.
+        self.buf.get_mut(self.tail..self.head).unwrap_or_default()
+    }
+
+    ///
+    /// Appends all values into this buffer
+    pub fn append_all(&mut self, vals: &[u8]) -> Result<(), BitsError> {
+        for v in vals {
+            if self.push_back(*v).is_err() {
+                return Err(BitsErrorKind::OutOfMemory.into());
+            };
+        }
+        Ok(())
+    }
+
+    ///
+    /// Appends some of the data into this buffer.  Returns the number of bytes
+    /// successfully appended - which may be less than the total available.
+    pub fn append_some(&mut self, vals: &[u8]) -> usize {
+        let mut used = 0;
+        for v in vals {
+            if self.push_back(*v).is_err() {
+                return used;
+            }
+            used += 1;
+        }
+        used
+    }
+
+    pub fn consume(&mut self, amt: usize) {
+        if amt >= self.size {
+            return self.clear();
+        }
+        self.head += amt;
+        self.size -= amt;
+        if self.head >= N {
+            self.head -= N;
+        }
+    }
+
+    pub fn mark_some_used(&mut self, used: usize) -> Result<(), BitsError> {
+        if self.size + used > N {
+            return Err(BitsErrorKind::OutOfMemory.into());
+        }
+        self.size += used;
+        self.tail += used;
+        if self.tail >= N {
+            self.tail -= N;
+        }
+        Ok(())
+    }
+
     pub fn limit(&mut self, limit: usize) -> Result<(), BitsError> {
         if limit >= N || self.size < limit {
             return BitsErrorKind::InvalidInput.err("Invalid limit");
         }
         self.size = limit;
         Ok(())
-    }
-}
-
-impl<const N: usize> AsRef<[u8]> for RoundU8Buffer<N> {
-    fn as_ref(&self) -> &[u8] {
-        self.buf.split_at(self.size).0
     }
 }
 
@@ -303,6 +383,7 @@ impl<const N: usize> Index<usize> for RoundU8Buffer<N> {
 #[cfg(test)]
 mod tests {
     use crate::buf::Buffer;
+    use irox_bits::Error;
 
     macro_rules! assert_empty {
         ($buf:ident) => {
@@ -374,6 +455,70 @@ mod tests {
         assert_empty!(buf);
         assert_empty!(buf);
 
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_slicing() -> Result<(), Error> {
+        let mut buf = crate::buf::RoundU8Buffer::<10>::default();
+        assert_eq!(0, buf.len());
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(0, a.len());
+        assert_eq!(0, b.len());
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(10, avail.len());
+
+        for i in 0..5 {
+            buf.push_back(i).unwrap();
+        }
+        assert_eq!(5, buf.len());
+
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(5, a.len());
+        assert_eq!(0, b.len());
+        assert_eq!(&[0, 1, 2, 3, 4], a);
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(5, avail.len());
+        assert_eq!(&[0, 0, 0, 0, 0], avail);
+
+        assert_eq!(Some(0), buf.pop_front());
+        assert_eq!(4, buf.len());
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(4, a.len());
+        assert_eq!(0, b.len());
+        assert_eq!(&[1, 2, 3, 4], a);
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(5, avail.len());
+        assert_eq!(&[0, 0, 0, 0, 0], avail);
+
+        buf.append_all(&[5, 6, 7, 8, 9, 10])?;
+        assert_eq!(10, buf.len());
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(9, a.len());
+        assert_eq!(1, b.len());
+        assert_eq!(&[1, 2, 3, 4, 5, 6, 7, 8, 9], a);
+        assert_eq!(&[10], b);
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(0, avail.len());
+
+        assert_eq!(Some(10), buf.pop_back());
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(1, avail.len());
+        assert_eq!(&[10], avail);
+
+        buf.consume(5);
+        assert_eq!(4, buf.len());
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(&[6, 7, 8, 9], a);
+        assert_eq!(0, b.len());
+        buf.consume(4);
+        assert_eq!(0, buf.len());
+
+        let (a, b) = buf.as_ref_used();
+        assert_eq!(0, a.len());
+        assert_eq!(0, b.len());
+        let avail = buf.as_ref_mut_available();
+        assert_eq!(10, avail.len());
         Ok(())
     }
 }
