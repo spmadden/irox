@@ -4,6 +4,7 @@
 
 use crate::mutbits::MutBits;
 use crate::{Bits, BitsWrapper, Error, Seek, SeekFrom, SeekRead, SeekWrite};
+use std::io::{Read, Write};
 
 impl Bits for std::fs::File {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
@@ -27,6 +28,16 @@ impl Seek for std::fs::File {
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error> {
         std::io::Seek::seek(self, pos.into())?;
         Ok(std::io::Seek::stream_position(self)?)
+    }
+}
+impl<T: Read> Bits for std::io::BufReader<T> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        BitsWrapper::Borrowed(self).next_u8()
+    }
+}
+impl<T: Write> MutBits for std::io::BufWriter<T> {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        BitsWrapper::Borrowed(self).write_u8(val)
     }
 }
 
