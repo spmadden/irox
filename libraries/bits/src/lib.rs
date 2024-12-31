@@ -75,6 +75,7 @@ mod macros {
 
 pub use bits::*;
 pub use bitstream::*;
+pub use buf::*;
 pub use codec::*;
 pub use error::*;
 pub use mutbits::*;
@@ -94,5 +95,6 @@ cfg_feature_std! {
     mod stdimpls;
 }
 mod bitstream;
+mod buf;
 mod stdwrappers;
 pub mod utf;
