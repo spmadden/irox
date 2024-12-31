@@ -2115,6 +2115,7 @@ dependencies = [
  "irox-fixedmath",
  "irox-git-tools",
  "irox-gpx",
+ "irox-imagery",
  "irox-influxdb_v1",
  "irox-log",
  "irox-networking",
