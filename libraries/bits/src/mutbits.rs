@@ -6,7 +6,7 @@ cfg_feature_alloc! {
     extern crate alloc;
 }
 
-use crate::{Error, ErrorKind};
+use crate::{Bits, Error, ErrorKind};
 use core::ops::{Deref, DerefMut};
 
 ///
@@ -238,6 +238,17 @@ pub trait MutBits {
             self.write_u8(*val)?;
         }
         Ok(())
+    }
+
+    ///
+    /// Copies all data from the other stream into this stream.
+    fn write_all_into_self_from<T: Bits>(&mut self, other: &mut T) -> Result<u64, Error> {
+        let mut used = 0;
+        while let Some(v) = other.next_u8()? {
+            self.write_u8(v)?;
+            used += 1;
+        }
+        Ok(used)
     }
 }
 
