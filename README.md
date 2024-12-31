@@ -4,7 +4,7 @@ A collection of (hopefully) useful crates written in Rust.
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/spmadden/irox/blob/master/LICENSE)
 [![Apache](https://img.shields.io/badge/license-Apache-blue.svg)](https://github.com/spmadden/irox/blob/master/LICENSE-APACHE)
-![Maintenance](https://img.shields.io/maintenance/yes/2024)
+![Maintenance](https://img.shields.io/maintenance/yes/2025)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/spmadden/irox/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/irox)](https://crates.io/crates/irox/)
 [![docs.rs](https://img.shields.io/docsrs/irox/latest)](https://docs.rs/irox/latest/irox/)
