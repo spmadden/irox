@@ -7,10 +7,12 @@ use core::hash::{Hash, Hasher};
 use irox_time::epoch::Timestamp;
 use irox_time::Time64;
 
+///
+/// A sample with a time resolution of 64 bits and a value resolution of 64 bits. 128b total.
 #[derive(Default, Debug, Copy, Clone)]
 pub struct Sample64 {
-    time: Time64,
-    value: f64,
+    pub time: Time64,
+    pub value: f64,
 }
 impl PartialEq for Sample64 {
     fn eq(&self, other: &Self) -> bool {
@@ -37,7 +39,7 @@ impl Hash for Sample64 {
 
 impl Sample64 {
     #[must_use]
-    pub const fn new(value: f64, time: Time64) -> Self {
+    pub const fn new(time: Time64, value: f64) -> Self {
         Sample64 { time, value }
     }
     #[must_use]
@@ -56,6 +58,8 @@ impl Sample64 {
     }
 }
 
+///
+/// A more generic sample that uses [`Timestamp<T>`] rather than [`Time64`]
 #[derive(Debug, Copy, Clone)]
 pub struct Sample<T: Copy> {
     pub time: Timestamp<T>,

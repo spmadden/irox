@@ -2,6 +2,33 @@
 // Copyright 2024 IROX Contributors
 //
 
+///
+/// Simple linear regression from provided data.
+///
+/// ```
+/// use irox_stats::sampling::Sample;
+/// use irox_time::epoch::UnixTimestamp;
+/// use irox_stats::fitting::LinearRegression;
+///
+/// let data = &[
+///             Sample::new(0., UnixTimestamp::from_seconds(0)),
+///             Sample::new(0.5, UnixTimestamp::from_seconds_f64(0.5)),
+///             Sample::new(1., UnixTimestamp::from_seconds(1)),
+///         ];
+///
+///         let reg = LinearRegression::from_data(
+///             data.iter(),
+///             |s| s.time.get_offset().as_seconds_f64(),
+///             |s| s.value,
+///         );
+///         assert!(reg.is_some());
+///         let Some(reg) = reg else {
+///             return;
+///         };
+///         assert_eq!(1.0, reg.slope);
+///         assert_eq!(0.5, reg.mean_x);
+///         assert_eq!(0.5, reg.mean_y);
+/// ```
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct LinearRegression {
     pub slope: f64,

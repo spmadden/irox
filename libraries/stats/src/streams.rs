@@ -5,15 +5,15 @@
 //!
 //! Streaming data encoders and decoders
 
+extern crate alloc;
 use crate::cfg_feature_miniz;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 use core::fmt::UpperHex;
 use core::ops::Sub;
 use irox_bits::{Error, MutBits, WriteToBEBits};
 use irox_tools::codec::vbyte::EncodeVByteTo;
 use irox_tools::WrappingSub;
-extern crate alloc;
-use alloc::boxed::Box;
-use alloc::vec::Vec;
 
 pub trait Streamable:
     Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> + WrappingSub
@@ -192,7 +192,7 @@ cfg_feature_miniz! {
             }
         }
 
-        pub fn write_value<V: Streamable>(
+        pub fn write_value<V: WriteToBEBits+Copy>(
                 &mut self, value: V) -> Result<(), Error> {
             // println!("writing {value:08X}");
             WriteToBEBits::write_be_to(&value, &mut self.inbuf)?;

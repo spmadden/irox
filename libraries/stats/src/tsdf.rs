@@ -2,10 +2,10 @@
 // Copyright 2024 IROX Contributors
 //
 
+use crate::sampling::Sample64;
 use crate::streams::DeltaCompressStream;
 use alloc::sync::Arc;
 use irox_bits::{BitsWrapper, Error};
-use irox_time::Time64;
 use irox_tools::read::{MultiStreamWriter, StreamWriter};
 use std::path::Path;
 
@@ -24,6 +24,8 @@ pub trait SampleCompressor {
     }
 }
 
+///
+/// Breaks a [`u64`] into the 8 component bytes, and then delta-compresses them individually.
 pub struct EightByteStream<'a> {
     pub(crate) fb1: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
     pub(crate) fb2: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
@@ -98,17 +100,8 @@ impl<'a> EightByteStream<'a> {
         Ok(())
     }
 }
-
-pub struct Sample64 {
-    pub time: Time64,
-    pub value: f64,
-}
-impl Sample64 {
-    pub fn new(time: Time64, value: f64) -> Self {
-        Sample64 { time, value }
-    }
-}
-pub struct SPDPCompressor;
+///
+/// Time Series Data File.  
 pub struct TimeSeriesFloatDataFileWriter<'a> {
     writer: Arc<MultiStreamWriter>,
     time_stream: EightByteStream<'a>,
