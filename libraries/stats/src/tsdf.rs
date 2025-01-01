@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::sampling::Sample64;
-use crate::streams::DeltaCompressStream;
+use crate::streams::{CompressStream, DeltaStream, Stream, StreamStageStats, XorDeltaStream};
 use alloc::sync::Arc;
-use irox_bits::{BitsWrapper, Error};
+use irox_bits::{BitsWrapper, Error, SharedCountingBits};
 use irox_tools::read::{MultiStreamWriter, StreamWriter};
 use std::path::Path;
 
 macro_rules! new_bdc {
     ($writer:ident) => {
-        Box::new(DeltaCompressStream::new(BitsWrapper::Owned(
+        Box::new(CompressStream::new(BitsWrapper::Owned(
             $writer.new_stream(),
         )))
     };
@@ -27,14 +27,14 @@ pub trait SampleCompressor {
 ///
 /// Breaks a [`u64`] into the 8 component bytes, and then delta-compresses them individually.
 pub struct EightByteStream<'a> {
-    pub(crate) fb1: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb2: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb3: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb4: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb5: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb6: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb7: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
-    pub(crate) fb8: Box<DeltaCompressStream<'a, i8, StreamWriter>>,
+    pub(crate) fb1: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb2: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb3: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb4: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb5: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb6: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb7: Box<CompressStream<'a, StreamWriter>>,
+    pub(crate) fb8: Box<CompressStream<'a, StreamWriter>>,
 }
 impl<'a> EightByteStream<'a> {
     pub fn new(writer: &Arc<MultiStreamWriter>) -> Self {
@@ -48,18 +48,6 @@ impl<'a> EightByteStream<'a> {
             fb7: new_bdc!(writer),
             fb8: new_bdc!(writer),
         }
-    }
-    pub fn write_value(&mut self, v: u64) -> Result<(), Error> {
-        let [a, b, c, d, e, f, g, h] = v.to_be_bytes();
-        self.fb1.write_value(a as i8)?;
-        self.fb2.write_value(b as i8)?;
-        self.fb3.write_value(c as i8)?;
-        self.fb4.write_value(d as i8)?;
-        self.fb5.write_value(e as i8)?;
-        self.fb6.write_value(f as i8)?;
-        self.fb7.write_value(g as i8)?;
-        self.fb8.write_value(h as i8)?;
-        Ok(())
     }
 
     pub fn written(&self) -> u64 {
@@ -87,8 +75,22 @@ impl<'a> EightByteStream<'a> {
             self.fb8.written(),
         ]
     }
+}
+impl<'a> Stream<u64> for EightByteStream<'a> {
+    fn write_value(&mut self, v: u64) -> Result<(), Error> {
+        let [a, b, c, d, e, f, g, h] = v.to_be_bytes();
+        self.fb1.write_value(a as i8)?;
+        self.fb2.write_value(b as i8)?;
+        self.fb3.write_value(c as i8)?;
+        self.fb4.write_value(d as i8)?;
+        self.fb5.write_value(e as i8)?;
+        self.fb6.write_value(f as i8)?;
+        self.fb7.write_value(g as i8)?;
+        self.fb8.write_value(h as i8)?;
+        Ok(())
+    }
 
-    pub fn flush(&mut self) -> Result<(), Error> {
+    fn flush(&mut self) -> Result<(), Error> {
         self.fb1.flush()?;
         self.fb2.flush()?;
         self.fb3.flush()?;
@@ -99,10 +101,14 @@ impl<'a> EightByteStream<'a> {
         self.fb8.flush()?;
         Ok(())
     }
+
+    fn written_stats(&self) -> String {
+        format!("{:?} = {}", self.written_stats(), self.written())
+    }
 }
 ///
 /// Time Series Data File.  
-pub struct TimeSeriesFloatDataFileWriter<'a> {
+pub struct SPDPWriter<'a> {
     writer: Arc<MultiStreamWriter>,
     time_stream: EightByteStream<'a>,
     float_stream: EightByteStream<'a>,
@@ -110,18 +116,18 @@ pub struct TimeSeriesFloatDataFileWriter<'a> {
     last_value: f64,
 }
 
-fn _rot54(value: u64) -> u64 {
+fn rot54(value: u64) -> u64 {
     let [_, b, c, d, e, f, g, h] = value.to_be_bytes();
     irox_bits::FromBEBytes::from_be_bytes([0, h, g, f, e, d, c, b])
 }
 
-impl<'a> TimeSeriesFloatDataFileWriter<'a> {
+impl<'a> SPDPWriter<'a> {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
         let writer = MultiStreamWriter::new(path)?;
         let time_stream = EightByteStream::new(&writer);
         let float_stream = EightByteStream::new(&writer);
 
-        Ok(TimeSeriesFloatDataFileWriter {
+        Ok(SPDPWriter {
             writer,
             time_stream,
             float_stream,
@@ -153,11 +159,133 @@ impl<'a> TimeSeriesFloatDataFileWriter<'a> {
         Ok(self.len()? == 0)
     }
 }
+pub struct Rot54Stream {
+    writer: Box<dyn Stream<u64>>,
+}
+impl Rot54Stream {
+    pub fn new(writer: Box<dyn Stream<u64>>) -> Self {
+        Self { writer }
+    }
+}
+impl Stream<u64> for Rot54Stream {
+    fn write_value(&mut self, value: u64) -> Result<(), Error> {
+        let v = rot54(value);
+        self.writer.write_value(v)
+    }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+}
+
+pub struct FloatSplitter {
+    mantissa_writer: Box<dyn Stream<u64>>,
+    exponent_writer: Box<dyn Stream<u64>>,
+}
+impl FloatSplitter {
+    pub fn new(
+        mantissa_writer: Box<dyn Stream<u64>>,
+        exponent_writer: Box<dyn Stream<u64>>,
+    ) -> Self {
+        Self {
+            mantissa_writer,
+            exponent_writer,
+        }
+    }
+}
+impl Stream<f64> for FloatSplitter {
+    fn write_value(&mut self, value: f64) -> Result<(), Error> {
+        let bits = value.to_bits();
+        let exponent = bits >> 52;
+        let mantissa = bits & 0xFFFFFFFFFFFFF;
+        self.mantissa_writer.write_value(mantissa)?;
+        self.exponent_writer.write_value(exponent)?;
+        Ok(())
+    }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        self.mantissa_writer.flush()?;
+        self.exponent_writer.flush()?;
+        Ok(())
+    }
+}
+///
+/// Float-Delta-Split-R54-VB-Compress
+pub struct FDSRVByteCompressWriter {
+    float_stream: Box<dyn Stream<f64>>,
+    time_stream: Box<dyn Stream<u64>>,
+    stats: StreamStageStats,
+}
+
+impl FDSRVByteCompressWriter {
+    pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
+        let mut stats = StreamStageStats::default();
+
+        let writer = MultiStreamWriter::new(path)?;
+        // let exponent_stream = writer.new_stream();
+        // let exponent_stream = SharedCountingBits::new(BitsWrapper::Owned(exponent_stream));
+        // stats.stage("0.exp_compressed", exponent_stream.get_count());
+        // let exponent_stream = CompressStream::new(BitsWrapper::Owned(exponent_stream));
+        // let exponent_stream = SharedCountingBits::new(BitsWrapper::Owned(exponent_stream));
+        // stats.stage("1.exp_vbyte", exponent_stream.get_count());
+        // let exponent_stream = VByteIntStream::new(BitsWrapper::Owned(exponent_stream));
+        // let exponent_stream = XorDeltaStream::new(Box::new(exponent_stream));
+
+        // let mantissa_stream = writer.new_stream();
+        // let mantissa_stream = SharedCountingBits::new(BitsWrapper::Owned(mantissa_stream));
+        // stats.stage("2.mant_compressed", mantissa_stream.get_count());
+        // let mantissa_stream = EightByteStream::new(&writer);
+        // let mantissa_stream = CompressStream::new(BitsWrapper::Owned(mantissa_stream));
+        // let mantissa_stream = SharedCountingBits::new(BitsWrapper::Owned(mantissa_stream));
+        // stats.stage("3.mant_vbyte", mantissa_stream.get_count());
+        // let mantissa_stream = VByteIntStream::new(BitsWrapper::Owned(mantissa_stream));
+        // let mantissa_stream = Rot54Stream::new(Box::new(mantissa_stream));
+        // let mantissa_stream = XorDeltaStream::new(Box::new(mantissa_stream));
+
+        // let float_stream = FloatSplitter::new(Box::new(mantissa_stream), Box::new(exponent_stream));
+
+        let float_stream = EightByteStream::new(&writer);
+        // let float_stream = CompressStream::new(BitsWrapper::Owned(writer.new_stream()));
+        let float_stream = XorDeltaStream::new(Box::new(float_stream));
+        // let float_stream = DeltaStream::new(Box::new(float_stream));
+
+        let time_stream = writer.new_stream();
+        let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
+        stats.stage("4.time_compressed", time_stream.get_count());
+        let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
+        let time_stream = DeltaStream::new(Box::new(time_stream));
+
+        Ok(Self {
+            float_stream: Box::new(float_stream),
+            time_stream: Box::new(time_stream),
+            stats,
+        })
+    }
+
+    pub fn write_sample(&mut self, sample: &Sample64) -> Result<(), Error> {
+        let Sample64 { time, value } = sample;
+        self.time_stream.write_value(time.as_u64())?;
+        self.float_stream.write_value(*value)?;
+        Ok(())
+    }
+
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.time_stream.flush()?;
+        self.float_stream.flush()?;
+        Ok(())
+    }
+    pub fn written_stats(&self) -> Vec<String> {
+        let stats = self.float_stream.written_stats();
+        let mut out = self.stats.stats();
+        out.push(stats);
+        out
+    }
+}
 
 #[cfg(test)]
 mod tests {
+    use crate::tsdf::FDSRVByteCompressWriter;
     use crate::tsdf::Sample64;
-    use crate::tsdf::TimeSeriesFloatDataFileWriter;
     use irox_bits::Error;
     use irox_time::Time64;
     use irox_tools::random::{Random, PRNG};
@@ -166,7 +294,7 @@ mod tests {
 
     #[test]
     pub fn test() -> Result<(), Error> {
-        let mut file = TimeSeriesFloatDataFileWriter::new("test_file.tsd")?;
+        let mut file = FDSRVByteCompressWriter::new("test_file.tsd")?;
         // let mut buf1 = UnlimitedBuffer::<u8>::new();
         // let mut buf2 = UnlimitedBuffer::<u8>::new();
         let mut input = Time64::now();
@@ -174,7 +302,7 @@ mod tests {
         let start = Instant::now();
         let count = 20_000_000;
         let center = 100f64;
-        let variance = 0.00001f64;
+        let variance = 0.000001f64;
         let mut rand = Random::default();
         {
             // let mut cbuf1 = CompressStream::new(BitsWrapper::Borrowed(&mut buf1));
@@ -192,7 +320,7 @@ mod tests {
             // drop(cbuf1);
             // drop(cbuf2);
         }
-        let written = std::fs::metadata("test_file.tsd").unwrap().len();
+        let written = std::fs::metadata("test_file.tsd")?.len();
         let input_size = count * 16;
         let end = start.elapsed();
         // irox_tools::hex::HexDump::hexdump(&buf);
@@ -202,8 +330,9 @@ mod tests {
         println!(
             "Turned {input_size} bytes into {written} = {ratio:02.}% reduction = {ubps:02.02}MB/s"
         );
-        println!("floats: {:#?}", file.float_stream.written_stats());
-        println!("times: {:#?}", file.time_stream.written_stats());
+        println!("{:#?}", file.written_stats());
+        // println!("floats: {:#?}", file.float_stream.written_stats());
+        // println!("times: {:#?}", file.time_stream.written_stats());
 
         // let input_size = count * 16;
         // let written = buf1.len() + buf2.len();

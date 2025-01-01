@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -8,27 +8,46 @@
 extern crate alloc;
 use crate::cfg_feature_miniz;
 use alloc::boxed::Box;
+use alloc::collections::BTreeMap;
 use alloc::vec::Vec;
 use core::fmt::UpperHex;
-use core::ops::Sub;
-use irox_bits::{Error, MutBits, WriteToBEBits};
+use core::ops::{BitXor, DerefMut, Sub};
+use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
 use irox_tools::codec::vbyte::EncodeVByteTo;
 use irox_tools::WrappingSub;
 
-pub trait Streamable:
-    Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> + WrappingSub
-{
+pub trait Stream<T: Streamable> {
+    fn write_value(&mut self, value: T) -> Result<(), Error>;
+    fn flush(&mut self) -> Result<(), Error> {
+        Ok(())
+    }
+    fn written_stats(&self) -> String {
+        String::new()
+    }
 }
-impl<T> Streamable for T where
-    T: Sized + Default + Copy + WriteToBEBits + Sub<Output: WriteToBEBits> + WrappingSub
-{
-}
+
+pub trait Streamable: Sized + Default + Copy + WriteToBEBits + Sub + WrappingSub {}
+impl<T> Streamable for T where T: Sized + Default + Copy + WriteToBEBits + Sub + WrappingSub {}
 pub trait StreamableVByte:
-    Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo + WrappingSub
+    Sized
+    + Default
+    + Copy
+    + Sub<Output: EncodeVByteTo + UpperHex>
+    + EncodeVByteTo
+    + WrappingSub
+    + WriteToBEBits
+    + Sub
 {
 }
 impl<T> StreamableVByte for T where
-    T: Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo + WrappingSub
+    T: Sized
+        + Default
+        + Copy
+        + Sub<Output: EncodeVByteTo + UpperHex>
+        + EncodeVByteTo
+        + WrappingSub
+        + WriteToBEBits
+        + Sub
 {
 }
 pub trait ValueOperation<'a, T> {
@@ -77,39 +96,91 @@ impl<'a, T: Sub<T, Output = T> + Copy> ValueOperation<'a, T> for VByteOperation 
 ///
 /// A stream impl that writes the difference between the last value and the current
 /// value to the provided [`MutBits`] writer.  The previous value is initialized to 0.
-pub struct DeltaStream<'a, T: Streamable, B: MutBits> {
+pub struct DeltaStream<T: Streamable> {
     last_value: T,
-    writer: &'a mut B,
+    writer: Box<dyn Stream<T>>,
 }
 
-impl<'a, T: Streamable, B: MutBits> DeltaStream<'a, T, B> {
+impl<T: Streamable<Output = T>> DeltaStream<T> {
     ///
     /// Create a new stream impl
-    pub fn new(writer: &'a mut B) -> Self {
+    pub fn new(writer: Box<dyn Stream<T>>) -> Self {
         DeltaStream {
             last_value: Default::default(),
             writer,
         }
     }
-
+}
+impl<T: Streamable<Output = T>> Stream<T> for DeltaStream<T> {
     ///
     /// Deltifies the value against the previous value and writes it out.
-    pub fn write_value(&mut self, value: T) -> Result<(), Error> {
+    fn write_value(&mut self, value: T) -> Result<(), Error> {
         let delta = value - self.last_value;
         self.last_value = value;
-        WriteToBEBits::write_be_to(&delta, self.writer)?;
+        self.writer.write_value(delta)?;
         Ok(())
     }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+    fn written_stats(&self) -> String {
+        self.writer.written_stats()
+    }
 }
+
+pub struct XorDeltaStream<T> {
+    last_value: T,
+    writer: Box<dyn Stream<T>>,
+}
+impl<T: Sized + Default> XorDeltaStream<T> {
+    pub fn new(writer: Box<dyn Stream<T>>) -> Self {
+        Self {
+            writer,
+            last_value: Default::default(),
+        }
+    }
+}
+impl<T: Streamable<Output = T> + BitXor<Output = T>> Stream<T> for XorDeltaStream<T> {
+    fn write_value(&mut self, value: T) -> Result<(), Error> {
+        let out = BitXor::bitxor(self.last_value, value);
+        self.last_value = value;
+        self.writer.write_value(out)
+    }
+    fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+
+    fn written_stats(&self) -> String {
+        self.writer.written_stats()
+    }
+}
+impl Stream<f64> for XorDeltaStream<u64> {
+    fn write_value(&mut self, value: f64) -> Result<(), Error> {
+        let value = value.to_bits();
+        self.write_value(value)
+    }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+
+    fn written_stats(&self) -> String {
+        self.writer.written_stats()
+    }
+}
+
 pub struct VByteIntStream<'a, B: MutBits> {
-    writer: &'a mut B,
+    writer: BitsWrapper<'a, B>,
 }
 impl<'a, B: MutBits> VByteIntStream<'a, B> {
-    pub fn new(writer: &'a mut B) -> Self {
+    pub fn new(writer: BitsWrapper<'a, B>) -> Self {
         Self { writer }
     }
-    pub fn write_value<T: StreamableVByte>(&mut self, value: T) -> Result<(), Error> {
-        EncodeVByteTo::encode_vbyte_to(&value, self.writer)
+}
+impl<'a, B: MutBits, T: StreamableVByte + WriteToBEBits> Stream<T> for VByteIntStream<'a, B> {
+    fn write_value(&mut self, value: T) -> Result<(), Error> {
+        EncodeVByteTo::encode_vbyte_to(&value, self.writer.deref_mut())
     }
 }
 macro_rules! impl_mutbits_for_stream {
@@ -143,27 +214,27 @@ impl<'a, B: MutBits> MutBits for VByteIntStream<'a, B> {
 /// A stream impl that writes the varint-encoded difference between the last
 /// value and the current value to the provided [`MutBits`] writer.  The previous
 /// value is initialized to 0.
-pub struct VByteDeltaIntStream<'a, T: StreamableVByte, B: MutBits> {
+pub struct VByteDeltaIntStream<'a, T, B: MutBits> {
     last_value: T,
     writer: VByteIntStream<'a, B>,
 }
 
-impl<'a, T: StreamableVByte, B: MutBits> VByteDeltaIntStream<'a, T, B> {
+impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
     /// Creates a new stream
-    pub fn new(writer: &mut B) -> VByteDeltaIntStream<T, B> {
+    pub fn new(writer: BitsWrapper<'a, B>) -> VByteDeltaIntStream<T, B> {
         VByteDeltaIntStream {
             last_value: Default::default(),
             writer: VByteIntStream::new(writer),
         }
     }
-
-    ///
-    /// Takes the delta of the last value and this value, varint-encodes it,
-    /// then writes it to the provided stream.
-    pub fn write_value(&mut self, value: T) -> Result<(), Error> {
+}
+impl<'a, T: Streamable<Output = T> + EncodeVByteTo + UpperHex, B: MutBits> Stream<T>
+    for VByteDeltaIntStream<'a, T, B>
+{
+    fn write_value(&mut self, value: T) -> Result<(), Error> {
         let delta = value - self.last_value;
         self.last_value = value;
-        EncodeVByteTo::encode_vbyte_to(&delta, &mut self.writer)
+        self.writer.write_value(delta)
     }
 }
 
@@ -172,7 +243,7 @@ cfg_feature_miniz! {
     use miniz_oxide::deflate::CompressionLevel;
     use miniz_oxide::DataFormat;
     use alloc::collections::VecDeque;
-    use irox_bits::{ErrorKind, BitsWrapper};
+    use irox_bits::{ErrorKind};
 
     pub struct CompressStream<'a, T: MutBits> {
         writer: BitsWrapper<'a, T>,
@@ -256,6 +327,21 @@ cfg_feature_miniz! {
         impl_mutbits_for_stream!();
     }
 
+    impl<'a, B: MutBits, T: Streamable> Stream<T> for CompressStream<'a, B> {
+        fn write_value(&mut self, value: T) -> Result<(), Error> {
+            WriteToBEBits::write_be_to(&value, self)
+        }
+
+        fn flush(&mut self) -> Result<(), Error> {
+            Self::flush(self)
+        }
+
+        fn written_stats(&self) -> String {
+            format!("{}", self.written)
+        }
+
+    }
+
     ///
     /// A stream impl that writes the deflated, varint-encoded difference between
     /// the last value and the current value to the provided [`MutBits`] writer.
@@ -299,6 +385,21 @@ cfg_feature_miniz! {
         fn drop(&mut self) {
             let _ = self.flush();
         }
+    }
+}
+#[derive(Debug, Default)]
+pub struct StreamStageStats {
+    stats: BTreeMap<String, SharedROCounter>,
+}
+impl StreamStageStats {
+    pub fn stage(&mut self, name: &str, value: SharedROCounter) {
+        self.stats.insert(name.to_string(), value);
+    }
+    pub fn stats(&self) -> Vec<String> {
+        self.stats
+            .iter()
+            .map(|(k, v)| format!("{k}: {}", v.get_count()))
+            .collect::<Vec<String>>()
     }
 }
 
