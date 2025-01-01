@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::mutbits::MutBits;
@@ -23,6 +23,11 @@ impl MutBits for std::fs::File {
         use std::io::Write;
         Ok(self.write_all(&[val])?)
     }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        std::io::Write::flush(self)?;
+        Ok(())
+    }
 }
 impl Seek for std::fs::File {
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error> {
@@ -38,6 +43,10 @@ impl<T: Read> Bits for std::io::BufReader<T> {
 impl<T: Write> MutBits for std::io::BufWriter<T> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         BitsWrapper::Borrowed(self).write_u8(val)
+    }
+    fn flush(&mut self) -> Result<(), Error> {
+        std::io::Write::flush(self)?;
+        Ok(())
     }
 }
 
@@ -55,10 +64,18 @@ impl MutBits for std::net::TcpStream {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         BitsWrapper::Borrowed(self).write_u8(val)
     }
+    fn flush(&mut self) -> Result<(), Error> {
+        std::io::Write::flush(self)?;
+        Ok(())
+    }
 }
 impl MutBits for &mut std::net::TcpStream {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         BitsWrapper::Borrowed(self).write_u8(val)
+    }
+    fn flush(&mut self) -> Result<(), Error> {
+        std::io::Write::flush(self)?;
+        Ok(())
     }
 }
 

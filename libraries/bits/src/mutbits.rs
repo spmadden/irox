@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 cfg_feature_alloc! {
@@ -249,6 +249,12 @@ pub trait MutBits {
             used += 1;
         }
         Ok(used)
+    }
+
+    ///
+    /// Flush all bytes out of the cache.  Most impl's won't need this.
+    fn flush(&mut self) -> Result<(), Error> {
+        Ok(())
     }
 }
 
