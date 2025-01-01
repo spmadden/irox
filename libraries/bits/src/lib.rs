@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //! # [Bits & Bobs](https://www.wordnik.com/words/bits%20and%20bobs).  No-std/No-alloc bit/byte manipulation of streams.
 //!
@@ -84,6 +85,7 @@ pub use stdwrappers::*;
 
 cfg_feature_alloc! {
     mod allocimpls;
+    pub use allocimpls::*;
 }
 mod bits;
 mod codec;

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use alloc::sync::Arc;
 use core::sync::atomic::{AtomicU64, Ordering};
+use irox_bits::SharedROCounter;
 use std::io::Read;
 
 ///
@@ -49,9 +50,7 @@ impl<T: Read> SharedReadCounting<T> {
 
     /// Returns a shared read-only copy of the counter
     pub fn get_counter(&self) -> SharedROCounter {
-        SharedROCounter {
-            counter: self.counter.clone(),
-        }
+        SharedROCounter::new(self.counter.clone())
     }
 }
 
@@ -60,25 +59,5 @@ impl<T: Read> Read for SharedReadCounting<T> {
         let read = self.reader.read(buf)?;
         self.counter.fetch_add(read as u64, Ordering::Relaxed);
         Ok(read)
-    }
-}
-
-///
-/// A Read-Only counter that can be shared between threads.  The owner of the underlying counter
-/// is free to update the value, but users of this object alone may not.
-#[derive(Debug, Clone)]
-pub struct SharedROCounter {
-    counter: Arc<AtomicU64>,
-}
-
-impl SharedROCounter {
-    pub fn new(counter: Arc<AtomicU64>) -> Self {
-        SharedROCounter { counter }
-    }
-
-    ///
-    /// Returns the current value of the counter
-    pub fn get_count(&self) -> u64 {
-        self.counter.load(Ordering::Relaxed)
     }
 }
