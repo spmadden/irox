@@ -3,9 +3,11 @@
 //
 
 use crate::sampling::Sample64;
-use crate::streams::{CompressStream, DeltaStream, Stream, StreamStageStats, XorDeltaStream};
+use crate::streams::{CompressStream, DeltaStream, Stream, StreamStageStats, Streamable};
 use alloc::sync::Arc;
-use irox_bits::{BitsWrapper, Error, SharedCountingBits};
+use irox_bits::{BitsWrapper, Error, MutBits, SharedCountingBits, SharedROCounter};
+use irox_tools::buf::{Buffer, FixedBuf};
+use irox_tools::codec::GroupVarintCodeEncoder;
 use irox_tools::read::{MultiStreamWriter, StreamWriter};
 use std::path::Path;
 
@@ -17,15 +19,8 @@ macro_rules! new_bdc {
     };
 }
 
-pub trait SampleCompressor {
-    fn write_sample(&mut self, sample: &Sample64) -> Result<(), Error>;
-    fn flush(&mut self) -> Result<(), Error> {
-        Ok(())
-    }
-}
-
 ///
-/// Breaks a [`u64`] into the 8 component bytes, and then delta-compresses them individually.
+/// Breaks a [`u64`] into the 8 component bytes, and then compresses them individually.
 pub struct EightByteStream<'a> {
     pub(crate) fb1: Box<CompressStream<'a, StreamWriter>>,
     pub(crate) fb2: Box<CompressStream<'a, StreamWriter>>,
@@ -107,7 +102,7 @@ impl<'a> Stream<u64> for EightByteStream<'a> {
     }
 }
 ///
-/// Time Series Data File.  
+/// Time Series Data File using the SPDP encoding scheme
 pub struct SPDPWriter<'a> {
     writer: Arc<MultiStreamWriter>,
     time_stream: EightByteStream<'a>,
@@ -116,7 +111,16 @@ pub struct SPDPWriter<'a> {
     last_value: f64,
 }
 
-fn rot54(value: u64) -> u64 {
+///
+/// The rot54 operation is intended to exploit the ordered entropy of a float mantissa.  Most of the
+/// zero values from the mantissa will be in the LSBs.  Rot54 is therefor:
+///
+/// Float: `0xEEE_MMMMMMMMMMMMMu64 = 0x00_0ABBCCDDEEFFGG`
+/// Rot54: `0x00GGFFEEDDCCBB0A`
+///
+/// A value like `0.25f64` is encoded as `0x3FD0000000000000` if you call [`f64::to_bits`].  The rot54
+/// operation rotates it to `0xD03F` - which usually encodes much nicer.
+pub fn rot54(value: u64) -> u64 {
     let [_, b, c, d, e, f, g, h] = value.to_be_bytes();
     irox_bits::FromBEBytes::from_be_bytes([0, h, g, f, e, d, c, b])
 }
@@ -159,6 +163,8 @@ impl<'a> SPDPWriter<'a> {
         Ok(self.len()? == 0)
     }
 }
+///
+/// Basic stream to [`rot54`] the input sample.
 pub struct Rot54Stream {
     writer: Box<dyn Stream<u64>>,
 }
@@ -178,6 +184,8 @@ impl Stream<u64> for Rot54Stream {
     }
 }
 
+///
+/// Basic stream to split a [`f64`] into it's exponent and mantissa
 pub struct FloatSplitter {
     mantissa_writer: Box<dyn Stream<u64>>,
     exponent_writer: Box<dyn Stream<u64>>,
@@ -209,56 +217,122 @@ impl Stream<f64> for FloatSplitter {
         Ok(())
     }
 }
+
 ///
-/// Float-Delta-Split-R54-VB-Compress
-pub struct FDSRVByteCompressWriter {
+/// Basic stream to convert from a [`f64`] to a [`u64`]
+pub struct F64ToU64Stream {
+    writer: Box<dyn Stream<u64>>,
+}
+impl F64ToU64Stream {
+    pub fn new(writer: Box<dyn Stream<u64>>) -> Self {
+        Self { writer }
+    }
+}
+impl Stream<f64> for F64ToU64Stream {
+    fn write_value(&mut self, value: f64) -> Result<usize, Error> {
+        self.writer.write_value(value.to_bits())
+    }
+}
+
+///
+/// Stream to collect values into groups of 4 and then run them through a [`GroupVarintCodeEncoder`]
+pub struct GroupCodingStream<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> {
+    buf: FixedBuf<4, T>,
+    inner: GroupVarintCodeEncoder<'a, T, B>,
+}
+impl<'a, T: core::hash::Hash + Eq + Default + Copy + Streamable, B: MutBits>
+    GroupCodingStream<'a, T, B>
+{
+    pub fn new(inner: BitsWrapper<'a, B>) -> Self {
+        Self {
+            buf: FixedBuf::new(),
+            inner: GroupVarintCodeEncoder::new(inner),
+        }
+    }
+    pub fn counter(&self) -> SharedROCounter {
+        self.inner.counter()
+    }
+}
+impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Stream<T>
+    for GroupCodingStream<'a, T, B>
+{
+    fn write_value(&mut self, value: T) -> Result<usize, Error> {
+        if !self.buf.is_full() {
+            let _ = self.buf.push_back(value);
+            return Ok(0);
+        }
+        let d = self.buf.pop_front().unwrap_or_default();
+        let c = self.buf.pop_front().unwrap_or_default();
+        let b = self.buf.pop_front().unwrap_or_default();
+        let a = self.buf.pop_front().unwrap_or_default();
+        self.inner.encode_4(&[a, b, c, d])
+    }
+
+    fn flush(&mut self) -> Result<(), Error> {
+        self.inner.flush()
+    }
+}
+impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Drop for GroupCodingStream<'a, T, B> {
+    fn drop(&mut self) {
+        let len = self.buf.len();
+        if len > 0 {
+            let needed = 4 - len;
+            for _ in 0..needed {
+                let _ = self.write_value(T::default());
+            }
+        }
+        let _ = self.inner.flush();
+    }
+}
+
+///
+/// Coded Time Series Sample File consists of 2 streams: a data stream and a time stream backed by a [`MultiStreamWriter`]
+///
+/// Data stream:
+/// 1. Convert [`f64`] to [`u64`] bit-for-bit
+/// 2. Run it through a [`irox_tools::codec::CodeDictionary`] to map the observed values into unique [`u32`] codes
+/// 3. Group those codes into blocks of 4 using [`GroupCodingStream`] and then encode into Varint-GB using [`GroupVarintCodeEncoder`]
+/// 4. Deflate/GZ the resultant byte stream.
+///
+/// It is assumed that the data stream samples come from something approximating a A2D sensor with a fixed number of detection bits
+/// and as such, most of the data will be fairly similar, even if very noisy when it jumps around.
+///
+/// Time stream:
+/// 0. Convert the time value into a [`u64`] (external)
+/// 1. Run it through a [`DeltaStream`] to encode the first value, and then output the `N-1` difference
+/// 2. Run it through the same 2, 3, 4 processing as the data stream.
+///
+/// It is assumed that the time series will be periodically sampled and atomically increasing
+pub struct CodedTimeSeriesWriter {
     float_stream: Box<dyn Stream<f64>>,
     time_stream: Box<dyn Stream<u64>>,
     stats: StreamStageStats,
 }
 
-impl FDSRVByteCompressWriter {
+impl CodedTimeSeriesWriter {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
         let mut stats = StreamStageStats::default();
 
         let writer = MultiStreamWriter::new(path)?;
-        // let exponent_stream = writer.new_stream();
-        // let exponent_stream = SharedCountingBits::new(BitsWrapper::Owned(exponent_stream));
-        // stats.stage("0.exp_compressed", exponent_stream.get_count());
-        // let exponent_stream = CompressStream::new(BitsWrapper::Owned(exponent_stream));
-        // let exponent_stream = SharedCountingBits::new(BitsWrapper::Owned(exponent_stream));
-        // stats.stage("1.exp_vbyte", exponent_stream.get_count());
-        // let exponent_stream = VByteIntStream::new(BitsWrapper::Owned(exponent_stream));
-        // let exponent_stream = XorDeltaStream::new(Box::new(exponent_stream));
 
-        // let mantissa_stream = writer.new_stream();
-        // let mantissa_stream = SharedCountingBits::new(BitsWrapper::Owned(mantissa_stream));
-        // stats.stage("2.mant_compressed", mantissa_stream.get_count());
-        // let mantissa_stream = EightByteStream::new(&writer);
-        // let mantissa_stream = CompressStream::new(BitsWrapper::Owned(mantissa_stream));
-        // let mantissa_stream = SharedCountingBits::new(BitsWrapper::Owned(mantissa_stream));
-        // stats.stage("3.mant_vbyte", mantissa_stream.get_count());
-        // let mantissa_stream = VByteIntStream::new(BitsWrapper::Owned(mantissa_stream));
-        // let mantissa_stream = Rot54Stream::new(Box::new(mantissa_stream));
-        // let mantissa_stream = XorDeltaStream::new(Box::new(mantissa_stream));
-
-        // let float_stream = FloatSplitter::new(Box::new(mantissa_stream), Box::new(exponent_stream));
-
-        let float_stream = EightByteStream::new(&writer);
-        // let float_stream = CompressStream::new(BitsWrapper::Owned(writer.new_stream()));
-        let float_stream = XorDeltaStream::new(Box::new(float_stream));
-        // let float_stream = DeltaStream::new(Box::new(float_stream));
+        let float_stream = writer.new_stream();
+        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("1.data_gz", float_stream.get_count());
+        let float_stream = CompressStream::new(BitsWrapper::Owned(float_stream));
+        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("2.data_vgb", float_stream.get_count());
+        let float_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("3.data_codes", float_stream.counter());
+        let float_stream = F64ToU64Stream::new(Box::new(float_stream));
 
         let time_stream = writer.new_stream();
         let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        {
-            let count = time_stream.get_count();
-            stats.stage(
-                "4.time_compressed",
-                Box::new(move || count.get_count().to_string()),
-            );
-        }
+        stats.stage_counting("1.time_gz", time_stream.get_count());
         let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
+        let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
+        stats.stage_counting("2.time_vgb", time_stream.get_count());
+        let time_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
+        stats.stage_counting("3.time_codes", time_stream.counter());
         let time_stream = DeltaStream::new(Box::new(time_stream));
 
         Ok(Self {
@@ -290,7 +364,7 @@ impl FDSRVByteCompressWriter {
 
 #[cfg(test)]
 mod tests {
-    use crate::tsdf::FDSRVByteCompressWriter;
+    use crate::tsdf::CodedTimeSeriesWriter;
     use crate::tsdf::Sample64;
     use irox_bits::Error;
     use irox_time::Time64;
@@ -300,22 +374,25 @@ mod tests {
 
     #[test]
     pub fn test() -> Result<(), Error> {
-        let mut file = FDSRVByteCompressWriter::new("test_file.tsd")?;
+        let mut file = CodedTimeSeriesWriter::new("test_file.tsd")?;
         // let mut buf1 = UnlimitedBuffer::<u8>::new();
         // let mut buf2 = UnlimitedBuffer::<u8>::new();
         let mut input = Time64::now();
         let incr = Duration::from_millis(100);
         let start = Instant::now();
-        let count = 20_000_000;
+        let count = 20_000_000u64;
         let center = 100f64;
-        let variance = 0.000001f64;
+        let variance = 0.001f64;
         let mut rand = Random::default();
         {
             // let mut cbuf1 = CompressStream::new(BitsWrapper::Borrowed(&mut buf1));
             // let mut cbuf2 = CompressStream::new(BitsWrapper::Borrowed(&mut buf2));
             for _i in 0..count {
-                let val = (rand.next_u16() as f64 / u16::MAX as f64) * variance - variance / 2f64;
-                let val = (_i as f64).to_radians().sin() * center + val;
+                let val = rand.next_in_range(0., 4096.); // 12-bit A2D
+                                                         // let val = rand.next_in_range(0., 8192.); // 13-bit A2D
+                                                         // let val = rand.next_in_range(0., 16384.); // 14-bit A2D
+                let val = center + val.round() * variance - variance / 2f64;
+                // let val = (_i as f64) * center + val;
                 // println!("value: {val} // {:08X}", val.to_bits());
                 // cbuf1.write_value(input.as_u64())?;
                 // cbuf2.write_value(val)?;
