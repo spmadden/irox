@@ -2,21 +2,33 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::cfg_feature_std;
 use crate::codec::{DecodeGroupVarintFrom, EncodeGroupVarintTo};
+use alloc::sync::Arc;
 use core::hash::Hash;
 use core::ops::DerefMut;
-use irox_bits::{Bits, BitsWrapper, Error, MutBits, ReadFromBEBits, WriteToBEBits};
+use core::sync::atomic::{AtomicU64, Ordering};
+use irox_bits::{
+    Bits, BitsWrapper, Error, MutBits, ReadFromBEBits, SharedROCounter, WriteToBEBits,
+};
 use std::collections::HashMap;
 
 ///
 /// Simple auto-incrementing dictionary indexed by hash value.  Creates new codes
 /// for new values when first seen.  Increments in order of query.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct CodeDictionary<T: Eq + Hash> {
     dictionary: HashMap<T, u32>,
     inverse: HashMap<u32, T>,
-    counter: u32,
+    counter: Arc<AtomicU64>,
+}
+impl<T: Eq + Hash> Default for CodeDictionary<T> {
+    fn default() -> CodeDictionary<T> {
+        Self {
+            dictionary: HashMap::new(),
+            inverse: HashMap::new(),
+            counter: Arc::new(AtomicU64::new(1)),
+        }
+    }
 }
 impl<T: Eq + Hash + Default> CodeDictionary<T> {
     pub fn new() -> CodeDictionary<T> {
@@ -37,9 +49,9 @@ impl<T: Eq + Hash + Copy> CodeDictionary<T> {
         let mut new_code = false;
         let code = self.dictionary.entry(*value).or_insert_with(|| {
             new_code = true;
-            self.counter += 1;
-            self.inverse.insert(self.counter, *value);
-            self.counter
+            let ctr = self.counter.fetch_add(1, Ordering::SeqCst) as u32;
+            self.inverse.insert(ctr, *value);
+            ctr
         });
         (new_code, *code)
     }
@@ -103,115 +115,118 @@ impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
 
         Ok(used)
     }
+
+    pub fn counter(&self) -> SharedROCounter {
+        SharedROCounter::new(self.dict.counter.clone())
+    }
+
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.inner.flush()
+    }
 }
 
-cfg_feature_std! {
+///
+/// Wraps [`CodeDictionary`] in an `Arc<RwLock>>` for shared access.
+#[derive(Debug, Default, Clone)]
+pub struct SharedCodeDictionary<T: Eq + Hash> {
+    inner: Arc<std::sync::RwLock<CodeDictionary<T>>>,
+}
+impl<T: Eq + Hash + Default> SharedCodeDictionary<T> {
+    pub fn new() -> SharedCodeDictionary<T> {
+        Default::default()
+    }
+}
+impl<T: Eq + Hash + Copy + Default> SharedCodeDictionary<T> {
     ///
-    /// Wraps [`CodeDictionary`] in an `Arc<RwLock>>` for shared access.
-    #[derive(Debug, Default, Clone)]
-    pub struct SharedCodeDictionary<T: Eq + Hash> {
-        inner: alloc::sync::Arc<std::sync::RwLock<CodeDictionary<T>>>,
-    }
-    impl<T: Eq + Hash + Default> SharedCodeDictionary<T> {
-        pub fn new() -> SharedCodeDictionary<T> {
-            Default::default()
-        }
-    }
-    impl<T: Eq + Hash + Copy + Default> SharedCodeDictionary<T> {
-        ///
-        /// Looks up a code for a specific value
-        pub fn lookup_value(&self, value: &T) -> Option<u32> {
-            if let Ok(lock) = self.inner.read() {
-                if let Some(code) = lock.lookup_value(value) {
-                    return Some(code);
-                }
+    /// Looks up a code for a specific value
+    pub fn lookup_value(&self, value: &T) -> Option<u32> {
+        if let Ok(lock) = self.inner.read() {
+            if let Some(code) = lock.lookup_value(value) {
+                return Some(code);
             }
-
-            None
         }
 
-        ///
-        /// Returns the code for the specified value and if a new code was generated
-        /// for the value (first time seeing the value).
-        pub fn get_code(&mut self, value: &T) -> (bool, u32) {
-            if let Ok(lock) = self.inner.read() {
-                if let Some(code) = lock.lookup_value(value) {
-                    return (false, code);
-                }
-            }
-            if let Ok(mut lock) = self.inner.write() {
-                return lock.get_code(value);
-            }
-            (false, 0)
-        }
-        pub fn read_code<F: FnOnce() -> Result<T, E>, E>(
-            &mut self,
-            code: u32,
-            value_producer: F,
-        ) -> Result<T, E> {
-            if let Ok(lock) = self.inner.read() {
-                if let Some(val) = lock.inverse.get(&code) {
-                    return Ok(*val);
-                }
-            }
-            if let Ok(mut lock) = self.inner.write() {
-                let val = value_producer()?;
-                lock.inverse.insert(code, val);
-                lock.dictionary.insert(val, code);
-                return Ok(val);
-            }
-            Ok(T::default())
-        }
+        None
     }
 
     ///
-    /// Converts values into codes using [`CodeDictionary`], then uses [`GroupVarintCodeEncoder`]
-    /// to encode a sequence of 4 codes to the stream.  If a code hasn't been written before,
-    /// we immediately follow the group varint block with the specific coded value(s) (up to 4).
-    ///
-    /// Block format: `[control byte][4..=16 code bytes][0..=4 code-mapped-values]`
-    ///
-    /// Must provide a shared dictionary to use this struct.  Decoding MUST be performed in the
-    /// exact same order as encoding or else the mapped values won't align correctly.
-    pub struct SharedGroupVarintCodeEncoder<'a, T: Eq + Hash, B: MutBits> {
-        inner: BitsWrapper<'a, B>,
-        dict: SharedCodeDictionary<T>,
-    }
-    impl<'a, T: Eq + Hash + Default, B: MutBits> SharedGroupVarintCodeEncoder<'a, T, B> {
-        pub fn new(inner: BitsWrapper<'a, B>, dict: SharedCodeDictionary<T>) -> Self {
-            Self {
-                inner,
-                dict,
+    /// Returns the code for the specified value and if a new code was generated
+    /// for the value (first time seeing the value).
+    pub fn get_code(&mut self, value: &T) -> (bool, u32) {
+        if let Ok(lock) = self.inner.read() {
+            if let Some(code) = lock.lookup_value(value) {
+                return (false, code);
             }
         }
-    }
-    impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
-        SharedGroupVarintCodeEncoder<'a, T, B>
-    {
-        pub fn encode_4(&mut self, vals: &[T; 4]) -> Result<usize, Error> {
-            let [a, b, c, d] = vals;
-            let ea = self.dict.get_code(a);
-            let eb = self.dict.get_code(b);
-            let ec = self.dict.get_code(c);
-            let ed = self.dict.get_code(d);
-
-            let codes = [ea.1, eb.1, ec.1, ed.1];
-            let mut used = codes.encode_group_varint_to(self.inner.deref_mut())?;
-            if ea.0 {
-                used += a.write_be_to(self.inner.deref_mut())?;
-            }
-            if eb.0 {
-                used += b.write_be_to(self.inner.deref_mut())?;
-            }
-            if ec.0 {
-                used += c.write_be_to(self.inner.deref_mut())?;
-            }
-            if ed.0 {
-                used += d.write_be_to(self.inner.deref_mut())?;
-            }
-
-            Ok(used)
+        if let Ok(mut lock) = self.inner.write() {
+            return lock.get_code(value);
         }
+        (false, 0)
+    }
+    pub fn read_code<F: FnOnce() -> Result<T, E>, E>(
+        &mut self,
+        code: u32,
+        value_producer: F,
+    ) -> Result<T, E> {
+        if let Ok(lock) = self.inner.read() {
+            if let Some(val) = lock.inverse.get(&code) {
+                return Ok(*val);
+            }
+        }
+        if let Ok(mut lock) = self.inner.write() {
+            let val = value_producer()?;
+            lock.inverse.insert(code, val);
+            lock.dictionary.insert(val, code);
+            return Ok(val);
+        }
+        Ok(T::default())
+    }
+}
+
+///
+/// Converts values into codes using [`CodeDictionary`], then uses [`GroupVarintCodeEncoder`]
+/// to encode a sequence of 4 codes to the stream.  If a code hasn't been written before,
+/// we immediately follow the group varint block with the specific coded value(s) (up to 4).
+///
+/// Block format: `[control byte][4..=16 code bytes][0..=4 code-mapped-values]`
+///
+/// Must provide a shared dictionary to use this struct.  Decoding MUST be performed in the
+/// exact same order as encoding or else the mapped values won't align correctly.
+pub struct SharedGroupVarintCodeEncoder<'a, T: Eq + Hash, B: MutBits> {
+    inner: BitsWrapper<'a, B>,
+    dict: SharedCodeDictionary<T>,
+}
+impl<'a, T: Eq + Hash + Default, B: MutBits> SharedGroupVarintCodeEncoder<'a, T, B> {
+    pub fn new(inner: BitsWrapper<'a, B>, dict: SharedCodeDictionary<T>) -> Self {
+        Self { inner, dict }
+    }
+}
+impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
+    SharedGroupVarintCodeEncoder<'a, T, B>
+{
+    pub fn encode_4(&mut self, vals: &[T; 4]) -> Result<usize, Error> {
+        let [a, b, c, d] = vals;
+        let ea = self.dict.get_code(a);
+        let eb = self.dict.get_code(b);
+        let ec = self.dict.get_code(c);
+        let ed = self.dict.get_code(d);
+
+        let codes = [ea.1, eb.1, ec.1, ed.1];
+        let mut used = codes.encode_group_varint_to(self.inner.deref_mut())?;
+        if ea.0 {
+            used += a.write_be_to(self.inner.deref_mut())?;
+        }
+        if eb.0 {
+            used += b.write_be_to(self.inner.deref_mut())?;
+        }
+        if ec.0 {
+            used += c.write_be_to(self.inner.deref_mut())?;
+        }
+        if ed.0 {
+            used += d.write_be_to(self.inner.deref_mut())?;
+        }
+
+        Ok(used)
     }
 }
 
