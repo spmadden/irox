@@ -232,7 +232,7 @@ impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
         }
     }
 }
-impl<'a, T: Streamable<Output = T> + EncodeVByteTo + UpperHex, B: MutBits> Stream<T>
+impl<'a, T: Streamable<Output = T> + EncodeVByteTo + UpperHex + Sub<T>, B: MutBits> Stream<T>
     for VByteDeltaIntStream<'a, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
