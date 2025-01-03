@@ -9,6 +9,8 @@
 
 mod vbyte;
 pub use vbyte::*;
+mod varint;
+pub use varint::*;
 
 crate::cfg_feature_alloc! {
     use alloc::string::{String, ToString};
