@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
@@ -192,11 +192,11 @@ impl<const N: usize, T: Sized> FixedBuf<N, T> {
     }
 }
 impl<const N: usize, T: Sized + WriteToBEBits> FixedBuf<N, T> {
-    pub fn write_to<B: MutBits + ?Sized>(&self, out: &mut B) -> Result<(), BitsError> {
+    pub fn write_to<B: MutBits + ?Sized>(&self, out: &mut B) -> Result<usize, BitsError> {
         for v in self.iter() {
             WriteToBEBits::write_be_to(v, out)?;
         }
-        Ok(())
+        Ok(self.len)
     }
 }
 pub struct FixedBufIter<'a, const N: usize, T: Sized> {

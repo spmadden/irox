@@ -13,11 +13,11 @@ use alloc::vec::Vec;
 use core::fmt::UpperHex;
 use core::ops::{BitXor, DerefMut, Sub};
 use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
-use irox_tools::codec::vbyte::EncodeVByteTo;
+use irox_tools::codec::EncodeVByteTo;
 use irox_tools::WrappingSub;
 
 pub trait Stream<T: Streamable> {
-    fn write_value(&mut self, value: T) -> Result<(), Error>;
+    fn write_value(&mut self, value: T) -> Result<usize, Error>;
     fn flush(&mut self) -> Result<(), Error> {
         Ok(())
     }
@@ -67,7 +67,7 @@ impl<'a, T: Streamable, B: MutBits> CompositeStream<'a, T, B> {
     pub fn and_then<V: ValueOperation<'a, T> + 'static>(&mut self, value: Box<V>) {
         self.operations.push(value);
     }
-    pub fn write_value(&'a mut self, value: T) -> Result<(), Error> {
+    pub fn write_value(&'a mut self, value: T) -> Result<usize, Error> {
         let mut v = value;
         for op in &mut self.operations {
             v = op.encode(&v)?;
@@ -114,11 +114,10 @@ impl<T: Streamable<Output = T>> DeltaStream<T> {
 impl<T: Streamable<Output = T>> Stream<T> for DeltaStream<T> {
     ///
     /// Deltifies the value against the previous value and writes it out.
-    fn write_value(&mut self, value: T) -> Result<(), Error> {
+    fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let delta = value - self.last_value;
         self.last_value = value;
-        self.writer.write_value(delta)?;
-        Ok(())
+        self.writer.write_value(delta)
     }
 
     fn flush(&mut self) -> Result<(), Error> {
@@ -142,7 +141,7 @@ impl<T: Sized + Default> XorDeltaStream<T> {
     }
 }
 impl<T: Streamable<Output = T> + BitXor<Output = T>> Stream<T> for XorDeltaStream<T> {
-    fn write_value(&mut self, value: T) -> Result<(), Error> {
+    fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let out = BitXor::bitxor(self.last_value, value);
         self.last_value = value;
         self.writer.write_value(out)
@@ -156,7 +155,7 @@ impl<T: Streamable<Output = T> + BitXor<Output = T>> Stream<T> for XorDeltaStrea
     }
 }
 impl Stream<f64> for XorDeltaStream<u64> {
-    fn write_value(&mut self, value: f64) -> Result<(), Error> {
+    fn write_value(&mut self, value: f64) -> Result<usize, Error> {
         let value = value.to_bits();
         self.write_value(value)
     }
@@ -179,30 +178,35 @@ impl<'a, B: MutBits> VByteIntStream<'a, B> {
     }
 }
 impl<'a, B: MutBits, T: StreamableVByte + WriteToBEBits> Stream<T> for VByteIntStream<'a, B> {
-    fn write_value(&mut self, value: T) -> Result<(), Error> {
+    fn write_value(&mut self, value: T) -> Result<usize, Error> {
         EncodeVByteTo::encode_vbyte_to(&value, self.writer.deref_mut())
     }
 }
 macro_rules! impl_mutbits_for_stream {
     () => {
         fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-            self.write_value(val)
+            self.write_value(val)?;
+            Ok(())
         }
 
         fn write_be_u16(&mut self, val: u16) -> Result<(), Error> {
-            self.write_value(val)
+            self.write_value(val)?;
+            Ok(())
         }
 
         fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
-            self.write_value(val)
+            self.write_value(val)?;
+            Ok(())
         }
 
         fn write_be_u64(&mut self, val: u64) -> Result<(), Error> {
-            self.write_value(val)
+            self.write_value(val)?;
+            Ok(())
         }
 
         fn write_be_u128(&mut self, val: u128) -> Result<(), Error> {
-            self.write_value(val)
+            self.write_value(val)?;
+            Ok(())
         }
     };
 }
@@ -231,7 +235,7 @@ impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
 impl<'a, T: Streamable<Output = T> + EncodeVByteTo + UpperHex, B: MutBits> Stream<T>
     for VByteDeltaIntStream<'a, T, B>
 {
-    fn write_value(&mut self, value: T) -> Result<(), Error> {
+    fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let delta = value - self.last_value;
         self.last_value = value;
         self.writer.write_value(delta)
@@ -328,7 +332,7 @@ cfg_feature_miniz! {
     }
 
     impl<'a, B: MutBits, T: Streamable> Stream<T> for CompressStream<'a, B> {
-        fn write_value(&mut self, value: T) -> Result<(), Error> {
+        fn write_value(&mut self, value: T) -> Result<usize, Error> {
             WriteToBEBits::write_be_to(&value, self)
         }
 

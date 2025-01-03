@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -239,68 +239,80 @@ impl FromBEBytes<32> for [u128; 2] {
 
 /// Writes 'self' to the provided [`MutBits`] impl in big endian order.
 pub trait WriteToBEBits {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error>;
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error>;
 }
 
 impl WriteToBEBits for u8 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_u8(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_u8(*self)?;
+        Ok(1)
     }
 }
 impl WriteToBEBits for u16 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_u16(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_u16(*self)?;
+        Ok(2)
     }
 }
 
 impl WriteToBEBits for u32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_u32(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_u32(*self)?;
+        Ok(4)
     }
 }
 impl WriteToBEBits for u64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_u64(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_u64(*self)?;
+        Ok(8)
     }
 }
 impl WriteToBEBits for u128 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_u128(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_u128(*self)?;
+        Ok(16)
     }
 }
 impl WriteToBEBits for f32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_f32(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_f32(*self)?;
+        Ok(4)
     }
 }
 impl WriteToBEBits for f64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_f64(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_f64(*self)?;
+        Ok(8)
     }
 }
 impl WriteToBEBits for i8 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_i8(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_i8(*self)?;
+        Ok(1)
     }
 }
 impl WriteToBEBits for i16 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_i16(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_i16(*self)?;
+        Ok(2)
     }
 }
 impl WriteToBEBits for i32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_i32(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_i32(*self)?;
+        Ok(4)
     }
 }
 impl WriteToBEBits for i64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_i64(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_i64(*self)?;
+        Ok(8)
     }
 }
 impl WriteToBEBits for i128 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<(), Error> {
-        bits.write_be_i128(*self)
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_be_i128(*self)?;
+        Ok(16)
     }
 }
 

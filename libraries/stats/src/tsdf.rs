@@ -77,7 +77,7 @@ impl<'a> EightByteStream<'a> {
     }
 }
 impl<'a> Stream<u64> for EightByteStream<'a> {
-    fn write_value(&mut self, v: u64) -> Result<(), Error> {
+    fn write_value(&mut self, v: u64) -> Result<usize, Error> {
         let [a, b, c, d, e, f, g, h] = v.to_be_bytes();
         self.fb1.write_value(a as i8)?;
         self.fb2.write_value(b as i8)?;
@@ -87,7 +87,7 @@ impl<'a> Stream<u64> for EightByteStream<'a> {
         self.fb6.write_value(f as i8)?;
         self.fb7.write_value(g as i8)?;
         self.fb8.write_value(h as i8)?;
-        Ok(())
+        Ok(8)
     }
 
     fn flush(&mut self) -> Result<(), Error> {
@@ -168,7 +168,7 @@ impl Rot54Stream {
     }
 }
 impl Stream<u64> for Rot54Stream {
-    fn write_value(&mut self, value: u64) -> Result<(), Error> {
+    fn write_value(&mut self, value: u64) -> Result<usize, Error> {
         let v = rot54(value);
         self.writer.write_value(v)
     }
@@ -194,13 +194,13 @@ impl FloatSplitter {
     }
 }
 impl Stream<f64> for FloatSplitter {
-    fn write_value(&mut self, value: f64) -> Result<(), Error> {
+    fn write_value(&mut self, value: f64) -> Result<usize, Error> {
         let bits = value.to_bits();
         let exponent = bits >> 52;
         let mantissa = bits & 0xFFFFFFFFFFFFF;
         self.mantissa_writer.write_value(mantissa)?;
         self.exponent_writer.write_value(exponent)?;
-        Ok(())
+        Ok(8)
     }
 
     fn flush(&mut self) -> Result<(), Error> {

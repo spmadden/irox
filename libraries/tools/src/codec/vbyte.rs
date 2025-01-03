@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::buf::Buffer;
@@ -386,58 +386,78 @@ zigzag_impl!(zigzag_i128, i128, u128, 128);
 pub fn encode_integer_to<T: MutBits + ?Sized>(
     val: IntegerValue,
     out: &mut T,
-) -> Result<(), BitsError> {
+) -> Result<usize, BitsError> {
     match val {
         IntegerValue::U8(v) => {
             if v <= one_byte_mask!() {
-                out.write_all_bytes(&encode_7bits(v))
+                out.write_all_bytes(&encode_7bits(v))?;
+                Ok(1)
             } else {
-                out.write_all_bytes(&encode_8bits(v))
+                out.write_all_bytes(&encode_8bits(v))?;
+                Ok(2)
             }
         }
         IntegerValue::U16(v) => {
             if v <= one_byte_mask!() {
-                out.write_all_bytes(&encode_7bits(v as u8))
+                out.write_all_bytes(&encode_7bits(v as u8))?;
+                Ok(1)
             } else if v <= two_byte_mask!() {
-                out.write_all_bytes(&encode_14bits(v))
+                out.write_all_bytes(&encode_14bits(v))?;
+                Ok(2)
             } else {
-                out.write_all_bytes(&encode_16bits(v))
+                out.write_all_bytes(&encode_16bits(v))?;
+                Ok(3)
             }
         }
         IntegerValue::U32(v) => {
             if v <= one_byte_mask!() {
-                out.write_all_bytes(&encode_7bits(v as u8))
+                out.write_all_bytes(&encode_7bits(v as u8))?;
+                Ok(1)
             } else if v <= two_byte_mask!() {
-                out.write_all_bytes(&encode_14bits(v as u16))
+                out.write_all_bytes(&encode_14bits(v as u16))?;
+                Ok(2)
             } else if v <= three_byte_mask!() {
-                out.write_all_bytes(&encode_21bits(v))
+                out.write_all_bytes(&encode_21bits(v))?;
+                Ok(3)
             } else if v <= four_byte_mask!() {
-                out.write_all_bytes(&encode_28bits(v))
+                out.write_all_bytes(&encode_28bits(v))?;
+                Ok(4)
             } else {
-                out.write_all_bytes(&encode_32bits(v))
+                out.write_all_bytes(&encode_32bits(v))?;
+                Ok(5)
             }
         }
         IntegerValue::U64(v) => {
             if v <= one_byte_mask!() {
-                out.write_all_bytes(&encode_7bits(v as u8))
+                out.write_all_bytes(&encode_7bits(v as u8))?;
+                Ok(1)
             } else if v <= two_byte_mask!() {
-                out.write_all_bytes(&encode_14bits(v as u16))
+                out.write_all_bytes(&encode_14bits(v as u16))?;
+                Ok(2)
             } else if v <= three_byte_mask!() {
-                out.write_all_bytes(&encode_21bits(v as u32))
+                out.write_all_bytes(&encode_21bits(v as u32))?;
+                Ok(3)
             } else if v <= four_byte_mask!() {
-                out.write_all_bytes(&encode_28bits(v as u32))
+                out.write_all_bytes(&encode_28bits(v as u32))?;
+                Ok(4)
             } else if v <= five_byte_mask!() {
-                out.write_all_bytes(&encode_35bits(v))
+                out.write_all_bytes(&encode_35bits(v))?;
+                Ok(5)
             } else if v <= six_byte_mask!() {
-                out.write_all_bytes(&encode_42bits(v))
+                out.write_all_bytes(&encode_42bits(v))?;
+                Ok(6)
             } else if v <= seven_byte_mask!() {
-                out.write_all_bytes(&encode_49bits(v))
+                out.write_all_bytes(&encode_49bits(v))?;
+                Ok(7)
             } else if v <= eight_byte_mask!() {
-                out.write_all_bytes(&encode_56bits(v))
+                out.write_all_bytes(&encode_56bits(v))?;
+                Ok(8)
             } else if v <= nine_byte_mask!() {
-                out.write_all_bytes(&encode_63bits(v))
+                out.write_all_bytes(&encode_63bits(v))?;
+                Ok(9)
             } else {
-                out.write_all_bytes(&encode_64bits(v))
+                out.write_all_bytes(&encode_64bits(v))?;
+                Ok(10)
             }
         }
         IntegerValue::U128(v) => encode_u128bits(v).write_to(out),
@@ -449,55 +469,55 @@ pub fn encode_integer_to<T: MutBits + ?Sized>(
     }
 }
 pub trait EncodeVByteTo {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError>;
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError>;
 }
 impl EncodeVByteTo for u128 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::U128(*self), out)
     }
 }
 impl EncodeVByteTo for i128 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::I128(*self), out)
     }
 }
 impl EncodeVByteTo for u64 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::U64(*self), out)
     }
 }
 impl EncodeVByteTo for i64 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::I64(*self), out)
     }
 }
 impl EncodeVByteTo for u32 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::U32(*self), out)
     }
 }
 impl EncodeVByteTo for i32 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::I32(*self), out)
     }
 }
 impl EncodeVByteTo for u16 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::U16(*self), out)
     }
 }
 impl EncodeVByteTo for i16 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::I16(*self), out)
     }
 }
 impl EncodeVByteTo for u8 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::U8(*self), out)
     }
 }
 impl EncodeVByteTo for i8 {
-    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), BitsError> {
+    fn encode_vbyte_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<usize, BitsError> {
         encode_integer_to(IntegerValue::I8(*self), out)
     }
 }

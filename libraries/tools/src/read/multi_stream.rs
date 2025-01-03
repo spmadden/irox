@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -8,7 +8,7 @@
 //! the last 4 bytes of the last page point to the next page index.
 
 use crate::buf::{Buffer, FixedBuf, RoundU8Buffer};
-use crate::codec::vbyte::{encode_integer, DecodeVByte};
+use crate::codec::{encode_integer, DecodeVByte};
 use crate::IntegerValue;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;

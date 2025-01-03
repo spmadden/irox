@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -7,7 +7,8 @@
 //! encoding formats
 //!
 
-pub mod vbyte;
+mod vbyte;
+pub use vbyte::*;
 
 crate::cfg_feature_alloc! {
     use alloc::string::{String, ToString};
