@@ -251,7 +251,13 @@ impl FDSRVByteCompressWriter {
 
         let time_stream = writer.new_stream();
         let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        stats.stage("4.time_compressed", time_stream.get_count());
+        {
+            let count = time_stream.get_count();
+            stats.stage(
+                "4.time_compressed",
+                Box::new(move || count.get_count().to_string()),
+            );
+        }
         let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
         let time_stream = DeltaStream::new(Box::new(time_stream));
 

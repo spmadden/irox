@@ -12,7 +12,7 @@ use alloc::collections::BTreeMap;
 use alloc::vec::Vec;
 use core::fmt::UpperHex;
 use core::ops::{BitXor, DerefMut, Sub};
-use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
+use irox_bits::{BitsWrapper, Error, MutBits, WriteToBEBits};
 use irox_tools::codec::EncodeVByteTo;
 use irox_tools::WrappingSub;
 
@@ -391,18 +391,18 @@ cfg_feature_miniz! {
         }
     }
 }
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct StreamStageStats {
-    stats: BTreeMap<String, SharedROCounter>,
+    stats: BTreeMap<String, Box<dyn Fn() -> String>>,
 }
 impl StreamStageStats {
-    pub fn stage(&mut self, name: &str, value: SharedROCounter) {
+    pub fn stage(&mut self, name: &str, value: Box<dyn Fn() -> String>) {
         self.stats.insert(name.to_string(), value);
     }
     pub fn stats(&self) -> Vec<String> {
         self.stats
             .iter()
-            .map(|(k, v)| format!("{k}: {}", v.get_count()))
+            .map(|(k, v)| format!("{k}: {}", v()))
             .collect::<Vec<String>>()
     }
 }
