@@ -5,7 +5,7 @@
 //!
 //! Bits encoding and decoding functions
 
-use crate::{BitsWrapper, Error, MutBits};
+use crate::{Bits, BitsWrapper, Error, MutBits};
 
 /// Splits the input into two equal sized arrays.
 pub const fn array_concat_2(a: [u8; 2], b: [u8; 2]) -> [u8; 4] {
@@ -313,6 +313,77 @@ impl WriteToBEBits for i128 {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
         bits.write_be_i128(*self)?;
         Ok(16)
+    }
+}
+
+pub trait ReadFromBEBits: Sized {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error>;
+}
+impl ReadFromBEBits for u8 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_u8()
+    }
+}
+impl ReadFromBEBits for u16 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_u16()
+    }
+}
+impl ReadFromBEBits for u32 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_u32()
+    }
+}
+impl ReadFromBEBits for u64 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_u64()
+    }
+}
+impl ReadFromBEBits for u128 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_u128()
+    }
+}
+impl ReadFromBEBits for f32 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_f32()
+    }
+}
+impl ReadFromBEBits for f64 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_f64()
+    }
+}
+impl ReadFromBEBits for i8 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_i8()
+    }
+}
+impl ReadFromBEBits for i16 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_i16()
+    }
+}
+impl ReadFromBEBits for i32 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_i32()
+    }
+}
+impl ReadFromBEBits for i64 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_i64()
+    }
+}
+impl ReadFromBEBits for i128 {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        inp.read_be_i128()
+    }
+}
+impl<const N: usize> ReadFromBEBits for [u8; N] {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        let mut out = [0; N];
+        inp.read_all_into(&mut out.as_mut_slice())?;
+        Ok(out)
     }
 }
 
