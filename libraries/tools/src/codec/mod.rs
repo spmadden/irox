@@ -12,6 +12,11 @@ pub use vbyte::*;
 mod varint;
 pub use varint::*;
 
+crate::cfg_feature_std! {
+    mod code_dictionary;
+    pub use code_dictionary::*;
+}
+
 crate::cfg_feature_alloc! {
     use alloc::string::{String, ToString};
     use alloc::vec::Vec;
