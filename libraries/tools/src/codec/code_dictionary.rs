@@ -2,10 +2,10 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::codec::EncodeGroupVarintTo;
+use crate::codec::{DecodeGroupVarintFrom, EncodeGroupVarintTo};
 use core::hash::Hash;
 use core::ops::DerefMut;
-use irox_bits::{BitsWrapper, Error, MutBits, WriteToBEBits};
+use irox_bits::{Bits, BitsWrapper, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 use std::collections::HashMap;
 
 ///
@@ -14,6 +14,7 @@ use std::collections::HashMap;
 #[derive(Debug, Default)]
 pub struct CodeDictionary<T: Eq + Hash> {
     dictionary: HashMap<T, u32>,
+    inverse: HashMap<u32, T>,
     counter: u32,
 }
 impl<T: Eq + Hash + Default> CodeDictionary<T> {
@@ -36,9 +37,23 @@ impl<T: Eq + Hash + Copy> CodeDictionary<T> {
         let code = self.dictionary.entry(*value).or_insert_with(|| {
             new_code = true;
             self.counter += 1;
+            self.inverse.insert(self.counter, *value);
             self.counter
         });
         (new_code, *code)
+    }
+    pub fn read_code<F: FnOnce() -> Result<T, E>, E>(
+        &mut self,
+        code: u32,
+        value_producer: F,
+    ) -> Result<T, E> {
+        if let Some(val) = self.inverse.get(&code) {
+            return Ok(*val);
+        }
+        let val = value_producer()?;
+        self.inverse.insert(code, val);
+        self.dictionary.insert(val, code);
+        Ok(val)
     }
 }
 
@@ -89,10 +104,43 @@ impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
     }
 }
 
+pub struct GroupVarintCodeDecoder<'a, T: Hash + Eq, B: Bits> {
+    inner: BitsWrapper<'a, B>,
+    dict: CodeDictionary<T>,
+}
+impl<'a, T: Hash + Eq + Default, B: Bits> GroupVarintCodeDecoder<'a, T, B> {
+    pub fn new(inner: BitsWrapper<'a, B>) -> Self {
+        Self {
+            inner,
+            dict: CodeDictionary::new(),
+        }
+    }
+}
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupVarintCodeDecoder<'a, T, B> {
+    fn decode_1(&mut self, code: u32) -> Result<T, Error> {
+        self.dict
+            .read_code(code, || T::read_from_be_bits(self.inner.deref_mut()))
+    }
+
+    pub fn decode_4(&mut self) -> Result<Option<[T; 4]>, Error> {
+        let Some(val) = u32::decode_group_varint_from(self.inner.deref_mut())? else {
+            return Ok(None);
+        };
+        let [a, b, c, d] = val;
+
+        Ok(Some([
+            self.decode_1(a)?,
+            self.decode_1(b)?,
+            self.decode_1(c)?,
+            self.decode_1(d)?,
+        ]))
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use crate::buf::FixedU8Buf;
-    use crate::codec::GroupVarintCodeEncoder;
+    use crate::buf::{Buffer, FixedU8Buf, RoundU8Buffer};
+    use crate::codec::{GroupVarintCodeDecoder, GroupVarintCodeEncoder};
     use crate::hex::HexDump;
     use irox_bits::{BitsWrapper, Error};
 
@@ -122,6 +170,35 @@ mod test {
             ],
             buf.as_ref_used()
         );
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_decoder() -> Result<(), Error> {
+        let mut buf = RoundU8Buffer::from([
+            0x00, // control char for first code block
+            0x01, 0x02, 0x03, 0x04, // first 4 codes in code block
+            0x00, 0x00, 0xAA, 0xAA, // first coded value,
+            0x00, 0xBB, 0xBB, 0xBB, // second coded value,
+            0x00, 0x00, 0x00, 0xCC, // third coded value,
+            0xDD, 0xDD, 0xDD, 0xDD, // fourth coded value
+            0x00, // control char for second code block
+            0x01, 0x02, 0x03, 0x04, // second 4 code in code block
+        ]);
+        let mut dec = GroupVarintCodeDecoder::<u32, _>::new(BitsWrapper::Borrowed(&mut buf));
+        let block1 = dec.decode_4()?;
+        assert!(block1.is_some());
+        if let Some(block1) = block1 {
+            assert_eq_hex_slice!(&[0xAAAA, 0xBBBBBB, 0xCC, 0xDDDDDDDD], block1.as_ref())
+        }
+        let block2 = dec.decode_4()?;
+        assert!(block2.is_some());
+        if let Some(block2) = block2 {
+            assert_eq_hex_slice!(&[0xAAAA, 0xBBBBBB, 0xCC, 0xDDDDDDDD], block2.as_ref())
+        }
+        let block3 = dec.decode_4()?;
+        assert!(block3.is_none());
+        assert_eq!(0, buf.len());
         Ok(())
     }
 }

@@ -181,6 +181,20 @@ impl EncodeUsedBytesTo for u32 {
     }
 }
 
+pub trait DecodeUsedBytesFrom: Sized {
+    fn decode_used_bytes<T: Bits + ?Sized>(inp: &mut T, len: u8) -> Result<Self, Error>;
+}
+impl DecodeUsedBytesFrom for u32 {
+    fn decode_used_bytes<T: Bits + ?Sized>(inp: &mut T, len: u8) -> Result<Self, Error> {
+        let mut out = 0u32;
+        for _ in 0..len {
+            out <<= 8;
+            out |= inp.read_u8()? as u32;
+        }
+        Ok(out)
+    }
+}
+
 ///
 /// The 'Group Varint' format, which moves all the control bits to header bytes
 pub trait EncodeGroupVarintTo {
@@ -204,10 +218,32 @@ impl EncodeGroupVarintTo for [u32; 4] {
     }
 }
 
+pub trait DecodeGroupVarintFrom: Sized {
+    fn decode_group_varint_from<T: Bits>(inp: &mut T) -> Result<Option<[Self; 4]>, Error>;
+}
+impl DecodeGroupVarintFrom for u32 {
+    fn decode_group_varint_from<T: Bits>(inp: &mut T) -> Result<Option<[Self; 4]>, Error> {
+        let Some(ctrl) = inp.next_u8()? else {
+            return Ok(None);
+        };
+        let dl = (ctrl & 0x3) + 1;
+        let cl = ((ctrl >> 2) & 0x3) + 1;
+        let bl = ((ctrl >> 4) & 0x3) + 1;
+        let al = ((ctrl >> 6) & 0x3) + 1;
+
+        Ok(Some([
+            u32::decode_used_bytes(inp, al)?,
+            u32::decode_used_bytes(inp, bl)?,
+            u32::decode_used_bytes(inp, cl)?,
+            u32::decode_used_bytes(inp, dl)?,
+        ]))
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use crate::buf::FixedU8Buf;
-    use crate::codec::EncodeGroupVarintTo;
+    use crate::buf::{Buffer, FixedU8Buf, RoundU8Buffer};
+    use crate::codec::{DecodeGroupVarintFrom, EncodeGroupVarintTo};
     use irox_bits::Error;
 
     #[test]
@@ -219,6 +255,23 @@ mod test {
             buf.as_ref()
         );
         assert_eq!(11, used);
+
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_group_decoding() -> Result<(), Error> {
+        let mut buf = RoundU8Buffer::from([
+            0x63, 0xAA, 0xAA, 0xBB, 0xBB, 0xBB, 0xCC, 0xDD, 0xDD, 0xDD, 0xDD,
+        ]);
+
+        let res = u32::decode_group_varint_from(&mut buf)?;
+        assert!(res.is_some());
+        if let Some(res) = res {
+            assert_eq_hex_slice!(&[0xAAAA, 0xBBBBBB, 0xCC, 0xDDDDDDDD], res.as_ref());
+        }
+
+        assert_eq!(0, buf.len());
 
         Ok(())
     }
