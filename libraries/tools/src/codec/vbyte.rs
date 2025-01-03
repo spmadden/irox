@@ -586,8 +586,36 @@ pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
         }
     }
 }
+
+pub const fn resultant_length(value: IntegerValue) -> u8 {
+    let v = value.to_be_u64();
+    match v {
+        0x0000_0000_0000_0000..=0x0000_0000_0000_007F => 1,
+        0x0000_0000_0000_0080..=0x0000_0000_0000_3FFF => 2,
+        0x0000_0000_0000_4000..=0x0000_0000_001F_FFFF => 3,
+        0x0000_0000_0020_0000..=0x0000_0000_0FFF_FFFF => 4,
+        0x0000_0000_1000_0000..=0x0000_0007_FFFF_FFFF => 5,
+        0x0000_0008_0000_0000..=0x0000_03FF_FFFF_FFFF => 6,
+        0x0000_0400_0000_0000..=0x0001_FFFF_FFFF_FFFF => 7,
+        0x0002_0000_0000_0000..=0x00FF_FFFF_FFFF_FFFF => 8,
+        0x0100_0000_0000_0000..=0x7FFF_FFFF_FFFF_FFFF => 9,
+        _ => 10,
+    }
+}
+
 pub trait EncodeVByte {
     fn encode_vbyte(&self) -> Box<[u8]>;
+}
+pub trait EncodeVByteLength {
+    fn vbyte_length(&self) -> u8;
+}
+impl<T> EncodeVByteLength for T
+where
+    T: Into<IntegerValue> + Copy,
+{
+    fn vbyte_length(&self) -> u8 {
+        resultant_length(Into::<IntegerValue>::into(*self))
+    }
 }
 macro_rules! impl_encode {
     ($typ:ty) => {
@@ -649,6 +677,7 @@ impl<T: Bits> DecodeVByte for T {
 #[cfg(test)]
 mod tests {
     use crate::codec::vbyte::{DecodeVByte, EncodeVByte};
+    use crate::codec::EncodeVByteLength;
     use irox_bits::Error;
 
     #[test]
@@ -692,6 +721,13 @@ mod tests {
             [0xFF, 0xFF, 0xFF, 0x7F].as_ref().decode_vbyte()?
         );
 
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_vbyte_length() -> Result<(), Error> {
+        assert_eq!(2, 0xCC.vbyte_length());
+        assert_eq!(3, 0xAAAA.vbyte_length());
         Ok(())
     }
 }
