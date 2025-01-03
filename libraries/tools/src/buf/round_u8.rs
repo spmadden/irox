@@ -156,6 +156,18 @@ impl<const N: usize> RoundU8Buffer<N> {
     }
 }
 
+impl<const N: usize> From<[u8; N]> for RoundU8Buffer<N> {
+    fn from(value: [u8; N]) -> Self {
+        Self {
+            buf: value,
+            head: 0,
+            tail: N - 1,
+            size: N,
+            mod_count: 0,
+        }
+    }
+}
+
 /// Circular buffer iterator, just calls `pop_front()` repeatedly
 pub struct RoundU8BufferIter<const N: usize> {
     buf: RoundU8Buffer<N>,
