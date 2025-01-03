@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
 use crate::buf::Buffer;
 use crate::iterators::LendingIterator;
-use core::iter::zip;
 use core::ops::{Index, IndexMut};
-use irox_bits::{BitsError, BitsErrorKind, Error, MutBits, WriteToBEBits};
+use irox_bits::{BitsErrorKind, Error, MutBits, WriteToBEBits};
 
 ///
-/// Fixed length stack allocated buffer.  Basically a stack-allocated [`std::vec::Vec`]
+/// Fixed length stack allocated buffer.  Basically a stack-allocated [`Vec`]
 #[derive(Clone)]
 pub struct FixedU8Buf<const N: usize> {
     buf: [u8; N],
@@ -23,6 +22,80 @@ impl<const N: usize> FixedU8Buf<N> {
             buf: [0u8; N],
             len: 0,
         }
+    }
+
+    ///
+    /// Returns a copy of the full buffer
+    pub fn as_buf_default(&mut self) -> [u8; N] {
+        let out = core::mem::replace(&mut self.buf, [0u8; N]);
+        self.clear();
+        out
+    }
+
+    ///
+    /// Returns an iterator to the data in this buffer
+    pub fn iter(&self) -> FixedU8BufIter<N> {
+        FixedU8BufIter { buf: self, idx: 0 }
+    }
+
+    ///
+    /// Returns the used length of this buffer.
+    pub const fn len(&self) -> usize {
+        self.len
+    }
+
+    ///
+    /// Returns true if this buffer is empty.
+    pub const fn is_empty(&self) -> bool {
+        self.len == 0
+    }
+
+    ///
+    /// Returns a slice to only the used portion of this buffer
+    pub fn as_ref_used(&self) -> &[u8] {
+        self.as_ref()
+    }
+
+    ///
+    /// Returns a mut slice to the full capacity of this buffer.  If you change the used
+    /// length of the internal buffer, ensure you call [`update_length`] to correct the
+    /// internal length tracking.
+    pub fn as_mut_full(&mut self) -> &mut [u8] {
+        self.as_mut()
+    }
+
+    ///
+    /// Returns a mut slice to only the used capacity of this buffer.
+    pub fn as_mut_used(&mut self) -> &mut [u8] {
+        &mut self.buf[0..self.len]
+    }
+
+    ///
+    /// Manually updates the "used length" of the buffer.  This is expected to be used in
+    /// concert with [`as_mut_full`] when loading data into the buffer.
+    pub fn update_length(&mut self, new_len: usize) -> Result<(), Error> {
+        if new_len >= N {
+            return Err(BitsErrorKind::OutOfMemory.into());
+        }
+        self.len = new_len;
+        Ok(())
+    }
+}
+impl<const N: usize> WriteToBEBits for FixedU8Buf<N> {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_all_bytes(self.as_ref_used())?;
+        Ok(self.len)
+    }
+}
+impl<const N: usize> AsRef<[u8]> for FixedU8Buf<N> {
+    #[allow(clippy::indexing_slicing)]
+    fn as_ref(&self) -> &[u8] {
+        &self.buf[..self.len]
+    }
+}
+impl<const N: usize> AsMut<[u8]> for FixedU8Buf<N> {
+    fn as_mut(&mut self) -> &mut [u8] {
+        &mut self.buf
     }
 }
 impl<const N: usize> Default for FixedU8Buf<N> {
@@ -157,29 +230,6 @@ impl<const N: usize> IndexMut<usize> for FixedU8Buf<N> {
     }
 }
 
-impl<const N: usize> FixedU8Buf<N> {
-    pub fn into_buf_default(&mut self) -> [u8; N] {
-        let mut out = [0u8; N];
-        for (i, o) in zip(self.buf.iter_mut(), out.iter_mut()) {
-            *o = *i;
-        }
-        self.clear();
-        out
-    }
-}
-impl<const N: usize> FixedU8Buf<N> {
-    pub fn iter(&self) -> FixedU8BufIter<N> {
-        FixedU8BufIter { buf: self, idx: 0 }
-    }
-}
-impl<const N: usize> FixedU8Buf<N> {
-    pub fn write_to<B: MutBits + ?Sized>(&self, out: &mut B) -> Result<(), BitsError> {
-        for v in self.iter() {
-            WriteToBEBits::write_be_to(v, out)?;
-        }
-        Ok(())
-    }
-}
 pub struct FixedU8BufIter<'a, const N: usize> {
     buf: &'a FixedU8Buf<N>,
     idx: usize,

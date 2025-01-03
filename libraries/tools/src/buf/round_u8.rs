@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
-// SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
-//
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
 
@@ -119,6 +116,8 @@ impl<const N: usize> RoundU8Buffer<N> {
         used
     }
 
+    ///
+    /// Advances the head pointer the specified amount, up to the filled length of this buffer.
     pub fn consume(&mut self, amt: usize) {
         if amt >= self.size {
             return self.clear();
@@ -130,6 +129,9 @@ impl<const N: usize> RoundU8Buffer<N> {
         }
     }
 
+    ///
+    /// Marks some of the internal buffer space as used by advancing the tail pointer by
+    /// the specified amount
     pub fn mark_some_used(&mut self, used: usize) -> Result<(), BitsError> {
         if self.size + used > N {
             return Err(BitsErrorKind::OutOfMemory.into());
@@ -142,6 +144,9 @@ impl<const N: usize> RoundU8Buffer<N> {
         Ok(())
     }
 
+    ///
+    /// Limits the internal returned buffer to the specified amount by clipping the
+    /// 'used length' parameter
     pub fn limit(&mut self, limit: usize) -> Result<(), BitsError> {
         if limit >= N || self.size < limit {
             return BitsErrorKind::InvalidInput.err("Invalid limit");
