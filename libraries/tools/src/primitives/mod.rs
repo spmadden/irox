@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 pub mod f32;
@@ -11,6 +11,7 @@ pub mod u64;
 pub mod u8;
 mod wrapping;
 
+use irox_bits::{Error, MutBits, WriteToBEBits};
 pub use wrapping::*;
 
 ///
@@ -28,6 +29,56 @@ pub enum IntegerValue {
     I32(i32),
     I64(i64),
     I128(i128),
+}
+
+impl IntegerValue {
+    pub const fn to_be_u128(&self) -> u128 {
+        match self {
+            IntegerValue::U8(i) => *i as u128,
+            IntegerValue::U16(i) => *i as u128,
+            IntegerValue::U32(i) => *i as u128,
+            IntegerValue::U64(i) => *i as u128,
+            IntegerValue::U128(i) => *i,
+            IntegerValue::I8(i) => *i as u128,
+            IntegerValue::I16(i) => *i as u128,
+            IntegerValue::I32(i) => *i as u128,
+            IntegerValue::I64(i) => *i as u128,
+            IntegerValue::I128(i) => *i as u128,
+        }
+    }
+    pub const fn to_be_u64(&self) -> u64 {
+        match self {
+            IntegerValue::U8(i) => *i as u64,
+            IntegerValue::U16(i) => *i as u64,
+            IntegerValue::U32(i) => *i as u64,
+            IntegerValue::U64(i) => *i,
+            IntegerValue::U128(i) => *i as u64,
+            IntegerValue::I8(i) => *i as u64,
+            IntegerValue::I16(i) => *i as u64,
+            IntegerValue::I32(i) => *i as u64,
+            IntegerValue::I64(i) => *i as u64,
+            IntegerValue::I128(i) => *i as u64,
+        }
+    }
+    pub const fn to_be_u32(&self) -> u32 {
+        self.to_be_u64() as u32
+    }
+}
+impl WriteToBEBits for IntegerValue {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            IntegerValue::U8(i) => i.write_be_to(bits),
+            IntegerValue::U16(i) => i.write_be_to(bits),
+            IntegerValue::U32(i) => i.write_be_to(bits),
+            IntegerValue::U64(i) => i.write_be_to(bits),
+            IntegerValue::U128(i) => i.write_be_to(bits),
+            IntegerValue::I8(i) => i.write_be_to(bits),
+            IntegerValue::I16(i) => i.write_be_to(bits),
+            IntegerValue::I32(i) => i.write_be_to(bits),
+            IntegerValue::I64(i) => i.write_be_to(bits),
+            IntegerValue::I128(i) => i.write_be_to(bits),
+        }
+    }
 }
 
 macro_rules! impl_from_integer {
