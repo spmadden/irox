@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
 //! A collection of utilities for the f32 built-in
 //!
 
-use crate::ToF64;
+use crate::{ToF64, ToSigned};
 
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
@@ -136,6 +136,14 @@ impl crate::f64::FloatExt for f32 {
 impl ToF64 for f32 {
     fn to_f64(&self) -> f64 {
         *self as f64
+    }
+}
+
+impl ToSigned for f32 {
+    type Output = f32;
+
+    fn to_signed(self) -> Self::Output {
+        self
     }
 }
 

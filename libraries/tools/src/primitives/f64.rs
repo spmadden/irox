@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! A collection of utilities for the f64 built-in
 //!
 
-use crate::{ToF64, WrappingSub};
+use crate::{ToF64, ToSigned, WrappingSub};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -264,6 +265,13 @@ impl WrappingSub for f64 {
 impl ToF64 for f64 {
     fn to_f64(&self) -> f64 {
         *self
+    }
+}
+impl ToSigned for f64 {
+    type Output = f64;
+
+    fn to_signed(self) -> Self::Output {
+        self
     }
 }
 

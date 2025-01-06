@@ -111,6 +111,66 @@ impl_from_integer!(i64, IntegerValue::I64);
 impl_from_integer!(u128, IntegerValue::U128);
 impl_from_integer!(i128, IntegerValue::I128);
 
+///
+/// Converts this value into a F64 using the `as` cast operation.
 pub trait ToF64 {
     fn to_f64(&self) -> f64;
 }
+
+///
+/// Converts this value to the signed version using the `as` cast operation.
+pub trait ToSigned {
+    type Output;
+    fn to_signed(self) -> Self::Output;
+}
+
+macro_rules! impl_to_signed {
+    ($src:ty, $dst:ty) => {
+        impl ToSigned for $src {
+            type Output = $dst;
+            fn to_signed(self) -> Self::Output {
+                self as $dst
+            }
+        }
+        impl ToSigned for $dst {
+            type Output = $dst;
+            fn to_signed(self) -> Self::Output {
+                self
+            }
+        }
+    };
+}
+impl_to_signed!(u8, i8);
+impl_to_signed!(u16, i16);
+impl_to_signed!(u32, i32);
+impl_to_signed!(u64, i64);
+impl_to_signed!(u128, i128);
+
+///
+/// Converts this value to the unsigned version using the `as` cast operation.
+pub trait ToUnsigned {
+    type Output;
+    fn to_unsigned(self) -> Self::Output;
+}
+
+macro_rules! impl_to_unsigned {
+    ($src:ty, $dst:ty) => {
+        impl ToUnsigned for $src {
+            type Output = $dst;
+            fn to_unsigned(self) -> Self::Output {
+                self as $dst
+            }
+        }
+        impl ToUnsigned for $dst {
+            type Output = $dst;
+            fn to_unsigned(self) -> Self::Output {
+                self
+            }
+        }
+    };
+}
+impl_to_unsigned!(i8, u8);
+impl_to_unsigned!(i16, u16);
+impl_to_unsigned!(i32, u32);
+impl_to_unsigned!(i64, u64);
+impl_to_unsigned!(i128, u128);
