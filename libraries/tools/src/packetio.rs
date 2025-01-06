@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Traits for packetization of data and movement of packets of data
+
+extern crate alloc;
 
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;

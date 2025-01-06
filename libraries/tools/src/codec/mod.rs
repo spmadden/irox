@@ -18,6 +18,7 @@ crate::cfg_feature_std! {
 }
 
 crate::cfg_feature_alloc! {
+    extern crate alloc;
     use alloc::string::{String, ToString};
     use alloc::vec::Vec;
 }

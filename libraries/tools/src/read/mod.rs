@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Helper functions around [`std::io::Read`]
@@ -13,13 +14,12 @@ pub use counting::*;
 pub use pagefile::*;
 pub use readerator::*;
 
-crate::cfg_feature_std! {
-    pub use buffer::*;
-    mod buffer;
+pub use buffer::*;
+mod buffer;
 
-    mod multi_stream;
-    pub use multi_stream::*;
-}
+mod multi_stream;
+pub use multi_stream::*;
+
 mod conv;
 mod counting;
 #[cfg(feature = "std")]

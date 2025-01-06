@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -9,6 +9,7 @@ crate::cfg_feature_alloc! {
     extern crate alloc;
 }
 use crate::buf::StrBuf;
+use crate::cfg_feature_alloc;
 use core::fmt::Write;
 use irox_bits::{Error, ErrorKind, FormatBits, MutBits};
 
@@ -75,16 +76,17 @@ impl<S: AsRef<[u8]>> HexDump for S {
         Ok(())
     }
 }
+cfg_feature_alloc! {
+    /// Prints the values in the slice as a static rust-type array
+    pub fn to_hex_array(value: &[u8]) -> alloc::string::String {
+        let mut out = alloc::vec::Vec::new();
+        for v in value {
+            out.push(format!("0x{:02X}", v));
+        }
+        let joined = out.join(",");
 
-/// Prints the values in the slice as a static rust-type array
-pub fn to_hex_array(value: &[u8]) -> alloc::string::String {
-    let mut out = alloc::vec::Vec::new();
-    for v in value {
-        out.push(format!("0x{:02X}", v));
+        format!("[{joined}]")
     }
-    let joined = out.join(",");
-
-    format!("[{joined}]")
 }
 
 pub const fn hex_char_to_nibble(ch: char) -> Result<u8, Error> {
@@ -318,6 +320,7 @@ macro_rules! hex {
 #[cfg(test)]
 #[cfg(feature = "std")]
 mod tests {
+    extern crate alloc;
     use crate::hex::HexDump;
     use alloc::vec::Vec;
 

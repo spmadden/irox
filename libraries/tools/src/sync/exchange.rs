@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
+
+extern crate alloc;
 
 use alloc::sync::Arc;
 use core::sync::atomic::{AtomicBool, Ordering};

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -13,13 +13,13 @@ pub use fixed::*;
 mod fixed;
 pub use fixed_u8::*;
 mod fixed_u8;
-mod str;
 pub use round_u8::*;
 mod round_u8;
 
 use crate::cfg_feature_alloc;
-pub use str::*;
 cfg_feature_alloc! {
+    extern crate alloc;
+
     pub use unlimited::*;
     mod unlimited;
 }

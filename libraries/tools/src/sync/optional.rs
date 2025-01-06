@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //! Contains the [`SynchronizedOptional`], [`SharedCell`] and other associated primitives
 
+extern crate alloc;
 use alloc::sync::Arc;
 use core::fmt::{Debug, Formatter};
 use core::ops::Deref;

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
 //! Filesystem utilities
 
+use crate::cfg_feature_alloc;
 use core::fmt::{Display, Formatter};
 
 ///
@@ -76,17 +77,20 @@ impl Display for FilenameError {
 }
 impl core::error::Error for FilenameError {}
 
-///
-/// Removes any character in the input value that isn't in [`USUALLY_SAFE_FS_CHARS`]
-pub fn clean_filename<T: AsRef<str>>(val: &T) -> alloc::string::String {
-    let input = val.as_ref();
-    let mut out = alloc::string::String::with_capacity(input.len());
-    for v in input.chars() {
-        if USUALLY_SAFE_FS_CHARS.binary_search(&v).is_ok() {
-            out.push(v);
+cfg_feature_alloc! {
+    extern crate alloc;
+    ///
+    /// Removes any character in the input value that isn't in [`USUALLY_SAFE_FS_CHARS`]
+    pub fn clean_filename<T: AsRef<str>>(val: &T) -> alloc::string::String {
+        let input = val.as_ref();
+        let mut out = alloc::string::String::with_capacity(input.len());
+        for v in input.chars() {
+            if USUALLY_SAFE_FS_CHARS.binary_search(&v).is_ok() {
+                out.push(v);
+            }
         }
+        out
     }
-    out
 }
 
 ///

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
+extern crate alloc;
 
 use crate::codec::{DecodeGroupVarintFrom, EncodeGroupVarintTo};
 use alloc::sync::Arc;

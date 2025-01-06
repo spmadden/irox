@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 #![forbid(unsafe_code)]
 #![warn(clippy::alloc_instead_of_core)]
@@ -7,9 +8,6 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-
-extern crate alloc;
-extern crate core;
 
 pub use primitives::*;
 pub use util::*;
@@ -25,7 +23,6 @@ pub mod fmt;
 pub mod hex;
 pub mod iterators;
 pub mod options;
-pub mod packetio;
 pub mod random;
 cfg_feature_std! {
     pub mod read;
@@ -34,6 +31,7 @@ cfg_feature_std! {
     pub mod sync;
 }
 cfg_feature_alloc! {
+    pub mod packetio;
     pub mod vec;
 }
 
