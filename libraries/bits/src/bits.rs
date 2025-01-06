@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -348,6 +348,23 @@ pub trait Bits {
             self.read_u8()?;
         }
         Ok(len)
+    }
+
+    fn read_u8_blob_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        let size = self.read_u8()? as usize;
+        self.read_exact_into(size, into)
+    }
+    fn read_u16_blob_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        let size = self.read_be_u16()? as usize;
+        self.read_exact_into(size, into)
+    }
+    fn read_u32_blob_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        let size = self.read_be_u32()? as usize;
+        self.read_exact_into(size, into)
+    }
+    fn read_u64_blob_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        let size = self.read_be_u64()? as usize;
+        self.read_exact_into(size, into)
     }
 
     cfg_feature_alloc! {
