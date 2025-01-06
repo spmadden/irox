@@ -13,8 +13,9 @@ use alloc::vec::Vec;
 use core::fmt::UpperHex;
 use core::ops::{BitXor, DerefMut, Sub};
 use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
-use irox_tools::codec::EncodeVByteTo;
-use irox_tools::WrappingSub;
+use irox_tools::codec::{EncodeVByteTo, ZigZag};
+use irox_tools::ToSigned;
+use irox_types::NumberSigned;
 
 pub trait Stream<T: Streamable> {
     fn write_value(&mut self, value: T) -> Result<usize, Error>;
@@ -25,18 +26,14 @@ pub trait Stream<T: Streamable> {
         String::new()
     }
 }
+pub trait Decoder<T> {
+    fn next(&mut self) -> Result<Option<T>, Error>;
+}
 
-pub trait Streamable: Sized + Default + Copy + WriteToBEBits + Sub + WrappingSub {}
-impl<T> Streamable for T where T: Sized + Default + Copy + WriteToBEBits + Sub + WrappingSub {}
+pub trait Streamable: Sized + Default + Copy + WriteToBEBits {}
+impl<T> Streamable for T where T: Sized + Default + Copy + WriteToBEBits {}
 pub trait StreamableVByte:
-    Sized
-    + Default
-    + Copy
-    + Sub<Output: EncodeVByteTo + UpperHex>
-    + EncodeVByteTo
-    + WrappingSub
-    + WriteToBEBits
-    + Sub
+    Sized + Default + Copy + Sub<Output: EncodeVByteTo + UpperHex> + EncodeVByteTo + WriteToBEBits + Sub
 {
 }
 impl<T> StreamableVByte for T where
@@ -45,7 +42,6 @@ impl<T> StreamableVByte for T where
         + Copy
         + Sub<Output: EncodeVByteTo + UpperHex>
         + EncodeVByteTo
-        + WrappingSub
         + WriteToBEBits
         + Sub
 {
@@ -101,7 +97,7 @@ pub struct DeltaStream<T: Streamable> {
     writer: Box<dyn Stream<T>>,
 }
 
-impl<T: Streamable<Output = T>> DeltaStream<T> {
+impl<T: Streamable> DeltaStream<T> {
     ///
     /// Create a new stream impl
     pub fn new(writer: Box<dyn Stream<T>>) -> Self {
@@ -111,10 +107,13 @@ impl<T: Streamable<Output = T>> DeltaStream<T> {
         }
     }
 }
-impl<T: Streamable<Output = T>> Stream<T> for DeltaStream<T> {
+impl<S: Streamable + ToSigned<Output = T>, T: Streamable + NumberSigned + Sub<Output = T>> Stream<S>
+    for DeltaStream<T>
+{
     ///
     /// Deltifies the value against the previous value and writes it out.
-    fn write_value(&mut self, value: T) -> Result<usize, Error> {
+    fn write_value(&mut self, value: S) -> Result<usize, Error> {
+        let value = ToSigned::to_signed(value);
         let delta = value - self.last_value;
         self.last_value = value;
         self.writer.write_value(delta)
@@ -125,6 +124,52 @@ impl<T: Streamable<Output = T>> Stream<T> for DeltaStream<T> {
     }
     fn written_stats(&self) -> String {
         self.writer.written_stats()
+    }
+}
+
+pub struct ZigZagStream<T> {
+    writer: Box<dyn Stream<T>>,
+}
+impl<T: Streamable> ZigZagStream<T> {
+    pub fn new(writer: Box<dyn Stream<T>>) -> Self {
+        Self { writer }
+    }
+}
+impl<D: Streamable, S: Streamable + ZigZag<Output = D>> Stream<S> for ZigZagStream<D> {
+    fn write_value(&mut self, value: S) -> Result<usize, Error> {
+        self.writer.write_value(ZigZag::zigzag(value))
+    }
+}
+
+///
+/// Basic stream to convert from a [`f64`] to a [`u64`]
+pub struct F64ToU64Stream {
+    writer: Box<dyn Stream<u64>>,
+}
+impl F64ToU64Stream {
+    pub fn new(writer: Box<dyn Stream<u64>>) -> Self {
+        Self { writer }
+    }
+}
+impl Stream<f64> for F64ToU64Stream {
+    fn write_value(&mut self, value: f64) -> Result<usize, Error> {
+        self.writer.write_value(value.to_bits())
+    }
+}
+pub struct U64ToF64Decoder {
+    reader: Box<dyn Decoder<u64>>,
+}
+impl U64ToF64Decoder {
+    pub fn new(reader: Box<dyn Decoder<u64>>) -> Self {
+        Self { reader }
+    }
+}
+impl Decoder<f64> for U64ToF64Decoder {
+    fn next(&mut self) -> Result<Option<f64>, Error> {
+        let Some(val) = self.reader.next()? else {
+            return Ok(None);
+        };
+        Ok(Some(f64::from_bits(val)))
     }
 }
 
@@ -140,7 +185,7 @@ impl<T: Sized + Default> XorDeltaStream<T> {
         }
     }
 }
-impl<T: Streamable<Output = T> + BitXor<Output = T>> Stream<T> for XorDeltaStream<T> {
+impl<T: Streamable + BitXor<Output = T> + Copy> Stream<T> for XorDeltaStream<T> {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let out = BitXor::bitxor(self.last_value, value);
         self.last_value = value;
@@ -232,8 +277,11 @@ impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
         }
     }
 }
-impl<'a, T: Streamable<Output = T> + EncodeVByteTo + UpperHex + Sub<T>, B: MutBits> Stream<T>
-    for VByteDeltaIntStream<'a, T, B>
+impl<
+        'a,
+        T: Streamable + Sub<Output = T> + EncodeVByteTo + UpperHex + Sub<T> + NumberSigned,
+        B: MutBits,
+    > Stream<T> for VByteDeltaIntStream<'a, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let delta = value - self.last_value;
@@ -247,7 +295,7 @@ cfg_feature_miniz! {
     use miniz_oxide::deflate::CompressionLevel;
     use miniz_oxide::DataFormat;
     use alloc::collections::VecDeque;
-    use irox_bits::{ErrorKind};
+    use irox_bits::{Bits, ErrorKind};
 
     pub struct CompressStream<'a, T: MutBits> {
         writer: BitsWrapper<'a, T>,
@@ -261,7 +309,7 @@ cfg_feature_miniz! {
             compressor.set_format_and_level(DataFormat::Raw, CompressionLevel::DefaultCompression as u8);
             Self {
                 writer,
-                inbuf: VecDeque::with_capacity(4096),
+                inbuf: VecDeque::with_capacity(32768),
                 compressor,
                 written: 0,
             }
@@ -271,7 +319,7 @@ cfg_feature_miniz! {
                 &mut self, value: V) -> Result<(), Error> {
             // println!("writing {value:08X}");
             WriteToBEBits::write_be_to(&value, &mut self.inbuf)?;
-            if self.inbuf.len() < 4000 {
+            if self.inbuf.len() < 32768 {
                 return Ok(())
             }
             let (a,b) = self.inbuf.as_slices();
@@ -350,11 +398,11 @@ cfg_feature_miniz! {
     /// A stream impl that writes the deflated, varint-encoded difference between
     /// the last value and the current value to the provided [`MutBits`] writer.
     /// The previous value is initialized to 0.
-    pub struct DeltaCompressStream<'a, T: Streamable, B: MutBits> {
+    pub struct DeltaCompressStream<'a, T: Streamable+Copy, B: MutBits> {
         last_value: T,
         compressor: CompressStream<'a, B>
     }
-    impl<'a, T: Streamable, B: MutBits> DeltaCompressStream<'a, T, B> {
+    impl<'a, T: Streamable+Copy, B: MutBits> DeltaCompressStream<'a, T, B> {
         /// Create a new stream
         pub fn new(writer: BitsWrapper<'a, B>) -> DeltaCompressStream<'a, T, B> {
             DeltaCompressStream {
@@ -384,11 +432,49 @@ cfg_feature_miniz! {
         }
 
     }
-    impl<'a, T: Streamable, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
+    impl<'a, T: Streamable+Copy, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
         /// Make sure the buffer is fully flushed on drop
         fn drop(&mut self) {
             let _ = self.flush();
         }
+    }
+
+    pub struct InflateStream<'a, B: irox_bits::BufBits> {
+        reader: BitsWrapper<'a, B>,
+        out_buffer: VecDeque<u8>,
+        inflater: miniz_oxide::inflate::stream::InflateState,
+    }
+    impl<'a, B: irox_bits::BufBits> InflateStream<'a, B> {
+        pub fn new(reader: BitsWrapper<'a, B>) -> Self {
+            let inflater = miniz_oxide::inflate::stream::InflateState::new(DataFormat::Raw);
+            let out_buffer = VecDeque::with_capacity(4096);
+            Self {
+                reader,
+                out_buffer,
+                inflater
+            }
+        }
+    }
+    impl<'a, B: irox_bits::BufBits> Bits for InflateStream<'a, B> {
+        fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+            if let Some(v) = self.out_buffer.pop_front() {
+                return Ok(Some(v));
+            }
+
+            self.out_buffer.clear();
+            for _ in 0..self.out_buffer.capacity() {
+                self.out_buffer.push_back(0);
+            }
+            let outbuf = self.out_buffer.make_contiguous();
+            let inbuf = self.reader.fill_buf()?;
+
+            let res = miniz_oxide::inflate::stream::inflate(&mut self.inflater, inbuf, outbuf, miniz_oxide::MZFlush::None);
+            self.reader.consume(res.bytes_consumed);
+            self.out_buffer.truncate(res.bytes_written);
+
+            Ok(self.out_buffer.pop_front())
+        }
+
     }
 }
 #[derive(Default)]
