@@ -7,6 +7,7 @@ use crate::bits::Bits;
 use crate::error::Error;
 use crate::mutbits::MutBits;
 use crate::BitsWrapper;
+use alloc::boxed::Box;
 use alloc::collections::VecDeque;
 use alloc::string::String;
 use alloc::sync::Arc;
