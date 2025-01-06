@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 mod error;
 mod utils;
 
@@ -6,7 +10,14 @@ pub use utils::*;
 use crate::error::Error;
 use clap::{Parser, Subcommand};
 
-const FEATURE_ARGS: &[&str] = &["--no-default-features", "-Fdefault", "--all-features"];
+const FEATURE_ARGS: &[&str] = &[
+    "--no-default-features",
+    "-Falloc",
+    "-Fstd",
+    "-Falloc,std",
+    "-Fdefault",
+    "--all-features",
+];
 const TARGETS: &[&str] = &[
     "x86_64-pc-windows-msvc",
     "wasm32-unknown-unknown",
@@ -178,7 +189,7 @@ fn test() -> Result<(), Error> {
         exec_passthru_env(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
-            [("RUSTFLAGS", "-Copt-level=1")]
+            [("RUSTFLAGS", "-Copt-level=1")],
         )?;
     }
     logend();
@@ -258,7 +269,16 @@ fn check(target: &str) -> Result<(), Error> {
     logstart(&format!("check-{target}"));
     exec_passthru("rustup", &["target", "add", target])?;
     cleanlocal()?;
-    exec_passthru("cargo", &["check", "--target", target, "--color=always", "--all-targets"])?;
+    exec_passthru(
+        "cargo",
+        &[
+            "check",
+            "--target",
+            target,
+            "--color=always",
+            "--all-targets",
+        ],
+    )?;
     logend();
     Ok(())
 }
