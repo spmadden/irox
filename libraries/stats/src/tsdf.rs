@@ -3,12 +3,21 @@
 //
 
 use crate::sampling::Sample64;
-use crate::streams::{CompressStream, DeltaStream, Stream, StreamStageStats, Streamable};
+use crate::streams::{
+    CompressStream, Decoder, DeltaStream, F64ToU64Stream, InflateStream, Stream, StreamStageStats,
+    Streamable, U64ToF64Decoder, ZigZagStream,
+};
 use alloc::sync::Arc;
-use irox_bits::{BitsWrapper, Error, MutBits, SharedCountingBits, SharedROCounter};
+use core::hash::Hash;
+use irox_bits::{
+    Bits, BitsError, BitsWrapper, Error, MutBits, ReadFromBEBits, SharedCountingBits,
+    SharedROCounter,
+};
+use irox_time::Time64;
 use irox_tools::buf::{Buffer, FixedBuf};
-use irox_tools::codec::GroupVarintCodeEncoder;
-use irox_tools::read::{MultiStreamWriter, StreamWriter};
+use irox_tools::codec::{GroupVarintCodeDecoder, GroupVarintCodeEncoder};
+use irox_tools::map::OrderedHashMap;
+use irox_tools::read::{MultiStreamReader, MultiStreamWriter, StreamWriter};
 use std::path::Path;
 
 macro_rules! new_bdc {
@@ -219,30 +228,12 @@ impl Stream<f64> for FloatSplitter {
 }
 
 ///
-/// Basic stream to convert from a [`f64`] to a [`u64`]
-pub struct F64ToU64Stream {
-    writer: Box<dyn Stream<u64>>,
-}
-impl F64ToU64Stream {
-    pub fn new(writer: Box<dyn Stream<u64>>) -> Self {
-        Self { writer }
-    }
-}
-impl Stream<f64> for F64ToU64Stream {
-    fn write_value(&mut self, value: f64) -> Result<usize, Error> {
-        self.writer.write_value(value.to_bits())
-    }
-}
-
-///
 /// Stream to collect values into groups of 4 and then run them through a [`GroupVarintCodeEncoder`]
 pub struct GroupCodingStream<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> {
     buf: FixedBuf<4, T>,
     inner: GroupVarintCodeEncoder<'a, T, B>,
 }
-impl<'a, T: core::hash::Hash + Eq + Default + Copy + Streamable, B: MutBits>
-    GroupCodingStream<'a, T, B>
-{
+impl<'a, T: core::hash::Hash + Eq + Default + Streamable, B: MutBits> GroupCodingStream<'a, T, B> {
     pub fn new(inner: BitsWrapper<'a, B>) -> Self {
         Self {
             buf: FixedBuf::new(),
@@ -285,6 +276,34 @@ impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Drop for GroupCoding
     }
 }
 
+pub struct GroupDecodingStream<'a, T: Hash + Eq + Default, B: Bits> {
+    inner: GroupVarintCodeDecoder<'a, T, B>,
+    buf: FixedBuf<4, T>,
+}
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupDecodingStream<'a, T, B> {
+    pub fn new(inner: BitsWrapper<'a, B>) -> Self {
+        Self {
+            inner: GroupVarintCodeDecoder::new(inner),
+            buf: FixedBuf::new(),
+        }
+    }
+}
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> Decoder<T>
+    for GroupDecodingStream<'a, T, B>
+{
+    fn next(&mut self) -> Result<Option<T>, Error> {
+        if self.buf.is_empty() {
+            let Some(val) = self.inner.decode_4()? else {
+                return Ok(None);
+            };
+            for v in val {
+                let _ = self.buf.push_back(v);
+            }
+        }
+        Ok(self.buf.pop_front())
+    }
+}
+
 ///
 /// Coded Time Series Sample File consists of 2 streams: a data stream and a time stream backed by a [`MultiStreamWriter`]
 ///
@@ -306,6 +325,7 @@ impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Drop for GroupCoding
 pub struct CodedTimeSeriesWriter {
     float_stream: Box<dyn Stream<f64>>,
     time_stream: Box<dyn Stream<u64>>,
+    meta_stream: Box<dyn for<'a> Stream<&'a str>>,
     stats: StreamStageStats,
 }
 
@@ -314,6 +334,9 @@ impl CodedTimeSeriesWriter {
         let mut stats = StreamStageStats::default();
 
         let writer = MultiStreamWriter::new(path)?;
+
+        let meta_stream = writer.new_stream();
+        let meta_stream = CompressStream::new(BitsWrapper::Owned(meta_stream));
 
         let float_stream = writer.new_stream();
         let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
@@ -333,11 +356,13 @@ impl CodedTimeSeriesWriter {
         stats.stage_counting("2.time_vgb", time_stream.get_count());
         let time_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
         stats.stage_counting("3.time_codes", time_stream.counter());
-        let time_stream = DeltaStream::new(Box::new(time_stream));
+        let time_stream = ZigZagStream::new(Box::new(time_stream));
+        let time_stream = DeltaStream::<i64>::new(Box::new(time_stream));
 
         Ok(Self {
             float_stream: Box::new(float_stream),
             time_stream: Box::new(time_stream),
+            meta_stream: Box::new(meta_stream),
             stats,
         })
     }
@@ -359,6 +384,95 @@ impl CodedTimeSeriesWriter {
         let mut out = self.stats.stats();
         out.push(stats);
         out
+    }
+
+    pub fn metadata<K: AsRef<str>, V: AsRef<str>>(
+        &mut self,
+        key: K,
+        value: V,
+    ) -> Result<(), Error> {
+        let key = key.as_ref();
+        let value = value.as_ref();
+        self.meta_stream.write_value(key)?;
+        self.meta_stream.write_value(value)?;
+        Ok(())
+    }
+}
+
+pub enum TimeSeriesError {
+    BitsError(BitsError),
+    MissingMetadataStream,
+    MissingFloatStream,
+    MissingTimeStream,
+}
+impl From<BitsError> for TimeSeriesError {
+    fn from(e: BitsError) -> Self {
+        TimeSeriesError::BitsError(e)
+    }
+}
+pub struct CodedTimeSeriesReader {
+    metadata: OrderedHashMap<String, String>,
+    float_decoder: Box<dyn Decoder<f64>>,
+    time_decoder: Box<dyn Decoder<u64>>,
+}
+impl CodedTimeSeriesReader {
+    pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, TimeSeriesError> {
+        let mut reader = MultiStreamReader::open(path)?;
+        let mut streams = reader.drain(..);
+        let Some(mut meta_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingMetadataStream);
+        };
+        let mut metadata = OrderedHashMap::<String, String>::new();
+        while meta_stream.has_more()? {
+            let key = String::read_from_be_bits(&mut meta_stream)?;
+            let value = String::read_from_be_bits(&mut meta_stream)?;
+            metadata.insert(key, value);
+        }
+
+        let Some(float_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingFloatStream);
+        };
+        let float_stream = InflateStream::new(BitsWrapper::Owned(float_stream));
+        let float_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
+        let float_stream = U64ToF64Decoder::new(Box::new(float_stream));
+
+        let Some(time_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingTimeStream);
+        };
+        let time_stream = InflateStream::new(BitsWrapper::Owned(time_stream));
+        let time_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
+
+        Ok(Self {
+            metadata,
+            float_decoder: Box::new(float_stream),
+            time_decoder: Box::new(time_stream),
+        })
+    }
+
+    pub fn metadata(&self) -> impl Iterator<Item = (&String, &String)> {
+        self.metadata.iter()
+    }
+}
+impl Iterator for CodedTimeSeriesReader {
+    type Item = Result<Sample64, Error>;
+
+    fn next(&mut self) -> Option<Result<Sample64, Error>> {
+        let r1 = self.float_decoder.next();
+        let r2 = self.time_decoder.next();
+        let float = match r1 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let time = match r2 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let float = float?;
+        let time = time?;
+        Some(Ok(Sample64 {
+            value: float,
+            time: Time64::from_unix_u64(time),
+        }))
     }
 }
 
@@ -414,6 +528,8 @@ mod tests {
             "Turned {input_size} bytes into {written} = {ratio:02.}% reduction = {ubps:02.02}MB/s"
         );
         println!("{:#?}", file.written_stats());
+        drop(file);
+
         // println!("floats: {:#?}", file.float_stream.written_stats());
         // println!("times: {:#?}", file.time_stream.written_stats());
 
