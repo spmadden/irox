@@ -4,8 +4,7 @@
 
 use crate::buf::Buffer;
 use crate::buf::FixedBuf;
-use crate::IntegerValue;
-use alloc::boxed::Box;
+use crate::{cfg_feature_alloc, IntegerValue};
 use irox_bits::{Bits, BitsError, Error, MutBits};
 
 macro_rules! round {
@@ -370,18 +369,44 @@ pub fn encode_u128bits(val: u128) -> FixedBuf<19, u8> {
 }
 
 macro_rules! zigzag_impl {
-    ($id:ident,$sig:ty,$usig:ty,$len:literal) => {
+    ($id:ident,$un:ident,$sig:ty,$usig:ty,$len:literal) => {
         pub fn $id(n: $sig) -> $usig {
             let n = n as $usig;
             (n << 1) ^ (n >> ($len - 1))
         }
+        pub fn $un(n: $usig) -> $sig {
+            let v = (n & 0x01) as $sig;
+            let v = (n >> 1) as $sig ^ -v;
+            v as $sig
+        }
+        impl ZigZag for $sig {
+            type Output = $usig;
+            fn zigzag(self) -> $usig {
+                $id(self)
+            }
+        }
+        impl ZagZig for $usig {
+            type Output = $sig;
+            fn zagzig(self) -> Self::Output {
+                $un(self)
+            }
+        }
     };
 }
-zigzag_impl!(zigzag_i8, i8, u8, 8);
-zigzag_impl!(zigzag_i16, i16, u16, 16);
-zigzag_impl!(zigzag_i32, i32, u32, 32);
-zigzag_impl!(zigzag_i64, i64, u64, 64);
-zigzag_impl!(zigzag_i128, i128, u128, 128);
+zigzag_impl!(zigzag_i8, zagzig_u8, i8, u8, 8);
+zigzag_impl!(zigzag_i16, zagzig_u16, i16, u16, 16);
+zigzag_impl!(zigzag_i32, zagzig_u32, i32, u32, 32);
+zigzag_impl!(zigzag_i64, zagzig_u64, i64, u64, 64);
+zigzag_impl!(zigzag_i128, zagzig_u128, i128, u128, 128);
+
+pub trait ZigZag {
+    type Output;
+    fn zigzag(self) -> Self::Output;
+}
+pub trait ZagZig {
+    type Output;
+    fn zagzig(self) -> Self::Output;
+}
 
 pub fn encode_integer_to<T: MutBits + ?Sized>(
     val: IntegerValue,
@@ -521,68 +546,71 @@ impl EncodeVByteTo for i8 {
         encode_integer_to(IntegerValue::I8(*self), out)
     }
 }
-pub fn encode_integer(val: IntegerValue) -> Box<[u8]> {
-    match val {
-        IntegerValue::U8(v) => {
-            if v <= one_byte_mask!() {
-                Box::new(encode_7bits(v))
-            } else {
-                Box::new(encode_8bits(v))
+cfg_feature_alloc! {
+    pub fn encode_integer(val: IntegerValue) -> alloc::boxed::Box<[u8]> {
+        use alloc::boxed::Box;
+        match val {
+            IntegerValue::U8(v) => {
+                if v <= one_byte_mask!() {
+                    Box::new(encode_7bits(v))
+                } else {
+                    Box::new(encode_8bits(v))
+                }
             }
-        }
-        IntegerValue::U16(v) => {
-            if v <= one_byte_mask!() {
-                Box::new(encode_7bits(v as u8))
-            } else if v <= two_byte_mask!() {
-                Box::new(encode_14bits(v))
-            } else {
-                Box::new(encode_16bits(v))
+            IntegerValue::U16(v) => {
+                if v <= one_byte_mask!() {
+                    Box::new(encode_7bits(v as u8))
+                } else if v <= two_byte_mask!() {
+                    Box::new(encode_14bits(v))
+                } else {
+                    Box::new(encode_16bits(v))
+                }
             }
-        }
-        IntegerValue::U32(v) => {
-            if v <= one_byte_mask!() {
-                Box::new(encode_7bits(v as u8))
-            } else if v <= two_byte_mask!() {
-                Box::new(encode_14bits(v as u16))
-            } else if v <= three_byte_mask!() {
-                Box::new(encode_21bits(v))
-            } else if v <= four_byte_mask!() {
-                Box::new(encode_28bits(v))
-            } else {
-                Box::new(encode_32bits(v))
+            IntegerValue::U32(v) => {
+                if v <= one_byte_mask!() {
+                    Box::new(encode_7bits(v as u8))
+                } else if v <= two_byte_mask!() {
+                    Box::new(encode_14bits(v as u16))
+                } else if v <= three_byte_mask!() {
+                    Box::new(encode_21bits(v))
+                } else if v <= four_byte_mask!() {
+                    Box::new(encode_28bits(v))
+                } else {
+                    Box::new(encode_32bits(v))
+                }
             }
-        }
-        IntegerValue::U64(v) => {
-            if v <= one_byte_mask!() {
-                Box::new(encode_7bits(v as u8))
-            } else if v <= two_byte_mask!() {
-                Box::new(encode_14bits(v as u16))
-            } else if v <= three_byte_mask!() {
-                Box::new(encode_21bits(v as u32))
-            } else if v <= four_byte_mask!() {
-                Box::new(encode_28bits(v as u32))
-            } else if v <= five_byte_mask!() {
-                Box::new(encode_35bits(v))
-            } else if v <= six_byte_mask!() {
-                Box::new(encode_42bits(v))
-            } else if v <= seven_byte_mask!() {
-                Box::new(encode_49bits(v))
-            } else if v <= eight_byte_mask!() {
-                Box::new(encode_56bits(v))
-            } else if v <= nine_byte_mask!() {
-                Box::new(encode_63bits(v))
-            } else {
-                Box::new(encode_64bits(v))
+            IntegerValue::U64(v) => {
+                if v <= one_byte_mask!() {
+                    Box::new(encode_7bits(v as u8))
+                } else if v <= two_byte_mask!() {
+                    Box::new(encode_14bits(v as u16))
+                } else if v <= three_byte_mask!() {
+                    Box::new(encode_21bits(v as u32))
+                } else if v <= four_byte_mask!() {
+                    Box::new(encode_28bits(v as u32))
+                } else if v <= five_byte_mask!() {
+                    Box::new(encode_35bits(v))
+                } else if v <= six_byte_mask!() {
+                    Box::new(encode_42bits(v))
+                } else if v <= seven_byte_mask!() {
+                    Box::new(encode_49bits(v))
+                } else if v <= eight_byte_mask!() {
+                    Box::new(encode_56bits(v))
+                } else if v <= nine_byte_mask!() {
+                    Box::new(encode_63bits(v))
+                } else {
+                    Box::new(encode_64bits(v))
+                }
             }
-        }
-        // IntegerValue::U128(_) => {}
-        // IntegerValue::I8(_) => {}
-        // IntegerValue::I16(_) => {}
-        // IntegerValue::I32(_) => {}
-        // IntegerValue::I64(_) => {}
-        // IntegerValue::I128(_) => {}
-        _ => {
-            todo!()
+            // IntegerValue::U128(_) => {}
+            // IntegerValue::I8(_) => {}
+            // IntegerValue::I16(_) => {}
+            // IntegerValue::I32(_) => {}
+            // IntegerValue::I64(_) => {}
+            // IntegerValue::I128(_) => {}
+            _ => {
+                todo!()
+            }
         }
     }
 }
@@ -602,9 +630,11 @@ pub const fn resultant_length(value: IntegerValue) -> u8 {
         _ => 10,
     }
 }
-
-pub trait EncodeVByte {
-    fn encode_vbyte(&self) -> Box<[u8]>;
+cfg_feature_alloc! {
+    extern crate alloc;
+    pub trait EncodeVByte {
+        fn encode_vbyte(&self) -> alloc::boxed::Box<[u8]>;
+    }
 }
 pub trait EncodeVByteLength {
     fn vbyte_length(&self) -> u8;
@@ -617,40 +647,43 @@ where
         resultant_length(Into::<IntegerValue>::into(*self))
     }
 }
-macro_rules! impl_encode {
-    ($typ:ty) => {
-        impl crate::codec::vbyte::EncodeVByte for $typ {
-            fn encode_vbyte(&self) -> Box<[u8]> {
-                crate::codec::vbyte::encode_integer(self.into())
+cfg_feature_alloc! {
+    macro_rules! impl_encode {
+        ($typ:ty) => {
+            impl crate::codec::vbyte::EncodeVByte for $typ {
+                fn encode_vbyte(&self) -> alloc::boxed::Box<[u8]> {
+                    crate::codec::vbyte::encode_integer(self.into())
+                }
             }
-        }
-        // impl EncodeVByte for [$typ] {
-        //     fn encode_vbyte(&self) -> Box<[u8]> {
-        //         crate::vbyte::encode(self.into())
-        //     }
-        // }
-        impl EncodeVByte for &$typ {
-            fn encode_vbyte(&self) -> Box<[u8]> {
-                let v: IntegerValue = (*self).into();
-                crate::codec::vbyte::encode_integer(v)
+            // impl EncodeVByte for [$typ] {
+            //     fn encode_vbyte(&self) -> Box<[u8]> {
+            //         crate::vbyte::encode(self.into())
+            //     }
+            // }
+            impl EncodeVByte for &$typ {
+                fn encode_vbyte(&self) -> alloc::boxed::Box<[u8]> {
+                    let v: IntegerValue = (*self).into();
+                    crate::codec::vbyte::encode_integer(v)
+                }
             }
-        }
-        // impl EncodeVByte for &mut $typ {
-        //     fn encode_vbyte(&self) -> Box<[u8]> {
-        //         let v : IntegerValue = (*self).into();
-        //         crate::codec::vbyte::encode_integer(v)
-        //     }
-        // }
-    };
+            // impl EncodeVByte for &mut $typ {
+            //     fn encode_vbyte(&self) -> Box<[u8]> {
+            //         let v : IntegerValue = (*self).into();
+            //         crate::codec::vbyte::encode_integer(v)
+            //     }
+            // }
+        };
+    }
+
+    impl_encode!(u8);
+    impl_encode!(i8);
+    impl_encode!(u16);
+    impl_encode!(i16);
+    impl_encode!(u32);
+    impl_encode!(i32);
+    impl_encode!(u64);
+    impl_encode!(i64);
 }
-impl_encode!(u8);
-impl_encode!(i8);
-impl_encode!(u16);
-impl_encode!(i16);
-impl_encode!(u32);
-impl_encode!(i32);
-impl_encode!(u64);
-impl_encode!(i64);
 
 pub trait DecodeVByte {
     fn decode_vbyte(&mut self) -> Result<u128, Error>;
@@ -674,7 +707,7 @@ impl<T: Bits> DecodeVByte for T {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "alloc"))]
 mod tests {
     use crate::codec::vbyte::{DecodeVByte, EncodeVByte};
     use crate::codec::EncodeVByteLength;
