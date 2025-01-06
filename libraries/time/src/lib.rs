@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Module Structure
@@ -366,6 +367,15 @@ impl Time64 {
     #[must_use]
     pub const fn as_u64(&self) -> u64 {
         self.inner.raw_value()
+    }
+
+    ///
+    /// Creates a new timestamp with a unix epoch
+    pub fn from_unix_u64(value: u64) -> Self {
+        Self {
+            epoch: UNIX_EPOCH,
+            inner: value.into(),
+        }
     }
 }
 
