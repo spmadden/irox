@@ -459,3 +459,23 @@ pub const fn u128_to_u16(val: u128) -> [u16; 8] {
     let [k, l] = u32_to_u16(d);
     [e, f, g, h, i, j, k, l]
 }
+
+impl WriteToBEBits for &str {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_str_u32_blob(self)
+    }
+}
+
+cfg_feature_alloc! {
+    extern crate alloc;
+    impl WriteToBEBits for alloc::string::String {
+        fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+            bits.write_str_u32_blob(self.as_str())
+        }
+    }
+    impl ReadFromBEBits for alloc::string::String {
+        fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+            inp.read_str_u32_blob()
+        }
+    }
+}
