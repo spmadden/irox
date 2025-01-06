@@ -26,8 +26,7 @@ pub mod options;
 pub mod random;
 cfg_feature_std! {
     pub mod read;
-}
-cfg_feature_std! {
+    pub mod map;
     pub mod sync;
 }
 cfg_feature_alloc! {
