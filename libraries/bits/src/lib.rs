@@ -82,6 +82,7 @@ pub use error::*;
 pub use mutbits::*;
 pub use seek::*;
 pub use stdwrappers::*;
+pub use tee::*;
 
 cfg_feature_alloc! {
     mod allocimpls;
@@ -99,4 +100,5 @@ cfg_feature_std! {
 mod bitstream;
 mod buf;
 mod stdwrappers;
+mod tee;
 pub mod utf;
