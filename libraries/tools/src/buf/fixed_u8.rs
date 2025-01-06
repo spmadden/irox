@@ -7,7 +7,9 @@
 use crate::buf::Buffer;
 use crate::iterators::LendingIterator;
 use core::ops::{Index, IndexMut};
-use irox_bits::{BitsErrorKind, Error, MutBits, WriteToBEBits};
+use irox_bits::{Bits, BitsErrorKind, Error, MutBits, ReadFromBEBits, WriteToBEBits};
+
+pub type StrBuf<const N: usize> = FixedU8Buf<N>;
 
 ///
 /// Fixed length stack allocated buffer.  Basically a stack-allocated [`Vec`]
@@ -74,19 +76,51 @@ impl<const N: usize> FixedU8Buf<N> {
     /// Manually updates the "used length" of the buffer.  This is expected to be used in
     /// concert with [`as_mut_full`] when loading data into the buffer.
     pub fn update_length(&mut self, new_len: usize) -> Result<(), Error> {
-        if new_len >= N {
+        if new_len > N {
             return Err(BitsErrorKind::OutOfMemory.into());
         }
         self.len = new_len;
         Ok(())
     }
+
+    ///
+    /// Pushes a single unicode character into this buffer.
+    pub fn push_char(&mut self, c: char) -> Result<(), Error> {
+        let mut buf = [0u8; 4];
+        let used = c.encode_utf8(&mut buf).len();
+        if self.len + used > N {
+            return Err(BitsErrorKind::OutOfMemory.into());
+        }
+
+        Ok(())
+    }
+
+    ///
+    /// Appends the specified slice to this buffer.
+    pub fn append(&mut self, buf: &[u8]) -> Result<(), Error> {
+        if self.len + buf.len() > N {
+            return Err(BitsErrorKind::OutOfMemory.into());
+        }
+        for b in buf {
+            let _ = self.push_back(*b);
+        }
+        Ok(())
+    }
 }
 impl<const N: usize> WriteToBEBits for FixedU8Buf<N> {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_all_bytes(self.as_ref_used())?;
-        Ok(self.len)
+        bits.write_be_u32_blob(self.as_ref_used())?;
+        Ok(self.len + 4)
     }
 }
+impl<const N: usize> ReadFromBEBits for FixedU8Buf<N> {
+    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        let mut out = Self::new();
+        inp.read_u32_blob_into(&mut out)?;
+        Ok(out)
+    }
+}
+
 impl<const N: usize> AsRef<[u8]> for FixedU8Buf<N> {
     #[allow(clippy::indexing_slicing)]
     fn as_ref(&self) -> &[u8] {
@@ -106,9 +140,7 @@ impl<const N: usize> Default for FixedU8Buf<N> {
 
 impl<const N: usize> core::fmt::Write for FixedU8Buf<N> {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
-        for b in s.as_bytes() {
-            self.push(*b).map_err(|_| core::fmt::Error)?;
-        }
+        self.append(s.as_bytes()).map_err(|_| core::fmt::Error)?;
         Ok(())
     }
 }
