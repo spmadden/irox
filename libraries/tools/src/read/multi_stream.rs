@@ -6,6 +6,7 @@
 //! A Multi-Stream File is a file that allows multiple interlaced data streams within it.  Like
 //! databases, pagefiles, and the ilk.  Each stream is essentially a linked list of pages, where
 //! the last 4 bytes of the last page point to the next page index.
+extern crate alloc;
 
 use crate::buf::{Buffer, FixedBuf, RoundU8Buffer};
 use crate::codec::{encode_integer, DecodeVByte};
@@ -13,7 +14,7 @@ use crate::IntegerValue;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
 use core::sync::atomic::{AtomicU32, AtomicU8, Ordering};
-use irox_bits::{Bits, BitsErrorKind, Error, MutBits, SeekRead, SeekWrite};
+use irox_bits::{Bits, BitsErrorKind, BufBits, Error, MutBits, SeekRead, SeekWrite};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
@@ -256,9 +257,8 @@ impl StreamReader {
     pub fn stream_position(&self) -> u64 {
         self.stream_counter
     }
-}
-impl Bits for StreamReader {
-    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+
+    fn try_fill_buffer(&mut self) -> Result<usize, Error> {
         if self.buf.is_empty() {
             self.parent
                 .read_next_block(self.stream_idx, &mut self.buf)?;
@@ -266,12 +266,44 @@ impl Bits for StreamReader {
             if lim > 0 {
                 self.buf.limit(lim as usize)?;
             }
-            if self.buf.is_empty() {
-                return Ok(None);
-            }
+            return Ok(lim as usize);
         }
+        Ok(0)
+    }
+
+    pub fn has_more(&mut self) -> Result<bool, Error> {
+        self.try_fill_buffer()?;
+        Ok(!self.buf.is_empty())
+    }
+}
+impl Bits for StreamReader {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        if self.buf.is_empty() && self.try_fill_buffer()? == 0 {
+            return Ok(None);
+        }
+
         self.stream_counter += 1;
         Ok(self.buf.pop_front())
+    }
+}
+impl BufBits for StreamReader {
+    fn fill_buf(&mut self) -> Result<&[u8], Error> {
+        if self.buf.is_empty() {
+            let added = self.try_fill_buffer()?;
+            if added == 0 {
+                return Ok(&[]);
+            }
+        }
+        let (a, b) = self.buf.as_ref_used();
+        if a.is_empty() {
+            Ok(b)
+        } else {
+            Ok(a)
+        }
+    }
+
+    fn consume(&mut self, amt: usize) {
+        self.buf.consume(amt)
     }
 }
 
