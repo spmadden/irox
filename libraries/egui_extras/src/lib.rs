@@ -34,6 +34,7 @@ pub mod progressbar;
 pub mod fonts;
 #[cfg(feature = "plots")]
 pub mod logplot;
+pub mod repainting;
 #[cfg(feature = "serde")]
 pub mod serde;
 pub mod toolframe;
