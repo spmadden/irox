@@ -171,7 +171,7 @@ where
 #[derive(Default, Debug, Clone, Copy)]
 pub struct UnweightedSumOfSquares<T> {
     means: Mean<T>,
-    last_ssq: T,
+    last_ssq: Option<T>,
 }
 
 impl<T> UnweightedSumOfSquares<T>
@@ -182,7 +182,7 @@ where
         self.means.last_mean.unwrap_or_default()
     }
     pub fn get_unweighted_sum_of_squares(&self) -> T {
-        self.last_ssq
+        self.last_ssq.unwrap_or_default()
     }
 }
 
@@ -201,8 +201,9 @@ where
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         let count = self.means.get_num_samples() as f64;
         let var = sample - self.means.get_last_result();
-        let ussq = self.last_ssq + var * (var / (count + 1.0)) * count;
-        self.last_ssq = ussq;
+        let last = self.last_ssq.unwrap_or_default();
+        let ussq = last + var * (var / (count + 1.0)) * count;
+        self.last_ssq = Some(ussq);
         let _ = self.means.add_sample(sample);
         ussq
     }
@@ -212,7 +213,7 @@ where
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_ssq
+        self.last_ssq.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -226,7 +227,7 @@ where
 #[derive(Default, Debug, Copy, Clone)]
 pub struct BiasedVariance<T> {
     inner: UnweightedSumOfSquares<T>,
-    last_result: T,
+    last_result: Option<T>,
 }
 
 impl<T> BiasedVariance<T>
@@ -236,10 +237,10 @@ where
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
     }
-    pub fn get_unweighted_sum_of_squares(&self) -> T {
+    pub fn get_unweighted_sum_of_squares(&self) -> Option<T> {
         self.inner.last_ssq
     }
-    pub fn get_biased_variance(&self) -> T {
+    pub fn get_biased_variance(&self) -> Option<T> {
         self.last_result
     }
 }
@@ -259,7 +260,7 @@ where
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         let cnt = self.get_num_samples() + 1; // not incremented until add_sample
         let variance = self.inner.add_sample(sample) / cnt as f64;
-        self.last_result = variance;
+        self.last_result = Some(variance);
         variance
     }
 
@@ -268,7 +269,7 @@ where
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_result
+        self.last_result.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -282,7 +283,7 @@ where
 #[derive(Default, Debug, Copy, Clone)]
 pub struct UnbiasedVariance<T> {
     inner: UnweightedSumOfSquares<T>,
-    last_result: T,
+    last_result: Option<T>,
 }
 
 impl<T> UnbiasedVariance<T>
@@ -292,10 +293,10 @@ where
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
     }
-    pub fn get_unweighted_sum_of_squares(&self) -> T {
+    pub fn get_unweighted_sum_of_squares(&self) -> Option<T> {
         self.inner.last_ssq
     }
-    pub fn get_unbiased_variance(&self) -> T {
+    pub fn get_unbiased_variance(&self) -> Option<T> {
         self.last_result
     }
 }
@@ -315,7 +316,7 @@ where
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         let cnt = self.get_num_samples();
         let variance = self.inner.add_sample(sample) / cnt as f64;
-        self.last_result = variance;
+        self.last_result = Some(variance);
         variance
     }
 
@@ -324,7 +325,7 @@ where
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_result
+        self.last_result.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -338,7 +339,7 @@ where
 #[derive(Default, Debug, Copy, Clone)]
 pub struct UnbiasedStandardDeviation<T> {
     inner: UnbiasedVariance<T>,
-    last_result: T,
+    last_result: Option<T>,
 }
 
 impl<T> UnbiasedStandardDeviation<T>
@@ -348,13 +349,13 @@ where
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
     }
-    pub fn get_unweighted_sum_of_squares(&self) -> T {
+    pub fn get_unweighted_sum_of_squares(&self) -> Option<T> {
         self.inner.get_unweighted_sum_of_squares()
     }
-    pub fn get_unbiased_variance(&self) -> T {
+    pub fn get_unbiased_variance(&self) -> Option<T> {
         self.inner.last_result
     }
-    pub fn get_unbiased_stdev(&self) -> T {
+    pub fn get_unbiased_stdev(&self) -> Option<T> {
         self.last_result
     }
 }
@@ -374,7 +375,7 @@ where
 
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         let val = self.inner.add_sample(sample).sqrt();
-        self.last_result = val;
+        self.last_result = Some(val);
         val
     }
 
@@ -383,7 +384,7 @@ where
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_result
+        self.last_result.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -397,7 +398,7 @@ where
 #[derive(Default, Debug, Copy, Clone)]
 pub struct BiasedStandardDeviation<T> {
     inner: BiasedVariance<T>,
-    last_result: T,
+    last_result: Option<T>,
 }
 
 impl<T> BiasedStandardDeviation<T>
@@ -407,13 +408,13 @@ where
     pub fn get_mean(&self) -> T {
         self.inner.get_mean()
     }
-    pub fn get_unweighted_sum_of_squares(&self) -> T {
+    pub fn get_unweighted_sum_of_squares(&self) -> Option<T> {
         self.inner.get_unweighted_sum_of_squares()
     }
-    pub fn get_biased_variance(&self) -> T {
+    pub fn get_biased_variance(&self) -> Option<T> {
         self.inner.get_biased_variance()
     }
-    pub fn get_biased_stdev(&self) -> T {
+    pub fn get_biased_stdev(&self) -> Option<T> {
         self.last_result
     }
 }
@@ -433,7 +434,7 @@ where
 
     fn add_sample(&mut self, sample: Self::Type) -> Self::Type {
         let val = self.inner.add_sample(sample).sqrt();
-        self.last_result = val;
+        self.last_result = Some(val);
         val
     }
 
@@ -442,7 +443,7 @@ where
     }
 
     fn get_last_result(&self) -> Self::Type {
-        self.last_result
+        self.last_result.unwrap_or_default()
     }
 
     fn get_num_samples(&self) -> u64 {
@@ -498,7 +499,7 @@ where
         self.max.get_max_val()
     }
     #[must_use]
-    pub fn stdev(&self) -> T {
+    pub fn stddev(&self) -> Option<T> {
         self.stdev.get_unbiased_stdev()
     }
     #[must_use]
@@ -558,13 +559,21 @@ mod test {
         assert_eq!(5.0, samp_stddev.get_mean());
         assert_eq_eps!(
             4.571428571428571,
-            samp_stddev.get_unbiased_variance(),
+            samp_stddev.get_unbiased_variance().unwrap_or_default(),
             1e-15
         );
-        assert_eq_eps!(2.1380899352993947, samp_stddev.get_unbiased_stdev(), 1e-15);
+        assert_eq_eps!(
+            2.1380899352993947,
+            samp_stddev.get_unbiased_stdev().unwrap_or_default(),
+            1e-15
+        );
 
         assert_eq!(5.0, pop_stddev.get_mean());
-        assert_eq_eps!(4., pop_stddev.get_biased_variance(), 1e-15);
-        assert_eq_eps!(2., pop_stddev.get_biased_stdev(), 1e-15);
+        assert_eq_eps!(
+            4.,
+            pop_stddev.get_biased_variance().unwrap_or_default(),
+            1e-15
+        );
+        assert_eq_eps!(2., pop_stddev.get_biased_stdev().unwrap_or_default(), 1e-15);
     }
 }
