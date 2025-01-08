@@ -180,9 +180,17 @@ impl Deref for LineDataExchanger {
         &self.exchanger
     }
 }
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
+pub enum ErrorBarsType {
+    #[default]
+    MinMax,
+    StdDev,
+}
+#[derive(Default)]
 pub struct LineWithErrorBars {
     pub line_data: Arc<[PlotPoint]>,
     pub error_bars: Arc<[(f64, Summary<f64>)]>,
+    pub error_bars_type: ErrorBarsType,
 }
 #[derive(Default, Clone)]
 pub struct ErrorBarsExchanger {
@@ -380,9 +388,11 @@ impl BasicPlot {
             let mut bounds = Rect2D::empty();
             let mut errors = None;
             let mut lines = None;
+            let mut err_type = ErrorBarsType::default();
             if let Some(errs) = line.error_bars_exchanger.take_data() {
                 errors = Some(errs.error_bars);
                 lines = Some(errs.line_data);
+                err_type = errs.error_bars_type;
             } else if let Some(ls) = line.line_exchanger.take_data() {
                 lines = Some(ls);
             }
@@ -410,7 +420,10 @@ impl BasicPlot {
                 let mut added_triangles = 0;
                 for (x, summary) in errors.as_ref() {
                     let i = mesh.vertices.len() as u32;
-                    let Some(max) = summary.max() else {
+                    let Some(max) = (match err_type {
+                        ErrorBarsType::MinMax => summary.max(),
+                        ErrorBarsType::StdDev => summary.stddev(),
+                    }) else {
                         continue;
                     };
                     let maxpnt = PlotPoint { x: *x, y: max };
@@ -418,7 +431,10 @@ impl BasicPlot {
                         continue;
                     };
                     maxline.push(maxpos);
-                    let Some(min) = summary.min() else {
+                    let Some(min) = (match err_type {
+                        ErrorBarsType::MinMax => summary.min(),
+                        ErrorBarsType::StdDev => summary.stddev().map(|v| -v),
+                    }) else {
                         continue;
                     };
                     let minpnt = PlotPoint { x: *x, y: min };
