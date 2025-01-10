@@ -273,6 +273,9 @@ impl ToSigned for f64 {
     fn to_signed(self) -> Self::Output {
         self
     }
+    fn negative_one() -> Self::Output {
+        -1.
+    }
 }
 
 #[cfg(test)]

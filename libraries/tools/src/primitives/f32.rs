@@ -145,6 +145,10 @@ impl ToSigned for f32 {
     fn to_signed(self) -> Self::Output {
         self
     }
+
+    fn negative_one() -> Self::Output {
+        -1.
+    }
 }
 
 #[cfg(all(test, not(feature = "std")))]

@@ -122,6 +122,7 @@ pub trait ToF64 {
 pub trait ToSigned {
     type Output;
     fn to_signed(self) -> Self::Output;
+    fn negative_one() -> Self::Output;
 }
 
 macro_rules! impl_to_signed {
@@ -131,11 +132,17 @@ macro_rules! impl_to_signed {
             fn to_signed(self) -> Self::Output {
                 self as $dst
             }
+            fn negative_one() -> Self::Output {
+                -1 as $dst
+            }
         }
         impl ToSigned for $dst {
             type Output = $dst;
             fn to_signed(self) -> Self::Output {
                 self
+            }
+            fn negative_one() -> Self::Output {
+                -1 as $dst
             }
         }
     };
