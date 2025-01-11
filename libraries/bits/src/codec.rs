@@ -112,13 +112,13 @@ macro_rules! impl_codecs {
         impl WriteToBEBits for $ty {
             fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
                 bits.$writebe(*self)?;
-                Ok(1)
+                Ok($len)
             }
         }
         impl WriteToLEBits for $ty {
             fn write_le_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
                 bits.$writele(*self)?;
-                Ok(1)
+                Ok($len)
             }
         }
         impl ReadFromBEBits for $ty {
