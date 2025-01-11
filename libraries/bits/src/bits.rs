@@ -236,6 +236,11 @@ pub trait Bits {
         Ok(f32::from_bits(self.read_be_u32()?))
     }
 
+    /// Reads a single [`f32`], 4 bytes.  Reversed IEEE754 encoding
+    fn read_le_f32(&mut self) -> Result<f32, Error> {
+        Ok(f32::from_bits(self.read_le_u32()?))
+    }
+
     /// Reads a single [`f32`], 4 bytes.  Specified byte ordering.
     fn read_f32(&mut self, order: ByteOrder) -> Result<f32, Error> {
         Ok(f32::from_bits(self.read_u32(order)?))
@@ -246,14 +251,29 @@ pub trait Bits {
         Ok(self.next_be_u32()?.map(f32::from_bits))
     }
 
+    /// Optionally reads a single [`f32`], 4 bytes.  Reversed IEEE754 encoding
+    fn next_le_f32(&mut self) -> Result<Option<f32>, Error> {
+        Ok(self.next_le_u32()?.map(f32::from_bits))
+    }
+
     /// Reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
     fn read_be_f64(&mut self) -> Result<f64, Error> {
         Ok(f64::from_bits(self.read_be_u64()?))
     }
 
+    /// Reads a single [`f64`], 8 bytes.  Reversed IEEE754 encoding
+    fn read_le_f64(&mut self) -> Result<f64, Error> {
+        Ok(f64::from_bits(self.read_le_u64()?))
+    }
+
     /// Optionally reads a single [`f64`], 8 bytes.  Standard IEEE754 encoding
     fn next_be_f64(&mut self) -> Result<Option<f64>, Error> {
         Ok(self.next_be_u64()?.map(f64::from_bits))
+    }
+
+    /// Optionally reads a single [`f64`], 8 bytes.  Reversed IEEE754 encoding
+    fn next_le_f64(&mut self) -> Result<Option<f64>, Error> {
+        Ok(self.next_le_u64()?.map(f64::from_bits))
     }
 
     /// Reads a single [`f64`], 8 bytes.  Specified byte ordering.

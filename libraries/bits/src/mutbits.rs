@@ -68,9 +68,17 @@ pub trait MutBits {
     fn write_be_f32(&mut self, val: f32) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
     }
+    /// Writes a single [`f32`] in reversed IEEE754 format, 4 bytes
+    fn write_le_f32(&mut self, val: f32) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_le_bytes())
+    }
     /// Writes a single [`u16`] in standard IEEE754 format, 8 bytes
     fn write_be_f64(&mut self, val: f64) -> Result<(), Error> {
         self.write_all_bytes(&val.to_be_bytes())
+    }
+    /// Writes a single [`u16`] in reversed IEEE754 format, 8 bytes
+    fn write_le_f64(&mut self, val: f64) -> Result<(), Error> {
+        self.write_all_bytes(&val.to_le_bytes())
     }
 
     /// Writes a single [`i16`] in big-endian order, 2 bytes, MSB first.
