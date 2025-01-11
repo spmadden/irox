@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Bolt-ons for [`Vec`] and [`VecDeque`] - better displays and iteration tools
 
 extern crate alloc;
+use crate::buf::ZeroedBuffer;
 use alloc::collections::VecDeque;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -111,5 +113,21 @@ impl<T> RetainTake<T> for VecDeque<T> {
             }
         }
         out
+    }
+}
+
+impl<T: Default + Sized + Copy> ZeroedBuffer for Vec<T> {
+    type Output = Self;
+
+    fn new_zeroed(capacity: usize) -> Self::Output {
+        vec![T::default(); capacity]
+    }
+}
+
+impl<T: Default + Sized + Copy> ZeroedBuffer for VecDeque<T> {
+    type Output = Self;
+
+    fn new_zeroed(capacity: usize) -> Self::Output {
+        VecDeque::from(vec![T::default(); capacity])
     }
 }

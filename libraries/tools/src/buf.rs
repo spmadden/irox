@@ -62,3 +62,11 @@ pub trait Buffer<T> {
         }
     }
 }
+
+///
+/// Trait used for things like [`Vec`] and [`VecDeq`] to pre-allocate and fill
+/// with zeros.
+pub trait ZeroedBuffer {
+    type Output;
+    fn new_zeroed(capacity: usize) -> Self::Output;
+}
