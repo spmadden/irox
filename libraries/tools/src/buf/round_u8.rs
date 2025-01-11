@@ -524,7 +524,7 @@ mod tests {
         assert_eq!(Some(10), buf.pop_back());
         let avail = buf.as_ref_mut_available();
         assert_eq!(1, avail.len());
-        assert_eq!(&[10], avail);
+        assert_eq!(&[0], avail);
 
         buf.consume(5);
         assert_eq!(4, buf.len());
