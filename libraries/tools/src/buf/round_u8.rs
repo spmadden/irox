@@ -230,6 +230,7 @@ impl<const N: usize> Buffer<u8> for RoundU8Buffer<N> {
         self.tail = 0;
         self.size = 0;
         self.mod_count = self.mod_count.wrapping_add(1);
+        self.buf.fill(0);
     }
 
     fn front(&self) -> Option<&u8> {
@@ -256,6 +257,7 @@ impl<const N: usize> Buffer<u8> for RoundU8Buffer<N> {
         self.mod_count = self.mod_count.wrapping_add(1);
 
         let out = Some(self.buf[self.head]);
+        self.buf[self.head] = 0;
         // move the head pointer forward one
         if self.size > 0 {
             self.head += 1;
@@ -273,6 +275,7 @@ impl<const N: usize> Buffer<u8> for RoundU8Buffer<N> {
             return None;
         }
         let out = Some(self.buf[self.tail]);
+        self.buf[self.tail] = 0;
         self.mod_count = self.mod_count.wrapping_add(1);
 
         self.size -= 1;
