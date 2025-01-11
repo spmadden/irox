@@ -8,6 +8,17 @@
 use crate::{Bits, BitsWrapper, Error, MutBits};
 
 /// Splits the input into two equal sized arrays.
+pub const fn array_concat_1(a: [u8; 1], b: [u8; 1]) -> [u8; 2] {
+    let [a] = a;
+    let [b] = b;
+    [a, b]
+}
+/// Splits the input into two equal sized arrays.
+pub const fn array_split_1(a: [u8; 2]) -> ([u8; 1], [u8; 1]) {
+    let [a, b] = a;
+    ([a], [b])
+}
+/// Splits the input into two equal sized arrays.
 pub const fn array_concat_2(a: [u8; 2], b: [u8; 2]) -> [u8; 4] {
     let [c, d] = b;
     let [a, b] = a;
@@ -66,321 +77,567 @@ pub trait ToBEBytes<const N: usize> {
 pub trait FromBEBytes<const N: usize> {
     fn from_be_bytes(bytes: [u8; N]) -> Self;
 }
-
-impl ToBEBytes<1> for u8 {
-    fn to_be_bytes(&self) -> [u8; 1] {
-        [*self]
-    }
+/// Converts the value into a constant number of bytes
+pub trait ToLEBytes<const N: usize> {
+    fn to_le_bytes(&self) -> [u8; N];
 }
-impl FromBEBytes<1> for u8 {
-    fn from_be_bytes(bytes: [u8; 1]) -> u8 {
-        bytes[0]
-    }
+/// Converts to the value from a constant number of bytes
+pub trait FromLEBytes<const N: usize> {
+    fn from_le_bytes(bytes: [u8; N]) -> Self;
 }
 
-impl ToBEBytes<2> for u16 {
-    fn to_be_bytes(&self) -> [u8; 2] {
-        u16::to_be_bytes(*self)
-    }
-}
-impl FromBEBytes<2> for u16 {
-    fn from_be_bytes(bytes: [u8; 2]) -> u16 {
-        u16::from_be_bytes(bytes)
-    }
-}
-impl ToBEBytes<4> for u32 {
-    fn to_be_bytes(&self) -> [u8; 4] {
-        u32::to_be_bytes(*self)
-    }
-}
-
-// impl ToBEBytes<8> for [u32; 2] {
-//     fn to_be_bytes(&self) -> [u8; 8] {
-//         let [a, b] = *self;
-//         array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b))
-//     }
-// }
-// impl ToBEBytes<16> for [u32; 4] {
-//     fn to_be_bytes(&self) -> [u8; 16] {
-//         let [a, b, c, d] = *self;
-//         array_concat_8(
-//             array_concat_4(u32::to_be_bytes(a), u32::to_be_bytes(b)),
-//             array_concat_4(u32::to_be_bytes(c), u32::to_be_bytes(d)),
-//         )
-//     }
-// }
-impl<const N: usize, const Y: usize> ToBEBytes<Y> for [u32; N] {
-    fn to_be_bytes(&self) -> [u8; Y] {
-        let mut out = [0u8; Y];
-        let mut wr = BitsWrapper::Owned(out.as_mut_slice());
-        for v in self {
-            let _ = wr.write_be_u32(*v);
+macro_rules! impl_codecs {
+    ($ty:ty, $len:literal, $len2:literal, $arrsplit:ident, $arrconcat:ident, $writebe:ident, $readbe:ident, $writele:ident, $readle:ident) => {
+        impl ToBEBytes<$len> for $ty {
+            fn to_be_bytes(&self) -> [u8; $len] {
+                <$ty>::to_be_bytes(*self)
+            }
         }
-        out
-    }
-}
+        impl FromBEBytes<$len> for $ty {
+            fn from_be_bytes(bytes: [u8; $len]) -> $ty {
+                <$ty>::from_be_bytes(bytes)
+            }
+        }
 
-impl FromBEBytes<4> for u32 {
-    fn from_be_bytes(bytes: [u8; 4]) -> u32 {
-        u32::from_be_bytes(bytes)
-    }
-}
-impl FromBEBytes<8> for [u32; 2] {
-    fn from_be_bytes(bytes: [u8; 8]) -> [u32; 2] {
-        let (a, b) = array_split_4(bytes);
-        [u32::from_be_bytes(a), u32::from_be_bytes(b)]
-    }
-}
-impl FromBEBytes<16> for [u32; 4] {
-    fn from_be_bytes(bytes: [u8; 16]) -> [u32; 4] {
-        let (a, b) = array_split_8(bytes);
-        let (c, d) = array_split_4(b);
-        let (a, b) = array_split_4(a);
-        [
-            u32::from_be_bytes(a),
-            u32::from_be_bytes(b),
-            u32::from_be_bytes(c),
-            u32::from_be_bytes(d),
-        ]
-    }
-}
-impl ToBEBytes<4> for f32 {
-    fn to_be_bytes(&self) -> [u8; 4] {
-        f32::to_be_bytes(*self)
-    }
-}
-impl FromBEBytes<4> for f32 {
-    fn from_be_bytes(bytes: [u8; 4]) -> f32 {
-        f32::from_be_bytes(bytes)
-    }
-}
-impl ToBEBytes<8> for [f32; 2] {
-    fn to_be_bytes(&self) -> [u8; 8] {
-        let [a, b] = *self;
-        array_concat_4(f32::to_be_bytes(a), f32::to_be_bytes(b))
-    }
-}
-impl FromBEBytes<8> for [f32; 2] {
-    fn from_be_bytes(bytes: [u8; 8]) -> [f32; 2] {
-        let (a, b) = array_split_4(bytes);
-        [f32::from_be_bytes(a), f32::from_be_bytes(b)]
-    }
-}
+        impl ToLEBytes<$len> for $ty {
+            fn to_le_bytes(&self) -> [u8; $len] {
+                <$ty>::to_le_bytes(*self)
+            }
+        }
+        impl FromLEBytes<$len> for $ty {
+            fn from_le_bytes(bytes: [u8; $len]) -> Self {
+                <$ty>::from_le_bytes(bytes)
+            }
+        }
+        impl WriteToBEBits for $ty {
+            fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+                bits.$writebe(*self)?;
+                Ok(1)
+            }
+        }
+        impl WriteToLEBits for $ty {
+            fn write_le_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+                bits.$writele(*self)?;
+                Ok(1)
+            }
+        }
+        impl ReadFromBEBits for $ty {
+            fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+                inp.$readbe()
+            }
+        }
+        impl ReadFromLEBits for $ty {
+            fn read_from_le_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+                inp.$readle()
+            }
+        }
 
-impl ToBEBytes<8> for u64 {
-    fn to_be_bytes(&self) -> [u8; 8] {
-        u64::to_be_bytes(*self)
-    }
+        impl ToBEBytes<$len2> for [$ty; 2] {
+            fn to_be_bytes(&self) -> [u8; $len2] {
+                let [a, b] = *self;
+                $arrconcat(<$ty>::to_be_bytes(a), <$ty>::to_be_bytes(b))
+            }
+        }
+        impl ToLEBytes<$len2> for [$ty; 2] {
+            fn to_le_bytes(&self) -> [u8; $len2] {
+                let [a, b] = *self;
+                $arrconcat(<$ty>::to_le_bytes(a), <$ty>::to_le_bytes(b))
+            }
+        }
+        impl FromBEBytes<$len2> for [$ty; 2] {
+            fn from_be_bytes(bytes: [u8; $len2]) -> Self {
+                let (a, b) = $arrsplit(bytes);
+                [<$ty>::from_be_bytes(a), <$ty>::from_be_bytes(b)]
+            }
+        }
+        impl FromLEBytes<$len2> for [$ty; 2] {
+            fn from_le_bytes(bytes: [u8; $len2]) -> Self {
+                let (a, b) = $arrsplit(bytes);
+                [<$ty>::from_le_bytes(a), <$ty>::from_le_bytes(b)]
+            }
+        }
+    };
 }
-impl FromBEBytes<8> for u64 {
-    fn from_be_bytes(bytes: [u8; 8]) -> u64 {
-        u64::from_be_bytes(bytes)
-    }
-}
+impl_codecs!(
+    u8,
+    1,
+    2,
+    array_split_1,
+    array_concat_1,
+    write_u8,
+    read_u8,
+    write_u8,
+    read_u8
+);
+impl_codecs!(
+    i8,
+    1,
+    2,
+    array_split_1,
+    array_concat_1,
+    write_i8,
+    read_i8,
+    write_i8,
+    read_i8
+);
+impl_codecs!(
+    u16,
+    2,
+    4,
+    array_split_2,
+    array_concat_2,
+    write_be_u16,
+    read_be_u16,
+    write_le_u16,
+    read_le_u16
+);
+impl_codecs!(
+    i16,
+    2,
+    4,
+    array_split_2,
+    array_concat_2,
+    write_be_i16,
+    read_be_i16,
+    write_le_i16,
+    read_le_i16
+);
+impl_codecs!(
+    u32,
+    4,
+    8,
+    array_split_4,
+    array_concat_4,
+    write_be_u32,
+    read_be_u32,
+    write_le_u32,
+    read_le_u32
+);
+impl_codecs!(
+    i32,
+    4,
+    8,
+    array_split_4,
+    array_concat_4,
+    write_be_i32,
+    read_be_i32,
+    write_le_i32,
+    read_le_i32
+);
+impl_codecs!(
+    f32,
+    4,
+    8,
+    array_split_4,
+    array_concat_4,
+    write_be_f32,
+    read_be_f32,
+    write_le_f32,
+    read_le_f32
+);
+impl_codecs!(
+    u64,
+    8,
+    16,
+    array_split_8,
+    array_concat_8,
+    write_be_u64,
+    read_be_u64,
+    write_le_u64,
+    read_le_u64
+);
+impl_codecs!(
+    i64,
+    8,
+    16,
+    array_split_8,
+    array_concat_8,
+    write_be_i64,
+    read_be_i64,
+    write_le_i64,
+    read_le_i64
+);
+impl_codecs!(
+    f64,
+    8,
+    16,
+    array_split_8,
+    array_concat_8,
+    write_be_f64,
+    read_be_f64,
+    write_le_f64,
+    read_le_f64
+);
+impl_codecs!(
+    u128,
+    16,
+    32,
+    array_split_16,
+    array_concat_16,
+    write_be_u128,
+    read_le_u128,
+    write_le_u128,
+    read_le_u128
+);
+impl_codecs!(
+    i128,
+    16,
+    32,
+    array_split_16,
+    array_concat_16,
+    write_be_i128,
+    read_le_i128,
+    write_le_i128,
+    read_le_i128
+);
 
-impl ToBEBytes<8> for f64 {
-    fn to_be_bytes(&self) -> [u8; 8] {
-        f64::to_be_bytes(*self)
-    }
+macro_rules! impl_large_array {
+    ($ty:ty, $len:literal, $len2:literal, $writebe:ident, $writele:ident, $nextbe:ident, $nextle:ident) => {
+        impl ToBEBytes<$len2> for [$ty; $len] {
+            fn to_be_bytes(&self) -> [u8; $len2] {
+                let mut out = [0u8; $len2];
+                let mut wr = BitsWrapper::Owned(out.as_mut_slice());
+                for v in self {
+                    let _ = wr.$writebe(*v);
+                }
+                out
+            }
+        }
+        impl ToLEBytes<$len2> for [$ty; $len] {
+            fn to_le_bytes(&self) -> [u8; $len2] {
+                let mut out = [0u8; $len2];
+                let mut wr = BitsWrapper::Owned(out.as_mut_slice());
+                for v in self {
+                    let _ = wr.$writele(*v);
+                }
+                out
+            }
+        }
+        impl FromBEBytes<$len2> for [$ty; $len] {
+            fn from_be_bytes(bytes: [u8; $len2]) -> Self {
+                let mut out = [0; $len];
+                let mut rd = BitsWrapper::Owned(bytes.as_ref());
+                for v in out.iter_mut() {
+                    let Ok(Some(a)) = rd.$nextbe() else {
+                        break;
+                    };
+                    *v = a;
+                }
+                out
+            }
+        }
+        impl FromLEBytes<$len2> for [$ty; $len] {
+            fn from_le_bytes(bytes: [u8; $len2]) -> Self {
+                let mut out = [0; $len];
+                let mut rd = BitsWrapper::Owned(bytes.as_ref());
+                for v in out.iter_mut() {
+                    let Ok(Some(a)) = rd.$nextle() else {
+                        break;
+                    };
+                    *v = a;
+                }
+                out
+            }
+        }
+    };
 }
-impl FromBEBytes<8> for f64 {
-    fn from_be_bytes(bytes: [u8; 8]) -> f64 {
-        f64::from_be_bytes(bytes)
-    }
-}
-impl ToBEBytes<16> for [f64; 2] {
-    fn to_be_bytes(&self) -> [u8; 16] {
-        let [a, b] = *self;
-        array_concat_8(a.to_be_bytes(), b.to_be_bytes())
-    }
-}
-impl FromBEBytes<16> for [f64; 2] {
-    fn from_be_bytes(bytes: [u8; 16]) -> [f64; 2] {
-        let (a, b) = array_split_8(bytes);
-        [f64::from_be_bytes(a), f64::from_be_bytes(b)]
-    }
-}
+impl_large_array!(
+    u32,
+    3,
+    12,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 96 bit
+impl_large_array!(
+    u32,
+    4,
+    16,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 128 bit
+impl_large_array!(
+    u32,
+    5,
+    20,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 160 bit
+impl_large_array!(
+    u32,
+    6,
+    24,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 192 bit
+impl_large_array!(
+    u32,
+    7,
+    28,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 224 bit
+impl_large_array!(
+    u32,
+    8,
+    32,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 256 bit
+impl_large_array!(
+    u32,
+    9,
+    36,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 288 bit
+impl_large_array!(
+    u32,
+    10,
+    40,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 320 bit
+impl_large_array!(
+    u32,
+    11,
+    44,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 352 bit
+impl_large_array!(
+    u32,
+    12,
+    48,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 384 bit
 
-impl ToBEBytes<16> for [u64; 2] {
-    fn to_be_bytes(&self) -> [u8; 16] {
-        let [a, b] = *self;
-        array_concat_8(u64::to_be_bytes(a), u64::to_be_bytes(b))
-    }
-}
-impl FromBEBytes<16> for [u64; 2] {
-    fn from_be_bytes(bytes: [u8; 16]) -> [u64; 2] {
-        let (a, b) = array_split_8(bytes);
-        [u64::from_be_bytes(a), u64::from_be_bytes(b)]
-    }
-}
+impl_large_array!(
+    u64,
+    3,
+    24,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 192 bit
+impl_large_array!(
+    u64,
+    4,
+    32,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 256 bit
+impl_large_array!(
+    u64,
+    5,
+    40,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 320 bit
+impl_large_array!(
+    u64,
+    6,
+    48,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 384 bit
+impl_large_array!(
+    u64,
+    7,
+    56,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 448 bit
+impl_large_array!(
+    u64,
+    8,
+    64,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 512 bit
+impl_large_array!(
+    u64,
+    9,
+    72,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 576 bit
+impl_large_array!(
+    u64,
+    10,
+    80,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 640 bit
+impl_large_array!(
+    u64,
+    11,
+    88,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 704 bit
+impl_large_array!(
+    u64,
+    12,
+    96,
+    write_be_u64,
+    write_le_u64,
+    next_be_u64,
+    next_le_u64
+); // 768 bit
 
-impl ToBEBytes<16> for u128 {
-    fn to_be_bytes(&self) -> [u8; 16] {
-        u128::to_be_bytes(*self)
-    }
-}
-impl FromBEBytes<16> for u128 {
-    fn from_be_bytes(bytes: [u8; 16]) -> u128 {
-        u128::from_be_bytes(bytes)
-    }
-}
-impl ToBEBytes<32> for [u128; 2] {
-    fn to_be_bytes(&self) -> [u8; 32] {
-        let [a, b] = *self;
-        array_concat_16(u128::to_be_bytes(a), u128::to_be_bytes(b))
-    }
-}
-impl FromBEBytes<32> for [u128; 2] {
-    fn from_be_bytes(bytes: [u8; 32]) -> [u128; 2] {
-        let (a, b) = array_split_16(bytes);
-        [u128::from_be_bytes(a), u128::from_be_bytes(b)]
-    }
-}
+impl_large_array!(
+    u128,
+    3,
+    48,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 384 bit
+impl_large_array!(
+    u128,
+    4,
+    64,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 512 bit
+impl_large_array!(
+    u128,
+    5,
+    80,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 640 bit
+impl_large_array!(
+    u128,
+    6,
+    96,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 768 bit
+impl_large_array!(
+    u128,
+    7,
+    112,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 896 bit
+impl_large_array!(
+    u128,
+    8,
+    128,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 1024 bit
+impl_large_array!(
+    u128,
+    9,
+    144,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 1152 bit
+impl_large_array!(
+    u128,
+    10,
+    160,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 1280 bit
+impl_large_array!(
+    u128,
+    11,
+    176,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 1408 bit
+impl_large_array!(
+    u128,
+    12,
+    192,
+    write_be_u128,
+    write_le_u128,
+    next_be_u128,
+    next_le_u128
+); // 1536 bit
 
 /// Writes 'self' to the provided [`MutBits`] impl in big endian order.
 pub trait WriteToBEBits {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error>;
 }
-
-impl WriteToBEBits for u8 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_u8(*self)?;
-        Ok(1)
-    }
-}
-impl WriteToBEBits for u16 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_u16(*self)?;
-        Ok(2)
-    }
-}
-
-impl WriteToBEBits for u32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_u32(*self)?;
-        Ok(4)
-    }
-}
-impl WriteToBEBits for u64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_u64(*self)?;
-        Ok(8)
-    }
-}
-impl WriteToBEBits for u128 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_u128(*self)?;
-        Ok(16)
-    }
-}
-impl WriteToBEBits for f32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_f32(*self)?;
-        Ok(4)
-    }
-}
-impl WriteToBEBits for f64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_f64(*self)?;
-        Ok(8)
-    }
-}
-impl WriteToBEBits for i8 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_i8(*self)?;
-        Ok(1)
-    }
-}
-impl WriteToBEBits for i16 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_i16(*self)?;
-        Ok(2)
-    }
-}
-impl WriteToBEBits for i32 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_i32(*self)?;
-        Ok(4)
-    }
-}
-impl WriteToBEBits for i64 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_i64(*self)?;
-        Ok(8)
-    }
-}
-impl WriteToBEBits for i128 {
-    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        bits.write_be_i128(*self)?;
-        Ok(16)
-    }
+/// Writes 'self' to the provided [`MutBits`] impl in little endian order.
+pub trait WriteToLEBits {
+    fn write_le_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error>;
 }
 
 pub trait ReadFromBEBits: Sized {
     fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error>;
 }
-impl ReadFromBEBits for u8 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_u8()
-    }
-}
-impl ReadFromBEBits for u16 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_u16()
-    }
-}
-impl ReadFromBEBits for u32 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_u32()
-    }
-}
-impl ReadFromBEBits for u64 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_u64()
-    }
-}
-impl ReadFromBEBits for u128 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_u128()
-    }
-}
-impl ReadFromBEBits for f32 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_f32()
-    }
-}
-impl ReadFromBEBits for f64 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_f64()
-    }
-}
-impl ReadFromBEBits for i8 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_i8()
-    }
-}
-impl ReadFromBEBits for i16 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_i16()
-    }
-}
-impl ReadFromBEBits for i32 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_i32()
-    }
-}
-impl ReadFromBEBits for i64 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_i64()
-    }
-}
-impl ReadFromBEBits for i128 {
-    fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
-        inp.read_be_i128()
-    }
+pub trait ReadFromLEBits: Sized {
+    fn read_from_le_bits<T: Bits>(inp: &mut T) -> Result<Self, Error>;
 }
 impl<const N: usize> ReadFromBEBits for [u8; N] {
     fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+        let mut out = [0; N];
+        inp.read_all_into(&mut out.as_mut_slice())?;
+        Ok(out)
+    }
+}
+impl<const N: usize> ReadFromLEBits for [u8; N] {
+    fn read_from_le_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
         let mut out = [0; N];
         inp.read_all_into(&mut out.as_mut_slice())?;
         Ok(out)
