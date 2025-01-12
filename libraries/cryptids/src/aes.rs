@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
@@ -214,7 +214,13 @@ mod test {
     #[ignore]
     pub fn test_aes256_enc1() {
         let key: [u8; 32] = [
-            0x603DEB10, 0x15CA71BE, 0x2B73AEF0, 0x857D7781, 0x1F352C07, 0x3B6108D7, 0x2D9810A3,
+            0x603DEB10u32,
+            0x15CA71BE,
+            0x2B73AEF0,
+            0x857D7781,
+            0x1F352C07,
+            0x3B6108D7,
+            0x2D9810A3,
             0x0914DFF4,
         ]
         .to_be_bytes();
