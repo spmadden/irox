@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
@@ -75,21 +75,23 @@ impl_square!(9);
 impl_square!(10);
 
 impl Matrix<2, 2, f64> {
-    #[must_use]
-    pub fn rotation_counterclockwise(angle: f64) -> Self {
-        Self::new([[angle.cos(), -angle.sin()], [angle.sin(), angle.cos()]])
-    }
-    #[must_use]
-    pub fn rotate_counterclockwise(&self, angle: f64) -> Self {
-        self.mul(Self::rotation_counterclockwise(angle))
-    }
-    #[must_use]
-    pub fn rotation_clockwise(angle: f64) -> Self {
-        Self::new([[angle.cos(), angle.sin()], [-angle.sin(), angle.cos()]])
-    }
-    #[must_use]
-    pub fn rotate_clockwise(&self, angle: f64) -> Self {
-        self.mul(Self::rotation_clockwise(angle))
+    cfg_feature_std! {
+        #[must_use]
+        pub fn rotation_counterclockwise(angle: f64) -> Self {
+            Self::new([[angle.cos(), -angle.sin()], [angle.sin(), angle.cos()]])
+        }
+        #[must_use]
+        pub fn rotate_counterclockwise(&self, angle: f64) -> Self {
+            self.mul(Self::rotation_counterclockwise(angle))
+        }
+        #[must_use]
+        pub fn rotation_clockwise(angle: f64) -> Self {
+            Self::new([[angle.cos(), angle.sin()], [-angle.sin(), angle.cos()]])
+        }
+        #[must_use]
+        pub fn rotate_clockwise(&self, angle: f64) -> Self {
+            self.mul(Self::rotation_clockwise(angle))
+        }
     }
 
     #[must_use]
@@ -169,29 +171,31 @@ impl Matrix<3, 1, f64> {
 }
 
 impl Matrix<3, 3, f64> {
-    #[must_use]
-    pub fn rotate_x(angle: f64) -> Self {
-        Self::new([
-            [1., 0., 0.],
-            [0., angle.cos(), -angle.sin()],
-            [0., angle.sin(), angle.cos()],
-        ])
-    }
-    #[must_use]
-    pub fn rotate_y(angle: f64) -> Self {
-        Self::new([
-            [angle.cos(), 0.0, angle.sin()],
-            [0., 1., 0.],
-            [-angle.sin(), 0., angle.cos()],
-        ])
-    }
-    #[must_use]
-    pub fn rotate_z(angle: f64) -> Self {
-        Self::new([
-            [angle.cos(), -angle.sin(), 0.],
-            [angle.sin(), angle.cos(), 0.],
-            [0., 0., 1.],
-        ])
+    cfg_feature_std! {
+        #[must_use]
+        pub fn rotate_x(angle: f64) -> Self {
+            Self::new([
+                [1., 0., 0.],
+                [0., angle.cos(), -angle.sin()],
+                [0., angle.sin(), angle.cos()],
+            ])
+        }
+        #[must_use]
+        pub fn rotate_y(angle: f64) -> Self {
+            Self::new([
+                [angle.cos(), 0.0, angle.sin()],
+                [0., 1., 0.],
+                [-angle.sin(), 0., angle.cos()],
+            ])
+        }
+        #[must_use]
+        pub fn rotate_z(angle: f64) -> Self {
+            Self::new([
+                [angle.cos(), -angle.sin(), 0.],
+                [angle.sin(), angle.cos(), 0.],
+                [0., 0., 1.],
+            ])
+        }
     }
 }
 
