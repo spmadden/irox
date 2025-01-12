@@ -13,6 +13,8 @@
 
 mod aes;
 mod chacha20;
+mod poly1305;
 
 pub use aes::*;
 pub use chacha20::*;
+pub use poly1305::*;
