@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Fixed-precision mathematics.
@@ -229,6 +230,144 @@ macro_rules! impl_unsigned_flops {
             fn floor(self) -> Self::Type {
                 // same as trunc for unsigned
                 self.trunc()
+            }
+
+            fn ceil(self) -> Self::Type {
+                if Self::Type::fract(&self) == 0 {
+                    return self;
+                }
+                Self::Type::from_parts(self.whole() + 1, 0)
+            }
+
+            fn signum(self) -> Self::Type {
+                1.into()
+            }
+
+            ///
+            /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
+            fn exp(self) -> Self::Type {
+                let mut out = Self::from_parts(1, 0);
+                let i = self;
+                let mut idx = 1u16;
+                let mut next = self;
+
+                while next.abs() != 0.0 {
+                    out += next;
+                    idx += 1;
+                    next *= i / idx;
+                }
+
+                out
+            }
+
+            ///
+            /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
+            fn ln(self) -> Self::Type {
+                let z = self;
+                if z == 0. {
+                    return Self::Type::from_parts(1, 0);
+                }
+                let iter = (z - 1u8) / (z + 1u8);
+                let mut out = Self::Type::default();
+                let mut next = iter * 2u8;
+                let mut idx = 1 as $lower_prim;
+                let mut base = iter;
+                while !next.is_zero() {
+                    out += next;
+                    idx += 2;
+                    base *= iter * iter;
+                    next = (base * 2 as $lower_prim) / idx;
+                }
+                out
+            }
+
+            fn powi(self, val: i32) -> Self::Type {
+                let mut out = self;
+                let i = self;
+                for _ in 0..val.abs() {
+                    out *= i;
+                }
+                out
+            }
+
+            ///
+            /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
+            fn powf(self, a: Self::Type) -> Self::Type {
+                let z = self;
+
+                (a * z.ln()).exp()
+            }
+
+            fn sqrt(self) -> Self::Type {
+                self.powf(0.5.into())
+            }
+            fn to_bits(self) -> Self::Size {
+                self.raw_value()
+            }
+
+            fn exponent(self) -> u16 {
+                irox_tools::f64::FloatExt::exponent(self.as_f64())
+            }
+
+            fn significand(self) -> Self::Size {
+                irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
+            }
+        }
+    };
+}
+macro_rules! impl_signed_flops {
+    ($typ:ty, $prim:ty, $lower_prim:ty, $shift:ident, $val:ident, $mask:ident) => {
+        impl core::ops::Add<f64> for $typ {
+            type Output = Self;
+            fn add(self, rhs: f64) -> Self::Output {
+                let v = <$typ>::from(rhs);
+                self + v
+            }
+        }
+        impl core::ops::AddAssign<f64> for $typ {
+            fn add_assign(&mut self, rhs: f64) {
+                *self = *self + rhs;
+            }
+        }
+        impl core::ops::AddAssign<f64> for &mut $typ {
+            fn add_assign(&mut self, rhs: f64) {
+                **self = **self + rhs;
+            }
+        }
+        impl core::ops::Sub<f64> for $typ {
+            type Output = Self;
+
+            fn sub(self, rhs: f64) -> Self::Output {
+                let v = <$typ>::from(rhs);
+                self - v
+            }
+        }
+        impl irox_tools::f64::FloatExt for $typ {
+            type Type = Self;
+            type Size = $prim;
+
+            fn trunc(self) -> Self::Type {
+                // just mask out the fractional bits leaving the whole bits.
+                Self::from_raw_value(self.data & ($mask << $shift))
+            }
+
+            fn fract(self) -> Self::Type {
+                // just mask out the whole bits leaving the fractional bits.
+                Self::from_raw_value(self.data & $mask)
+            }
+
+            fn abs(self) -> Self::Type {
+                let bm = $mask | ($mask << $shift);
+
+                Self::from_raw_value(self.data & bm)
+            }
+
+            fn round(self) -> Self::Type {
+                (self + Self::Type::ONE_HALF).trunc()
+            }
+
+            fn floor(self) -> Self::Type {
+                todo!()
             }
 
             fn ceil(self) -> Self::Type {
@@ -624,4 +763,59 @@ impl_prim_ops!(FixedU128, u64, u64);
 pub struct FixedI128 {
     data: i128,
 }
+impl FixedI128 {
+    // pub const E: FixedI128 = FixedI128::from_parts(2, 13_249_961_062_380_153_450);
+    pub const PI: FixedI128 = FixedI128::from_parts(3, 2_611_923_443_488_327_891);
+    pub const ONE_HALF: FixedI128 = FixedI128::from_parts(0, 9_223_372_036_854_775_807);
+    pub const RESOLUTION: FixedI128 = FixedI128::from_parts(0, 1);
+}
 impl_base!(FixedI128, i128, i64, i128, I128_SHIFT, I128_VAL, I128_MASK);
+impl_signed_flops!(FixedI128, i128, i64, I128_SHIFT, I128_VAL, I128_MASK);
+impl_prim_ops!(FixedI128, i64, u8);
+impl_prim_ops!(FixedI128, i64, i8);
+impl_prim_ops!(FixedI128, i64, u16);
+impl_prim_ops!(FixedI128, i64, i16);
+impl_prim_ops!(FixedI128, i64, u32);
+impl_prim_ops!(FixedI128, i64, i32);
+impl_prim_ops!(FixedI128, i64, u64);
+impl_prim_ops!(FixedI128, i64, i64);
+
+pub trait AsFixedPoint {
+    fn as_fixed_u32(&self) -> FixedU32;
+    fn as_fixed_i32(&self) -> FixedI32;
+    fn as_fixed_u64(&self) -> FixedU64;
+    fn as_fixed_i64(&self) -> FixedI64;
+    fn as_fixed_u128(&self) -> FixedU128;
+    fn as_fixed_i128(&self) -> FixedI128;
+}
+macro_rules! impl_as_fixedpt {
+    ($ty:ty) => {
+        impl AsFixedPoint for $ty {
+            fn as_fixed_u32(&self) -> FixedU32 {
+                FixedU32::from(*self)
+            }
+
+            fn as_fixed_i32(&self) -> FixedI32 {
+                FixedI32::from(*self)
+            }
+
+            fn as_fixed_u64(&self) -> FixedU64 {
+                FixedU64::from(*self)
+            }
+
+            fn as_fixed_i64(&self) -> FixedI64 {
+                FixedI64::from(*self)
+            }
+
+            fn as_fixed_u128(&self) -> FixedU128 {
+                FixedU128::from(*self)
+            }
+
+            fn as_fixed_i128(&self) -> FixedI128 {
+                FixedI128::from(*self)
+            }
+        }
+    };
+}
+impl_as_fixedpt!(f32);
+impl_as_fixedpt!(f64);
