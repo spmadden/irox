@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Cartographic & Geospatial Library
@@ -10,6 +11,7 @@ pub use irox_units;
 
 pub mod altitude;
 pub mod coordinate;
+pub mod ecef;
 pub mod epsg3857;
 pub mod error;
 pub mod geo;

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Error Types
@@ -12,12 +13,16 @@ use irox_enums::EnumName;
 #[derive(Debug, Clone, EnumName)]
 pub enum ConvertError {
     MissingValue(String),
+    MissingProjection(String),
+    MismatchedReferenceFrame(String),
 }
 
 impl ConvertError {
-    fn error(&self) -> &String {
+    pub fn error(&self) -> &str {
         match self {
             ConvertError::MissingValue(e) => e,
+            ConvertError::MissingProjection(a) => a,
+            ConvertError::MismatchedReferenceFrame(r) => r,
         }
     }
 }

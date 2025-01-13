@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use crate::geo::ellipse::Ellipse;
 use crate::geo::ellipsoid::Ellipsoid;
@@ -90,5 +91,13 @@ impl StandardShapes {
     #[must_use]
     pub fn as_ellipsoid(&self) -> Ellipsoid {
         self.as_ellipse().into()
+    }
+
+    #[must_use]
+    pub fn lookup_epsg(epsg: u32) -> Option<StandardShapes> {
+        match epsg {
+            4326 => Some(StandardShapes::WGS84),
+            _ => None,
+        }
     }
 }
