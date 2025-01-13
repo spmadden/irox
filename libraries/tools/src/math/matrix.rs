@@ -4,8 +4,12 @@
 
 #![allow(clippy::indexing_slicing)]
 
-use crate::{ToF64, ToSigned};
+use crate::ToSigned;
 use core::ops::{Add, AddAssign, Deref, DerefMut, Index, IndexMut, Mul, Sub};
+
+cfg_feature_std! {
+    use crate::ToF64;
+}
 
 pub trait AsMatrix<const M: usize, const N: usize, T: Sized + Copy + Default> {
     fn as_matrix(&self) -> Matrix<M, N, T>;
