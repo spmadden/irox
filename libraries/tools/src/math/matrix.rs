@@ -87,6 +87,17 @@ macro_rules! impl_square {
                 }
                 out
             }
+
+            #[must_use]
+            pub fn transpose(&self) -> Self {
+                let mut out = Self::empty();
+                for i in 0..$N {
+                    for j in 0..$N {
+                        out[i][j] = self.values[j][i];
+                    }
+                }
+                out
+            }
         }
     };
 }
