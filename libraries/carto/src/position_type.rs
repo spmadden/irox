@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -8,10 +8,11 @@
 use crate::altitude::Altitude;
 use crate::coordinate::{
     AbsoluteCoordinateType, CartesianCoordinate, EllipticalCoordinate, EllipticalCoordinateBuilder,
-    Latitude, Longitude, PositionUncertainty, RelativeCoordinateType,
+    Latitude, Longitude, PositionUncertainty,
 };
 use crate::error::ConvertError;
 use crate::geo::standards::wgs84::WGS84_SHAPE;
+use core::ops::Deref;
 use irox_units::units::length::Length;
 
 ///
@@ -21,18 +22,41 @@ use irox_units::units::length::Length;
 pub enum PositionType {
     EarthCenteredEarthFixed(ECEFPosition),
     WGS84(WGS84Position),
-    EastNorthUp(RelativeCoordinateType),
+    EastNorthUp(ENUPosition),
+    NorthEastDown(NEDPosition),
 }
 
 ///
 /// Represents a position in ECEF `EarthCenteredEarthFixed` coordinate space
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ECEFPosition(pub CartesianCoordinate);
+impl ECEFPosition {
+    pub fn as_position_type(&self) -> PositionType {
+        PositionType::EarthCenteredEarthFixed(*self)
+    }
+}
+impl Deref for ECEFPosition {
+    type Target = CartesianCoordinate;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 ///
 /// Represents a position in WGS84 Latitude/Longitude
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct WGS84Position(pub EllipticalCoordinate);
+impl WGS84Position {
+    pub fn as_position_type(&self) -> PositionType {
+        PositionType::WGS84(*self)
+    }
+}
+impl Deref for WGS84Position {
+    type Target = EllipticalCoordinate;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 pub struct WGS84PositionBuilder {
     builder: EllipticalCoordinateBuilder,
@@ -94,6 +118,36 @@ pub struct ENUPosition {
     base_position: AbsoluteCoordinateType,
     coordinate: CartesianCoordinate,
 }
+impl ENUPosition {
+    pub fn new(base_position: AbsoluteCoordinateType, coordinate: CartesianCoordinate) -> Self {
+        Self {
+            base_position,
+            coordinate,
+        }
+    }
+    pub fn as_position_type(&self) -> PositionType {
+        PositionType::EastNorthUp(*self)
+    }
+    pub fn base_position(&self) -> &AbsoluteCoordinateType {
+        &self.base_position
+    }
+    pub fn coordinate(&self) -> &CartesianCoordinate {
+        &self.coordinate
+    }
+}
+
+///
+/// Represents a position in `NorthEastDown` coordinate space
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct NEDPosition {
+    base_position: AbsoluteCoordinateType,
+    coordinate: CartesianCoordinate,
+}
+impl NEDPosition {
+    pub fn as_position_type(&self) -> PositionType {
+        PositionType::NorthEastDown(*self)
+    }
+}
 
 ///
 /// Represents a set of positions that represent the exact same point in space, in varying different
@@ -103,6 +157,7 @@ pub struct Positions {
     pub ecef: Option<ECEFPosition>,
     pub latlon: Option<WGS84Position>,
     pub enu: Option<ENUPosition>,
+    pub ned: Option<NEDPosition>,
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
@@ -131,6 +186,12 @@ impl PositionsBuilder {
     #[must_use]
     pub fn with_enu(mut self, enu: ENUPosition) -> Self {
         self.positions.enu = Some(enu);
+        self
+    }
+
+    #[must_use]
+    pub fn with_ned(mut self, ned: NEDPosition) -> Self {
+        self.positions.ned = Some(ned);
         self
     }
 

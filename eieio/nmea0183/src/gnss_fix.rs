@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use irox_eieio_api::carto::coordinate::EllipticalCoordinateBuilder;
@@ -82,6 +82,7 @@ impl GNSSFix for GNSSFixImpl {
             ecef: None,
             latlon: bldr.build().ok().map(WGS84Position),
             enu: None,
+            ned: None,
         }
     }
 
