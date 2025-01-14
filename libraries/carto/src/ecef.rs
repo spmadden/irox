@@ -5,8 +5,9 @@
 use crate::altitude::{Altitude, AltitudeReferenceFrame};
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
 use crate::error::ConvertError;
+use crate::geo::standards::wgs84::WGS84_ELLIPSOID;
 use crate::geo::EllipticalShape;
-use crate::position_type::ECEFPosition;
+use crate::position_type::{ECEFPosition, WGS84Position};
 use irox_units::units::angle::Angle;
 use irox_units::units::length::Length;
 
@@ -76,6 +77,71 @@ impl ECEF {
             AltitudeReferenceFrame::Ellipsoid,
         ));
         Ok(out)
+    }
+}
+
+pub struct WGS84ECEF;
+impl WGS84ECEF {
+    pub fn ecef_to_coord(ecef: &ECEFPosition) -> WGS84Position {
+        let s = WGS84_ELLIPSOID;
+        let coord = ecef.0;
+        let x = coord.get_x().as_meters().value();
+        let y = coord.get_y().as_meters().value();
+        let z = coord.get_z().as_meters().value();
+        let lam = y.atan2(x);
+
+        let e2 = s.first_eccentricity_squared();
+        let eps = e2 / (1. - e2);
+        let b = s.semi_minor_axis_b().as_meters().value();
+        let a = s.semi_major_axis_a().as_meters().value();
+        let p = (x * x + y * y).sqrt();
+        let q = (z * a).atan2(p * b);
+
+        let s3 = q.sin().powi(3);
+        let c3 = q.cos().powi(3);
+        let phi = (z + eps * b * s3).atan2(p - e2 * a * c3);
+
+        let lat = Latitude(Angle::new_radians(phi));
+        let v = s.radius_curvature_prime_vertical(&lat);
+        let ht = (p / phi.cos()) - v.as_meters().value();
+
+        let lon = Longitude(Angle::new_radians(lam));
+        let out = EllipticalCoordinate::new(lat, lon, s.as_elliptical_shape());
+        let out = out.with_altitude(Altitude::new(
+            Length::new_meters(ht),
+            AltitudeReferenceFrame::Ellipsoid,
+        ));
+        WGS84Position(out)
+    }
+    pub fn coord_to_ecef(coord: WGS84Position) -> Result<ECEFPosition, ConvertError> {
+        let shape = WGS84_ELLIPSOID;
+        let coord = coord.0;
+        let v = shape.radius_curvature_prime_vertical(coord.get_latitude());
+
+        let cosphi = coord.get_latitude().cos();
+        let sinphi = coord.get_latitude().sin();
+        let coslam = coord.get_longitude().cos();
+        let sinlam = coord.get_longitude().sin();
+
+        let mut h = Length::default();
+        if let Some(ht) = coord.get_altitude() {
+            let arf = ht.reference_frame();
+            if arf != AltitudeReferenceFrame::Ellipsoid {
+                return Err(ConvertError::MismatchedReferenceFrame(format!(
+                    "Expecting altitude reference frame to be Ellipsoid, but was {arf:?}",
+                )));
+            };
+            h += ht.value();
+        }
+        let e2 = shape.first_eccentricity_squared();
+
+        let x = (v + h) * cosphi * coslam;
+        let y = (v + h) * cosphi * sinlam;
+        let z = (v * (1. - e2) + h) * sinphi;
+
+        let cc = CartesianCoordinate::new(x, y, z);
+        let ecef = ECEFPosition(cc);
+        Ok(ecef)
     }
 }
 
