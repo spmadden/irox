@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_units::units::length::{Length, LengthUnits};
 
 use crate::geo::ellipsoid::Ellipsoid;
+use crate::geo::EllipticalShape;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
@@ -100,6 +102,15 @@ impl Ellipse {
     #[must_use]
     pub fn second_eccentricity(&self) -> f64 {
         self.first_eccentricity_squared().sqrt()
+    }
+
+    #[must_use]
+    pub fn as_ellipsoid(&self) -> Ellipsoid {
+        Ellipsoid::from(*self)
+    }
+    #[must_use]
+    pub fn as_elliptical_shape(&self) -> EllipticalShape {
+        EllipticalShape::Ellipse(*self)
     }
 }
 

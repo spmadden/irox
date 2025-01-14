@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Ellipsoids, and calculators therefor
@@ -224,6 +225,15 @@ impl Ellipsoid {
         let e6 = e4 * e2;
         let offset = 1. - e2 / 6. - 5. / 72. * e4 - 55. / 1296. * e6;
         self.semi_major_axis * offset
+    }
+
+    #[must_use]
+    pub fn as_ellipse(&self) -> Ellipse {
+        Ellipse::from(*self)
+    }
+    #[must_use]
+    pub fn as_elliptical_shape(&self) -> EllipticalShape {
+        EllipticalShape::Ellipse(self.as_ellipse())
     }
 }
 
