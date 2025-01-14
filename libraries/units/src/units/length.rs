@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! This module contains the basic types and conversions for the SI "Length" quantity
@@ -202,6 +203,27 @@ pub const METERS_TO_NAUTICAL_MILE: f64 = 1. / NAUTICAL_MILES_TO_METERS;
 
 pub const SURVEYFOOT_TO_METER: f64 = 3.048006E-1;
 pub const METER_TO_SURVEYFOOT: f64 = 1. / SURVEYFOOT_TO_METER;
+
+#[macro_export]
+macro_rules! assert_length_eq_eps {
+    ($left:expr, $right:expr, $eps:expr) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                let delta = (*left_val - *right_val).value().abs();
+                if !(delta <= $eps) {
+                    panic!(
+                        "Assertion failed, {} - {} = {} > {} (error: {})",
+                        &*left_val,
+                        &*right_val,
+                        delta,
+                        $eps,
+                        delta - $eps
+                    )
+                }
+            }
+        }
+    };
+}
 
 #[cfg(test)]
 mod tests {
