@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+use irox_tools::cfg_feature_std;
 pub use irox_units;
 
 pub mod altitude;
@@ -20,6 +21,9 @@ pub mod lcc;
 pub mod position_type;
 pub mod proj;
 pub mod tm;
+cfg_feature_std! {
+    pub mod local;
+}
 
 /// ISO 3166-1 Country Codes
 pub mod countrycodes {
