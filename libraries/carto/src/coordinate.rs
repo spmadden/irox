@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Latitude, Longitude, Elevation, and associated Coordinate types, Elliptical and Cartesian
 
+use crate::altitude::Altitude;
+use crate::ecef::{ECEF, WGS84ECEF};
+use crate::error::ConvertError;
+use crate::geo::{standards, EllipticalShape};
+use crate::position_type::ECEFPosition;
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_units::shapes::circular::CircularDimension;
@@ -13,10 +19,6 @@ use irox_units::units::compass::Azimuth;
 use irox_units::units::length::Length;
 use std::fmt::{Display, Formatter};
 use std::ops::Deref;
-
-use crate::altitude::Altitude;
-use crate::error::ConvertError;
-use crate::geo::{standards, EllipticalShape};
 
 /// A generic coordinate type that does not distinguish between a [RelativeCoordinateType] or an
 /// [AbsoluteCoordinateType].
@@ -32,7 +34,22 @@ pub enum CoordinateType {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum AbsoluteCoordinateType {
     Elliptical(EllipticalCoordinate),
-    Cartesian(CartesianCoordinate),
+    ECEF(ECEFPosition),
+}
+impl AbsoluteCoordinateType {
+    #[must_use]
+    pub fn as_elliptical(&self) -> EllipticalCoordinate {
+        match self {
+            AbsoluteCoordinateType::Elliptical(e) => *e,
+            AbsoluteCoordinateType::ECEF(e) => WGS84ECEF::ecef_to_coord(e).0,
+        }
+    }
+    pub fn as_ecef(&self) -> Result<ECEFPosition, ConvertError> {
+        match self {
+            AbsoluteCoordinateType::Elliptical(e) => ECEF::coord_to_ecef(e),
+            AbsoluteCoordinateType::ECEF(e) => Ok(*e),
+        }
+    }
 }
 
 /// A "Relative Coordinate" is a coordinate that has a variable or dependent element.  It's
@@ -610,4 +627,17 @@ impl Display for Elevation {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("Elv[{}]", self.0))
     }
+}
+
+#[macro_export]
+macro_rules! assert_coordinate_eq_eps {
+    ($left:expr, $right:expr, $eps:expr) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                irox_units::assert_length_eq_eps!(left_val.get_x(), right_val.get_x(), $eps);
+                irox_units::assert_length_eq_eps!(left_val.get_y(), right_val.get_y(), $eps);
+                irox_units::assert_length_eq_eps!(left_val.get_z(), right_val.get_z(), $eps);
+            }
+        }
+    };
 }
