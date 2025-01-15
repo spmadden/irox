@@ -10,7 +10,8 @@ mod windows {
     use windows::Devices::Geolocation::{
         GeolocationAccessStatus, Geolocator, PositionChangedEventArgs, StatusChangedEventArgs,
     };
-    use windows::Foundation::{EventRegistrationToken, TypedEventHandler};
+    use windows::Foundation::TypedEventHandler;
+    type EventRegistrationToken = i64;
 
     pub use crate::data::*;
     pub use crate::error::*;
