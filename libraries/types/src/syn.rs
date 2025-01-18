@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
-use std::fmt::{Display, Formatter};
+extern crate alloc;
+use alloc::format;
+use alloc::string::{String, ToString};
+
+use core::fmt::{Display, Formatter};
 
 use syn::{Expr, Field, GenericArgument, Lit, PathArguments, Type, TypeArray, TypePath};
 
@@ -21,11 +25,11 @@ pub struct Error {
     error: String,
 }
 impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("Error({:?}): {}", self.error_type, self.error))
     }
 }
-impl std::error::Error for Error {}
+impl core::error::Error for Error {}
 impl Error {
     fn new(error_type: ErrorType, error: &'static str) -> Error {
         Error {

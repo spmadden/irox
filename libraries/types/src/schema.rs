@@ -1,22 +1,25 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::NamedPrimitive;
-use std::collections::HashMap;
+use alloc::collections::BTreeMap;
+use alloc::string::String;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 
 #[derive(Debug, Clone)]
 pub struct PrimitiveSchema {
     identifier: String,
     variables: Vec<NamedPrimitive>,
     size_bytes: usize,
-    varbl_offsets: HashMap<NamedPrimitive, usize>,
+    varbl_offsets: BTreeMap<NamedPrimitive, usize>,
 }
 
 impl PrimitiveSchema {
     pub fn new(identifier: String, variables: Vec<NamedPrimitive>) -> Self {
         let mut size_bytes = 0;
-        let mut varbl_offsets = HashMap::<NamedPrimitive, usize>::with_capacity(variables.len());
+        let mut varbl_offsets = BTreeMap::<NamedPrimitive, usize>::default();
         for varbl in &variables {
             varbl_offsets.insert(varbl.clone(), size_bytes);
             size_bytes += varbl.primitive().bytes_length();

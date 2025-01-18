@@ -1,10 +1,19 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
 //! This module contains a rudimentary reflection/type system
 //!
+#![warn(clippy::alloc_instead_of_core)]
+#![warn(clippy::std_instead_of_alloc)]
+#![warn(clippy::std_instead_of_core)]
+#![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
+extern crate alloc;
+use alloc::string::String;
+use alloc::vec::Vec;
 
 mod num;
 mod primitive;
@@ -12,8 +21,8 @@ mod schema;
 #[cfg(feature = "syn")]
 mod syn;
 
+use core::fmt::{Display, Formatter};
 use irox_enums_derive::{EnumIterItem, EnumName, EnumTryFromStr};
-use std::fmt::{Display, Formatter};
 
 pub use crate::num::*;
 pub use crate::primitive::*;
@@ -100,7 +109,7 @@ impl DynamicallySizedValue {
 }
 
 impl Display for DynamicallySizedValue {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             DynamicallySizedValue::str(v) => write!(f, "{v}"),
             DynamicallySizedValue::u8_blob(v)
@@ -132,7 +141,7 @@ pub enum VariableValue {
 }
 
 impl Display for VariableValue {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             VariableValue::Primitive(v) => write!(f, "{v}"),
             VariableValue::DynamicallySized(v) => write!(f, "{v}"),

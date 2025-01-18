@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
+use alloc::boxed::Box;
+use alloc::string::{String, ToString};
+use core::char::ParseCharError;
+use core::cmp::Ordering;
+use core::fmt::{Display, Formatter};
+use core::hash::{Hash, Hasher};
+use core::num::{ParseFloatError, ParseIntError};
+use core::str::{FromStr, ParseBoolError};
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
-use std::char::ParseCharError;
-use std::fmt::{Display, Formatter};
-use std::hash::{Hash, Hasher};
-use std::num::{ParseFloatError, ParseIntError};
-use std::str::{FromStr, ParseBoolError};
 
 ///
 /// A set of possible primitives
@@ -283,7 +287,7 @@ impl PrimitiveValue {
     }
 }
 impl Display for PrimitiveValue {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             PrimitiveValue::u8(v) => write!(f, "{v}"),
             PrimitiveValue::i8(v) => write!(f, "{v}"),
@@ -340,6 +344,16 @@ impl From<()> for PrimitiveValue {
 pub struct NamedPrimitive {
     name: String,
     primitive: Primitives,
+}
+impl Ord for NamedPrimitive {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.name.cmp(&other.name)
+    }
+}
+impl PartialOrd for NamedPrimitive {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl NamedPrimitive {

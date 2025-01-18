@@ -1,8 +1,8 @@
 [package]
 name = "irox-types"
 description = "Enums and structs to describe Rust's basic type system"
-keywords = ["irox", "reflection", "types", "primitives"]
-categories = ["rust-patterns", "development-tools"]
+keywords = ["irox", "reflection", "types", "primitives", "no-std"]
+categories = ["rust-patterns", "development-tools", "no-std"]
 version= "0.5.0"
 edition.workspace = true
 authors.workspace = true
