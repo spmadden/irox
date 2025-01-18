@@ -9,6 +9,8 @@ extern crate alloc;
 use crate::cfg_feature_miniz;
 use alloc::boxed::Box;
 use alloc::collections::BTreeMap;
+use alloc::format;
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use core::fmt::UpperHex;
 use core::ops::{BitXor, DerefMut, Sub};

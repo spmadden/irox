@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::points::{Double2D, Vec2D};
+
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Rect2D {

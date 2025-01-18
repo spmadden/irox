@@ -14,7 +14,7 @@ repository.workspace = true
 
 [features]
 default = []
-std = []
+std = ["irox-tools/std", "irox-bits/std"]
 emath = ["dep:emath"]
 miniz = ["dep:miniz_oxide"]
 
@@ -23,7 +23,7 @@ workspace = true
 
 [dependencies]
 irox-tools.workspace = true
-irox-bits.workspace = true
+irox-bits = { workspace = true, features = ["alloc"] }
 irox-types.workspace = true
 irox-time = { workspace = true }
 irox-units = { workspace = true }
