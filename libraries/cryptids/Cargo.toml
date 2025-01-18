@@ -1,5 +1,5 @@
 [package]
-name = "irox-crypids"
+name = "irox-cryptids"
 description = "IROX Cryptographic Primitives - probably very hazardous"
 keywords = ["irox", "crypto", "hazmat", "dragons"]
 categories = ["cryptography"]

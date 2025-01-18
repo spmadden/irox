@@ -2187,7 +2187,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "irox-crypids"
+name = "irox-cryptids"
 version = "0.1.0"
 dependencies = [
  "irox-bits",
