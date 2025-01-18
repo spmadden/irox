@@ -17,6 +17,7 @@ workspace = true
 
 [features]
 default = []
+windows = ["dep:windows"]
 std = ["irox-tools/std"]
 
 [dependencies]
@@ -26,7 +27,7 @@ irox-enums.workspace = true
 irox-time.workspace = true
 
 [target.'cfg(windows)'.dependencies]
-windows.workspace = true
+windows = { workspace = true, optional = true }
 
 [build-dependencies]
 irox-csv.workspace = true

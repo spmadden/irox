@@ -521,7 +521,7 @@ pub struct HorizontalCoordinate {
     elevation: Elevation,
 }
 
-#[cfg(target_os = "windows")]
+#[cfg(all(target_os = "windows", feature = "windows"))]
 pub mod windows_conv {
     use windows::Devices::Geolocation::Geocoordinate;
 

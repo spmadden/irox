@@ -36,3 +36,4 @@ irox-networking.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 irox-winlocation-api.workspace = true
+irox-carto = { workspace = true, features = ["windows"] }
