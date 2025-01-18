@@ -16,7 +16,7 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
-irox-carto.workspace = true
+irox-carto = { workspace = true, features = ["std"] }
 irox-units.workspace = true
 irox-mbtiles.workspace = true
 irox-tools.workspace = true

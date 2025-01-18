@@ -5,16 +5,23 @@
 //!
 //! Geodesy types and math, Ellipses, Ellipsoids, Elliptical Shapes
 
+extern crate alloc;
 use crate::error::ConvertError;
 use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::standards::wgs84::{WGS84_EPSG_SHAPE, WGS84_SHAPE};
 use crate::geo::standards::StandardShapes;
+use alloc::string::String;
 use ellipse::Ellipse;
+use irox_tools::{cfg_feature_std, format};
 
 pub mod ellipse;
 pub mod ellipsoid;
 pub mod standards;
 
+cfg_feature_std! {
+    mod meridians;
+    pub use meridians::*;
+}
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum EllipticalShape {
     EpsgDatum(u32),

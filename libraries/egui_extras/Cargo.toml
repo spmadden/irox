@@ -30,7 +30,7 @@ serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
 irox-tools = { workspace = true, optional = true, features = ["std"] }
 irox-time = { workspace = true, optional = true }
-irox-units = { workspace = true, optional = true }
+irox-units = { workspace = true, optional = true, features = ["std"] }
 irox-imagery = { workspace = true }
 irox-stats = { workspace = true, features = ["emath", "std"] }
 log.workspace = true

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Spherical (Web) Mercator Map Projection
 
-use std::f64::consts::{PI, TAU};
+use core::f64::consts::{PI, TAU};
 
 use irox_units::units::angle::{self, Angle};
 

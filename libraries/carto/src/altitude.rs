@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Altitude and Altitude Reference Frames
 
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 use irox_units::units::length::Length;
 
@@ -92,7 +93,7 @@ impl Altitude {
 }
 
 impl Display for Altitude {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "{} {}",
             self.value,

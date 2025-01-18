@@ -5,20 +5,28 @@
 //!
 //! Latitude, Longitude, Elevation, and associated Coordinate types, Elliptical and Cartesian
 
+extern crate alloc;
 use crate::altitude::Altitude;
-use crate::ecef::{ECEF, WGS84ECEF};
 use crate::error::ConvertError;
 use crate::geo::{standards, EllipticalShape};
 use crate::position_type::ECEFPosition;
+use core::fmt::{Display, Formatter};
+use core::ops::Deref;
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
+use irox_tools::cfg_feature_std;
 use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
 use irox_units::units::angle::{Angle, AngleUnits};
 use irox_units::units::compass::Azimuth;
 use irox_units::units::length::Length;
-use std::fmt::{Display, Formatter};
-use std::ops::Deref;
+
+use alloc::string::{String, ToString};
+use irox_tools::format;
+
+cfg_feature_std! {
+    use crate::ecef::{ECEF, WGS84ECEF};
+}
 
 /// A generic coordinate type that does not distinguish between a [RelativeCoordinateType] or an
 /// [AbsoluteCoordinateType].
@@ -36,18 +44,20 @@ pub enum AbsoluteCoordinateType {
     Elliptical(EllipticalCoordinate),
     ECEF(ECEFPosition),
 }
-impl AbsoluteCoordinateType {
-    #[must_use]
-    pub fn as_elliptical(&self) -> EllipticalCoordinate {
-        match self {
-            AbsoluteCoordinateType::Elliptical(e) => *e,
-            AbsoluteCoordinateType::ECEF(e) => WGS84ECEF::ecef_to_coord(e).0,
+cfg_feature_std! {
+    impl AbsoluteCoordinateType {
+        #[must_use]
+        pub fn as_elliptical(&self) -> EllipticalCoordinate {
+            match self {
+                AbsoluteCoordinateType::Elliptical(e) => *e,
+                AbsoluteCoordinateType::ECEF(e) => WGS84ECEF::ecef_to_coord(e).0,
+            }
         }
-    }
-    pub fn as_ecef(&self) -> Result<ECEFPosition, ConvertError> {
-        match self {
-            AbsoluteCoordinateType::Elliptical(e) => ECEF::coord_to_ecef(e),
-            AbsoluteCoordinateType::ECEF(e) => Ok(*e),
+        pub fn as_ecef(&self) -> Result<ECEFPosition, ConvertError> {
+            match self {
+                AbsoluteCoordinateType::Elliptical(e) => ECEF::coord_to_ecef(e),
+                AbsoluteCoordinateType::ECEF(e) => Ok(*e),
+            }
         }
     }
 }
@@ -97,7 +107,7 @@ pub struct EllipticalCoordinate {
 }
 
 impl Display for EllipticalCoordinate {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let alt = match self.altitude {
             Some(alt) => {
                 format!(
@@ -309,7 +319,7 @@ pub struct CartesianCoordinate {
 }
 
 impl Display for CartesianCoordinate {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let alt = match self.altitude {
             Some(alt) => {
                 format!(
@@ -503,7 +513,7 @@ pub enum PositionUncertainty {
 }
 
 impl Display for PositionUncertainty {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             PositionUncertainty::CircularUncertainty(circ) => write!(f, "{circ}"),
             PositionUncertainty::EllipticalUncertainty(ell) => write!(f, "{ell}"),
@@ -523,6 +533,8 @@ pub struct HorizontalCoordinate {
 
 #[cfg(all(target_os = "windows", feature = "windows"))]
 pub mod windows_conv {
+    extern crate alloc;
+    use alloc::string::ToString;
     use windows::Devices::Geolocation::Geocoordinate;
 
     use irox_time::epoch::{FromTimestamp, UnixTimestamp, WindowsNTTimestamp};
@@ -612,19 +624,19 @@ pub mod windows_conv {
 }
 
 impl Display for Latitude {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("Lat[{}]", self.0))
     }
 }
 
 impl Display for Longitude {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("Lon[{}]", self.0))
     }
 }
 
 impl Display for Elevation {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("Elv[{}]", self.0))
     }
 }

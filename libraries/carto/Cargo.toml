@@ -18,10 +18,10 @@ workspace = true
 [features]
 default = []
 windows = ["dep:windows"]
-std = ["irox-tools/std"]
+std = ["irox-tools/std", "irox-units/std"]
 
 [dependencies]
-irox-units = {workspace = true, features = ["std"]}
+irox-units = { workspace = true }
 irox-tools.workspace = true
 irox-enums.workspace = true
 irox-time.workspace = true

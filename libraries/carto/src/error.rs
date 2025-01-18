@@ -5,8 +5,10 @@
 //!
 //! Error Types
 
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+extern crate alloc;
+use alloc::string::String;
+use core::error::Error;
+use core::fmt::{Display, Formatter};
 
 use irox_enums::EnumName;
 
@@ -28,7 +30,7 @@ impl ConvertError {
 }
 
 impl Display for ConvertError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "ConvertError({}): {}",
             self.name(),

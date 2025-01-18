@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -39,6 +39,18 @@ macro_rules! cfg_feature_std {
         $(
             #[cfg(any(all(doc, docsrs), feature = "std"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+            $item
+        )*
+    }
+}
+
+/// Enables feature-specific code.
+/// Use this macro instead of `cfg(feature = "std")` to generate docs properly.
+#[macro_export]
+macro_rules! cfg_feature_nostd {
+    ($($item:item)*) => {
+        $(
+            #[cfg(any(all(doc, docsrs), not(feature = "std")))]
             $item
         )*
     }

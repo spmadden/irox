@@ -7,6 +7,9 @@ use irox_units::units::length::{Length, LengthUnits};
 use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::EllipticalShape;
 
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
     semi_major_axis: Length,

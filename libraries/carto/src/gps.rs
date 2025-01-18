@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! GPS Status Types, Satellite Signal, Fix Type, Dilution of Precision, etc
 
-use std::fmt::{Display, Formatter};
+extern crate alloc;
+use alloc::string::ToString;
+use core::fmt::{Display, Formatter};
 
+use irox_tools::format;
 use irox_tools::options::MaybeFrom;
 use irox_units::units::compass::Azimuth;
 
@@ -20,7 +24,7 @@ pub struct SatelliteSignal {
 }
 
 impl Display for SatelliteSignal {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "PRN: {} Az: {} El: {}, SNR: {}",
             self.prn, self.azimuth, self.elevation, self.snr
@@ -76,7 +80,7 @@ impl MaybeFrom<Option<f64>> for DilutionOfPrecision {
     }
 }
 impl Display for DilutionOfPrecision {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!("{}", self.0))
     }
 }
@@ -98,7 +102,7 @@ impl DOPs {
 }
 
 impl Display for DOPs {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let print = |x: Option<DilutionOfPrecision>| match x {
             Some(x) => format!("{:0.3}", x.0),
             None => "?".to_string(),
@@ -115,7 +119,7 @@ impl Display for DOPs {
     }
 }
 
-#[cfg(target_os = "windows")]
+#[cfg(all(target_os = "windows", feature = "windows"))]
 pub mod windows {
     use windows::Devices::Geolocation::Geocoordinate;
     use windows::Foundation::IReference;

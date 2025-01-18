@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Transverse Mercator Map Projection.
@@ -9,8 +10,9 @@ use irox_units::units::length;
 use irox_units::units::length::Length;
 
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
-use crate::geo::ellipsoid::{Ellipsoid, MeridianCalculators};
+use crate::geo::ellipsoid::Ellipsoid;
 use crate::geo::standards::StandardShapes;
+use crate::geo::MeridianCalculators;
 use crate::proj::Projection;
 
 ///
