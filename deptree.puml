@@ -1,0 +1,237 @@
+@startdot
+
+digraph DEPS {
+        irox_tools -> irox_bits
+        irox_units -> irox_tools
+        irox_fixedmath -> irox_tools
+
+        irox_time -> {
+            irox_enums
+            irox_units
+            irox_tools
+            irox_fixedmath
+        }
+
+        irox_carto -> {
+            irox_tools
+            irox_enums
+            irox_time
+        }
+        irox_carto -> irox_units;
+
+        irox_cryptids -> {irox_bits irox_tools}
+
+        irox_types -> {
+            irox_enums
+            irox_tools
+        }
+        irox_types -> irox_bits [style=dashed,label="feature[bits]"];
+
+        irox_imagery -> {
+            irox_log
+            irox_bits
+            irox_tools
+            irox_units
+            irox_carto
+            irox_types
+        }
+        irox_stats -> {
+            irox_tools
+            irox_bits
+            irox_types
+            irox_time
+            irox_units
+        }
+
+        irox_structs -> irox_bits
+
+        irox_build_rs -> irox_time [label="feature[std]"]
+
+        irox_csv -> irox_tools
+
+        irox_dot -> irox_bits
+
+        irox_log -> {log irox_tools}
+        irox_log -> irox_time [label="feature[std]"]
+
+        log [shape=component]
+
+        irox_bits [label=<
+            <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+            <TR><TD COLSPAN="2"><B>irox_bits</B></TD></TR>
+                <TR>
+                    <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                    <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+                </TR>
+                <TR>
+                    <TD BGCOLOR="#555555" WIDTH="30" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">alloc</FONT></TD>
+                    <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+                </TR>
+            </TABLE>>]
+        irox_tools [label=<
+            <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+                <TR><TD COLSPAN="2"><B>irox_tools</B></TD></TR>
+                <TR>
+                    <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                    <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+                </TR>
+                <TR>
+                    <TD BGCOLOR="#555555" WIDTH="30" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">alloc</FONT></TD>
+                    <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+                </TR>
+                </TABLE>>]
+        irox_cryptids [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_cryptids</B></TD></TR>
+              <TR>
+                  <TD BGCOLOR="#555555" WIDTH="41" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                  <TD BGCOLOR="#97ca00" WIDTH="23" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+              </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="41" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_alloc</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="23" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_units [label=<
+           <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+               <TR><TD COLSPAN="2"><B>irox_units</B></TD></TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                   <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+               </TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="30" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">alloc</FONT></TD>
+                   <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+               </TR>
+               </TABLE>>]
+        irox_csv [label=<
+           <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+               <TR><TD COLSPAN="2"><B>irox_csv</B></TD></TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="22" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+               </TR>
+               </TABLE>>]
+        irox_dot [label=<
+           <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+               <TR><TD COLSPAN="2"><B>irox_dot</B></TD></TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="22" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+               </TR>
+               </TABLE>>]
+        irox_build_rs [label=<
+           <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+               <TR><TD COLSPAN="2"><B>irox_build_rs</B></TD></TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="22" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+               </TR>
+               </TABLE>>]
+        irox_fixedmath [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_fixedmath</B></TD></TR>
+              <TR>
+                  <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                  <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+              </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_alloc</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_time [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_time</B></TD></TR>
+              <TR>
+                 <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                 <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+             </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_enums [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_enums</B></TD></TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_carto [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_carto</B></TD></TR>
+              <TR>
+                 <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                 <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+             </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_structs [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_structs</B></TD></TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_types [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_types</B></TD></TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_stats [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_stats</B></TD></TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="21" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> no_std</FONT></TD>
+                    <TD BGCOLOR="#97ca00" WIDTH="10" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">yes</FONT></TD>
+                </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_imagery [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_imagery</B></TD></TR>
+              <TR>
+                 <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                 <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+             </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
+        irox_log [label=<
+           <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+               <TR><TD COLSPAN="2"><B>irox_log</B></TD></TR>
+               <TR>
+                   <TD BGCOLOR="#555555" WIDTH="22" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                   <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
+               </TR>
+               </TABLE>>]
+}
+
+@end

@@ -1,0 +1,104 @@
+@startdot
+digraph DEPS {
+
+        subgraph cluster_external {
+            label="external";
+            emath
+            log
+            miniz_oxide
+            num_cpus
+            syn
+            windows
+        }
+
+        subgraph cluster_libraries {
+            label="libraries";
+            style=dashed;
+
+            irox_tools -> irox_bits
+            irox_units -> irox_tools
+            irox_fixedmath -> irox_tools
+
+            irox_time -> {
+                irox_enums
+                irox_units
+                irox_tools
+                irox_fixedmath
+            }
+
+            irox_carto -> {
+                irox_tools
+                irox_enums
+                irox_time
+            }
+            irox_carto -> irox_units [label="std"];
+            irox_carto -> windows [style=dashed,label="feature[windows]"]
+
+            irox_cryptids -> {irox_bits irox_tools}
+
+            irox_types -> {
+                irox_enums
+                irox_tools
+            }
+            irox_types -> irox_bits [style=dashed,label="feature[bits]"];
+            irox_types -> syn [style=dashed,label="feature[syn]"]
+
+
+            irox_imagery -> {
+                irox_log
+                irox_bits
+                irox_tools
+                irox_units
+                irox_carto
+                irox_types
+            }
+            irox_stats -> {
+                irox_tools
+                irox_bits
+                irox_types
+                irox_time
+                irox_units
+            }
+            irox_stats -> miniz_oxide [style=dashed,label="feature[miniz]"]
+            irox_stats -> emath [style=dashed,label="feature[emath]"]
+
+            irox_structs -> irox_bits
+
+            irox_threading -> log
+            irox_threading -> num_cpus [style=dashed,label="feature[num_cpus]"]
+
+            irox_build_rs -> irox_time [label="feature[std]"]
+        }
+
+        subgraph cluster_daf {
+            label="data-formats";
+            irox_csv -> irox_tools [label="feature[std]"]
+
+            irox_dot -> irox_bits [label="feature[std]"]
+
+            irox_nmea0183 -> {
+                irox_enums
+                irox_carto
+                irox_units
+                irox_time
+                log
+            }
+            irox_nmea0183 -> {irox_bits irox_tools} [label="feature[std]"]
+
+            irox_sirf -> {
+                irox_tools
+                log
+            }
+            irox_sirf -> irox_bits [label="feature[std]"]
+            irox_sirf -> irox_structs [label="feature[alloc]"]
+        }
+
+        emath [shape=component];
+        log [shape=component];
+        miniz_oxide [shape=component];
+        num_cpus [shape=component];
+        syn [shape=component];
+        windows [shape=component];
+}
+
+@enddot
