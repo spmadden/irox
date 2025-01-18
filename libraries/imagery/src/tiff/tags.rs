@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::tiff::{TiffTagFormat, TiffTagType};
+use alloc::collections::BTreeMap;
 use irox_tools::static_init;
-use std::collections::BTreeMap;
 
 pub const NEW_SUBFILE_TYPE: TiffTagType =
     TiffTagType::new("NewSubfileType", 254, TiffTagFormat::Long, 1);

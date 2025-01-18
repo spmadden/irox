@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Image processing, manipulation, formats
 //!
 
 #![forbid(unsafe_code)]
+#![warn(clippy::alloc_instead_of_core)]
+#![warn(clippy::std_instead_of_alloc)]
+#![warn(clippy::std_instead_of_core)]
+#![cfg_attr(not(feature = "std"), no_std)]
+extern crate alloc;
 
 pub use color::*;
 pub use error::*;

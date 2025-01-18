@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
+use alloc::format;
+use alloc::string::{String, ToString};
+use core::fmt::{Display, Formatter};
 use irox_tools::impl_from_error;
-use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub enum ImageErrorType {
@@ -32,7 +35,7 @@ pub struct ImageError {
 }
 
 impl Display for ImageError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "ImageError({:?}): {}", self.error_type, self.msg)
     }
 }

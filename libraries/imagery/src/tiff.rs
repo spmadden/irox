@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::tags::{get_geokey_directory_tags, GEO_KEY_DIRECTORY, KNOWN_TAG_TYPES};
 use crate::tiff::geo::GeoKeyDirectory;
 use crate::{ImageError, ImageErrorType};
+use alloc::collections::BTreeMap;
 use core::cmp::Ordering;
 use core::fmt::Debug;
 use irox_bits::{Bits, BitsError, ByteOrder, Seek, SeekFrom};
 use irox_log::log::{debug, warn};
-use std::collections::BTreeMap;
 
 pub mod geo;
 pub mod tags;
@@ -23,7 +23,7 @@ impl TiffImage {
     }
 }
 impl Debug for TiffImage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let mut str = f.debug_struct("TiffImage");
         for v in self.ifd.values() {
             let name = if let Some(tag) = &v.identified_tag {
@@ -456,7 +456,7 @@ impl TiffImageReader {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod test {
     use crate::tiff::TiffImageReader;
     use crate::ImageError;

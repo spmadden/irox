@@ -12,10 +12,14 @@ exclude.workspace = true
 repository.workspace = true
 readme = "README.md"
 
+[features]
+default = []
+std = ["irox-time/std"]
+
 [lints]
 workspace = true
 
 [dependencies]
 log = { workspace = true }
 irox-tools = { workspace = true }
-irox-time = { workspace = true, features = ["std"] }
+irox-time = { workspace = true }
