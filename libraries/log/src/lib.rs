@@ -17,7 +17,7 @@ use irox_tools::cfg_feature_std;
 pub use log;
 
 cfg_feature_std! {
-    use alloc::str::FromStr;
+    use core::str::FromStr;
     use log::Level;
     pub mod console;
 

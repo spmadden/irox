@@ -32,4 +32,4 @@ irox-structs.workspace = true
 [dev-dependencies]
 serde_json.workspace = true
 serde.workspace = true
-irox-log.workspace = true
+irox-log = { workspace = true, features = ["std"] }
