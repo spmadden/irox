@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Additional assert macros for tests
@@ -21,6 +22,24 @@ macro_rules! assert_eq_eps {
                         delta,
                         $eps,
                         delta - $eps
+                    )
+                }
+            }
+        }
+    };
+    ($left:expr, $right:expr, $eps:expr, $($arg:expr)?) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                let delta = (*left_val - *right_val).abs();
+                if !(delta <= $eps) {
+                    panic!(
+                        "{}: Assertion failed, {} - {} = {} > {} (error: {})",
+                        &*left_val,
+                        &*right_val,
+                        delta,
+                        $eps,
+                        delta - $eps,
+                        $($arg)?
                     )
                 }
             }
@@ -61,6 +80,28 @@ macro_rules! assert_eq_eps_slice {
             }
         }
     };
+    ($left:expr, $right:expr, $eps:expr, $($arg:expr)?) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                let left_len = left_val.len();
+                let right_len = right_val.len();
+                if left_len != right_len {
+                    panic!("{}: Assertion failed, left len ({left_len}) != right len ({right_len})", $($arg)?);
+                }
+                for idx in 0..left_len {
+                    let lv = left_val[idx];
+                    let rv = right_val[idx];
+                    let delta = (lv - rv).abs();
+                    if !(delta <= $eps) {
+                        panic!(
+                            "{}: Assertion failed, {} - {} = {} > {} at index {idx}",
+                            &lv, &rv, delta, $eps, $($arg)?
+                        )
+                    }
+                }
+            }
+        }
+    };
 }
 
 ///
@@ -74,6 +115,18 @@ macro_rules! assert_eq_hex {
                     panic!(
                         "Assertion failed, 0x{:0X} != 0x{:0X}",
                         &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    };
+    ($left:expr, $right:expr, $($arg:expr)?) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if *left_val != *right_val {
+                    panic!(
+                        "{}: Assertion failed, 0x{:0X} != 0x{:0X}",
+                        &*left_val, &*right_val, $($arg)?
                     )
                 }
             }
@@ -105,4 +158,25 @@ macro_rules! assert_eq_hex_slice {
             }
         }
     };
+    ($left:expr, $right:expr, $($arg:expr)?) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                let left_len = left_val.len();
+                let right_len = right_val.len();
+                if left_len != right_len {
+                    panic!("{}: Assertion failed, left len (0x{left_len:0X}) != right len (0x{right_len:0X})", $($arg)+);
+                }
+                for idx in 0..left_len {
+                    let lv = left_val[idx];
+                    let rv = right_val[idx];
+                    if lv != rv {
+                        panic!(
+                            "{}: Assertion failed, 0x{lv:0X} != 0x{rv:0X} at idx {idx}", $($arg)+
+                        )
+                    }
+                }
+            }
+        }
+    }
+    ;
 }
