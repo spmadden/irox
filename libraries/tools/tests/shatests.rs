@@ -3,7 +3,7 @@
 //
 
 use irox_bits::Error;
-use irox_tools::hash::{SHA224, SHA256, SHA384, SHA512};
+use irox_tools::hash::{SHA1, SHA224, SHA256, SHA384, SHA512};
 use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 
@@ -59,122 +59,83 @@ fn parse_rsp_file(path: &str) -> Result<Vec<Test>, Error> {
     Ok(tests)
 }
 
-#[test]
-pub fn test_sha256_short() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA256ShortMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
+macro_rules! impl_test {
+    ($name:ident, $filepath:literal, $testcount:literal, $test:ty) => {
+        #[test]
+        pub fn $name() -> Result<(), Error> {
+            let tests = parse_rsp_file($filepath)?;
 
-    assert_eq!(65, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA256::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
+            assert_eq!($testcount, tests.len());
+            for (idx, test) in tests.iter().enumerate() {
+                let res = <$test>::new().hash(test.msg.as_slice());
+                assert_eq!(test.digest.as_slice(), res);
+                println!("{} {idx}: passed", stringify!($name));
+            }
 
-    Ok(())
+            Ok(())
+        }
+    };
 }
 
-#[test]
-pub fn test_sha256_long() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA256LongMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
+impl_test!(
+    test_sha1_short,
+    "./doc/shabytetestvectors/SHA1ShortMsg.rsp",
+    65,
+    SHA1
+);
+impl_test!(
+    test_sha1_long,
+    "./doc/shabytetestvectors/SHA1LongMsg.rsp",
+    64,
+    SHA1
+);
 
-    assert_eq!(64, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA256::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
+impl_test!(
+    test_sha224_short,
+    "./doc/shabytetestvectors/SHA224ShortMsg.rsp",
+    65,
+    SHA224
+);
+impl_test!(
+    test_sha224_long,
+    "./doc/shabytetestvectors/SHA224LongMsg.rsp",
+    64,
+    SHA224
+);
+impl_test!(
+    test_sha256_short,
+    "./doc/shabytetestvectors/SHA256ShortMsg.rsp",
+    65,
+    SHA256
+);
+impl_test!(
+    test_sha256_long,
+    "./doc/shabytetestvectors/SHA256LongMsg.rsp",
+    64,
+    SHA256
+);
 
-    Ok(())
-}
-
-#[test]
-pub fn test_sha224_short() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA224ShortMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(65, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA224::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
-
-#[test]
-pub fn test_sha224_long() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA224LongMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(64, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA224::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
-
-#[test]
-pub fn test_sha384_short() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA384ShortMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(129, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA384::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
-
-#[test]
-pub fn test_sha384_long() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA384LongMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(128, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA384::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
-
-#[test]
-pub fn test_sha512_short() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA512ShortMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(129, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA512::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
-
-#[test]
-pub fn test_sha512_long() -> Result<(), Error> {
-    let filepath = "./doc/shabytetestvectors/SHA512LongMsg.rsp";
-    let tests = parse_rsp_file(filepath)?;
-
-    assert_eq!(128, tests.len());
-    for (idx, test) in tests.iter().enumerate() {
-        let res = SHA512::new().hash(test.msg.as_slice());
-        assert_eq!(test.digest.as_slice(), res);
-        println!("idx: {idx} passed");
-    }
-
-    Ok(())
-}
+impl_test!(
+    test_sha384_short,
+    "./doc/shabytetestvectors/SHA384ShortMsg.rsp",
+    129,
+    SHA384
+);
+impl_test!(
+    test_sha384_long,
+    "./doc/shabytetestvectors/SHA384LongMsg.rsp",
+    128,
+    SHA384
+);
+impl_test!(
+    test_sha512_short,
+    "./doc/shabytetestvectors/SHA512ShortMsg.rsp",
+    129,
+    SHA512
+);
+impl_test!(
+    test_sha512_long,
+    "./doc/shabytetestvectors/SHA512LongMsg.rsp",
+    128,
+    SHA512
+);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -48,6 +48,10 @@ impl Default for SHA1 {
 }
 
 impl SHA1 {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
     fn try_chomp(&mut self) {
         if self.buf.len() < BLOCK_SIZE {
             return;
