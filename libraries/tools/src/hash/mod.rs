@@ -54,7 +54,7 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
     pub fn new(in_key: &[u8]) -> Self {
         let keylen = in_key.len();
         let mut key = [0u8; BLOCK_SIZE];
-        if keylen >= BLOCK_SIZE {
+        if keylen > BLOCK_SIZE {
             let hash = T::default().hash(in_key) as [u8; OUTPUT_SIZE];
 
             let _ = key.as_mut_slice().write_all_bytes(&hash);
