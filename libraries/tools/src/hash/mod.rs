@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -32,6 +32,14 @@ pub trait HashDigest<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize>: Default
 pub type HMACSHA1 = HMAC<{ sha1::BLOCK_SIZE }, { sha1::OUTPUT_SIZE }, sha1::SHA1>;
 /// HMAC using the MD5 algorithm
 pub type HMACMD5 = HMAC<{ md5::BLOCK_SIZE }, { md5::OUTPUT_SIZE }, md5::MD5>;
+/// HMAC using the SHA224 algorithm
+pub type HMACSHA224 = HMAC<{ sha2::SHA224_BLOCK_SIZE }, { sha2::SHA224_OUTPUT_SIZE }, sha2::SHA224>;
+/// HMAC using the SHA256 algorithm
+pub type HMACSHA256 = HMAC<{ sha2::SHA256_BLOCK_SIZE }, { sha2::SHA256_OUTPUT_SIZE }, sha2::SHA256>;
+/// HMAC using the SHA384 algorithm
+pub type HMACSHA384 = HMAC<{ sha2::SHA384_BLOCK_SIZE }, { sha2::SHA384_OUTPUT_SIZE }, sha2::SHA384>;
+/// HMAC using the SHA512 algorithm
+pub type HMACSHA512 = HMAC<{ sha2::SHA512_BLOCK_SIZE }, { sha2::SHA512_OUTPUT_SIZE }, sha2::SHA512>;
 
 ///
 /// Implementation of [RFC 2104](https://datatracker.ietf.org/doc/html/rfc2104) based on the [Wikipedia](https://en.wikipedia.org/wiki/HMAC#Implementation) algorithm

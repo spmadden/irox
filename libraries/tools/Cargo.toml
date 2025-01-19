@@ -43,6 +43,10 @@ harness = false
 name = "shatests"
 required-features = ["std"]
 
+[[test]]
+name = "hmactests"
+required-features = ["std"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

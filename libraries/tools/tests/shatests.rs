@@ -3,6 +3,7 @@
 //
 
 use irox_bits::Error;
+use irox_tools::assert_eq_hex_slice;
 use irox_tools::hash::{SHA1, SHA224, SHA256, SHA384, SHA512};
 use std::io::{BufRead, BufReader};
 use std::str::FromStr;
@@ -68,7 +69,7 @@ macro_rules! impl_test {
             assert_eq!($testcount, tests.len());
             for (idx, test) in tests.iter().enumerate() {
                 let res = <$test>::new().hash(test.msg.as_slice());
-                assert_eq!(test.digest.as_slice(), res);
+                assert_eq_hex_slice!(test.digest.as_slice(), res);
                 println!("{} {idx}: passed", stringify!($name));
             }
 
@@ -78,63 +79,63 @@ macro_rules! impl_test {
 }
 
 impl_test!(
-    test_sha1_short,
+    test_nist_sha1_short,
     "./doc/shabytetestvectors/SHA1ShortMsg.rsp",
     65,
     SHA1
 );
 impl_test!(
-    test_sha1_long,
+    test_nist_sha1_long,
     "./doc/shabytetestvectors/SHA1LongMsg.rsp",
     64,
     SHA1
 );
 
 impl_test!(
-    test_sha224_short,
+    test_nist_sha224_short,
     "./doc/shabytetestvectors/SHA224ShortMsg.rsp",
     65,
     SHA224
 );
 impl_test!(
-    test_sha224_long,
+    test_nist_sha224_long,
     "./doc/shabytetestvectors/SHA224LongMsg.rsp",
     64,
     SHA224
 );
 impl_test!(
-    test_sha256_short,
+    test_nist_sha256_short,
     "./doc/shabytetestvectors/SHA256ShortMsg.rsp",
     65,
     SHA256
 );
 impl_test!(
-    test_sha256_long,
+    test_nist_sha256_long,
     "./doc/shabytetestvectors/SHA256LongMsg.rsp",
     64,
     SHA256
 );
 
 impl_test!(
-    test_sha384_short,
+    test_nist_sha384_short,
     "./doc/shabytetestvectors/SHA384ShortMsg.rsp",
     129,
     SHA384
 );
 impl_test!(
-    test_sha384_long,
+    test_nist_sha384_long,
     "./doc/shabytetestvectors/SHA384LongMsg.rsp",
     128,
     SHA384
 );
 impl_test!(
-    test_sha512_short,
+    test_nist_sha512_short,
     "./doc/shabytetestvectors/SHA512ShortMsg.rsp",
     129,
     SHA512
 );
 impl_test!(
-    test_sha512_long,
+    test_nist_sha512_long,
     "./doc/shabytetestvectors/SHA512LongMsg.rsp",
     128,
     SHA512

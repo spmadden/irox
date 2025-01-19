@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -195,17 +195,16 @@ impl<const N: usize> IndexMut<usize> for ShaBuf<N, u64> {
     }
 }
 
+/// Block size (bytes) for SHA224
+pub const SHA224_BLOCK_SIZE: usize = 64;
+pub const SHA224_WORD_SIZE: usize = 16;
+/// Block size (bytes) for SHA256
+pub const SHA256_BLOCK_SIZE: usize = 64;
+pub const SHA256_WORD_SIZE: usize = 16;
 mod sha224_256 {
     use crate::hash::sha2::ShaBuf;
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
-
-    /// Block size (bytes) for SHA224
-    pub const SHA224_BLOCK_SIZE: usize = 64;
-    pub const SHA224_WORD_SIZE: usize = 16;
-    /// Block size (bytes) for SHA256
-    pub const SHA256_BLOCK_SIZE: usize = 64;
-    pub const SHA256_WORD_SIZE: usize = 16;
 
     static KONSTANTS: [u32; 64] = [
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
@@ -403,31 +402,30 @@ mod sha224_256 {
         SHA224,
         LittleSha2,
         SHA224_INIT,
-        SHA224_BLOCK_SIZE,
-        SHA224_WORD_SIZE,
+        super::SHA224_BLOCK_SIZE,
+        super::SHA224_WORD_SIZE,
         super::SHA224_OUTPUT_SIZE
     );
     sha2_impl!(
         SHA256,
         LittleSha2,
         SHA256_INIT,
-        SHA256_BLOCK_SIZE,
-        SHA256_WORD_SIZE,
+        super::SHA256_BLOCK_SIZE,
+        super::SHA256_WORD_SIZE,
         super::SHA256_OUTPUT_SIZE
     );
 }
 
+/// Block size (bytes) for SHA384
+pub const SHA384_BLOCK_SIZE: usize = 128;
+pub const SHA384_WORD_SIZE: usize = 32;
+/// Block size (bytes) for SHA512
+pub const SHA512_BLOCK_SIZE: usize = 128;
+pub const SHA512_WORD_SIZE: usize = 32;
 mod sha384_512 {
     use crate::hash::sha2::ShaBuf;
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
-
-    /// Block size (bytes) for SHA384
-    pub const SHA384_BLOCK_SIZE: usize = 128;
-    pub const SHA384_WORD_SIZE: usize = 32;
-    /// Block size (bytes) for SHA512
-    pub const SHA512_BLOCK_SIZE: usize = 128;
-    pub const SHA512_WORD_SIZE: usize = 32;
 
     macro_rules! BSIG0 {
         ($x:expr) => {{
@@ -707,16 +705,16 @@ mod sha384_512 {
         SHA384,
         BiggerSha2,
         SHA384_INIT,
-        SHA384_BLOCK_SIZE,
-        SHA384_WORD_SIZE,
+        super::SHA384_BLOCK_SIZE,
+        super::SHA384_WORD_SIZE,
         super::SHA384_OUTPUT_SIZE
     );
     sha2_impl!(
         SHA512,
         BiggerSha2,
         SHA512_INIT,
-        SHA512_BLOCK_SIZE,
-        SHA512_WORD_SIZE,
+        super::SHA512_BLOCK_SIZE,
+        super::SHA512_WORD_SIZE,
         super::SHA512_OUTPUT_SIZE
     );
 }
