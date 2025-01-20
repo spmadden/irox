@@ -377,6 +377,13 @@ impl Time64 {
             inner: value.into(),
         }
     }
+
+    pub fn from_unix_raw(value: u64) -> Self {
+        Self {
+            epoch: UNIX_EPOCH,
+            inner: FixedU64::from_raw_value(value),
+        }
+    }
 }
 
 ///
