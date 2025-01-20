@@ -155,7 +155,7 @@ impl MutBits for StreamWriter {
 impl Drop for StreamWriter {
     fn drop(&mut self) {
         if !self.buf.is_empty() {
-            let len = self.buf.len() as u16 - 2;
+            let len = (self.buf.len() as u16).saturating_sub(2);
             let v = &mut self.buf.into_buf_default();
             let _ = v.as_mut_slice().write_be_u16(len);
             let _ = self.parent.write_block(self.stream_idx, v);
@@ -221,6 +221,9 @@ impl MultiStreamReader {
             };
             *v
         };
+        if block_idx == 0 {
+            return Ok(());
+        }
         let next_idx = {
             let Ok(mut lock) = self.inner.lock() else {
                 return broken_pipe!();
@@ -262,11 +265,14 @@ impl StreamReader {
         if self.buf.is_empty() {
             self.parent
                 .read_next_block(self.stream_idx, &mut self.buf)?;
+            if self.buf.is_empty() {
+                return Ok(0);
+            }
             let lim = self.buf.read_be_u16()?;
             if lim > 0 {
                 self.buf.limit(lim as usize)?;
             }
-            return Ok(lim as usize);
+            return Ok(self.buf.len());
         }
         Ok(0)
     }
