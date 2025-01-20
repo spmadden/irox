@@ -148,7 +148,7 @@ impl<const N: usize> RoundU8Buffer<N> {
     /// Limits the internal returned buffer to the specified amount by clipping the
     /// 'used length' parameter
     pub fn limit(&mut self, limit: usize) -> Result<(), BitsError> {
-        if limit >= N || self.size < limit {
+        if limit > N || self.size < limit {
             return BitsErrorKind::InvalidInput.err("Invalid limit");
         }
         self.size = limit;
