@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 extern crate alloc;
-use crate::buf::{Buffer, FixedBuf};
+use crate::buf::{Buffer, RoundBuffer};
 use alloc::collections::LinkedList;
 use irox_bits::Bits;
 use irox_bits::{Error, MutBits};
@@ -22,7 +22,7 @@ const DATA_MASK: usize = 0x0FFF;
 #[derive(Default, Clone)]
 pub struct UnlimitedBuffer<T: Clone> {
     #[allow(clippy::linkedlist)]
-    data: LinkedList<FixedBuf<PAGE_SIZE, T>>,
+    data: LinkedList<RoundBuffer<PAGE_SIZE, T>>,
     len: u64,
 }
 
@@ -117,7 +117,7 @@ impl<T: Clone> UnlimitedBuffer<T> {
     }
 
     pub fn push_front(&mut self, value: T) {
-        let mut buf = FixedBuf::new();
+        let mut buf = RoundBuffer::default();
         let _ = buf.push_back(value);
         self.data.push_front(buf);
         self.len += 1;
@@ -126,12 +126,12 @@ impl<T: Clone> UnlimitedBuffer<T> {
     pub fn push_back(&mut self, value: T) {
         if let Some(back) = self.data.back_mut() {
             if let Err(e) = back.push_back(value) {
-                let mut buf = FixedBuf::new();
+                let mut buf = RoundBuffer::new();
                 let _ = buf.push_back(e);
                 self.data.push_back(buf);
             }
         } else {
-            let mut buf = FixedBuf::new();
+            let mut buf = RoundBuffer::new();
             let _ = buf.push_back(value);
             self.data.push_back(buf);
         }
