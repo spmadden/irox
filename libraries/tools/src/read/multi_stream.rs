@@ -14,13 +14,15 @@ use crate::IntegerValue;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
 use core::sync::atomic::{AtomicU32, AtomicU8, Ordering};
-use irox_bits::{Bits, BitsErrorKind, BufBits, Error, MutBits, SeekRead, SeekWrite};
+use irox_bits::{
+    Bits, BitsErrorKind, BufBits, Error, MutBits, Seek, SeekFrom, SeekRead, SeekWrite,
+};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::sync::Mutex;
 
-pub const DEFAULT_BLOCK_SIZE: usize = 4 * 1024; // 16K
+pub const DEFAULT_BLOCK_SIZE: usize = 16 * 1024; // 16K
 pub const DATA_SIZE: usize = DEFAULT_BLOCK_SIZE - 4;
 pub const HEADER: &[u8] = b"IRXMSB";
 
@@ -52,6 +54,7 @@ impl MultiStreamWriter {
             .create(true)
             .truncate(true)
             .write(true)
+            .append(false)
             .open(path.as_ref())?;
 
         Ok(Arc::new(MultiStreamWriter {
@@ -99,7 +102,7 @@ impl MultiStreamWriter {
         let Ok(mut l2) = self.stream_latest_blocks.lock() else {
             return broken_pipe!();
         };
-        lock.write_all(&[0, 0, 0, 0])?;
+        lock.seek_write_all(&[0, 0, 0, 0], block.len() as u64 + offset)?;
         let last_block_idx = l2.entry(stream_idx).or_insert(block_idx);
         if *last_block_idx != block_idx {
             let offset = *last_block_idx as u64 * DEFAULT_BLOCK_SIZE as u64 + DATA_SIZE as u64;
@@ -233,6 +236,7 @@ impl MultiStreamReader {
                 lock.seek_read_all(buf, offset)?;
                 Ok(buf.len())
             })?;
+            lock.seek(SeekFrom::Start(offset + buf.len() as u64))?;
             lock.read_be_u32()?
         };
         let Ok(mut lock) = self.stream_next_block.lock() else {
