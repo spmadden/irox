@@ -4,17 +4,17 @@
 
 use crate::sampling::Sample64;
 use crate::streams::{
-    CompressStream, Decoder, DeltaStream, F64ToU64Stream, InflateStream, Stream, StreamStageStats,
-    Streamable, U64ToF64Decoder, ZigZagStream,
+    AddingDecoder, CompressStream, Decoder, DeltaStream, F64ToU64Stream, InflateStream, Stream,
+    StreamStageStats, Streamable, U64ToF64Decoder, ZigZagDecoder, ZigZagStream,
 };
 use alloc::sync::Arc;
 use core::hash::Hash;
 use irox_bits::{
-    Bits, BitsError, BitsWrapper, Error, MutBits, ReadFromBEBits, SharedCountingBits,
-    SharedROCounter,
+    Bits, BitsError, BitsErrorKind, BitsWrapper, Error, MutBits, ReadFromBEBits,
+    SharedCountingBits, SharedROCounter,
 };
 use irox_time::Time64;
-use irox_tools::buf::{Buffer, FixedBuf};
+use irox_tools::buf::{Buffer, RoundBuffer};
 use irox_tools::codec::{GroupVarintCodeDecoder, GroupVarintCodeEncoder};
 use irox_tools::map::OrderedHashMap;
 use irox_tools::read::{MultiStreamReader, MultiStreamWriter, StreamWriter};
@@ -230,13 +230,13 @@ impl Stream<f64> for FloatSplitter {
 ///
 /// Stream to collect values into groups of 4 and then run them through a [`GroupVarintCodeEncoder`]
 pub struct GroupCodingStream<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> {
-    buf: FixedBuf<4, T>,
+    buf: RoundBuffer<4, T>,
     inner: GroupVarintCodeEncoder<'a, T, B>,
 }
 impl<'a, T: core::hash::Hash + Eq + Default + Streamable, B: MutBits> GroupCodingStream<'a, T, B> {
     pub fn new(inner: BitsWrapper<'a, B>) -> Self {
         Self {
-            buf: FixedBuf::new(),
+            buf: RoundBuffer::new(),
             inner: GroupVarintCodeEncoder::new(inner),
         }
     }
@@ -248,15 +248,16 @@ impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Stream<T>
     for GroupCodingStream<'a, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
-        if !self.buf.is_full() {
-            let _ = self.buf.push_back(value);
-            return Ok(0);
+        let _ = self.buf.push_back(value);
+        if self.buf.is_full() {
+            let a = self.buf.pop_front().unwrap_or_default();
+            let b = self.buf.pop_front().unwrap_or_default();
+            let c = self.buf.pop_front().unwrap_or_default();
+            let d = self.buf.pop_front().unwrap_or_default();
+            self.inner.encode_4(&[a, b, c, d])
+        } else {
+            Ok(0)
         }
-        let d = self.buf.pop_front().unwrap_or_default();
-        let c = self.buf.pop_front().unwrap_or_default();
-        let b = self.buf.pop_front().unwrap_or_default();
-        let a = self.buf.pop_front().unwrap_or_default();
-        self.inner.encode_4(&[a, b, c, d])
     }
 
     fn flush(&mut self) -> Result<(), Error> {
@@ -278,13 +279,13 @@ impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Drop for GroupCoding
 
 pub struct GroupDecodingStream<'a, T: Hash + Eq + Default, B: Bits> {
     inner: GroupVarintCodeDecoder<'a, T, B>,
-    buf: FixedBuf<4, T>,
+    buf: RoundBuffer<4, T>,
 }
 impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupDecodingStream<'a, T, B> {
     pub fn new(inner: BitsWrapper<'a, B>) -> Self {
         Self {
             inner: GroupVarintCodeDecoder::new(inner),
-            buf: FixedBuf::new(),
+            buf: RoundBuffer::new(),
         }
     }
 }
@@ -405,23 +406,43 @@ pub enum TimeSeriesError {
     MissingFloatStream,
     MissingTimeStream,
 }
+impl TimeSeriesError {
+    pub fn name(&self) -> &'static str {
+        match self {
+            TimeSeriesError::BitsError(..) => "BitsError",
+            TimeSeriesError::MissingMetadataStream => "MissingMetadataStream",
+            TimeSeriesError::MissingFloatStream => "MissingFloatStream",
+            TimeSeriesError::MissingTimeStream => "MissingTimeStream",
+        }
+    }
+}
 impl From<BitsError> for TimeSeriesError {
     fn from(e: BitsError) -> Self {
         TimeSeriesError::BitsError(e)
+    }
+}
+impl From<TimeSeriesError> for BitsError {
+    fn from(e: TimeSeriesError) -> Self {
+        match e {
+            TimeSeriesError::BitsError(e) => e,
+            _ => BitsError::new(BitsErrorKind::InvalidData, e.name()),
+        }
     }
 }
 pub struct CodedTimeSeriesReader {
     metadata: OrderedHashMap<String, String>,
     float_decoder: Box<dyn Decoder<f64>>,
     time_decoder: Box<dyn Decoder<u64>>,
+    last_item: Option<Sample64>,
 }
 impl CodedTimeSeriesReader {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, TimeSeriesError> {
         let mut reader = MultiStreamReader::open(path)?;
         let mut streams = reader.drain(..);
-        let Some(mut meta_stream) = streams.next() else {
+        let Some(meta_stream) = streams.next() else {
             return Err(TimeSeriesError::MissingMetadataStream);
         };
+        let mut meta_stream = InflateStream::new(BitsWrapper::Owned(meta_stream));
         let mut metadata = OrderedHashMap::<String, String>::new();
         while meta_stream.has_more()? {
             let key = String::read_from_be_bits(&mut meta_stream)?;
@@ -441,16 +462,31 @@ impl CodedTimeSeriesReader {
         };
         let time_stream = InflateStream::new(BitsWrapper::Owned(time_stream));
         let time_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
+        let time_stream = ZigZagDecoder::new(Box::new(time_stream));
+        let time_stream = AddingDecoder::new(Box::new(time_stream));
 
         Ok(Self {
             metadata,
             float_decoder: Box::new(float_stream),
             time_decoder: Box::new(time_stream),
+            last_item: None,
         })
     }
 
     pub fn metadata(&self) -> impl Iterator<Item = (&String, &String)> {
         self.metadata.iter()
+    }
+
+    pub fn peek(&mut self) -> Result<&mut Option<Sample64>, Error> {
+        if self.last_item.is_some() {
+            Ok(&mut self.last_item)
+        } else {
+            if let Some(v) = self.next() {
+                let v = v?;
+                self.last_item = Some(v);
+            }
+            Ok(&mut self.last_item)
+        }
     }
 }
 impl Iterator for CodedTimeSeriesReader {
@@ -469,76 +505,90 @@ impl Iterator for CodedTimeSeriesReader {
         };
         let float = float?;
         let time = time?;
-        Some(Ok(Sample64 {
+        let samp = Sample64 {
             value: float,
-            time: Time64::from_unix_u64(time),
-        }))
+            time: Time64::from_unix_raw(time),
+        };
+        self.last_item = Some(samp);
+        Some(Ok(samp))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::tsdf::CodedTimeSeriesWriter;
     use crate::tsdf::Sample64;
+    use crate::tsdf::{CodedTimeSeriesReader, CodedTimeSeriesWriter};
     use irox_bits::Error;
     use irox_time::Time64;
+    use irox_tools::buf::UnlimitedBuffer;
     use irox_tools::random::{Random, PRNG};
     use irox_units::units::duration::Duration;
     use std::time::Instant;
 
     #[test]
     pub fn test() -> Result<(), Error> {
-        let mut file = CodedTimeSeriesWriter::new("test_file.tsd")?;
-        // let mut buf1 = UnlimitedBuffer::<u8>::new();
-        // let mut buf2 = UnlimitedBuffer::<u8>::new();
-        let mut input = Time64::now();
-        let incr = Duration::from_millis(100);
-        let start = Instant::now();
-        let count = 20_000_000u64;
-        let center = 100f64;
-        let variance = 0.001f64;
-        let mut rand = Random::default();
+        let mut data = UnlimitedBuffer::<Sample64>::new();
         {
-            // let mut cbuf1 = CompressStream::new(BitsWrapper::Borrowed(&mut buf1));
-            // let mut cbuf2 = CompressStream::new(BitsWrapper::Borrowed(&mut buf2));
-            for _i in 0..count {
-                let val = rand.next_in_range(0., 4096.); // 12-bit A2D
-                                                         // let val = rand.next_in_range(0., 8192.); // 13-bit A2D
-                                                         // let val = rand.next_in_range(0., 16384.); // 14-bit A2D
-                let val = center + val.round() * variance - variance / 2f64;
-                // let val = (_i as f64) * center + val;
-                // println!("value: {val} // {:08X}", val.to_bits());
-                // cbuf1.write_value(input.as_u64())?;
-                // cbuf2.write_value(val)?;
-                file.write_sample(&Sample64::new(input, val))?;
-                input += incr;
+            let mut file = CodedTimeSeriesWriter::new("test_file.tsd")?;
+            // let mut buf2 = UnlimitedBuffer::<u8>::new();
+            let mut input = Time64::now();
+            let incr = Duration::from_millis(100);
+            let start = Instant::now();
+            let count = 20_000_000u64;
+            let center = 100f64;
+            let variance = 0.001f64;
+            let mut rand = Random::default();
+            {
+                // let mut cbuf1 = CompressStream::new(BitsWrapper::Borrowed(&mut buf1));
+                // let mut cbuf2 = CompressStream::new(BitsWrapper::Borrowed(&mut buf2));
+                for _i in 0..count {
+                    let val = rand.next_in_range(0., 4096.); // 12-bit A2D
+                                                             // let val = rand.next_in_range(0., 8192.); // 13-bit A2D
+                                                             // let val = rand.next_in_range(0., 16384.); // 14-bit A2D
+                    let val = center + val.round() * variance - variance / 2f64;
+                    // let val = (_i as f64) * center + val;
+                    // println!("value: {val} // {:08X}", val.to_bits());
+                    // cbuf1.write_value(input.as_u64())?;
+                    // cbuf2.write_value(val)?;
+                    let samp = Sample64::new(input, val);
+                    data.push_back(samp);
+                    file.write_sample(&samp)?;
+                    input += incr;
+                }
+                file.flush()?;
+                // drop(cbuf1);
+                // drop(cbuf2);
             }
-            file.flush()?;
-            // drop(cbuf1);
-            // drop(cbuf2);
+            let written = std::fs::metadata("test_file.tsd")?.len();
+            let input_size = count * 16;
+            let end = start.elapsed();
+            // irox_tools::hex::HexDump::hexdump(&buf);
+            let ratio = 1. - (written as f64 / input_size as f64);
+            let ratio = ratio * 100.;
+            let ubps = input_size as f64 / end.as_secs_f64() / 1e6;
+            println!(
+                "Turned {input_size} bytes into {written} = {ratio:02.}% reduction = {ubps:02.02}MB/s"
+            );
+            println!("{:#?}", file.written_stats());
+            drop(file);
         }
-        let written = std::fs::metadata("test_file.tsd")?.len();
-        let input_size = count * 16;
-        let end = start.elapsed();
-        // irox_tools::hex::HexDump::hexdump(&buf);
-        let ratio = 1. - (written as f64 / input_size as f64);
-        let ratio = ratio * 100.;
-        let ubps = input_size as f64 / end.as_secs_f64() / 1e6;
-        println!(
-            "Turned {input_size} bytes into {written} = {ratio:02.}% reduction = {ubps:02.02}MB/s"
-        );
-        println!("{:#?}", file.written_stats());
-        drop(file);
 
-        // println!("floats: {:#?}", file.float_stream.written_stats());
-        // println!("times: {:#?}", file.time_stream.written_stats());
-
-        // let input_size = count * 16;
-        // let written = buf1.len() + buf2.len();
-        // let ratio = 1. - (written as f64 / input_size as f64);
-        // let ratio = ratio * 100.;
-        // println!("Turned total {input_size} bytes into {written} = {ratio:02.}% reduction");
-
+        let mut file = CodedTimeSeriesReader::new("test_file.tsd")?;
+        let num_samps = data.len();
+        assert!(num_samps > 0);
+        let mut idx = 0;
+        loop {
+            let res = file.peek()?;
+            let Some(val) = res.take() else {
+                break;
+            };
+            let Some(v) = data.pop_front() else {
+                panic!("should not happen");
+            };
+            assert_eq!(val, v, "{idx}");
+            idx += 1;
+        }
+        assert_eq!(num_samps, idx);
         Ok(())
     }
 }

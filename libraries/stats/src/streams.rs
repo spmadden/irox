@@ -13,10 +13,10 @@ use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use core::fmt::UpperHex;
-use core::ops::{BitXor, DerefMut, Sub};
+use core::ops::{Add, BitXor, DerefMut, Sub};
 use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
-use irox_tools::codec::{EncodeVByteTo, ZigZag};
-use irox_tools::ToSigned;
+use irox_tools::codec::{EncodeVByteTo, ZagZig, ZigZag};
+use irox_tools::{ToSigned, ToUnsigned};
 use irox_types::NumberSigned;
 
 pub trait Stream<T: Streamable> {
@@ -128,6 +128,32 @@ impl<S: Streamable + ToSigned<Output = T>, T: Streamable + NumberSigned + Sub<Ou
         self.writer.written_stats()
     }
 }
+pub struct AddingDecoder<T: Streamable> {
+    last_value: T,
+    reader: Box<dyn Decoder<T>>,
+}
+impl<T: Streamable> AddingDecoder<T> {
+    pub fn new(reader: Box<dyn Decoder<T>>) -> Self {
+        AddingDecoder {
+            last_value: Default::default(),
+            reader,
+        }
+    }
+}
+impl<T: Streamable + ToUnsigned<Output = R> + Add<Output = T>, R: Streamable> Decoder<R>
+    for AddingDecoder<T>
+{
+    fn next(&mut self) -> Result<Option<R>, Error> {
+        let a = self.reader.next()?;
+        let Some(a) = a else {
+            return Ok(None);
+        };
+        let next = a + self.last_value;
+        self.last_value = next;
+        let next = ToUnsigned::to_unsigned(next);
+        Ok(Some(next))
+    }
+}
 
 pub struct ZigZagStream<T> {
     writer: Box<dyn Stream<T>>,
@@ -140,6 +166,25 @@ impl<T: Streamable> ZigZagStream<T> {
 impl<D: Streamable, S: Streamable + ZigZag<Output = D>> Stream<S> for ZigZagStream<D> {
     fn write_value(&mut self, value: S) -> Result<usize, Error> {
         self.writer.write_value(ZigZag::zigzag(value))
+    }
+}
+
+pub struct ZigZagDecoder<T> {
+    reader: Box<dyn Decoder<T>>,
+}
+impl<T: Streamable> ZigZagDecoder<T> {
+    pub fn new(reader: Box<dyn Decoder<T>>) -> Self {
+        Self { reader }
+    }
+}
+impl<D: Streamable, S: Streamable + ZagZig<Output = D>> Decoder<D> for ZigZagDecoder<S> {
+    fn next(&mut self) -> Result<Option<D>, Error> {
+        let a = self.reader.next()?;
+        let Some(a) = a else {
+            return Ok(None);
+        };
+        let a = ZagZig::zagzig(a);
+        Ok(Some(a))
     }
 }
 
@@ -298,6 +343,7 @@ cfg_feature_miniz! {
     use miniz_oxide::DataFormat;
     use alloc::collections::VecDeque;
     use irox_bits::{Bits, ErrorKind};
+    use irox_tools::buf::{Buffer, RoundU8Buffer};
 
     pub struct CompressStream<'a, T: MutBits> {
         writer: BitsWrapper<'a, T>,
@@ -443,18 +489,37 @@ cfg_feature_miniz! {
 
     pub struct InflateStream<'a, B: irox_bits::BufBits> {
         reader: BitsWrapper<'a, B>,
-        out_buffer: VecDeque<u8>,
+        out_buffer: RoundU8Buffer<4096>,
         inflater: miniz_oxide::inflate::stream::InflateState,
     }
     impl<'a, B: irox_bits::BufBits> InflateStream<'a, B> {
         pub fn new(reader: BitsWrapper<'a, B>) -> Self {
             let inflater = miniz_oxide::inflate::stream::InflateState::new(DataFormat::Raw);
-            let out_buffer = VecDeque::with_capacity(4096);
+            let out_buffer = RoundU8Buffer::<4096>::default();
             Self {
                 reader,
                 out_buffer,
                 inflater
             }
+        }
+        pub fn has_more(&mut self) -> Result<bool, Error> {
+            if self.out_buffer.is_empty() {
+                self.try_fill_buf()?;
+            }
+            Ok(!self.out_buffer.is_empty())
+        }
+        fn try_fill_buf(&mut self) -> Result<(), Error> {
+            if !self.out_buffer.is_empty() {
+                return Ok(());
+            }
+            self.out_buffer.clear();
+
+            let outbuf = self.out_buffer.as_ref_mut_available();
+            let inbuf = self.reader.fill_buf()?;
+            let res = miniz_oxide::inflate::stream::inflate(&mut self.inflater, inbuf, outbuf, miniz_oxide::MZFlush::None);
+            self.reader.consume(res.bytes_consumed);
+            self.out_buffer.mark_some_used(res.bytes_written)?;
+            Ok(())
         }
     }
     impl<'a, B: irox_bits::BufBits> Bits for InflateStream<'a, B> {
@@ -462,17 +527,7 @@ cfg_feature_miniz! {
             if let Some(v) = self.out_buffer.pop_front() {
                 return Ok(Some(v));
             }
-
-            self.out_buffer.clear();
-            for _ in 0..self.out_buffer.capacity() {
-                self.out_buffer.push_back(0);
-            }
-            let outbuf = self.out_buffer.make_contiguous();
-            let inbuf = self.reader.fill_buf()?;
-
-            let res = miniz_oxide::inflate::stream::inflate(&mut self.inflater, inbuf, outbuf, miniz_oxide::MZFlush::None);
-            self.reader.consume(res.bytes_consumed);
-            self.out_buffer.truncate(res.bytes_written);
+            self.try_fill_buf()?;
 
             Ok(self.out_buffer.pop_front())
         }
