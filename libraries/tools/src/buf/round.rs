@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::unwrap_used)]
@@ -10,6 +10,7 @@ use irox_bits::{Bits, BitsError, BitsErrorKind, Error, ErrorKind, MutBits};
 
 ///
 /// Double-ended circular Buffer.  Basically a fixed size [`std::collections::VecDeque`]
+#[derive(Debug, Clone)]
 pub struct RoundBuffer<const N: usize, T: Sized> {
     buf: [Option<T>; N],
     head: usize,
@@ -63,16 +64,23 @@ impl<const N: usize, T: Sized> IntoIterator for RoundBuffer<N, T> {
         RoundBufferIter { buf: self }
     }
 }
+impl<const N: usize, T: Sized> RoundBuffer<N, T> {
+    const VAL: Option<T> = None;
 
-impl<const N: usize, T: Default + Copy> Default for RoundBuffer<N, T> {
-    fn default() -> Self {
+    pub fn new() -> Self {
         RoundBuffer {
-            buf: [Default::default(); N],
+            buf: [Self::VAL; N],
             head: 0,
             tail: 0,
             size: 0,
             mod_count: 0,
         }
+    }
+}
+
+impl<const N: usize, T: Sized> Default for RoundBuffer<N, T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
