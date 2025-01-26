@@ -1,5 +1,29 @@
 
 
+## v0.2.3 (2025-01-26)
+
+### Bug Fixes
+
+ - <csr-id-9cd9e624907cded75b72e0aa9734909ded0f93d1/> hopefully fix docsrs builds for cargo, log, stats, units
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
+</details>
+
 ## v0.2.2 (2025-01-26)
 
 ### New Features
@@ -11,7 +35,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 7 calendar days.
+ - 3 commits contributed to the release over the course of 7 calendar days.
  - 41 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +47,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-log v0.2.2 ([`8eb0836`](https://github.com/spmadden/irox/commit/8eb0836f0c89ab1c30d4d764ef93088b06dc66bc))
     - Put console logger behind std feature ([`cd21b25`](https://github.com/spmadden/irox/commit/cd21b254bfac53e6304a311a5bbfe045f7a7b643))
     - Cleanup nostd support in imagery ([`d1cf634`](https://github.com/spmadden/irox/commit/d1cf63488838f82f9c64755256fb75ca27851801))
 </details>
