@@ -1,7 +1,98 @@
 
 
 
+## v0.3.0 (2025-01-26)
+
+### Chore
+
+ - <csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/> cleanup some unused egui features
+ - <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/> fix lints around using Arc<Vec<T>> instead of Arc<[T]>
+
+### Documentation
+
+ - <csr-id-af1182afe32faf36f9f00954b0cf92dee60f8c8b/> hopefully fix the stats/units docsrs builds
+
+### New Features
+
+ - <csr-id-f039caac8a8960d249a754b99c19f38c64429eb3/> decoding a Coded stream passes basic tests
+ - <csr-id-18e0246c5173dc368e03681404f3eb8834b4a853/> fixup nostd support in stats
+ - <csr-id-13990089e681ebf7eb3ca5e86620ea81fb7cb4d6/> beginnings of a CodedTimeSeriesReader
+ - <csr-id-f45c79ad8097c998eb4794119f1cdcb31ff32065/> some basic decoders, ZagZig, Inflater
+ - <csr-id-dc687d8ebbc0a1bd62a10565ff491ef1f2cabfd4/> new CodedTimeSeriesWriter to compress time-series sensor data
+ - <csr-id-aef170881b7afcb4914e37c551bf3555b96fd48e/> simplify adding a counter vs a fn in StreamStats
+ - <csr-id-8ec4046bfec2b28efed7b5bdbe798cb60a0badf3/> rework StreamStats to take a boxed fn rather than a counter directly
+ - <csr-id-1460ffd9fb2aee608ba9974e87656c50a77b68ee/> bunch of work on TSDF and float compression
+ - <csr-id-5a8ca800c9fcf306271348355678eaecd344be82/> new basic alpha-beta and alpha-beta-gamma filter impls
+ - <csr-id-7dbfca1fa8be625a32613e7271922a9fbdfe21a0/> linreg curve fitting using standard least squares method
+ - <csr-id-511fa52cf26ed82ec2a2f4236ee6c822d5a28566/> add SavitzkyGolay1DerivOrder34 filter
+ - <csr-id-c4f025f35f68a954eb4fdb418418faf66eb4956e/> ability to break a rectangle into quadrants
+ - <csr-id-016d9e40273d24d1149eca0121e25565cddc71e4/> time window downsampling
+ - <csr-id-07a16c737337a6cdfafeca041e0178b991d6360e/> add time window filters
+
+### Bug Fixes
+
+ - <csr-id-4c1164835f66e16e242912dfe889aba04bab6346/> USOS doesn't default to zero when no data
+ - <csr-id-80518f578cbc22b2ff0572856825be11056a66e2/> squash rustrover misidentified error.
+ - <csr-id-a4ad50d17385224c4b0ee57b9bf569027aebb2fa/> rejigger filter to align with sago binning scheme
+ - <csr-id-16f1c7a7f9d79cf0108d00d5b84abb1c79ffccd1/> fix an issue with streaming mean
+ - <csr-id-6e5e222a6a72cf565c8da73bb4bb157dfcd409dd/> updating examples from breaking api changes
+ - <csr-id-a535cafdcbbcb6644fb57b402997bf49b2e00539/> clean up some issues with streaming min/max and points
+
+### Other
+
+ - <csr-id-7957bd7ac707c9c6bfe0ba2fd32612341fd8cb57/> Update readme & some documentation for the stats module
+
+### New Features (BREAKING)
+
+ - <csr-id-cf18819735eecc7e8512ec587f59fcbed385d712/> return usize instead of () in WriteToBEBits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 26 commits contributed to the release over the course of 36 calendar days.
+ - 41 days passed between releases.
+ - 25 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-bits v0.4.0 ([`a6de5f0`](https://github.com/spmadden/irox/commit/a6de5f0f1280adf860333e8c066b145e3166ef4b))
+    - Decoding a Coded stream passes basic tests ([`f039caa`](https://github.com/spmadden/irox/commit/f039caac8a8960d249a754b99c19f38c64429eb3))
+    - Fixup nostd support in stats ([`18e0246`](https://github.com/spmadden/irox/commit/18e0246c5173dc368e03681404f3eb8834b4a853))
+    - USOS doesn't default to zero when no data ([`4c11648`](https://github.com/spmadden/irox/commit/4c1164835f66e16e242912dfe889aba04bab6346))
+    - Beginnings of a CodedTimeSeriesReader ([`1399008`](https://github.com/spmadden/irox/commit/13990089e681ebf7eb3ca5e86620ea81fb7cb4d6))
+    - Some basic decoders, ZagZig, Inflater ([`f45c79a`](https://github.com/spmadden/irox/commit/f45c79ad8097c998eb4794119f1cdcb31ff32065))
+    - New CodedTimeSeriesWriter to compress time-series sensor data ([`dc687d8`](https://github.com/spmadden/irox/commit/dc687d8ebbc0a1bd62a10565ff491ef1f2cabfd4))
+    - Simplify adding a counter vs a fn in StreamStats ([`aef1708`](https://github.com/spmadden/irox/commit/aef170881b7afcb4914e37c551bf3555b96fd48e))
+    - Squash rustrover misidentified error. ([`80518f5`](https://github.com/spmadden/irox/commit/80518f578cbc22b2ff0572856825be11056a66e2))
+    - Rework StreamStats to take a boxed fn rather than a counter directly ([`8ec4046`](https://github.com/spmadden/irox/commit/8ec4046bfec2b28efed7b5bdbe798cb60a0badf3))
+    - Return usize instead of () in WriteToBEBits ([`cf18819`](https://github.com/spmadden/irox/commit/cf18819735eecc7e8512ec587f59fcbed385d712))
+    - Bunch of work on TSDF and float compression ([`1460ffd`](https://github.com/spmadden/irox/commit/1460ffd9fb2aee608ba9974e87656c50a77b68ee))
+    - Hopefully fix the stats/units docsrs builds ([`af1182a`](https://github.com/spmadden/irox/commit/af1182afe32faf36f9f00954b0cf92dee60f8c8b))
+    - Update readme & some documentation for the stats module ([`7957bd7`](https://github.com/spmadden/irox/commit/7957bd7ac707c9c6bfe0ba2fd32612341fd8cb57))
+    - New basic alpha-beta and alpha-beta-gamma filter impls ([`5a8ca80`](https://github.com/spmadden/irox/commit/5a8ca800c9fcf306271348355678eaecd344be82))
+    - Cleanup some unused egui features ([`45a936a`](https://github.com/spmadden/irox/commit/45a936a015f24871d007c91f9051377a3dfc1fe5))
+    - Linreg curve fitting using standard least squares method ([`7dbfca1`](https://github.com/spmadden/irox/commit/7dbfca1fa8be625a32613e7271922a9fbdfe21a0))
+    - Rejigger filter to align with sago binning scheme ([`a4ad50d`](https://github.com/spmadden/irox/commit/a4ad50d17385224c4b0ee57b9bf569027aebb2fa))
+    - Add SavitzkyGolay1DerivOrder34 filter ([`511fa52`](https://github.com/spmadden/irox/commit/511fa52cf26ed82ec2a2f4236ee6c822d5a28566))
+    - Fix an issue with streaming mean ([`16f1c7a`](https://github.com/spmadden/irox/commit/16f1c7a7f9d79cf0108d00d5b84abb1c79ffccd1))
+    - Ability to break a rectangle into quadrants ([`c4f025f`](https://github.com/spmadden/irox/commit/c4f025f35f68a954eb4fdb418418faf66eb4956e))
+    - Updating examples from breaking api changes ([`6e5e222`](https://github.com/spmadden/irox/commit/6e5e222a6a72cf565c8da73bb4bb157dfcd409dd))
+    - Time window downsampling ([`016d9e4`](https://github.com/spmadden/irox/commit/016d9e40273d24d1149eca0121e25565cddc71e4))
+    - Clean up some issues with streaming min/max and points ([`a535caf`](https://github.com/spmadden/irox/commit/a535cafdcbbcb6644fb57b402997bf49b2e00539))
+    - Add time window filters ([`07a16c7`](https://github.com/spmadden/irox/commit/07a16c737337a6cdfafeca041e0178b991d6360e))
+    - Fix lints around using Arc<Vec<T>> instead of Arc<[T]> ([`8852ee8`](https://github.com/spmadden/irox/commit/8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca))
+</details>
+
 ## v0.2.9 (2024-12-15)
+
+<csr-id-f0cb38d6ad407000405cecc9d94ed9157d639faa/>
 
 ### Chore
 
@@ -15,7 +106,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 1 day passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +118,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.2.9 ([`701453c`](https://github.com/spmadden/irox/commit/701453ca9800a501526f7bbc7aff9f94091d288d))
     - Samples, Points, Rects, Windows, and some graphing ([`ba92c86`](https://github.com/spmadden/irox/commit/ba92c8669b749a681057904e57c2697c70b7a250))
     - Clean up lints in stats ([`f0cb38d`](https://github.com/spmadden/irox/commit/f0cb38d6ad407000405cecc9d94ed9157d639faa))
 </details>
@@ -47,8 +139,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
- - 44 days passed between releases.
+ - 5 commits contributed to the release over the course of 20 calendar days.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -82,7 +173,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 5 calendar days.
  - 5 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -124,7 +215,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 10 commits contributed to the release.
+ - 10 commits contributed to the release over the course of 47 calendar days.
  - 159 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -158,7 +249,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 28 calendar days.
  - 47 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -196,8 +287,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
- - 28 days passed between releases.
+ - 7 commits contributed to the release over the course of 2 calendar days.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -229,7 +319,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 50 calendar days.
  - 95 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -257,8 +347,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
- - 52 days passed between releases.
+ - 2 commits contributed to the release over the course of 3 calendar days.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -288,7 +377,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 12 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -325,7 +414,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 29 calendar days.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
