@@ -1,7 +1,35 @@
 
 
 
+## v0.3.1 (2025-01-26)
+
+### Bug Fixes
+
+ - <csr-id-9cd9e624907cded75b72e0aa9734909ded0f93d1/> hopefully fix docsrs builds for cargo, log, stats, units
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
+</details>
+
 ## v0.3.0 (2025-01-26)
+
+<csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/>
+<csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/>
+<csr-id-7957bd7ac707c9c6bfe0ba2fd32612341fd8cb57/>
 
 ### Chore
 
@@ -50,7 +78,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 26 commits contributed to the release over the course of 36 calendar days.
+ - 27 commits contributed to the release over the course of 36 calendar days.
  - 41 days passed between releases.
  - 25 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -62,6 +90,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.3.0 ([`97dfe5a`](https://github.com/spmadden/irox/commit/97dfe5addce2b6ac72eb0633baa035d237c656cf))
     - Release irox-bits v0.4.0 ([`a6de5f0`](https://github.com/spmadden/irox/commit/a6de5f0f1280adf860333e8c066b145e3166ef4b))
     - Decoding a Coded stream passes basic tests ([`f039caa`](https://github.com/spmadden/irox/commit/f039caac8a8960d249a754b99c19f38c64429eb3))
     - Fixup nostd support in stats ([`18e0246`](https://github.com/spmadden/irox/commit/18e0246c5173dc368e03681404f3eb8834b4a853))
