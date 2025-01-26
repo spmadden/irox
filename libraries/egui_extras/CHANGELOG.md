@@ -1,6 +1,104 @@
 
 
 
+## v0.5.5 (2025-01-26)
+
+### Chore
+
+ - <csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/> cleanup some unused egui features
+ - <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/> fix lints around using Arc<Vec<T>> instead of Arc<[T]>
+
+### New Features
+
+ - <csr-id-8270cefc0903fafcf39d8b206a250403df3c79e9/> fixup nostd support in carto
+ - <csr-id-76eaf78eda488c5a0a9207bad1807351cf0bc7e7/> use new errorbars and repainter
+ - <csr-id-075db4dc85ea2437eb68f7a2a8c9ae8feb0b7fda/> add new stddev error bar type
+ - <csr-id-d34faf971db9204a1a0cad479793e56dac6415af/> add new repaint limiter
+ - <csr-id-9d668a1c87b9ce84855314c4bf8fac74449de20b/> upgrade egui to 0.30, fix profiling and fonts
+ - <csr-id-8a21395de80191d7bd2c89258541755d1aec7c85/> add TROC options in plotperf
+ - <csr-id-10d59a393cd9794cef83dd62903725c41cad87f7/> line highlight cycle now pauses in between loops
+ - <csr-id-197846898e443f48ced447a2e4e6208ae4b83f60/> update perftool to include a epoch bias
+ - <csr-id-f6d531a23cdff1ffc2d63228a427269bcb039a8d/> better axis alignment and ranging for right axis
+ - <csr-id-5bc9bb3290781a2bc26cd51021f1533ea743959d/> plot can cycle through the lines
+ - <csr-id-b24dffada0c756be63053ecf158d21ae933e7fc8/> pop hovered line to the front
+ - <csr-id-ff847d5fae3376dca63e294289ffcbc4f8cecb05/> draw bonus min/max line
+ - <csr-id-c475e0060a653c24d1ad3d8cc74e061c6002783e/> show multiple line quantity examples in plotsperf
+ - <csr-id-ea9f262077b885297aae79749b819e6a6d50e9b8/> break up error bars mesh
+ - <csr-id-407c46c35dacd4464cc54f48b9b3ed94ddb10914/> expose toolframe settings as defaults in constructor
+ - <csr-id-fb3cc94725b10f17b39150d1575ea15dc2dceb7b/> big perf improvement by building and caching meshes by hand whenever the data updates, rather than every frame.
+ - <csr-id-a9f48abe0ce7fd9351fbadfa6f434ab3d2398ddc/> add average lines to plotsperf
+ - <csr-id-e992440ae06282a790859447c75b92a3bcfaba77/> add ability to have second y-axis
+ - <csr-id-c614c13c659a2aa391e03b9ef91d9617c0d81828/> new plots performance checker example
+ - <csr-id-c99179a7139826518bd4c615844fa340e9083166/> rejigger line label drawing
+ - <csr-id-561032bc0ab15df35412d13cc358a76e4ed9a97c/> thread-safe out-of-band data updates for plots
+ - <csr-id-9d4addf0948678b541a48a662d28653bf97ff316/> ability to mark individual lines as visible/invisible.
+ - <csr-id-a9c96353d588db122ac290ad6f6a50383bab13cb/> new functions to build axis formatters for time-series physical data
+
+### Bug Fixes
+
+ - <csr-id-aba46d3516c51d883abd5f2fdfbc596187edf8f2/> fix irox-time imports within repainting
+ - <csr-id-1627a04d8aff91644a7202d5b4cc8141c0667876/> fix the linux build by adding missing egui features
+ - <csr-id-7fcb3e79aa80cc2d23c7de6733ff63d787af7a67/> show time rate of change
+ - <csr-id-1eec345d032e64e8719067890adf708eac74a3fe/> tweak transparent shading to be more localized to individual lines rather than the whole range
+ - <csr-id-023bc48c4c9179232558879ffef6acceb998883e/> allow extra stuff alongside the frame history in the bottom bar
+ - <csr-id-6e5e222a6a72cf565c8da73bb4bb157dfcd409dd/> updating examples from breaking api changes
+ - <csr-id-5061f5fc9bb6e46a431ac2dc92691d35f1492c4b/> only draw the hover within the plot grid area
+
+### Refactor
+
+ - <csr-id-9b3f63a99527aa22dccebac43a29057929b7493a/> move structure into own method
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 33 commits contributed to the release over the course of 40 calendar days.
+ - 41 days passed between releases.
+ - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix irox-time imports within repainting ([`aba46d3`](https://github.com/spmadden/irox/commit/aba46d3516c51d883abd5f2fdfbc596187edf8f2))
+    - Fixup nostd support in carto ([`8270cef`](https://github.com/spmadden/irox/commit/8270cefc0903fafcf39d8b206a250403df3c79e9))
+    - Use new errorbars and repainter ([`76eaf78`](https://github.com/spmadden/irox/commit/76eaf78eda488c5a0a9207bad1807351cf0bc7e7))
+    - Add new stddev error bar type ([`075db4d`](https://github.com/spmadden/irox/commit/075db4dc85ea2437eb68f7a2a8c9ae8feb0b7fda))
+    - Add new repaint limiter ([`d34faf9`](https://github.com/spmadden/irox/commit/d34faf971db9204a1a0cad479793e56dac6415af))
+    - Fix the linux build by adding missing egui features ([`1627a04`](https://github.com/spmadden/irox/commit/1627a04d8aff91644a7202d5b4cc8141c0667876))
+    - Cleanup some unused egui features ([`45a936a`](https://github.com/spmadden/irox/commit/45a936a015f24871d007c91f9051377a3dfc1fe5))
+    - Upgrade egui to 0.30, fix profiling and fonts ([`9d668a1`](https://github.com/spmadden/irox/commit/9d668a1c87b9ce84855314c4bf8fac74449de20b))
+    - Add TROC options in plotperf ([`8a21395`](https://github.com/spmadden/irox/commit/8a21395de80191d7bd2c89258541755d1aec7c85))
+    - Move structure into own method ([`9b3f63a`](https://github.com/spmadden/irox/commit/9b3f63a99527aa22dccebac43a29057929b7493a))
+    - Show time rate of change ([`7fcb3e7`](https://github.com/spmadden/irox/commit/7fcb3e79aa80cc2d23c7de6733ff63d787af7a67))
+    - Tweak transparent shading to be more localized to individual lines rather than the whole range ([`1eec345`](https://github.com/spmadden/irox/commit/1eec345d032e64e8719067890adf708eac74a3fe))
+    - Line highlight cycle now pauses in between loops ([`10d59a3`](https://github.com/spmadden/irox/commit/10d59a393cd9794cef83dd62903725c41cad87f7))
+    - Update perftool to include a epoch bias ([`1978468`](https://github.com/spmadden/irox/commit/197846898e443f48ced447a2e4e6208ae4b83f60))
+    - Better axis alignment and ranging for right axis ([`f6d531a`](https://github.com/spmadden/irox/commit/f6d531a23cdff1ffc2d63228a427269bcb039a8d))
+    - Plot can cycle through the lines ([`5bc9bb3`](https://github.com/spmadden/irox/commit/5bc9bb3290781a2bc26cd51021f1533ea743959d))
+    - Allow extra stuff alongside the frame history in the bottom bar ([`023bc48`](https://github.com/spmadden/irox/commit/023bc48c4c9179232558879ffef6acceb998883e))
+    - Pop hovered line to the front ([`b24dffa`](https://github.com/spmadden/irox/commit/b24dffada0c756be63053ecf158d21ae933e7fc8))
+    - Draw bonus min/max line ([`ff847d5`](https://github.com/spmadden/irox/commit/ff847d5fae3376dca63e294289ffcbc4f8cecb05))
+    - Show multiple line quantity examples in plotsperf ([`c475e00`](https://github.com/spmadden/irox/commit/c475e0060a653c24d1ad3d8cc74e061c6002783e))
+    - Break up error bars mesh ([`ea9f262`](https://github.com/spmadden/irox/commit/ea9f262077b885297aae79749b819e6a6d50e9b8))
+    - Expose toolframe settings as defaults in constructor ([`407c46c`](https://github.com/spmadden/irox/commit/407c46c35dacd4464cc54f48b9b3ed94ddb10914))
+    - Updating examples from breaking api changes ([`6e5e222`](https://github.com/spmadden/irox/commit/6e5e222a6a72cf565c8da73bb4bb157dfcd409dd))
+    - Big perf improvement by building and caching meshes by hand whenever the data updates, rather than every frame. ([`fb3cc94`](https://github.com/spmadden/irox/commit/fb3cc94725b10f17b39150d1575ea15dc2dceb7b))
+    - Add average lines to plotsperf ([`a9f48ab`](https://github.com/spmadden/irox/commit/a9f48abe0ce7fd9351fbadfa6f434ab3d2398ddc))
+    - Fix lints around using Arc<Vec<T>> instead of Arc<[T]> ([`8852ee8`](https://github.com/spmadden/irox/commit/8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca))
+    - Add ability to have second y-axis ([`e992440`](https://github.com/spmadden/irox/commit/e992440ae06282a790859447c75b92a3bcfaba77))
+    - New plots performance checker example ([`c614c13`](https://github.com/spmadden/irox/commit/c614c13c659a2aa391e03b9ef91d9617c0d81828))
+    - Rejigger line label drawing ([`c99179a`](https://github.com/spmadden/irox/commit/c99179a7139826518bd4c615844fa340e9083166))
+    - Thread-safe out-of-band data updates for plots ([`561032b`](https://github.com/spmadden/irox/commit/561032bc0ab15df35412d13cc358a76e4ed9a97c))
+    - Only draw the hover within the plot grid area ([`5061f5f`](https://github.com/spmadden/irox/commit/5061f5fc9bb6e46a431ac2dc92691d35f1492c4b))
+    - Ability to mark individual lines as visible/invisible. ([`9d4addf`](https://github.com/spmadden/irox/commit/9d4addf0948678b541a48a662d28653bf97ff316))
+    - New functions to build axis formatters for time-series physical data ([`a9c9635`](https://github.com/spmadden/irox/commit/a9c96353d588db122ac290ad6f6a50383bab13cb))
+</details>
+
 ## v0.5.4 (2024-12-15)
 
 ### New Features
@@ -11,7 +109,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +120,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.4 ([`fc569d0`](https://github.com/spmadden/irox/commit/fc569d0d513472f1fa43da6c817ed1e28498ee41))
     - Expose data changed flag in plot ([`4272412`](https://github.com/spmadden/irox/commit/42724120f69243ffb0f93a1524986dc48c79091e))
 </details>
 
@@ -39,7 +138,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 1 calendar day.
  - 1 day passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -96,8 +195,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
- - 44 days passed between releases.
+ - 4 commits contributed to the release over the course of 20 calendar days.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -130,7 +228,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 3 calendar days.
  - 42 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -210,7 +308,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 36 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -329,7 +427,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 10 calendar days.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -365,7 +463,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 2 calendar days.
  - 2 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -426,7 +524,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 26 calendar days.
  - 41 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -455,7 +553,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 13 calendar days.
  - 23 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -486,7 +584,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 51 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -514,7 +611,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 26 calendar days.
  - 50 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -549,7 +646,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 10 calendar days.
  - 25 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -640,8 +737,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
- - 27 days passed between releases.
+ - 6 commits contributed to the release over the course of 14 calendar days.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -724,7 +820,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 7 calendar days.
  - 7 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -753,7 +849,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 19 calendar days.
  - 19 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -792,7 +888,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 28 calendar days.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
