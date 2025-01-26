@@ -1,7 +1,34 @@
 
 
 
+## v0.6.4 (2025-01-26)
+
+### Bug Fixes
+
+ - <csr-id-9cd9e624907cded75b72e0aa9734909ded0f93d1/> hopefully fix docsrs builds for cargo, log, stats, units
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-units v0.4.5 ([`731469d`](https://github.com/spmadden/irox/commit/731469da7b0ff6d41bf7488a59767f199d62fb57))
+    - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
+</details>
+
 ## v0.6.3 (2025-01-26)
+
+<csr-id-bad3955a8da0b295db8543b867dc418b8d3d667c/>
 
 ### Chore
 
@@ -22,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 35 calendar days.
+ - 10 commits contributed to the release over the course of 35 calendar days.
  - 43 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -34,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.6.3 ([`6356cbf`](https://github.com/spmadden/irox/commit/6356cbf144e695d9246fd948f8419a3e28bc436b))
     - Fixup nostd support in carto ([`8270cef`](https://github.com/spmadden/irox/commit/8270cefc0903fafcf39d8b206a250403df3c79e9))
     - Put additional windows support behind feature gate 'windows' ([`087ade5`](https://github.com/spmadden/irox/commit/087ade571cf29d53d8bd391aceec324bdf66b937))
     - New LocalENU converter ([`1b47cb6`](https://github.com/spmadden/irox/commit/1b47cb63546d1ff499dcf49e3d862f58c6c927b5))
