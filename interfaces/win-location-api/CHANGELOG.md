@@ -1,7 +1,38 @@
 
 
 
+## v0.5.2 (2025-01-26)
+
+### Chore
+
+ - <csr-id-f84f96d844d5be0456e68b99322812fa2cccf464/> update to latest deps
+
+### Bug Fixes
+
+ - <csr-id-04df8d236f6416458b3b15817204c8914c4b7008/> fix missing 'windows' feature on carto
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 11 calendar days.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix missing 'windows' feature on carto ([`04df8d2`](https://github.com/spmadden/irox/commit/04df8d236f6416458b3b15817204c8914c4b7008))
+    - Update to latest deps ([`f84f96d`](https://github.com/spmadden/irox/commit/f84f96d844d5be0456e68b99322812fa2cccf464))
+</details>
+
 ## v0.5.1 (2024-05-18)
+
+<csr-id-ab1f67daadda5ee1768564f07f1f4f72aa165bad/>
 
 ### Chore
 
@@ -11,8 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 126 calendar days.
- - 171 days passed between releases.
+ - 3 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-winlocation-api v0.5.1 ([`f2c4565`](https://github.com/spmadden/irox/commit/f2c4565d09a9c2ece9ee6439a56058c10651f2d8))
     - Bump winlocation-api to 0.5.1 for release ([`ab1f67d`](https://github.com/spmadden/irox/commit/ab1f67daadda5ee1768564f07f1f4f72aa165bad))
     - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
@@ -42,7 +73,6 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 23 calendar days.
- - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -59,7 +89,7 @@
     - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 ### New Features (BREAKING)
 
@@ -86,7 +116,7 @@
     - Pivot win-location-api to use irox_time ([`f4dc26a`](https://github.com/spmadden/irox/commit/f4dc26af72846b460e0c0634a82cca3d31c160e3))
 </details>
 
-## v0.2.0 (2023-10-16)
+## v0.2.0 (2023-10-15)
 
 ### New Features
 
@@ -113,7 +143,7 @@
     - Bump versions for release ([`8dc3f98`](https://github.com/spmadden/irox/commit/8dc3f98d6b32d735c009468feb0ba32dc367d49a))
 </details>
 
-## v0.1.1 (2023-10-08)
+## v0.1.1 (2023-10-07)
 
 ### New Features
 
@@ -158,7 +188,7 @@
     - Add additional trace logging to the location handler ([`01adbbd`](https://github.com/spmadden/irox/commit/01adbbd31fe97922c50c2b15414bc7cc181467f2))
 </details>
 
-## v0.1.0 (2023-09-18)
+## v0.1.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
