@@ -31,3 +31,7 @@ windows = { workspace = true, optional = true }
 
 [build-dependencies]
 irox-csv.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

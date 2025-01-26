@@ -23,3 +23,7 @@ workspace = true
 log = { workspace = true }
 irox-tools = { workspace = true }
 irox-time = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

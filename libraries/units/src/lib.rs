@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! *The little Units Library that could*
@@ -28,6 +29,7 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::module_name_repetitions)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod bounds;
 pub mod shapes;

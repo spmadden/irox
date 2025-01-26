@@ -16,3 +16,7 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
