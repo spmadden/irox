@@ -1,6 +1,31 @@
 
 
 
+## v0.5.1 (2025-01-26)
+
+### New Features
+
+ - <csr-id-41e0d0f0b47d987ebe3aa69afa2a84e5fc478284/> cleanup nostd support in types
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 7 calendar days.
+ - 43 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleanup nostd support in types ([`41e0d0f`](https://github.com/spmadden/irox/commit/41e0d0f0b47d987ebe3aa69afa2a84e5fc478284))
+</details>
+
 ## v0.5.0 (2024-12-13)
 
 ### New Features
@@ -15,8 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
- - 44 days passed between releases.
+ - 3 commits contributed to the release over the course of 19 calendar days.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -27,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.5.0 ([`dbc8fe8`](https://github.com/spmadden/irox/commit/dbc8fe897650fabdf0038fa1eb1badf26511a932))
     - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
     - New Field class of struct with an optional settable value ([`0da999c`](https://github.com/spmadden/irox/commit/0da999c97c6c1a2c08b182f535eb4ec2f6b19963))
 </details>
@@ -41,7 +66,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 5 calendar days.
  - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -73,7 +98,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 11 calendar days.
  - 118 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -104,7 +129,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 26 calendar days.
  - 68 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -132,7 +157,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 17 calendar days.
  - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -161,7 +186,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 123 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -196,8 +220,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
- - 30 days passed between releases.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -257,7 +280,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 8 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -295,7 +318,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 21 calendar days.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 

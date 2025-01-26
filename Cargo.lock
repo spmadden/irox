@@ -2565,7 +2565,7 @@ dependencies = [
 
 [[package]]
 name = "irox-types"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "irox-bits",
  "irox-enums",
