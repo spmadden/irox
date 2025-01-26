@@ -1,18 +1,18 @@
 
 
 
-## v0.4.5 (2024-12-13)
+## v0.4.6 (2025-01-26)
 
 ### New Features
 
- - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+ - <csr-id-cd21b254bfac53e6304a311a5bbfe045f7a7b643/> put console logger behind std feature
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 50 days passed between releases.
+ - 1 commit contributed to the release over the course of 7 calendar days.
+ - 43 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +23,31 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Put console logger behind std feature ([`cd21b25`](https://github.com/spmadden/irox/commit/cd21b254bfac53e6304a311a5bbfe045f7a7b643))
+</details>
+
+## v0.4.5 (2024-12-13)
+
+### New Features
+
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 20 calendar days.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-networking v0.4.5 ([`eb3cab2`](https://github.com/spmadden/irox/commit/eb3cab2f41ec9b7b86bdb294f755fc64b9682dce))
     - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
 </details>
 
@@ -36,7 +61,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 10 calendar days.
  - 158 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -63,7 +88,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 76 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -95,7 +119,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 6 calendar days.
  - 50 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -230,7 +254,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 5 calendar days.
  - 6 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -258,8 +282,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
- - 30 days passed between releases.
+ - 2 commits contributed to the release over the course of 3 calendar days.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -363,7 +386,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 10 commits contributed to the release.
+ - 10 commits contributed to the release over the course of 29 calendar days.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
