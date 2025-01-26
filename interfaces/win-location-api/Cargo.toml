@@ -19,6 +19,6 @@ workspace = true
 windows.workspace = true
 log.workspace = true
 
-irox-carto.workspace = true
+irox-carto = { workspace = true, features = ["windows"] }
 irox-units.workspace = true
 irox-time.workspace = true
