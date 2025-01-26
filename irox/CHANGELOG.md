@@ -1,7 +1,42 @@
 
 
 
+## v0.8.0 (2025-01-26)
+
+### Chore
+
+ - <csr-id-dba5957f0e6f34e940bc0d3695b9ded01a3bda1d/> bump irox to 0.8.0 for release
+
+### Bug Fixes
+
+ - <csr-id-ddc6246a57502b1492c9c1ea96422ea355273043/> add a bunch of missing features to main module
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release over the course of 26 calendar days.
+ - 41 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox to 0.8.0 for release ([`dba5957`](https://github.com/spmadden/irox/commit/dba5957f0e6f34e940bc0d3695b9ded01a3bda1d))
+    - Release irox-stats v0.3.0 ([`97dfe5a`](https://github.com/spmadden/irox/commit/97dfe5addce2b6ac72eb0633baa035d237c656cf))
+    - Release irox-tools v0.10.0 ([`06629ef`](https://github.com/spmadden/irox/commit/06629ef062edd1cfe60a0ba1d8b0783a6c43e454))
+    - Release irox-bits v0.4.0 ([`a6de5f0`](https://github.com/spmadden/irox/commit/a6de5f0f1280adf860333e8c066b145e3166ef4b))
+    - Add a bunch of missing features to main module ([`ddc6246`](https://github.com/spmadden/irox/commit/ddc6246a57502b1492c9c1ea96422ea355273043))
+</details>
+
 ## v0.7.2 (2024-12-15)
+
+<csr-id-f6b726c3a992b31af94754aa093eb970ab10538f/>
 
 ### Chore
 
@@ -11,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.7.2 ([`4822f26`](https://github.com/spmadden/irox/commit/4822f2625a0f969aa53e52e0686bcb62994a68ee))
     - Bump irox to 0.7.2 for release ([`f6b726c`](https://github.com/spmadden/irox/commit/f6b726c3a992b31af94754aa093eb970ab10538f))
 </details>
 
@@ -66,7 +102,6 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release.
- - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -130,7 +165,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 25 calendar days.
  - 84 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -190,7 +225,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 3 calendar days.
  - 39 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -275,7 +310,6 @@
 <csr-read-only-do-not-edit/>
 
  - 17 commits contributed to the release.
- - 145 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -316,7 +350,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 12 commits contributed to the release.
+ - 12 commits contributed to the release over the course of 19 calendar days.
  - 26 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -359,7 +393,6 @@
 <csr-read-only-do-not-edit/>
 
  - 27 commits contributed to the release.
- - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -482,7 +515,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 6 calendar days.
  - 19 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -533,7 +566,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release.
+ - 9 commits contributed to the release over the course of 35 calendar days.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
