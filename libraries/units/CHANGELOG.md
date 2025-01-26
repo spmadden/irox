@@ -1,6 +1,48 @@
 
 
 
+## v0.4.4 (2025-01-26)
+
+### Documentation
+
+ - <csr-id-af1182afe32faf36f9f00954b0cf92dee60f8c8b/> hopefully fix the stats/units docsrs builds
+
+### New Features
+
+ - <csr-id-dd07c94554b9b667fb47a191944abfa686ae2069/> new assert_length_eq_eps! macro to compare lengths in tests
+ - <csr-id-b5145eff50004ef8a959c8d346b00b4c57139de9/> Rework macro impls for units macro.  ALL HAIL THE MACROS.
+ - <csr-id-903aa93424a1c310f810efa0ea0b35b6a6c70dd7/> push ord & eq up to all units
+ - <csr-id-252e8c8348fe55a485d18da4e4b234bb046fe949/> impl Eq and Ord for Duration
+
+### Bug Fixes
+
+ - <csr-id-abc61257319eeadfcb45fdb251375ceace022b80/> fix issue with identifying a good prefix for negative numbers
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 7 commits contributed to the release over the course of 40 calendar days.
+ - 41 days passed between releases.
+ - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.10.0 ([`06629ef`](https://github.com/spmadden/irox/commit/06629ef062edd1cfe60a0ba1d8b0783a6c43e454))
+    - New assert_length_eq_eps! macro to compare lengths in tests ([`dd07c94`](https://github.com/spmadden/irox/commit/dd07c94554b9b667fb47a191944abfa686ae2069))
+    - Hopefully fix the stats/units docsrs builds ([`af1182a`](https://github.com/spmadden/irox/commit/af1182afe32faf36f9f00954b0cf92dee60f8c8b))
+    - Rework macro impls for units macro.  ALL HAIL THE MACROS. ([`b5145ef`](https://github.com/spmadden/irox/commit/b5145eff50004ef8a959c8d346b00b4c57139de9))
+    - Push ord & eq up to all units ([`903aa93`](https://github.com/spmadden/irox/commit/903aa93424a1c310f810efa0ea0b35b6a6c70dd7))
+    - Fix issue with identifying a good prefix for negative numbers ([`abc6125`](https://github.com/spmadden/irox/commit/abc61257319eeadfcb45fdb251375ceace022b80))
+    - Impl Eq and Ord for Duration ([`252e8c8`](https://github.com/spmadden/irox/commit/252e8c8348fe55a485d18da4e4b234bb046fe949))
+</details>
+
 ## v0.4.3 (2024-12-15)
 
 ### New Features
@@ -15,7 +57,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 1 day passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +69,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.3 ([`d5c40da`](https://github.com/spmadden/irox/commit/d5c40da2c1827de911cbc20cd02792d526dc96da))
     - Guard log10 behind alloc ([`b5810ec`](https://github.com/spmadden/irox/commit/b5810ecb0c9e3736e3a5261d33827be8e8d416f2))
     - SI Prefixes and Quantities ([`3d7d1bf`](https://github.com/spmadden/irox/commit/3d7d1bff4b37383c1746119894431ee9afdb5288))
 </details>
@@ -42,8 +85,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
- - 131 days passed between releases.
+ - 3 commits contributed to the release over the course of 20 calendar days.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -124,7 +166,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 28 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -216,7 +257,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 20 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -244,7 +285,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 9 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -278,7 +318,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -354,7 +394,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 34 commits contributed to the release.
+ - 34 commits contributed to the release over the course of 5 calendar days.
  - 27 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -474,7 +514,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 41 commits contributed to the release.
+ - 41 commits contributed to the release over the course of 62 calendar days.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
