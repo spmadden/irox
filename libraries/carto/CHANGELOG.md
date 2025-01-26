@@ -1,6 +1,50 @@
 
 
 
+## v0.6.3 (2025-01-26)
+
+### Chore
+
+ - <csr-id-bad3955a8da0b295db8543b867dc418b8d3d667c/> Cleanup lints with new math macros
+
+### New Features
+
+ - <csr-id-8270cefc0903fafcf39d8b206a250403df3c79e9/> fixup nostd support in carto
+ - <csr-id-087ade571cf29d53d8bd391aceec324bdf66b937/> put additional windows support behind feature gate 'windows'
+ - <csr-id-1b47cb63546d1ff499dcf49e3d862f58c6c927b5/> new LocalENU converter
+ - <csr-id-7f5bac909bd4cc71ae99ee8a3d02cabc66ca42f6/> new specific WGS84ECEF conversion to short-circuit some ellpipsoid checks
+ - <csr-id-bd0c627afc8f54acb74e56a9e3c6073d3608879f/> add specific ENUPosition, NEDPosition types
+ - <csr-id-2329e5f2ce482edaaba079ee14b199a2d234e9e7/> pivot AbsoluteCoordinate to be ECEF rather than plain cartesian
+ - <csr-id-18fac2cf5ea0d86cca127843b603b834b4c70261/> explicit conversions to ellipse/ellipsoid/shape
+ - <csr-id-2f2c19a3836375cb1ab3dce94f8112a9c2dbc384/> impl ECEF/Geocentric conversions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release over the course of 35 calendar days.
+ - 43 days passed between releases.
+ - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fixup nostd support in carto ([`8270cef`](https://github.com/spmadden/irox/commit/8270cefc0903fafcf39d8b206a250403df3c79e9))
+    - Put additional windows support behind feature gate 'windows' ([`087ade5`](https://github.com/spmadden/irox/commit/087ade571cf29d53d8bd391aceec324bdf66b937))
+    - New LocalENU converter ([`1b47cb6`](https://github.com/spmadden/irox/commit/1b47cb63546d1ff499dcf49e3d862f58c6c927b5))
+    - New specific WGS84ECEF conversion to short-circuit some ellpipsoid checks ([`7f5bac9`](https://github.com/spmadden/irox/commit/7f5bac909bd4cc71ae99ee8a3d02cabc66ca42f6))
+    - Add specific ENUPosition, NEDPosition types ([`bd0c627`](https://github.com/spmadden/irox/commit/bd0c627afc8f54acb74e56a9e3c6073d3608879f))
+    - Pivot AbsoluteCoordinate to be ECEF rather than plain cartesian ([`2329e5f`](https://github.com/spmadden/irox/commit/2329e5f2ce482edaaba079ee14b199a2d234e9e7))
+    - Explicit conversions to ellipse/ellipsoid/shape ([`18fac2c`](https://github.com/spmadden/irox/commit/18fac2cf5ea0d86cca127843b603b834b4c70261))
+    - Impl ECEF/Geocentric conversions ([`2f2c19a`](https://github.com/spmadden/irox/commit/2f2c19a3836375cb1ab3dce94f8112a9c2dbc384))
+    - Cleanup lints with new math macros ([`bad3955`](https://github.com/spmadden/irox/commit/bad3955a8da0b295db8543b867dc418b8d3d667c))
+</details>
+
 ## v0.6.2 (2024-12-13)
 
 ### New Features
@@ -11,7 +55,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 285 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.6.2 ([`3d14877`](https://github.com/spmadden/irox/commit/3d14877e65e772f254e351eb6ee8eb42e2a4b014))
     - Basic lcc impl - needs more tests ([`83c359b`](https://github.com/spmadden/irox/commit/83c359bd88322ed9c130c54501550544803886de))
 </details>
 
@@ -38,7 +83,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 6 calendar days.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -107,8 +152,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
- - 30 days passed between releases.
+ - 7 commits contributed to the release over the course of 23 calendar days.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -142,7 +186,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -210,7 +254,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 19 calendar days.
  - 19 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -303,7 +347,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 43 commits contributed to the release.
+ - 43 commits contributed to the release over the course of 62 calendar days.
  - 40 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
