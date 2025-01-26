@@ -1,7 +1,36 @@
 
 
 
+## v0.5.6 (2025-01-26)
+
+### Bug Fixes
+
+ - <csr-id-9cd9e624907cded75b72e0aa9734909ded0f93d1/> hopefully fix docsrs builds for cargo, log, stats, units
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-units v0.4.5 ([`731469d`](https://github.com/spmadden/irox/commit/731469da7b0ff6d41bf7488a59767f199d62fb57))
+    - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
+</details>
+
 ## v0.5.5 (2025-01-26)
+
+<csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/>
+<csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/>
+<csr-id-9b3f63a99527aa22dccebac43a29057929b7493a/>
 
 ### Chore
 
@@ -52,7 +81,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 33 commits contributed to the release over the course of 40 calendar days.
+ - 34 commits contributed to the release over the course of 40 calendar days.
  - 41 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -64,6 +93,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.5 ([`a850656`](https://github.com/spmadden/irox/commit/a850656664f6e71a9543095377dfe191f0ae4d40))
     - Fix irox-time imports within repainting ([`aba46d3`](https://github.com/spmadden/irox/commit/aba46d3516c51d883abd5f2fdfbc596187edf8f2))
     - Fixup nostd support in carto ([`8270cef`](https://github.com/spmadden/irox/commit/8270cefc0903fafcf39d8b206a250403df3c79e9))
     - Use new errorbars and repainter ([`76eaf78`](https://github.com/spmadden/irox/commit/76eaf78eda488c5a0a9207bad1807351cf0bc7e7))
