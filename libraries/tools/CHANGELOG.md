@@ -1,6 +1,126 @@
 
 
 
+## v0.10.0 (2025-01-26)
+
+### Chore
+
+ - <csr-id-73c770e4c24a06ebd1938f68027b32354a8a6c29/> fixup lints
+
+### New Features
+
+ - <csr-id-b71c23c77672f7efcb500268167874ec9f0403d3/> impl new,debug,clone in RoundBuffer
+ - <csr-id-79883f420af37979cf0b19d70d7960df7b358703/> HMAC-SHA2 with test vectors
+ - <csr-id-33553680fe493ec285286310c2bac2a29d60b90d/> some asserts can now take test name/message as last parameter
+ - <csr-id-80726de6cd543fbad5faa4bb182f534bb231a078/> adding sha1 test vectors
+ - <csr-id-8270cefc0903fafcf39d8b206a250403df3c79e9/> fixup nostd support in carto
+ - <csr-id-54580210d482718c4e6a876b0081485eca0d5b44/> new Matrix::transpose() operation
+ - <csr-id-d0c38822ffb13c9a7fb300a402161a43e339816c/> tests for rotating matrices
+ - <csr-id-904ba2577ddd001a459326fb2741436f8dfab923/> new ZeroedBuffer trait to create empty buffers
+ - <csr-id-8b816e9cdc2228c9de03e406dd4b1e8454c030db/> zero out any part of RoundU8Buffer when consumed
+ - <csr-id-7bf897d6381c453936022d5ea985cd5e3fcc4930/> yaaay matrix transforms :>
+ - <csr-id-6321e4e643eca9541801dee69bd19a8f66e63bdc/> new negative_one fn in ToSigned to allow easy inversion
+ - <csr-id-223ce686b44ef9bf39fa83ea06c02bfbe5d814b4/> new OrderedHashMap that replicates elements in insertion order.
+ - <csr-id-be2700b42dba1c7e88a7db6d131d17e26bde840d/> new ZagZig impls, fix alloc in vbyte
+ - <csr-id-fd99495373be8ef4adda57cbece5e0dcd2f53f20/> impl BufBits for StreamReader
+ - <csr-id-e3caf23f1b80eafdb449e92ce8d1fda89afa91b3/> new ToSigned and ToUnsigned traits for the primitives
+ - <csr-id-e73848b677f582ad68a22cd92afb0d0fd4cdb1c5/> refactoring StrBuf into FixedU8Buf
+ - <csr-id-fdbf627db9f5614d9b92a135812dc6c05adf85ad/> add an atomic counter to CodeDictionary for stats
+ - <csr-id-616ab4de9cadc5c0caf2ae381e42c12d9d70cefa/> new shared version of the code dictionary and encoder
+ - <csr-id-15873e543c1009ee5b863f3e058ca9a35a742847/> new GroupVarintCodeDecoder
+ - <csr-id-ef314f4261f6f8f84a6571b0d844801c045ffc7f/> impl From<[u8;N]> for RoundU8Buffer
+ - <csr-id-0a8a6c62ebfb1ea2228fc6317af920ca9fb7c3a3/> new CodeDictionary and GroupVarintCodeEncoder capabilities
+ - <csr-id-57d04be3a4becf00779eaed39351b8c68bcd2ee1/> new varint encoding capability
+ - <csr-id-a7e15d7475435f05e57fb13310ed1bb0d4f88ef2/> new vbyte predictive length functions
+ - <csr-id-d1e54a55a16da755bb2c3b9d420e3bd0b447c08f/> impl WriteToBEBits for IntegerValue
+ - <csr-id-247c3228f154f10eb36a6bd96b1ec14c3965da71/> further flushing out of Fixed & Round u8 buffers
+ - <csr-id-e34948deae97e45b1da777dcc616eee983cf6487/> new CountingBits struct, move SharedROCounter to bits from tools
+ - <csr-id-138fe8565dc368755498c2f1426779e227cbc54a/> Better buffer usage in the RoundU8Buffer, nearly usable now for reading & writing.
+ - <csr-id-83a5f506b8a49930e8d18d07cc9dd5f311d0db8d/> new basic matrix implementation
+ - <csr-id-cd5e251008bbd88c72c7bd56793cf72cd85a503a/> new debug_assert_eq_eps assert
+ - <csr-id-c459c43514fd3d240686ddd23ecd3645883b8f95/> new functions in PRNG to make generating spreads of numbers easier
+ - <csr-id-33bee42679e32d4b1e2e48bc18a072dcce881a51/> new bencher to check performance of atomics on a hardware config
+ - <csr-id-fbd4a63b40a6d1955e446a0480ea183a01e7ada9/> new thread-safe performant one-way non-blocking data exchanger
+
+### Bug Fixes
+
+ - <csr-id-a7d97e08afba83769389842156c78e9792037e66/> fix multi_stream on linux, seek_write doesn't modify the underlying position of the FP like it does on windows.
+ - <csr-id-507a83ccd5831745d983fcbddf6a9da9f83df9c5/> fix edge case issues in multi_stream around the end of a stream.
+ - <csr-id-2e05702b0f90563b76be1caa2f0666d90158dbdd/> switch to RoundBuf in UnlimitedBuf for performance
+ - <csr-id-f9a5bdd6dd5f9b06a48b8fa0d1e46986cc2d1aa1/> fix off-by-one in roundu8 buffer limiting
+ - <csr-id-4096723f47280285db82c2ce82afc21c23cfcb95/> fix off-by-one where key was same length as block size.
+ - <csr-id-b60738301ce6d50bcd91b40bf8da7225ad3ff1f2/> fix impls of sha2/384/512 and add NIST test vectors
+ - <csr-id-f327a89b1f398e1552758b0a9bd49506bcabbd90/> silence warning about unused trait in Matrix
+ - <csr-id-dbf8ef898ba6c089582caf3d6d7fe7f8f166e845/> matrix rotations behind feature std for sin/cos
+ - <csr-id-e7bba1e8df7cffe0bf8a30addee93218500c3a34/> fix test assumption the buffer wasn't cleared.
+ - <csr-id-ee5face00fb5d16bf1a23b9fff50852b1eafacf2/> fix alloc feature build in tools
+
+### New Features (BREAKING)
+
+ - <csr-id-cf18819735eecc7e8512ec587f59fcbed385d712/> return usize instead of () in WriteToBEBits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 44 commits contributed to the release over the course of 40 calendar days.
+ - 41 days passed between releases.
+ - 44 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix multi_stream on linux, seek_write doesn't modify the underlying position of the FP like it does on windows. ([`a7d97e0`](https://github.com/spmadden/irox/commit/a7d97e08afba83769389842156c78e9792037e66))
+    - Fix edge case issues in multi_stream around the end of a stream. ([`507a83c`](https://github.com/spmadden/irox/commit/507a83ccd5831745d983fcbddf6a9da9f83df9c5))
+    - Impl new,debug,clone in RoundBuffer ([`b71c23c`](https://github.com/spmadden/irox/commit/b71c23c77672f7efcb500268167874ec9f0403d3))
+    - Switch to RoundBuf in UnlimitedBuf for performance ([`2e05702`](https://github.com/spmadden/irox/commit/2e05702b0f90563b76be1caa2f0666d90158dbdd))
+    - Fix off-by-one in roundu8 buffer limiting ([`f9a5bdd`](https://github.com/spmadden/irox/commit/f9a5bdd6dd5f9b06a48b8fa0d1e46986cc2d1aa1))
+    - HMAC-SHA2 with test vectors ([`79883f4`](https://github.com/spmadden/irox/commit/79883f420af37979cf0b19d70d7960df7b358703))
+    - Fix off-by-one where key was same length as block size. ([`4096723`](https://github.com/spmadden/irox/commit/4096723f47280285db82c2ce82afc21c23cfcb95))
+    - Some asserts can now take test name/message as last parameter ([`3355368`](https://github.com/spmadden/irox/commit/33553680fe493ec285286310c2bac2a29d60b90d))
+    - Adding sha1 test vectors ([`80726de`](https://github.com/spmadden/irox/commit/80726de6cd543fbad5faa4bb182f534bb231a078))
+    - Fix impls of sha2/384/512 and add NIST test vectors ([`b607383`](https://github.com/spmadden/irox/commit/b60738301ce6d50bcd91b40bf8da7225ad3ff1f2))
+    - Fixup nostd support in carto ([`8270cef`](https://github.com/spmadden/irox/commit/8270cefc0903fafcf39d8b206a250403df3c79e9))
+    - New Matrix::transpose() operation ([`5458021`](https://github.com/spmadden/irox/commit/54580210d482718c4e6a876b0081485eca0d5b44))
+    - Silence warning about unused trait in Matrix ([`f327a89`](https://github.com/spmadden/irox/commit/f327a89b1f398e1552758b0a9bd49506bcabbd90))
+    - Tests for rotating matrices ([`d0c3882`](https://github.com/spmadden/irox/commit/d0c38822ffb13c9a7fb300a402161a43e339816c))
+    - Matrix rotations behind feature std for sin/cos ([`dbf8ef8`](https://github.com/spmadden/irox/commit/dbf8ef898ba6c089582caf3d6d7fe7f8f166e845))
+    - Fix test assumption the buffer wasn't cleared. ([`e7bba1e`](https://github.com/spmadden/irox/commit/e7bba1e8df7cffe0bf8a30addee93218500c3a34))
+    - New ZeroedBuffer trait to create empty buffers ([`904ba25`](https://github.com/spmadden/irox/commit/904ba2577ddd001a459326fb2741436f8dfab923))
+    - Zero out any part of RoundU8Buffer when consumed ([`8b816e9`](https://github.com/spmadden/irox/commit/8b816e9cdc2228c9de03e406dd4b1e8454c030db))
+    - Yaaay matrix transforms :> ([`7bf897d`](https://github.com/spmadden/irox/commit/7bf897d6381c453936022d5ea985cd5e3fcc4930))
+    - New negative_one fn in ToSigned to allow easy inversion ([`6321e4e`](https://github.com/spmadden/irox/commit/6321e4e643eca9541801dee69bd19a8f66e63bdc))
+    - New OrderedHashMap that replicates elements in insertion order. ([`223ce68`](https://github.com/spmadden/irox/commit/223ce686b44ef9bf39fa83ea06c02bfbe5d814b4))
+    - New ZagZig impls, fix alloc in vbyte ([`be2700b`](https://github.com/spmadden/irox/commit/be2700b42dba1c7e88a7db6d131d17e26bde840d))
+    - Impl BufBits for StreamReader ([`fd99495`](https://github.com/spmadden/irox/commit/fd99495373be8ef4adda57cbece5e0dcd2f53f20))
+    - New ToSigned and ToUnsigned traits for the primitives ([`e3caf23`](https://github.com/spmadden/irox/commit/e3caf23f1b80eafdb449e92ce8d1fda89afa91b3))
+    - Refactoring StrBuf into FixedU8Buf ([`e73848b`](https://github.com/spmadden/irox/commit/e73848b677f582ad68a22cd92afb0d0fd4cdb1c5))
+    - Fix alloc feature build in tools ([`ee5face`](https://github.com/spmadden/irox/commit/ee5face00fb5d16bf1a23b9fff50852b1eafacf2))
+    - Add an atomic counter to CodeDictionary for stats ([`fdbf627`](https://github.com/spmadden/irox/commit/fdbf627db9f5614d9b92a135812dc6c05adf85ad))
+    - New shared version of the code dictionary and encoder ([`616ab4d`](https://github.com/spmadden/irox/commit/616ab4de9cadc5c0caf2ae381e42c12d9d70cefa))
+    - New GroupVarintCodeDecoder ([`15873e5`](https://github.com/spmadden/irox/commit/15873e543c1009ee5b863f3e058ca9a35a742847))
+    - Impl From<[u8;N]> for RoundU8Buffer ([`ef314f4`](https://github.com/spmadden/irox/commit/ef314f4261f6f8f84a6571b0d844801c045ffc7f))
+    - New CodeDictionary and GroupVarintCodeEncoder capabilities ([`0a8a6c6`](https://github.com/spmadden/irox/commit/0a8a6c62ebfb1ea2228fc6317af920ca9fb7c3a3))
+    - New varint encoding capability ([`57d04be`](https://github.com/spmadden/irox/commit/57d04be3a4becf00779eaed39351b8c68bcd2ee1))
+    - New vbyte predictive length functions ([`a7e15d7`](https://github.com/spmadden/irox/commit/a7e15d7475435f05e57fb13310ed1bb0d4f88ef2))
+    - Impl WriteToBEBits for IntegerValue ([`d1e54a5`](https://github.com/spmadden/irox/commit/d1e54a55a16da755bb2c3b9d420e3bd0b447c08f))
+    - Further flushing out of Fixed & Round u8 buffers ([`247c322`](https://github.com/spmadden/irox/commit/247c3228f154f10eb36a6bd96b1ec14c3965da71))
+    - Return usize instead of () in WriteToBEBits ([`cf18819`](https://github.com/spmadden/irox/commit/cf18819735eecc7e8512ec587f59fcbed385d712))
+    - New CountingBits struct, move SharedROCounter to bits from tools ([`e34948d`](https://github.com/spmadden/irox/commit/e34948deae97e45b1da777dcc616eee983cf6487))
+    - Better buffer usage in the RoundU8Buffer, nearly usable now for reading & writing. ([`138fe85`](https://github.com/spmadden/irox/commit/138fe8565dc368755498c2f1426779e227cbc54a))
+    - New basic matrix implementation ([`83a5f50`](https://github.com/spmadden/irox/commit/83a5f506b8a49930e8d18d07cc9dd5f311d0db8d))
+    - New debug_assert_eq_eps assert ([`cd5e251`](https://github.com/spmadden/irox/commit/cd5e251008bbd88c72c7bd56793cf72cd85a503a))
+    - Fixup lints ([`73c770e`](https://github.com/spmadden/irox/commit/73c770e4c24a06ebd1938f68027b32354a8a6c29))
+    - New functions in PRNG to make generating spreads of numbers easier ([`c459c43`](https://github.com/spmadden/irox/commit/c459c43514fd3d240686ddd23ecd3645883b8f95))
+    - New bencher to check performance of atomics on a hardware config ([`33bee42`](https://github.com/spmadden/irox/commit/33bee42679e32d4b1e2e48bc18a072dcce881a51))
+    - New thread-safe performant one-way non-blocking data exchanger ([`fbd4a63`](https://github.com/spmadden/irox/commit/fbd4a63b40a6d1955e446a0480ea183a01e7ada9))
+</details>
+
 ## v0.9.3 (2024-12-15)
 
 ### New Features
@@ -11,7 +131,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +143,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.9.3 ([`7df8024`](https://github.com/spmadden/irox/commit/7df8024c2166824c4b9d4f85d780c923192f3166))
     - New assert_eq_eps_slice! macro for testing slices of floating points to within epsilon values ([`d72868b`](https://github.com/spmadden/irox/commit/d72868b00c3b8ae018badf809dce12584a1186a5))
 </details>
 
@@ -44,8 +165,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
- - 44 days passed between releases.
+ - 7 commits contributed to the release over the course of 20 calendar days.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -135,7 +255,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 25 commits contributed to the release.
+ - 25 commits contributed to the release over the course of 16 calendar days.
  - 37 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -223,7 +343,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 4 calendar days.
  - 40 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -253,7 +373,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 11 calendar days.
  - 13 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -336,7 +456,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release.
+ - 15 commits contributed to the release over the course of 33 calendar days.
  - 36 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -398,7 +518,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release.
+ - 9 commits contributed to the release over the course of 13 calendar days.
  - 27 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -511,8 +631,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 12 commits contributed to the release.
- - 28 days passed between releases.
+ - 12 commits contributed to the release over the course of 2 calendar days.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -572,7 +691,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 35 calendar days.
  - 48 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -797,7 +916,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 25 commits contributed to the release.
+ - 25 commits contributed to the release over the course of 8 calendar days.
  - 37 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -847,7 +966,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 4 calendar days.
  - 6 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -890,7 +1009,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 14 calendar days.
  - 23 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -922,7 +1041,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -999,7 +1117,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release.
+ - 15 commits contributed to the release over the course of 1 calendar day.
  - 14 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -1049,7 +1167,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 7 calendar days.
  - 7 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -1089,7 +1207,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
+ - 6 commits contributed to the release over the course of 12 calendar days.
  - 19 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -1160,7 +1278,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 27 commits contributed to the release.
+ - 27 commits contributed to the release over the course of 62 calendar days.
  - 26 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
