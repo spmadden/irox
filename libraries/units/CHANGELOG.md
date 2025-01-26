@@ -1,6 +1,30 @@
 
 
 
+## v0.4.5 (2025-01-26)
+
+### Bug Fixes
+
+ - <csr-id-9cd9e624907cded75b72e0aa9734909ded0f93d1/> hopefully fix docsrs builds for cargo, log, stats, units
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
+</details>
+
 ## v0.4.4 (2025-01-26)
 
 ### Documentation
@@ -22,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 40 calendar days.
+ - 8 commits contributed to the release over the course of 40 calendar days.
  - 41 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -34,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.4 ([`af064b1`](https://github.com/spmadden/irox/commit/af064b132778f6add56b22d7d7705e6e8c92f68d))
     - Release irox-tools v0.10.0 ([`06629ef`](https://github.com/spmadden/irox/commit/06629ef062edd1cfe60a0ba1d8b0783a6c43e454))
     - New assert_length_eq_eps! macro to compare lengths in tests ([`dd07c94`](https://github.com/spmadden/irox/commit/dd07c94554b9b667fb47a191944abfa686ae2069))
     - Hopefully fix the stats/units docsrs builds ([`af1182a`](https://github.com/spmadden/irox/commit/af1182afe32faf36f9f00954b0cf92dee60f8c8b))
