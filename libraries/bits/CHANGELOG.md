@@ -1,5 +1,62 @@
 
 
+## v0.4.0 (2025-01-26)
+
+### New Features
+
+ - <csr-id-5fe9aca83691818e241c808034706288f8366538/> rework codec into a template to impl more conversions
+ - <csr-id-c1ba59f17d2937c2aea90f2ff90a1fdace864dcc/> impl LE for f32/f64
+ - <csr-id-0a2df5a5c5e83ffd2ab6fed96c0d5b2aecb00dad/> Add new Tee struct which copies data to multiple outputs simultaneously
+ - <csr-id-01bfda3f7f60e219d99e53d9db25d91da9d0fcfb/> new string encoding WriteToBEBits, ReadFromBEBits
+ - <csr-id-f62f28cdd74e919909661f3e22be520b917b502b/> new read_X_blob_into functions in Bits
+ - <csr-id-8b258ddec7c7cffed8df3c58a3e46e7f0eac898c/> new ReadFromBEBits trait, the inverse of WriteToBeBits
+ - <csr-id-47550e97462f3100d11b34884e8d7a56bba39eef/> new flush() in MutBits
+ - <csr-id-e34948deae97e45b1da777dcc616eee983cf6487/> new CountingBits struct, move SharedROCounter to bits from tools
+ - <csr-id-1ed5ace17b2670059fa9ca8dfafd8f8a307e2423/> new BufBits trait, like BufRead
+ - <csr-id-90367606a72590d15b9ab172af537570b97d08fa/> new default write_all_into fn in MutBits
+ - <csr-id-f77e9ec544ecdc3ee37fbc38f0d5ad294d6e6bb1/> impl Bits,MutBits for BufRead,BufWrite
+
+### Bug Fixes
+
+ - <csr-id-3491afb67a5d45feac9cf1865900c2a196d76f4f/> fix issue where WriteToBEBytes returned the wrong length.
+ - <csr-id-f2a9641da129188ced1bfcc02c53d638b9d095a3/> fix alloc compliation
+
+### New Features (BREAKING)
+
+ - <csr-id-cf18819735eecc7e8512ec587f59fcbed385d712/> return usize instead of () in WriteToBEBits
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 14 commits contributed to the release over the course of 20 calendar days.
+ - 37 days passed between releases.
+ - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix issue where WriteToBEBytes returned the wrong length. ([`3491afb`](https://github.com/spmadden/irox/commit/3491afb67a5d45feac9cf1865900c2a196d76f4f))
+    - Rework codec into a template to impl more conversions ([`5fe9aca`](https://github.com/spmadden/irox/commit/5fe9aca83691818e241c808034706288f8366538))
+    - Impl LE for f32/f64 ([`c1ba59f`](https://github.com/spmadden/irox/commit/c1ba59f17d2937c2aea90f2ff90a1fdace864dcc))
+    - Add new Tee struct which copies data to multiple outputs simultaneously ([`0a2df5a`](https://github.com/spmadden/irox/commit/0a2df5a5c5e83ffd2ab6fed96c0d5b2aecb00dad))
+    - Fix alloc compliation ([`f2a9641`](https://github.com/spmadden/irox/commit/f2a9641da129188ced1bfcc02c53d638b9d095a3))
+    - New string encoding WriteToBEBits, ReadFromBEBits ([`01bfda3`](https://github.com/spmadden/irox/commit/01bfda3f7f60e219d99e53d9db25d91da9d0fcfb))
+    - New read_X_blob_into functions in Bits ([`f62f28c`](https://github.com/spmadden/irox/commit/f62f28cdd74e919909661f3e22be520b917b502b))
+    - New ReadFromBEBits trait, the inverse of WriteToBeBits ([`8b258dd`](https://github.com/spmadden/irox/commit/8b258ddec7c7cffed8df3c58a3e46e7f0eac898c))
+    - Return usize instead of () in WriteToBEBits ([`cf18819`](https://github.com/spmadden/irox/commit/cf18819735eecc7e8512ec587f59fcbed385d712))
+    - New flush() in MutBits ([`47550e9`](https://github.com/spmadden/irox/commit/47550e97462f3100d11b34884e8d7a56bba39eef))
+    - New CountingBits struct, move SharedROCounter to bits from tools ([`e34948d`](https://github.com/spmadden/irox/commit/e34948deae97e45b1da777dcc616eee983cf6487))
+    - New BufBits trait, like BufRead ([`1ed5ace`](https://github.com/spmadden/irox/commit/1ed5ace17b2670059fa9ca8dfafd8f8a307e2423))
+    - New default write_all_into fn in MutBits ([`9036760`](https://github.com/spmadden/irox/commit/90367606a72590d15b9ab172af537570b97d08fa))
+    - Impl Bits,MutBits for BufRead,BufWrite ([`f77e9ec`](https://github.com/spmadden/irox/commit/f77e9ec544ecdc3ee37fbc38f0d5ad294d6e6bb1))
+</details>
+
 ## v0.3.0 (2024-12-13)
 
 ### New Features
@@ -18,8 +75,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
- - 44 days passed between releases.
+ - 7 commits contributed to the release over the course of 13 calendar days.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -30,6 +86,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.3.0 ([`32e7b8d`](https://github.com/spmadden/irox/commit/32e7b8dbcb854c7eaebe3473145cbe2a4ad35ac0))
     - New bitstream struct for reading/writing a stream of individual bits ([`067e6e3`](https://github.com/spmadden/irox/commit/067e6e3d3f0fce2f2667e8f2065a28e23083c6c7))
     - Impl Bits and MutBits for Box<Bits> and Box<MutBits> ([`ca74e7d`](https://github.com/spmadden/irox/commit/ca74e7d801a4f42d111987d2b2ee9d29e0bb0db4))
     - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
@@ -88,7 +145,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 10 commits contributed to the release.
+ - 10 commits contributed to the release over the course of 11 calendar days.
  - 84 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -122,7 +179,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 11 calendar days.
  - 13 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -176,7 +233,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 1 calendar day.
  - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
