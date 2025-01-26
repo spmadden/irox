@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use egui::Context;
-use irox_time::epoch::UnixTimestamp;
-use irox_units::units::duration::Duration;
+use irox_time::{epoch::UnixTimestamp, Duration};
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::Arc;
 use std::thread::JoinHandle;

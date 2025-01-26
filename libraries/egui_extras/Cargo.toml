@@ -18,7 +18,7 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde", "egui/serde", "dep:irox-tools", "dep:irox-bits"]
-plots = ["dep:irox-tools", "dep:irox-time", "dep:irox-units"]
+plots = ["dep:irox-tools", "dep:irox-units"]
 profiling = ["dep:profiling", "dep:puffin"]
 dump_csv = []
 
@@ -29,7 +29,7 @@ ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
 irox-tools = { workspace = true, optional = true, features = ["std"] }
-irox-time = { workspace = true, optional = true }
+irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, optional = true, features = ["std"] }
 irox-imagery = { workspace = true }
 irox-stats = { workspace = true, features = ["emath", "std"] }
