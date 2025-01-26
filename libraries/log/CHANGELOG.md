@@ -1,5 +1,32 @@
 
 
+## v0.2.2 (2025-01-26)
+
+### New Features
+
+ - <csr-id-cd21b254bfac53e6304a311a5bbfe045f7a7b643/> put console logger behind std feature
+ - <csr-id-d1cf63488838f82f9c64755256fb75ca27851801/> cleanup nostd support in imagery
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 7 calendar days.
+ - 41 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Put console logger behind std feature ([`cd21b25`](https://github.com/spmadden/irox/commit/cd21b254bfac53e6304a311a5bbfe045f7a7b643))
+    - Cleanup nostd support in imagery ([`d1cf634`](https://github.com/spmadden/irox/commit/d1cf63488838f82f9c64755256fb75ca27851801))
+</details>
+
 ## v0.2.1 (2024-12-15)
 
 ### New Features
@@ -10,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 337 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,7 +49,29 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-log v0.2.1 ([`5a07a76`](https://github.com/spmadden/irox/commit/5a07a76c6da7d020d4761104b68073cafa70c2b8))
     - Eliminate default feature 'std' for irox-time ([`4fbdda8`](https://github.com/spmadden/irox/commit/4fbdda81df4bab66572325250fbe12367a67f5ec))
+</details>
+
+## v0.2.0 (2024-01-13)
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 18 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
 
 ## v0.1.3 (2023-12-25)
@@ -35,7 +84,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 2 calendar days.
  - 11 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -89,7 +138,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 3 calendar days.
  - 23 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -103,27 +152,6 @@
  * **Uncategorized**
     - Release irox-log v0.1.1 ([`de31716`](https://github.com/spmadden/irox/commit/de31716d5f454a26826d0a91b862d1d98b5a727e))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
-</details>
-
-## v0.2.0 (2024-01-13)
-
-### Commit Statistics
-
-<csr-read-only-do-not-edit/>
-
- - 1 commit contributed to the release.
- - 18 days passed between releases.
- - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
- - 0 issues like '(#ID)' were seen in commit messages
-
-### Commit Details
-
-<csr-read-only-do-not-edit/>
-
-<details><summary>view details</summary>
-
- * **Uncategorized**
-    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
 </details>
 
 ## v0.1.0 (2023-11-05)
