@@ -2102,7 +2102,7 @@ checksum = "ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708"
 
 [[package]]
 name = "irox"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "irox-bits",
  "irox-build-rs",
@@ -2434,7 +2434,7 @@ dependencies = [
 
 [[package]]
 name = "irox-progress"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "eframe",
  "egui",
