@@ -9,7 +9,7 @@ extern crate alloc;
 use crate::buf::ZeroedBuffer;
 use alloc::collections::VecDeque;
 use alloc::string::String;
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 use core::fmt::{Display, Formatter, UpperHex, Write};
 
 ///
