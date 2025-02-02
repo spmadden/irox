@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use core::ops::{Deref, DerefMut};
-use irox_tools::{cfg_feature_alloc, ToF64};
+use irox_tools::{cfg_feature_std, ToF64};
+
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Units {
@@ -124,7 +127,7 @@ impl Units {
         }
     }
 
-    cfg_feature_alloc! {
+    cfg_feature_std! {
         pub fn format<T: ToF64>(&self, v: &T) -> String {
             let value = v.to_f64();
             if let Some(prefix) = crate::prefixes::PrefixSet::Common.best_prefix_for(&value) {
@@ -168,7 +171,7 @@ impl<T: ToF64> DerefMut for Quantity<T> {
     }
 }
 
-cfg_feature_alloc! {
+cfg_feature_std! {
     use core::fmt::{Display, Formatter};
     impl<T: ToF64> Display for Quantity<T> {
         fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {

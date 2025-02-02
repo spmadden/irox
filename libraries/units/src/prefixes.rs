@@ -1,9 +1,18 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use core::cmp::Ordering;
-use irox_tools::cfg_feature_alloc;
+use irox_tools::{cfg_feature_alloc, cfg_feature_std};
+
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
+
+cfg_feature_alloc! {
+    extern crate alloc;
+    use alloc::string::String;
+    use alloc::format;
+}
 
 #[derive(Debug, Copy, Clone)]
 pub struct SIPrefix {
@@ -148,7 +157,7 @@ impl PrefixSet {
             Self::Common => COMMON_PREFIXES,
         }
     }
-    cfg_feature_alloc! {
+    cfg_feature_std! {
         pub fn best_prefix_for<T: irox_tools::ToF64>(&self, t: &T) -> Option<SIPrefix> {
             let v = t.to_f64().abs();
             let e = v.log10();
