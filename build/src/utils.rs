@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::error::{Error, ErrorKind};
@@ -11,6 +11,10 @@ use std::io::{BufRead, Read, Write};
 use std::process::Stdio;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+
+pub fn get_modules() -> Result<Vec<String>, Error> {
+    exec_stdout_lines("cargo", &["describe", "-oplain", "-fname"])
+}
 
 pub fn is_github_action() -> bool {
     let Ok(val) = std::env::var("GITHUB_ACTIONS") else {

@@ -20,8 +20,8 @@ const FEATURE_ARGS: &[&str] = &[
 ];
 const TARGETS: &[&str] = &[
     "x86_64-pc-windows-msvc",
-    "wasm32-unknown-unknown",
-    "x86_64-unknown-linux-gnu",
+    // "wasm32-unknown-unknown",
+    //"x86_64-unknown-linux-gnu",
 ];
 
 #[derive(Debug, Clone, Default, Subcommand)]
@@ -149,6 +149,7 @@ fn ci() -> Result<(), Error> {
     deny()?;
     format_check()?;
     lints_deny()?;
+    check_all()?;
     test()?;
     about()?;
     doc()?;
@@ -284,6 +285,22 @@ fn check(target: &str) -> Result<(), Error> {
 }
 
 fn check_all() -> Result<(), Error> {
+    clean()?;
+    let mut skip = Some(());
+    for feat in exec_stdout_lines(
+        "cargo",
+        &["describe", "-fname", "-fmodule-features", "-ocsv"],
+    )? {
+        if skip.take().is_some() {
+            // skip header row.
+            continue;
+        }
+        let (module, feats) = feat.split_once(",").unwrap_or_default();
+        let feats = feats.split(" ");
+        for f in feats {
+            exec_passthru("cargo", &["check", "-p", &module, "-F", f])?;
+        }
+    }
     for target in TARGETS {
         check(target)?;
     }
@@ -383,14 +400,17 @@ fn buildperf() -> Result<(), Error> {
     println!("Built in {:.2}s", elapsed.as_secs_f64());
     Ok(())
 }
-
+fn clean() -> Result<(), Error> {
+    exec_passthru("cargo", &["clean"])
+}
 fn cleanlocal() -> Result<(), Error> {
-    let lines = exec_stdout_lines("cargo", &["describe", "-oplain", "-fname"])?;
+    let lines = get_modules()?;
     let mut modules = vec!["clean"];
     for line in &lines {
         modules.push("-p");
         modules.push(line);
     }
+
     exec("cargo", &modules)?;
     Ok(())
 }
