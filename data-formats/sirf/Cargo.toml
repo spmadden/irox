@@ -18,5 +18,5 @@ workspace = true
 [dependencies]
 irox-structs = {workspace = true, features = ["alloc"] }
 irox-bits = {workspace = true, features = ["std"] }
-irox-tools.workspace = true
+irox-tools = { workspace = true, features = ["alloc"] }
 log.workspace = true
