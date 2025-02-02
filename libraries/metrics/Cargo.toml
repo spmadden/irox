@@ -19,7 +19,7 @@ workspace = true
 
 [dependencies]
 irox-bits.workspace = true
-irox-time.workspace = true
+irox-time = { workspace = true, features = ["std"] }
 irox-types = { workspace = true, features = ["bits"] }
 irox-tools = {workspace = true, features = ["std"]}
 
