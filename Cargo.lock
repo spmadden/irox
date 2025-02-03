@@ -2116,6 +2116,7 @@ checksum = "469fb0b9cefa57e3ef31275ee7cacb78f2fdca44e4765491884a2b119d4eb130"
 name = "irox"
 version = "0.8.1"
 dependencies = [
+ "irox-asn1",
  "irox-bits",
  "irox-build-rs",
  "irox-carto",
@@ -2151,6 +2152,15 @@ dependencies = [
 name = "irox-app-helpers"
 version = "0.1.0"
 dependencies = [
+ "irox-tools",
+ "irox-types",
+]
+
+[[package]]
+name = "irox-asn1"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
  "irox-tools",
  "irox-types",
 ]

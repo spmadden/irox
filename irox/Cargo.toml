@@ -18,6 +18,7 @@ workspace = true
 [features]
 default = []
 bits = ["dep:irox-bits", "irox-types?/bits"]
+asn1 = ["dep:irox-asn1"]
 csv = ["dep:irox-csv"]
 dot = ["dep:irox-dot"]
 gpx = ["dep:irox-gpx"]
@@ -63,6 +64,7 @@ syn = ["irox-types?/syn"]
 
 
 [dependencies]
+irox-asn1 = { version = "^0.1.0", optional = true, path = "../data-formats/asn1" }
 irox-csv = { version = "^0.5.1", optional = true, path = "../data-formats/csv" }
 irox-dot = { version = "^0.1.0", optional = true, path = "../data-formats/dot" }
 irox-gpx = { version = "^0.5.0", optional = true, path = "../data-formats/gpx" }
