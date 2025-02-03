@@ -2,7 +2,7 @@
 name = "irox-asn1"
 description = "ITU-T X.690 ASN.1 DER/BER/CER Encoding and Decoding"
 keywords = ["irox", "der", "ber", "cer", "asn1"]
-categories = ["encoding", "network-programming", "cryptography", "no-std"]
+categories = ["encoding", "network-programming", "cryptography"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -16,9 +16,9 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
-irox-bits = {workspace = true, features = ["alloc"]}
+irox-bits = {workspace = true, features = ["std"]}
 irox-types = {workspace = true, features = ["bits"]}
-irox-tools = {workspace = true, features = ["alloc"]}
+irox-tools = {workspace = true, features = ["std"]}
 
 [package.metadata.docs.rs]
 all-features = true

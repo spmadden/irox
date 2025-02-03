@@ -14,8 +14,11 @@
 
 mod primitives;
 mod tags;
+mod objects;
 
 pub use tags::*;
+pub use objects::*;
+pub use primitives::*;
 
 use irox_bits::{Bits, BitsError, MutBits};
 
@@ -25,7 +28,7 @@ pub trait EncodeDER {
 
 pub trait DecodeDER {
     type Output;
-    fn decode_der<T: Bits>(&self, input: &mut T) -> Result<TagValue<Self::Output>, BitsError>;
+    fn decode_der<T: Bits>(input: &mut T) -> Result<Self::Output, BitsError>;
 }
 
 pub struct TagValue<T> {
