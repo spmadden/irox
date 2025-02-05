@@ -317,7 +317,7 @@ pub struct VByteDeltaIntStream<'a, T, B: MutBits> {
 
 impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
     /// Creates a new stream
-    pub fn new(writer: BitsWrapper<'a, B>) -> VByteDeltaIntStream<T, B> {
+    pub fn new(writer: BitsWrapper<'a, B>) -> VByteDeltaIntStream<'a, T, B> {
         VByteDeltaIntStream {
             last_value: Default::default(),
             writer: VByteIntStream::new(writer),
