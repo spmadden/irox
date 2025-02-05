@@ -13,6 +13,8 @@ repository.workspace = true
 readme = "README.md"
 
 [features]
+default = ["std"]
+std = []
 
 [lints]
 workspace = true
