@@ -20,6 +20,7 @@ pub mod md5;
 pub mod murmur3;
 pub mod sha1;
 pub mod sha2;
+pub mod sixwords;
 
 /// Generic trait to describe a hash function
 pub trait HashDigest<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize>: Default {

@@ -401,12 +401,11 @@ pub static WORDLIST : [&str;2048] = [
 
 #[cfg(test)]
 mod tests {
-    use crate::hash::{MD5, SHA1};
-    use crate::sets::sixwords::fold_hash_to_u64;
-    use crate::sets::{
-        get_six_words_by_value, get_six_words_for_md5, get_six_words_for_sha1,
+    use crate::hash::sixwords::{
+        fold_hash_to_u64, get_six_words_by_value, get_six_words_for_md5, get_six_words_for_sha1,
         get_value_for_six_words,
     };
+    use crate::hash::{MD5, SHA1};
 
     #[test]
     pub fn test1() {
