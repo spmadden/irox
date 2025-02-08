@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -149,6 +149,9 @@ pub struct Line {
     points: Vec<Shape>,
     bounds: Option<Rect2D>,
     is_hovered: bool,
+
+    last_line_data: Option<Arc<[PlotPoint]>>,
+    last_error_data: Option<LineWithErrorBars>,
 }
 impl Line {
     pub fn set_name<T: AsRef<str>>(&mut self, name: T) {
@@ -166,6 +169,19 @@ impl Line {
             y: bounds.far_point.y,
         };
         Some([a, b])
+    }
+
+    fn get_error_data(&mut self) -> Option<LineWithErrorBars> {
+        if let Some(err) = self.error_bars_exchanger.take_data() {
+            self.last_error_data = Some(err.clone());
+        }
+        self.last_error_data.clone()
+    }
+    fn get_line_data(&mut self) -> Option<Arc<[PlotPoint]>> {
+        if let Some(data) = self.line_exchanger.take_data() {
+            self.last_line_data = Some(data.clone());
+        }
+        self.last_line_data.clone()
     }
 }
 
@@ -186,7 +202,7 @@ pub enum ErrorBarsType {
     MinMax,
     StdDev,
 }
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct LineWithErrorBars {
     pub line_data: Arc<[PlotPoint]>,
     pub error_bars: Arc<[(f64, Summary<f64>)]>,
@@ -233,12 +249,20 @@ pub struct BasicPlot {
     /// Optional title for this plot.
     pub title: Option<String>,
 
-    last_render_size: Rect2D,
+    // transient stateful variables below
     pub rotate_line_highlights: bool,
     pub line_highlight_focus_duration: Duration,
+
+    /// the last area that was rendered
+    last_render_size: Rect2D,
+    /// does the highlight pause because a line is being hovered over
     pause_line_highlight_for_hover: bool,
+    /// the last line that was highlighted
     last_line_highlight_index: usize,
+    /// the time that the last line was highlighted
     last_line_highlight_time: UnixTimestamp,
+    /// has the first frame been rendered?
+    rendered_first: bool,
 }
 macro_rules! scale_y {
     ($self:ident, $ax:ident,$pos:ident) => {{
@@ -290,22 +314,22 @@ impl BasicPlot {
     }
     #[must_use]
     pub fn with_x_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
-        self.x_axis.axis_label = Some(title.as_ref().to_string());
+        self.x_axis.user_data.axis_label = Some(title.as_ref().to_string());
         self
     }
     #[must_use]
     pub fn with_y_axis_label<T: AsRef<str>>(mut self, title: T) -> Self {
-        self.y_axis_left.axis_label = Some(title.as_ref().to_string());
+        self.y_axis_left.user_data.axis_label = Some(title.as_ref().to_string());
         self
     }
     #[must_use]
     pub fn with_x_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
-        self.x_axis.axis_formatter = Some(fmtr);
+        self.x_axis.user_data.axis_formatter = Some(fmtr);
         self
     }
     #[must_use]
     pub fn with_y_axis_formatter(mut self, fmtr: Box<FormatterFn>) -> Self {
-        self.y_axis_left.axis_formatter = Some(fmtr);
+        self.y_axis_left.user_data.axis_formatter = Some(fmtr);
         self
     }
     // #[must_use]
@@ -389,13 +413,24 @@ impl BasicPlot {
             let mut errors = None;
             let mut lines = None;
             let mut err_type = ErrorBarsType::default();
-            if let Some(errs) = line.error_bars_exchanger.take_data() {
+            if let Some(errs) = line.get_error_data() {
+                line.last_error_data = Some(errs.clone());
+                if !self.rendered_first {
+                    // gotta do it again after the first frame.
+                    let _ = line.error_bars_exchanger.replace_data(errs.clone());
+                }
                 errors = Some(errs.error_bars);
                 lines = Some(errs.line_data);
                 err_type = errs.error_bars_type;
-            } else if let Some(ls) = line.line_exchanger.take_data() {
+            } else if let Some(ls) = line.get_line_data() {
+                line.last_line_data = Some(ls.clone());
+                if !self.rendered_first {
+                    // gotta do it again after the first frame.
+                    let _ = line.line_exchanger.replace_data(ls.clone());
+                }
                 lines = Some(ls);
             }
+
             let mut fill_color = Rgba::from(stroke.color)
                 // .to_opaque()
                 .multiply(0.5 * nlines_frac)
@@ -543,7 +578,7 @@ impl BasicPlot {
         response.context_menu(|ui| {
             if ui
                 .selectable_value(
-                    &mut self.y_axis_left.scale_mode,
+                    &mut self.y_axis_left.user_data.scale_mode,
                     ScaleMode::Linear,
                     "Y-Linear",
                 )
@@ -553,7 +588,7 @@ impl BasicPlot {
             }
             if ui
                 .selectable_value(
-                    &mut self.y_axis_left.scale_mode,
+                    &mut self.y_axis_left.user_data.scale_mode,
                     ScaleMode::Log10,
                     "Y-Log10",
                 )
@@ -562,7 +597,11 @@ impl BasicPlot {
                 ui.close_menu();
             }
             if ui
-                .selectable_value(&mut self.y_axis_left.scale_mode, ScaleMode::DBScale, "Y-dB")
+                .selectable_value(
+                    &mut self.y_axis_left.user_data.scale_mode,
+                    ScaleMode::DBScale,
+                    "Y-dB",
+                )
                 .clicked()
             {
                 ui.close_menu();
@@ -581,7 +620,7 @@ impl BasicPlot {
 
         // setup the y-axis label (if it exists)
         let mut y_label_additional_width = 0.0;
-        if let Some(y_label) = &self.y_axis_left.axis_label {
+        if let Some(y_label) = &self.y_axis_left.user_data.axis_label {
             let galley = painter.layout_no_wrap(
                 y_label.to_string(),
                 large_font.clone(),
@@ -596,7 +635,7 @@ impl BasicPlot {
             ));
         }
         let mut x_label_additional_width = 0.0;
-        if let Some(x_label) = &self.x_axis.axis_label {
+        if let Some(x_label) = &self.x_axis.user_data.axis_label {
             let galley = painter.layout_no_wrap(
                 x_label.to_string(),
                 large_font.clone(),
@@ -689,7 +728,18 @@ impl BasicPlot {
         }
 
         let lr = rect.into();
-        if lr != self.last_render_size || self.any_lines_changed() {
+        let any_lines_changed = self.any_lines_changed();
+        let render_area_changed = lr != self.last_render_size;
+        let y_zoom_changed = self.y_axis_left.needs_rerendering();
+        let x_zoom_changed = self.x_axis.needs_rerendering();
+
+        let render_window_changed = render_area_changed || x_zoom_changed || y_zoom_changed;
+        if render_window_changed {
+            self.rendered_first = false;
+        }
+        let reinitialize_data = render_window_changed || any_lines_changed;
+
+        if reinitialize_data {
             profile_scope!("update range", self.name.as_str());
             self.update_line_data();
             let all_points = self
@@ -726,8 +776,12 @@ impl BasicPlot {
                     .flatten()
                     .collect::<Vec<PlotPoint>>();
                 y_axis_rt.update_range(rt_points.as_slice(), |p| p.y, Some(&self.y_axis_left));
+
+                y_axis_rt.mark_rendered();
             }
 
+            self.x_axis.mark_rendered();
+            self.y_axis_left.mark_rendered();
             self.last_render_size = lr;
         }
         self.draw_structure(ui, &mut painter);
@@ -838,6 +892,7 @@ impl BasicPlot {
                 ui.visuals().text_color(),
             );
         }
+        self.rendered_first = true;
     }
 
     fn _draw_yellow_err_line(
@@ -921,7 +976,7 @@ impl BasicPlot {
         // draw the info up the y axis - note, painted inverted!
         for detent in &self.y_axis_left.detents {
             let pos = Pos2 {
-                x: self.y_axis_left.screen_limit - 5.,
+                x: self.x_axis.screen_origin - 5.,
                 y: detent.0,
             };
             let anchor = Align2::RIGHT_CENTER;
@@ -1081,43 +1136,64 @@ pub enum AxisAlignmentMode {
     CenterOnZeroWithOppsositeRange,
 }
 #[derive(Default)]
-pub struct Axis {
+pub struct AxisUserData {
     pub name: Arc<String>,
-    /// Minimum detected value of this axis in data-coordinates
-    pub min_val: f64,
-    /// Maximum detected value of this axis in data-coordinates
-    pub max_val: f64,
-    /// Scaling mode for this axis
-    pub scale_mode: ScaleMode,
-    /// -1 or +1, the direction of "positive" on this axis.
-    pub incr_sign: f64,
-    /// The range of this axis (max - min values) in data-coordinates
-    pub range: f64,
-    /// The origin (zero value) of this axis in screen coordinates
-    pub screen_origin: f32,
-    /// The range of this axis in screen coordinates
-    pub screen_range: f32,
-    /// The limit (max value) of this axis in screen coordinates
-    pub screen_limit: f32,
-    /// The list of detents to draw on this axis, position and label
-    pub detents: Vec<(f32, String)>,
-    /// Whether or not to draw a warning that the values have been clipped to
-    /// positive values for `log` drawing
-    pub draw_log_clip_warning: bool,
-
-    /// If the plot has been zoomed in, this is the (min,max) values in data
-    /// coordinates of the changed range.
-    pub zoomed_range: Option<(f64, f64)>,
     /// Optional label to paint on this axis
     pub axis_label: Option<String>,
+
     /// Optional formatter for the detents on this axis, accepts the data value
     /// and returns a string as the detent.
     pub axis_formatter: Option<Box<FormatterFn>>,
 
+    /// Axis alignment mode, for centering and the like
     pub alignment_mode: AxisAlignmentMode,
+    /// Scaling mode for this axis
+    pub scale_mode: ScaleMode,
+}
+#[derive(Default)]
+pub struct Axis {
+    pub user_data: AxisUserData,
+
+    /// Minimum detected value of this axis in data-coordinates
+    min_val: f64,
+    /// Maximum detected value of this axis in data-coordinates
+    max_val: f64,
+    /// -1 or +1, the direction of "positive" on this axis.
+    incr_sign: f64,
+    /// The range of this axis (max - min values) in data-coordinates
+    range: f64,
+    /// The origin (zero value) of this axis in screen coordinates
+    screen_origin: f32,
+    /// The range of this axis in screen coordinates
+    screen_range: f32,
+    /// The limit (max value) of this axis in screen coordinates
+    screen_limit: f32,
+    /// The list of detents to draw on this axis, position and label
+    pub detents: Vec<(f32, String)>,
+    /// Whether or not to draw a warning that the values have been clipped to
+    /// positive values for `log` drawing
+    draw_log_clip_warning: bool,
+
+    /// If the plot has been zoomed in, this is the (min,max) values in data
+    /// coordinates of the changed range.
+    pub zoomed_range: Option<(f64, f64)>,
+
+    /// Force a rerendering on the next frame
+    pub force_render: bool,
+
+    /// the last zoom that the data was re-rendered for.
+    last_rendered_zoom: Option<(f64, f64)>,
+    /// the last scale mode that the data was re-rendered for.
+    last_rendered_scale_mode: ScaleMode,
 }
 
 impl Axis {
+    pub fn with_configuration(user_data: AxisUserData) -> Self {
+        Axis {
+            user_data,
+            ..Default::default()
+        }
+    }
     pub fn update_range<F: Fn(&PlotPoint) -> f64>(
         &mut self,
         vals: &[PlotPoint],
@@ -1131,13 +1207,13 @@ impl Axis {
         self.min_val = f64::INFINITY;
         self.max_val = f64::NEG_INFINITY;
         for val in vals {
-            let v = match self.scale_mode {
+            let v = match self.user_data.scale_mode {
                 ScaleMode::Linear => accessor(val),
                 ScaleMode::Log10 | ScaleMode::DBScale => {
-                    let v = accessor(val);
+                    let mut v = accessor(val);
                     if v <= 0.0 {
                         self.draw_log_clip_warning = true;
-                        continue;
+                        v = f64::MIN_POSITIVE;
                     }
                     v
                 }
@@ -1145,7 +1221,7 @@ impl Axis {
             self.min_val = self.min_val.min(v);
             self.max_val = self.max_val.max(v);
         }
-        match self.alignment_mode {
+        match self.user_data.alignment_mode {
             AxisAlignmentMode::CenterOnZero => {
                 let absval = self.max_val.abs().max(self.min_val.abs());
                 self.max_val = absval;
@@ -1161,14 +1237,14 @@ impl Axis {
             }
             _ => {}
         }
-        if self.scale_mode == ScaleMode::DBScale {
+        if self.user_data.scale_mode == ScaleMode::DBScale {
             if self.min_val <= 0.0 {
                 self.draw_log_clip_warning = true;
                 self.min_val = f64::MIN_POSITIVE;
             }
             self.min_val = 10. * self.min_val.log10();
             self.max_val = 10. * self.max_val.log10();
-        } else if self.scale_mode == ScaleMode::Log10 && self.min_val <= 0.0 {
+        } else if self.user_data.scale_mode == ScaleMode::Log10 && self.min_val <= 0.0 {
             self.draw_log_clip_warning = true;
             self.min_val = f64::MIN_POSITIVE;
         }
@@ -1177,8 +1253,14 @@ impl Axis {
             self.max_val = max;
         }
 
+        if !self.min_val.is_finite() || !self.max_val.is_finite() {
+            return;
+        }
         self.range = self.max_val - self.min_val;
-        match self.scale_mode {
+        if self.range <= 0.0 {
+            return;
+        }
+        match self.user_data.scale_mode {
             ScaleMode::Linear | ScaleMode::DBScale => {
                 let model_per_point = self.range / (self.screen_range as f64);
                 let base_step_size = model_per_point * 5.0f64;
@@ -1199,10 +1281,10 @@ impl Axis {
                     let frac = idx as f64 / 10f64;
                     let dv = min_detent + range * frac;
                     let drawpnt = self.model_to_screen(dv);
-                    let label = if let Some(fmtr) = &self.axis_formatter {
+                    let label = if let Some(fmtr) = &self.user_data.axis_formatter {
                         fmtr(dv)
                     } else {
-                        match self.scale_mode {
+                        match self.user_data.scale_mode {
                             ScaleMode::DBScale => format!("{dv:4.2} dB"),
                             _ => format!("{dv:4.2}"),
                         }
@@ -1233,7 +1315,7 @@ impl Axis {
                 let stop = self.max_val;
                 // major detents
                 let drawpnt = self.model_to_screen(self.log_scale(current));
-                let label = if let Some(fmtr) = &self.axis_formatter {
+                let label = if let Some(fmtr) = &self.user_data.axis_formatter {
                     fmtr(current)
                 } else {
                     format!("{current:.4}: 1e{current_exp:.4}")
@@ -1244,7 +1326,7 @@ impl Axis {
                     let next = current + 10f64 * incr;
                     current = (current / incr).round() * incr;
                     let drawpnt = self.model_to_screen(self.log_scale(current));
-                    let label = if let Some(fmtr) = &self.axis_formatter {
+                    let label = if let Some(fmtr) = &self.user_data.axis_formatter {
                         fmtr(current)
                     } else {
                         format!("{current:.4}: 1e{current_exp:.4}")
@@ -1264,7 +1346,7 @@ impl Axis {
                     current_exp += 1;
                 }
                 let drawpnt = self.model_to_screen(self.log_scale(self.max_val));
-                let label = if let Some(fmtr) = &self.axis_formatter {
+                let label = if let Some(fmtr) = &self.user_data.axis_formatter {
                     fmtr(self.max_val)
                 } else {
                     format!("{:.4}: 1e{current_exp:.4}", self.max_val)
@@ -1312,7 +1394,7 @@ impl Axis {
     }
 
     pub fn scale_value(&self, val: f64) -> Option<f32> {
-        match self.scale_mode {
+        match self.user_data.scale_mode {
             ScaleMode::Linear => Some(self.model_to_screen(val)),
             ScaleMode::Log10 => {
                 if val <= 0.0 {
@@ -1333,7 +1415,7 @@ impl Axis {
         }
     }
     pub fn unscale_value(&self, val: f32) -> f64 {
-        match self.scale_mode {
+        match self.user_data.scale_mode {
             ScaleMode::Linear => self.screen_to_model(val),
             ScaleMode::Log10 => {
                 let val = self.screen_to_model(val);
@@ -1369,9 +1451,9 @@ impl Axis {
 
     pub fn describe_screen_pos(&self, val: f32) -> String {
         let v = self.screen_to_model(val);
-        match self.scale_mode {
+        match self.user_data.scale_mode {
             ScaleMode::Linear => {
-                if let Some(f) = &self.axis_formatter {
+                if let Some(f) = &self.user_data.axis_formatter {
                     f(v)
                 } else {
                     format!("{}", PrettyDec(v))
@@ -1379,7 +1461,7 @@ impl Axis {
             }
             ScaleMode::Log10 => {
                 let orig = self.log_unscale(v);
-                if let Some(f) = &self.axis_formatter {
+                if let Some(f) = &self.user_data.axis_formatter {
                     f(orig)
                 } else {
                     format!("{orig}")
@@ -1387,7 +1469,7 @@ impl Axis {
             }
             ScaleMode::DBScale => {
                 let orig = self.db_unscale(v);
-                if let Some(f) = &self.axis_formatter {
+                if let Some(f) = &self.user_data.axis_formatter {
                     f(orig)
                 } else {
                     let scaled = 10. * orig.log10();
@@ -1395,6 +1477,17 @@ impl Axis {
                 }
             }
         }
+    }
+
+    fn needs_rerendering(&self) -> bool {
+        self.last_rendered_zoom != self.zoomed_range
+            || self.last_rendered_scale_mode != self.user_data.scale_mode
+            || self.force_render
+    }
+    fn mark_rendered(&mut self) {
+        self.last_rendered_zoom = self.zoomed_range;
+        self.last_rendered_scale_mode = self.user_data.scale_mode;
+        self.force_render = false;
     }
 }
 struct PrettyDec<T: LowerExp>(T);

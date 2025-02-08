@@ -15,9 +15,13 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[features]
+default = []
+profiling = []
+
 [dependencies]
 eframe = { workspace = true, default-features = false, features = ["default_fonts"] }
-egui = {workspace = true, features = ["persistence"]}
+egui = { workspace = true, default-features = false, features = ["persistence"] }
 log.workspace = true
 irox-egui-extras = { workspace = true, features = ["serde", "plots"] }
 irox-stats.workspace = true
@@ -25,7 +29,7 @@ puffin_http = { workspace = true }
 puffin = { workspace = true }
 
 [target.'cfg(not(target_arch="wasm32"))'.dependencies]
-eframe = { workspace = true, features = ["glow", "x11", "wayland"] }
+eframe = { workspace = true, default-features = false, features = ["glow", "x11", "wayland"] }
 
 [target.'cfg(target_arch="wasm32")'.dependencies]
 eframe = { workspace = true, features = ["wgpu"] }

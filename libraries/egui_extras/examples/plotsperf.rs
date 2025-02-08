@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
-    x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, BasicPlot,
-    ErrorBarsType, LineWithErrorBars, PlotPoint, YAxisSide,
+    x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, AxisUserData,
+    BasicPlot, ErrorBarsType, LineWithErrorBars, PlotPoint, YAxisSide,
 };
 use irox_egui_extras::repainting::{RepaintManager, RepaintRequest};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
@@ -160,12 +160,12 @@ impl TestApp {
                 line.set_name(format!("Line {}", lidx + 1));
             });
             let (_, troc_line) = if TROC_OVERLAY {
-                data_plot.y_axis_right = Some(Axis {
+                data_plot.y_axis_right = Some(Axis::with_configuration(AxisUserData {
                     // alignment_mode: AxisAlignmentMode::CenterOnZeroWithOppsositeRange,
                     alignment_mode: AxisAlignmentMode::CenterOnZero,
                     axis_formatter: Some(y_axis_units_formatter(Units::Volt)),
                     ..Default::default()
-                });
+                }));
                 data_plot.add_line_with_error_bars(|line| {
                     line.set_name(format!("Line {} TROC", lidx + 1));
                     line.yaxis_side = YAxisSide::RightAxis;
