@@ -25,7 +25,7 @@ docsrs = ["eframe/x11", "eframe/wayland"]
 
 [dependencies]
 egui.workspace = true
-eframe = { workspace = true, features = [] }
+eframe = { workspace = true, default-features = false, features = [] }
 ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
@@ -39,16 +39,17 @@ profiling = { workspace = true, optional = true }
 puffin = { workspace = true, optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-eframe = { workspace = true, features = ["wgpu"] }
+eframe = { workspace = true, default-features = false, features = ["wgpu"] }
 wasm-bindgen-futures.workspace = true
 
 [dev-dependencies]
-eframe = { workspace = true, features = ["glow", "default_fonts"] }
-egui = { workspace = true, features = ["rayon"] }
+eframe = { workspace = true, default-features = false, features = ["glow", "default_fonts"] }
+egui = { workspace = true, default-features = false, features = ["rayon"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }
 puffin_http = { workspace = true }
 irox-csv = { workspace = true }
+irox-build-rs = { workspace = true, features = ["git"] }
 
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 eframe = { workspace = true, features = ["x11", "wayland"] }
@@ -60,9 +61,6 @@ required-features = ["serde", "plots"]
 [[example]]
 name = "plotsperf"
 required-features = ["plots"]
-
-[build-dependencies]
-irox-build-rs.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

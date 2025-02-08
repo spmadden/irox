@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::collections::BTreeMap;
@@ -9,6 +9,7 @@ use std::sync::Arc;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
 use egui::{CentralPanel, Context, Layout, Pos2, Shape, Vec2, ViewportBuilder, Window};
+use irox_build_rs::BuildEnvironment;
 use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::logplot::{BasicPlot, IntoColor32, PlotPoint};
 use irox_egui_extras::progressbar::ProgressBar;
@@ -16,8 +17,13 @@ use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_egui_extras::visuals::VisualsWindow;
 use irox_imagery::Color;
+use irox_tools::static_init;
 use log::error;
 use serde::Serialize;
+
+static_init!(get_env, BuildEnvironment, {
+    irox_build_rs::generate_build_environment().unwrap_or_default()
+});
 
 pub fn main() {
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
@@ -205,15 +211,16 @@ impl App for TestApp {
                         ui.radio_value(&mut self.about_tabs, AboutTabs::Grouped, "Grouped");
                         ui.radio_value(&mut self.about_tabs, AboutTabs::All, "All");
                     });
+                    let pe = get_env().as_parsed_environment();
                     match self.about_tabs {
                         AboutTabs::Important => {
-                            AboutWindow::show_important(irox_egui_extras::build::get_ALL_ITEMS, ui);
+                            AboutWindow::show_important(|| &pe.all_items, ui);
                         }
                         AboutTabs::Grouped => {
-                            AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
+                            AboutWindow::show_grouped(|| &pe.grouped, ui);
                         }
                         AboutTabs::All => {
-                            AboutWindow::show(irox_egui_extras::build::get_ALL_ITEMS, ui);
+                            AboutWindow::show(|| &pe.all_items, ui);
                         }
                     }
                 });

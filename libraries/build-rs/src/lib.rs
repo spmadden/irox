@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Compile-time build metadata injection inspired by `shadow-rs`
@@ -36,14 +37,26 @@ pub enum VariableSource {
 pub enum VariableType {
     String(String),
     Bool(bool),
-    Integer(i64),
 }
 impl Display for VariableType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             VariableType::String(s) => write!(f, "{s}"),
             VariableType::Bool(b) => write!(f, "{b}"),
-            VariableType::Integer(i) => write!(f, "{i}"),
+        }
+    }
+}
+impl VariableType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            VariableType::String(s) => s.as_str(),
+            VariableType::Bool(b) => {
+                if *b {
+                    "true"
+                } else {
+                    "false"
+                }
+            }
         }
     }
 }
@@ -51,6 +64,42 @@ impl Display for VariableType {
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
 pub struct BuildEnvironment {
     pub(crate) variables: BTreeMap<String, BuildVariable>,
+}
+impl BuildEnvironment {
+    pub fn as_parsed_environment(&self) -> ParsedBuildVariables {
+        let mut out = ParsedBuildVariables::default();
+        for (k, v) in &self.variables {
+            let v = v.value.as_str();
+            if cargo::CARGO_ENV_VARIABLES.contains(&k.as_str()) {
+                out.cargo_items.insert(k, v);
+                out.grouped.entry("CARGO_ITEMS").or_default().insert(k, v);
+            } else if cargo::RUSTC_ENV_VARIABLES.contains(&k.as_str()) {
+                out.rustc_items.insert(k, v);
+                out.grouped.entry("RUSTC_ITEMS").or_default().insert(k, v);
+            } else if cargo::BUILD_HOST_VARIABLES.contains(&k.as_str()) {
+                out.build_host.insert(k, v);
+                out.grouped.entry("BUILD_HOST").or_default().insert(k, v);
+            } else {
+                #[cfg(feature = "git")]
+                if git::GIT_VARIABLES.contains(&k.as_str()) {
+                    out.git_items.insert(k, v);
+                    out.grouped.entry("GIT_ITEMS").or_default().insert(k, v);
+                }
+            }
+            out.all_items.insert(k, v);
+        }
+        out
+    }
+}
+#[derive(Default, Debug, Clone, Eq, PartialEq)]
+pub struct ParsedBuildVariables<'a> {
+    pub all_items: BTreeMap<&'a str, &'a str>,
+    pub cargo_items: BTreeMap<&'a str, &'a str>,
+    pub rustc_items: BTreeMap<&'a str, &'a str>,
+    pub build_host: BTreeMap<&'a str, &'a str>,
+    pub git_items: BTreeMap<&'a str, &'a str>,
+
+    pub grouped: BTreeMap<&'a str, BTreeMap<&'a str, &'a str>>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -231,9 +280,6 @@ pub fn write_environment<T: Write>(
             VariableType::Bool(val) => {
                 writeln!(dest_file, "pub const {name}: bool = {val};")?;
             }
-            VariableType::Integer(val) => {
-                writeln!(dest_file, "pub const {name}: i64 = {val};")?;
-            }
         }
     }
 
@@ -331,7 +377,6 @@ fn write_aggregation_block<T: Write>(
         match varbl.value {
             VariableType::String(_) => writeln!(dest_file, "\t\t(\"{name}\", {name}),")?,
             VariableType::Bool(b) => writeln!(dest_file, "\t\t(\"{name}\", \"{b}\"),")?,
-            VariableType::Integer(i) => writeln!(dest_file, "\t\t(\"{name}\", \"{i}\"),")?,
         }
     }
     writeln!(dest_file, "\t]))")?;
@@ -366,7 +411,6 @@ fn write_grouped_block<T: Write>(
             match varbl.value {
                 VariableType::String(_) => writeln!(dest_file, "\t\t\t(\"{name}\", {name}),")?,
                 VariableType::Bool(b) => writeln!(dest_file, "\t\t\t(\"{name}\", \"{b}\"),")?,
-                VariableType::Integer(i) => writeln!(dest_file, "\t\t\t(\"{name}\", \"{i}\"),")?,
             }
         }
         writeln!(dest_file, "\t\t])),")?;

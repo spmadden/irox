@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use egui::Ui;
@@ -85,10 +85,9 @@ impl AboutWindow {
     }
 
     pub fn show_grouped<
-        F: Fn() -> &'static std::collections::BTreeMap<
-            &'static str,
-            std::collections::BTreeMap<&'static str, &'static str>,
-        >,
+        'a,
+        F: Fn()
+            -> &'a std::collections::BTreeMap<&'a str, std::collections::BTreeMap<&'a str, &'a str>>,
     >(
         providerfn: F,
         ui: &mut Ui,

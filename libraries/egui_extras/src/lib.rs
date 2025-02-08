@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Stuff that should have been in [`egui`], but isn't.
@@ -39,10 +40,6 @@ pub mod repainting;
 pub mod serde;
 pub mod toolframe;
 pub mod visuals;
-
-pub mod build {
-    include!(concat!(env!("OUT_DIR"), "/builders.rs"));
-}
 
 pub trait WithAlpha {
     #[must_use]

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::{BuildEnvironment, BuildVariable, Error, VariableSource, VariableType};
@@ -46,19 +46,6 @@ macro_rules! add_bool_varbl {
     };
 }
 
-macro_rules! add_int_varbl {
-    ($name:literal, $env:ident, $val:ident) => {
-        $env.variables.insert(
-            $name.to_string(),
-            BuildVariable {
-                source: VariableSource::Git,
-                name: $name.to_string(),
-                value: VariableType::Integer($val),
-            },
-        );
-    };
-}
-
 #[cfg(feature = "git")]
 pub fn load_git_variables(env: &mut BuildEnvironment) -> Result<(), Error> {
     let start_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
@@ -91,8 +78,8 @@ pub fn load_git_variables(env: &mut BuildEnvironment) -> Result<(), Error> {
     let when = author.when();
     let seconds = when.seconds();
     let offset_seconds = when.offset_minutes() as i64 * 60;
-    add_int_varbl!("GIT_COMMIT_TIMESTAMP_SECS", env, seconds);
-    add_int_varbl!("GIT_COMMIT_TZ_OFFSET_SECS", env, offset_seconds);
+    add_str_varbl!("GIT_COMMIT_TIMESTAMP_SECS", env, seconds);
+    add_str_varbl!("GIT_COMMIT_TZ_OFFSET_SECS", env, offset_seconds);
 
     let time = irox_time::epoch::UnixTimestamp::from_offset(Duration::from_seconds(seconds as u64));
     let time = Into::<UTCDateTime>::into(time).format(&EXTENDED_DATE_TIME_FORMAT);
