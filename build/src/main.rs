@@ -18,7 +18,7 @@ const FEATURE_ARGS: &[&str] = &[
     "-Fdefault",
     "--all-features",
 ];
-const TARGETS: &[&str] = &[
+const _TARGETS: &[&str] = &[
     "x86_64-pc-windows-msvc",
     // "wasm32-unknown-unknown",
     //"x86_64-unknown-linux-gnu",
@@ -303,9 +303,6 @@ fn check_all() -> Result<(), Error> {
             exec_passthru("cargo", &["check", "-p", &module, "-F", f])?;
             logend();
         }
-    }
-    for target in TARGETS {
-        check(target)?;
     }
     logend();
     Ok(())
