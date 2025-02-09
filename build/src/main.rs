@@ -287,6 +287,7 @@ fn check(target: &str) -> Result<(), Error> {
 fn check_all() -> Result<(), Error> {
     clean()?;
     let mut skip = Some(());
+    install_update("cargo-describe");
     for feat in exec_stdout_lines(
         "cargo",
         &["describe", "-fname", "-fmodule-features", "-ocsv"],
