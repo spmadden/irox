@@ -60,7 +60,7 @@ impl IntoColor32 for Color {
 }
 static DEFAULT_COLORMAP: &[Color] = CLASSIC_20;
 
-/// A tracking struct for an user interaction with a plot.
+/// A tracking struct for a user interaction with a plot.
 ///
 /// This tracks whether a drag has started, the end delta of the drag, and the
 /// current "painter coordinates" of the highlighted area by the mouse.
@@ -618,7 +618,7 @@ impl BasicPlot {
         let width = rect.width();
         let height = rect.height();
 
-        // setup the y-axis label (if it exists)
+        // set up the y-axis label (if it exists)
         let mut y_label_additional_width = 0.0;
         if let Some(y_label) = &self.y_axis_left.user_data.axis_label {
             let galley = painter.layout_no_wrap(
@@ -945,7 +945,7 @@ impl BasicPlot {
         let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
         let small_font = TextStyle::Small.resolve(ui.style());
 
-        // draw the info across the bottom of the x axis
+        // draw the info across the bottom of the x-axis
         for detent in &self.x_axis.detents {
             let pos = Pos2 {
                 x: detent.0,
@@ -973,7 +973,7 @@ impl BasicPlot {
                 minor_stroke,
             );
         }
-        // draw the info up the y axis - note, painted inverted!
+        // draw the info up the py-axis - note, painted inverted!
         for detent in &self.y_axis_left.detents {
             let pos = Pos2 {
                 x: self.x_axis.screen_origin - 5.,
@@ -1002,7 +1002,7 @@ impl BasicPlot {
             );
         }
         if let Some(rt_y) = &self.y_axis_right {
-            // draw the info up the y axis - note, painted inverted!
+            // draw the info up the y-axis - note, painted inverted!
             for detent in &rt_y.detents {
                 let pos = Pos2 {
                     x: self.x_axis.screen_limit + 5.,
@@ -1170,7 +1170,7 @@ pub struct Axis {
     screen_limit: f32,
     /// The list of detents to draw on this axis, position and label
     pub detents: Vec<(f32, String)>,
-    /// Whether or not to draw a warning that the values have been clipped to
+    /// Whether to draw a warning that the values have been clipped to
     /// positive values for `log` drawing
     draw_log_clip_warning: bool,
 
