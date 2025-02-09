@@ -13,6 +13,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 pub fn get_modules() -> Result<Vec<String>, Error> {
+    install_update("cargo-describe");
     exec_stdout_lines("cargo", &["describe", "-oplain", "-fname"])
 }
 
