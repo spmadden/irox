@@ -185,15 +185,15 @@ fn build() -> Result<(), Error> {
 }
 
 fn test() -> Result<(), Error> {
-    logstart("test");
     for feature in FEATURE_ARGS {
+        logstart(format!("test-{feature}").as_str());
         exec_passthru_env(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
             [("RUSTFLAGS", "-Copt-level=1")],
         )?;
+        logend();
     }
-    logend();
     Ok(())
 }
 
@@ -298,12 +298,15 @@ fn check_all() -> Result<(), Error> {
         let (module, feats) = feat.split_once(",").unwrap_or_default();
         let feats = feats.split(" ");
         for f in feats {
+            logstart(format!("cargo-check-p-{module}-f-{f}").as_str());
             exec_passthru("cargo", &["check", "-p", &module, "-F", f])?;
+            logend();
         }
     }
     for target in TARGETS {
         check(target)?;
     }
+    logend();
     Ok(())
 }
 
@@ -401,7 +404,10 @@ fn buildperf() -> Result<(), Error> {
     Ok(())
 }
 fn clean() -> Result<(), Error> {
-    exec_passthru("cargo", &["clean"])
+    logstart("clean");
+    exec_passthru("cargo", &["clean"])?;
+    logend();
+    Ok(())
 }
 fn cleanlocal() -> Result<(), Error> {
     let lines = get_modules()?;
