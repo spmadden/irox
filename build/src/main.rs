@@ -265,7 +265,7 @@ fn doc() -> Result<(), Error> {
     logend();
     Ok(())
 }
-
+#[allow(dead_code)]
 fn check(target: &str) -> Result<(), Error> {
     logstart(&format!("check-{target}"));
     exec_passthru("rustup", &["target", "add", target])?;
