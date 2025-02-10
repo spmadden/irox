@@ -43,7 +43,7 @@ eframe = { workspace = true, default-features = false, features = ["wgpu"] }
 wasm-bindgen-futures.workspace = true
 
 [dev-dependencies]
-eframe = { workspace = true, default-features = false, features = ["glow", "default_fonts"] }
+eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts"] }
 egui = { workspace = true, default-features = false, features = ["rayon"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }

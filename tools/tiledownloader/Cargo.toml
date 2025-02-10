@@ -28,6 +28,6 @@ clap = { workspace = true, features = [
     "wrap_help",
     "error-context",
 ] }
-reqwest = { version = "0.12", features = ["gzip", "brotli", "deflate"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 bytes = { version = "1" }
 indicatif = { version = "0.17" }

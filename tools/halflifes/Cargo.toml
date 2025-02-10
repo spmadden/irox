@@ -29,7 +29,7 @@ puffin_http = { workspace = true }
 puffin = { workspace = true }
 
 [target.'cfg(not(target_arch="wasm32"))'.dependencies]
-eframe = { workspace = true, default-features = false, features = ["glow", "x11", "wayland"] }
+eframe = { workspace = true, default-features = false, features = ["wgpu", "x11", "wayland"] }
 
 [target.'cfg(target_arch="wasm32")'.dependencies]
 eframe = { workspace = true, features = ["wgpu"] }

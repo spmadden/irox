@@ -2,7 +2,9 @@
 // Copyright 2025 IROX Contributors
 //
 
-use eframe::{App, CreationContext, Frame, HardwareAcceleration, Renderer};
+use eframe::egui_wgpu::{WgpuConfiguration, WgpuSetup};
+use eframe::wgpu::Backends;
+use eframe::{wgpu, App, CreationContext, Frame, HardwareAcceleration, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
     x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, AxisUserData,
@@ -40,12 +42,25 @@ pub fn main() {
         #[allow(clippy::mem_forget)]
         std::mem::forget(_puffin_server);
     }
+    let mut wgpu_options = WgpuConfiguration::default();
+    match &mut wgpu_options.wgpu_setup {
+        WgpuSetup::CreateNew {
+            supported_backends,
+            power_preference,
+            ..
+        } => {
+            *supported_backends = Backends::PRIMARY;
+            *power_preference = wgpu::PowerPreference::HighPerformance;
+        }
+        _ => {}
+    };
     let native_options = eframe::NativeOptions {
         viewport,
-        renderer: Renderer::Glow,
+        renderer: Renderer::Wgpu,
         hardware_acceleration: HardwareAcceleration::Preferred,
-        multisampling: 2,
-        vsync: false,
+        // multisampling: 2,
+        wgpu_options,
+        vsync: true,
         ..Default::default()
     };
 
