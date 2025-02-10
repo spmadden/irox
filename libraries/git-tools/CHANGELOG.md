@@ -1,17 +1,16 @@
 
 
-## 0.2.1 (2024-10-29)
+## 0.2.2 (2025-02-09)
 
 ### Chore
 
- - <csr-id-976ac6c154c5b5ef4c73613c5acc93662305b7cb/> bump version of git-tools to capture the new dep versions
+ - <csr-id-1b9a62e43c049f5fef79f6acd6c7b31c2fd9b751/> bump git-tools to 0.2.2 for release
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 1 commit contributed to the release.
- - 290 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +21,33 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Bump git-tools to 0.2.2 for release ([`1b9a62e`](https://github.com/spmadden/irox/commit/1b9a62e43c049f5fef79f6acd6c7b31c2fd9b751))
+</details>
+
+## 0.2.1 (2024-10-29)
+
+<csr-id-976ac6c154c5b5ef4c73613c5acc93662305b7cb/>
+
+### Chore
+
+ - <csr-id-976ac6c154c5b5ef4c73613c5acc93662305b7cb/> bump version of git-tools to capture the new dep versions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-git-tools v0.2.1 ([`d6d1013`](https://github.com/spmadden/irox/commit/d6d1013dcf02cc315cc81e9baa97fb6b865f1768))
     - Bump version of git-tools to capture the new dep versions ([`976ac6c`](https://github.com/spmadden/irox/commit/976ac6c154c5b5ef4c73613c5acc93662305b7cb))
 </details>
 
