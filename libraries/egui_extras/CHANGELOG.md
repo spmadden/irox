@@ -1,6 +1,48 @@
 
 
 
+## v0.6.0 (2025-02-09)
+
+### Chore
+
+ - <csr-id-38267a2559f76808f24d092ddaa2c6c002c319c3/> fixup grammar in plots
+
+### New Features
+
+ - <csr-id-c419ac5c2c140c909341021143e94348d30799c7/> reworks buildrs to remove dep from irox_egui_extras
+
+### Bug Fixes
+
+ - <csr-id-7ab2f23fb4208834f81a9fb29c836bc353da79aa/> pivot from glow to wgpu
+ - <csr-id-af2fc489d0826e438edac6ba956193129c23b607/> fix missing build feature for eframe.
+
+### Bug Fixes (BREAKING)
+
+ - <csr-id-f3f5245f45aa1ba0932b6c38e4f92a361c7c3556/> fix some rendering state bugs, refactor some user-facing axis data.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release over the course of 1 calendar day.
+ - 14 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Pivot from glow to wgpu ([`7ab2f23`](https://github.com/spmadden/irox/commit/7ab2f23fb4208834f81a9fb29c836bc353da79aa))
+    - Fix missing build feature for eframe. ([`af2fc48`](https://github.com/spmadden/irox/commit/af2fc489d0826e438edac6ba956193129c23b607))
+    - Fixup grammar in plots ([`38267a2`](https://github.com/spmadden/irox/commit/38267a2559f76808f24d092ddaa2c6c002c319c3))
+    - Fix some rendering state bugs, refactor some user-facing axis data. ([`f3f5245`](https://github.com/spmadden/irox/commit/f3f5245f45aa1ba0932b6c38e4f92a361c7c3556))
+    - Reworks buildrs to remove dep from irox_egui_extras ([`c419ac5`](https://github.com/spmadden/irox/commit/c419ac5c2c140c909341021143e94348d30799c7))
+</details>
+
 ## v0.5.6 (2025-01-26)
 
 ### Bug Fixes
@@ -11,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +64,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.5.6 ([`8aa9990`](https://github.com/spmadden/irox/commit/8aa999068d9cf62bad7024fe08bdc61bd656e2cb))
     - Release irox-units v0.4.5 ([`731469d`](https://github.com/spmadden/irox/commit/731469da7b0ff6d41bf7488a59767f199d62fb57))
     - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
 </details>
