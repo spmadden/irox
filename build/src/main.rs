@@ -454,6 +454,7 @@ fn rbuild() -> Result<(), Error> {
         "-Ccodegen-units=1",
         "-Ccontrol-flow-guard=yes",
         "-Cpanic=abort",
+        "-Cembed-bitcode=no",
     ]
     .join(" ");
     exec_passthru_env(
@@ -473,6 +474,7 @@ fn bloat(args: &[&str]) -> Result<(), Error> {
         "-Ccodegen-units=1",
         "-Ccontrol-flow-guard=yes",
         "-Cpanic=abort",
+        "-Cembed-bitcode=no",
     ]
     .join(" ");
 
