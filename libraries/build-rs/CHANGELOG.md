@@ -1,5 +1,29 @@
 
 
+## v0.2.5 (2025-02-09)
+
+### New Features
+
+ - <csr-id-c419ac5c2c140c909341021143e94348d30799c7/> reworks buildrs to remove dep from irox_egui_extras
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 1 calendar day.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Reworks buildrs to remove dep from irox_egui_extras ([`c419ac5`](https://github.com/spmadden/irox/commit/c419ac5c2c140c909341021143e94348d30799c7))
+</details>
+
 ## v0.2.4 (2024-10-29)
 
 ### New Features
@@ -16,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 3 calendar days.
  - 112 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-build-rs v0.2.4 ([`2cebc8f`](https://github.com/spmadden/irox/commit/2cebc8fcb577c6e397a8ea0d5d69e76a0973d93c))
     - Fix typo in build varbl name ([`aaf72c7`](https://github.com/spmadden/irox/commit/aaf72c79829324964936928b418cd5efc77b1892))
     - Add linux sysinfo ([`1c8e352`](https://github.com/spmadden/irox/commit/1c8e35227a0b025b2fa42eb2268d9eb43f2c7410))
     - Add new Build Host variables ([`958387f`](https://github.com/spmadden/irox/commit/958387fb18f926d2d0c23bae0b89c297620ff185))
@@ -73,8 +98,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
- - 127 days passed between releases.
+ - 3 commits contributed to the release over the course of 2 calendar days.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -102,7 +126,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 6 calendar days.
  - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -150,7 +174,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
