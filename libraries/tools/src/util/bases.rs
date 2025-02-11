@@ -5,36 +5,16 @@
 use crate::buf::{Buffer, StrBuf};
 
 /// Base32 Alphabet chosen to maximize letter disparity
-pub static ZBASE32: &[u8; 32] = &[
-    b'Y', b'B', b'N', b'D', b'R', b'F', b'G', b'8', b'E', b'J', b'K', b'M', b'C', b'P', b'Q', b'X',
-    b'O', b'T', b'1', b'U', b'W', b'I', b'S', b'Z', b'A', b'3', b'4', b'5', b'H', b'7', b'6', b'9',
-];
+pub static ZBASE32: &[u8; 32] = b"YBNDRFG8EJKMCPQXOT1UWISZA345H769";
 /// Base32 standard alphabet
-pub static BASE32_1: &[u8; 32] = &[
-    b'A', b'B', b'C', b'D', b'E', b'F', b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P',
-    b'Q', b'R', b'S', b'T', b'U', b'V', b'W', b'X', b'Y', b'Z', b'2', b'3', b'4', b'5', b'6', b'7',
-];
+pub static BASE32_1: &[u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 /// Base32 Extended Hex Alphabet
-pub static BASE32_2: &[u8; 32] = &[
-    b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D', b'E', b'F',
-    b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P', b'Q', b'R', b'S', b'T', b'U', b'V',
-];
+pub static BASE32_2: &[u8; 32] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
 /// Base32 Alphabet chosen to ensure that words can't be randomly made
-pub static BASE32_WORDSAFE: &[u8; 32] = &[
-    b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'C', b'F', b'G', b'H', b'J', b'M', b'P', b'Q',
-    b'R', b'V', b'W', b'X', b'c', b'f', b'g', b'h', b'j', b'm', b'p', b'q', b'r', b'v', b'w', b'x',
-];
-pub static BASE31_VG: &[u8; 31] = &[
-    b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'B', b'C', b'D', b'F', b'G', b'H',
-    b'J', b'K', b'L', b'M', b'N', b'P', b'Q', b'R', b'S', b'T', b'V', b'W', b'X', b'Y', b'Z',
-];
-pub static BASE20_WORDSAFE: &[u8; 20] = &[
-    b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'C', b'F', b'G', b'H', b'J', b'M', b'P', b'Q',
-    b'R', b'V', b'W', b'X',
-];
-pub static BASE12: &[u8; 12] = &[
-    b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B',
-];
+pub static BASE32_WORDSAFE: &[u8; 32] = b"23456789CFGHJMPQRVWXcfghjmpqrvwx";
+pub static BASE31_VG: &[u8; 31] = b"0123456789BCDFGHJKLMNPQRSTVWXYZ";
+pub static BASE20_WORDSAFE: &[u8; 20] = b"23456789CFGHJMPQRVWX";
+pub static BASE12: &[u8; 12] = b"0123456789AB";
 pub fn convert_base10_to_base_n<const N: usize>(base_10: u64, alphabet: &[u8; N]) -> StrBuf<64> {
     let mut out = StrBuf::new();
 
@@ -52,7 +32,7 @@ pub fn convert_base10_to_base_n<const N: usize>(base_10: u64, alphabet: &[u8; N]
     }
 
     if out.is_empty() {
-        let _ = out.push(alphabet.get(0).copied().unwrap_or_default());
+        let _ = out.push(alphabet.first().copied().unwrap_or_default());
     }
     out.reverse();
     out
