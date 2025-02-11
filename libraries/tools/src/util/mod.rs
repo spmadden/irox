@@ -10,4 +10,5 @@ pub mod identifier;
 crate::cfg_feature_std! {
     pub mod scanner;
 }
+pub mod bases;
 pub mod uuid;
