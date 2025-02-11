@@ -118,6 +118,18 @@ impl<const N: usize> FixedU8Buf<N> {
     pub fn as_str_mut(&mut self) -> Result<&mut str, Utf8Error> {
         core::str::from_utf8_mut(self.as_mut_used())
     }
+
+    ///
+    /// Basic in-place swap.
+    pub fn reverse(&mut self) {
+        let mut i = 0;
+        let mut j = self.len - 1;
+        while i < j {
+            self.buf.swap(i, j);
+            i += 1;
+            j -= 1;
+        }
+    }
 }
 impl<const N: usize> WriteToBEBits for FixedU8Buf<N> {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
