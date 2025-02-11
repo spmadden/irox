@@ -43,17 +43,15 @@ pub fn main() {
         std::mem::forget(_puffin_server);
     }
     let mut wgpu_options = WgpuConfiguration::default();
-    match &mut wgpu_options.wgpu_setup {
-        WgpuSetup::CreateNew {
-            supported_backends,
-            power_preference,
-            ..
-        } => {
-            *supported_backends = Backends::PRIMARY;
-            *power_preference = wgpu::PowerPreference::HighPerformance;
-        }
-        _ => {}
-    };
+    if let WgpuSetup::CreateNew {
+        supported_backends,
+        power_preference,
+        ..
+    } = &mut wgpu_options.wgpu_setup
+    {
+        *supported_backends = Backends::PRIMARY;
+        *power_preference = wgpu::PowerPreference::HighPerformance;
+    }
     let native_options = eframe::NativeOptions {
         viewport,
         renderer: Renderer::Wgpu,
