@@ -7,6 +7,7 @@
 use crate::buf::Buffer;
 use crate::iterators::LendingIterator;
 use core::ops::{Index, IndexMut};
+use core::str::Utf8Error;
 use irox_bits::{Bits, BitsErrorKind, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 
 pub type StrBuf<const N: usize> = FixedU8Buf<N>;
@@ -105,6 +106,17 @@ impl<const N: usize> FixedU8Buf<N> {
             let _ = self.push_back(*b);
         }
         Ok(())
+    }
+
+    ///
+    /// Returns the contents of this buffer as a str
+    pub fn as_str(&self) -> Result<&str, Utf8Error> {
+        core::str::from_utf8(self.as_ref_used())
+    }
+    ///
+    /// Returns the contents of this buffer as a mutable str
+    pub fn as_str_mut(&mut self) -> Result<&mut str, Utf8Error> {
+        core::str::from_utf8_mut(self.as_mut_used())
     }
 }
 impl<const N: usize> WriteToBEBits for FixedU8Buf<N> {
