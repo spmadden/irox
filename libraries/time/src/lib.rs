@@ -37,6 +37,7 @@ use crate::format::{Format, FormatError, FormatParser};
 use alloc::string::String;
 use core::cmp::Ordering;
 use core::fmt::{Display, Formatter};
+use core::hash::{Hash, Hasher};
 use irox_fixedmath::{FixedU128, FixedU32, FixedU64};
 pub use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 pub use irox_units::units::duration::{Duration, DurationUnit};
@@ -610,6 +611,12 @@ macro_rules! impls {
         impl Ord for $strukt {
             fn cmp(&self, other: &Self) -> Ordering {
                 other.as_epoch(self.epoch).inner.cmp(&self.inner)
+            }
+        }
+        impl Hash for $strukt {
+            fn hash<H: Hasher>(&self, state: &mut H) {
+                self.epoch.hash(state);
+                self.inner.hash(state);
             }
         }
     };

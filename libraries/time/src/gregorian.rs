@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Contains [`Date`] and associated elements to represent a Proleptic Gregorian Date.
 //!
 
+extern crate alloc;
 use core::fmt::{Display, Formatter};
 use core::ops::{Add, AddAssign, Sub};
 
@@ -18,7 +20,6 @@ use crate::format::{Format, FormatError, FormatParser};
 use crate::julian::{JulianDate, JulianDayNumber, PrimeDate, JULIAN_EPOCH};
 use crate::SECONDS_IN_DAY;
 
-extern crate alloc;
 pub use alloc::string::String;
 
 /// Days per 4 Year Window
@@ -214,7 +215,7 @@ impl TryFrom<u8> for Month {
 
 ///
 /// Gregorian Date - a specific date on a calendar.
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Date {
     ///
     /// Year is the Proleptic Gregorian Year

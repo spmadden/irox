@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Contains the concept of an [`Epoch`] - a specific Proleptic Gregorian [`Date`] from which a
@@ -17,7 +18,7 @@ use crate::gregorian::Date;
 
 ///
 /// An `Epoch` serves as a reference point from which time is measured.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Epoch(pub Date);
 
 impl Epoch {
