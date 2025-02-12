@@ -181,3 +181,30 @@ impl_to_unsigned!(i16, u16);
 impl_to_unsigned!(i32, u32);
 impl_to_unsigned!(i64, u64);
 impl_to_unsigned!(i128, u128);
+
+pub trait ToU64 {
+    fn to_u64(&self) -> u64;
+}
+macro_rules! impl_to_u64 {
+    ($ty:ty) => {
+        impl ToU64 for $ty {
+            fn to_u64(&self) -> u64 {
+                *self as u64
+            }
+        }
+    };
+}
+impl_to_u64!(u8);
+impl_to_u64!(i8);
+impl_to_u64!(u16);
+impl_to_u64!(i16);
+impl_to_u64!(u32);
+impl_to_u64!(i32);
+impl_to_u64!(u64);
+impl_to_u64!(i64);
+impl_to_u64!(u128);
+impl_to_u64!(i128);
+impl_to_u64!(f32);
+impl_to_u64!(f64);
+impl_to_u64!(bool);
+impl_to_u64!(char);
