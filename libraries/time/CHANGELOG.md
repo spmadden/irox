@@ -1,5 +1,31 @@
 
 
+## v0.4.8 (2025-02-12)
+
+### New Features
+
+ - <csr-id-bdc13318e33b2bd3aedf9cf743ad943b1b2a8131/> Add `Hash` implementation for `Epoch`, `Date`, and time structs
+   This update derives the `Hash` trait for `Epoch` and `Date` structs and implements custom `Hash` logic for time structs. These changes improve compatibility with hash-based collections like `HashMap` and `HashSet`. Additionally, copyright years were updated to 2025.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 17 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add `Hash` implementation for `Epoch`, `Date`, and time structs ([`bdc1331`](https://github.com/spmadden/irox/commit/bdc13318e33b2bd3aedf9cf743ad943b1b2a8131))
+</details>
+
 ## v0.4.7 (2025-01-26)
 
 ### New Features
@@ -14,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 40 calendar days.
+ - 6 commits contributed to the release over the course of 40 calendar days.
  - 41 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -26,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.7 ([`1fc49ae`](https://github.com/spmadden/irox/commit/1fc49ae61e7fe0f93d0771a834e1d90e0cb710a8))
     - New Time64::from_unix_raw function ([`2ef5e6a`](https://github.com/spmadden/irox/commit/2ef5e6ac703d6f2c38c82e3ad1f313987432ee3c))
     - New Time64::from_unix_u64 fn ([`377ac47`](https://github.com/spmadden/irox/commit/377ac47a9a9c557900296a1d5cbb375a3b5e8559))
     - More impls for Timestamp and Duration math ([`ce75d8f`](https://github.com/spmadden/irox/commit/ce75d8f6c30fce9b0e435d1c0b77b0e8fa02d7ae))
