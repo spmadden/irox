@@ -1,5 +1,31 @@
 
 
+## v0.4.1 (2025-02-12)
+
+### New Features
+
+ - <csr-id-d428007e46592c8b1c15d2e83abd34f94a7a8540/> Add LE bit encoding/decoding for strings
+   Introduced `WriteToLEBits` for `&str` and `ReadFromLEBits` for `String` to support little-endian bit operations. These implementations handle length-prefixed string serialization and deserialization efficiently.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 17 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add LE bit encoding/decoding for strings ([`d428007`](https://github.com/spmadden/irox/commit/d428007e46592c8b1c15d2e83abd34f94a7a8540))
+</details>
+
 ## v0.4.0 (2025-01-26)
 
 ### New Features
@@ -29,8 +55,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release over the course of 20 calendar days.
- - 37 days passed between releases.
+ - 15 commits contributed to the release over the course of 25 calendar days.
+ - 43 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -41,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.4.0 ([`a6de5f0`](https://github.com/spmadden/irox/commit/a6de5f0f1280adf860333e8c066b145e3166ef4b))
     - Fix issue where WriteToBEBytes returned the wrong length. ([`3491afb`](https://github.com/spmadden/irox/commit/3491afb67a5d45feac9cf1865900c2a196d76f4f))
     - Rework codec into a template to impl more conversions ([`5fe9aca`](https://github.com/spmadden/irox/commit/5fe9aca83691818e241c808034706288f8366538))
     - Impl LE for f32/f64 ([`c1ba59f`](https://github.com/spmadden/irox/commit/c1ba59f17d2937c2aea90f2ff90a1fdace864dcc))
