@@ -1,7 +1,35 @@
 
 
 
+## v0.8.3 (2025-02-12)
+
+### Chore
+
+ - <csr-id-e8554fdbf92b2a1d46175f0e3a5180c17d340925/> bump irox to 0.8.3 for release
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 2 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox to 0.8.3 for release ([`e8554fd`](https://github.com/spmadden/irox/commit/e8554fdbf92b2a1d46175f0e3a5180c17d340925))
+    - Release irox-egui-extras v0.6.1 ([`dc3f710`](https://github.com/spmadden/irox/commit/dc3f710fb37158cd706b93839b20b357c3a61c23))
+</details>
+
 ## v0.8.2 (2025-02-09)
+
+<csr-id-fffa7e209ce1d270d1975e8756b0a648bc357747/>
 
 ### Chore
 
@@ -11,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 4 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.8.2 ([`bae0baa`](https://github.com/spmadden/irox/commit/bae0baa60ee7faf9d5bd15d2496c98463bb21a45))
     - Bump irox to 0.8.2 for release ([`fffa7e2`](https://github.com/spmadden/irox/commit/fffa7e209ce1d270d1975e8756b0a648bc357747))
     - Release irox-egui-extras v0.6.0 ([`7999c35`](https://github.com/spmadden/irox/commit/7999c358705a82bd6da098bf97c59bc9b35968c0))
 </details>
