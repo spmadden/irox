@@ -1479,10 +1479,16 @@ impl Axis {
         }
     }
 
-    fn needs_rerendering(&self) -> bool {
+    pub fn needs_rerendering(&self) -> bool {
         self.last_rendered_zoom != self.zoomed_range
             || self.last_rendered_scale_mode != self.user_data.scale_mode
             || self.force_render
+    }
+    pub fn get_screen_range(&self) -> f32 {
+        self.screen_range
+    }
+    pub fn get_model_range(&self) -> f64 {
+        self.range
     }
     fn mark_rendered(&mut self) {
         self.last_rendered_zoom = self.zoomed_range;
