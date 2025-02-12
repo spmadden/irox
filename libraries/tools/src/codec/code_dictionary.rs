@@ -36,7 +36,7 @@ impl<T: Eq + Hash + Default> CodeDictionary<T> {
         Default::default()
     }
 }
-impl<T: Eq + Hash + Copy> CodeDictionary<T> {
+impl<T: Eq + Hash + Clone> CodeDictionary<T> {
     ///
     /// Looks up a code for a specific value
     pub fn lookup_value(&self, value: &T) -> Option<u32> {
@@ -48,10 +48,10 @@ impl<T: Eq + Hash + Copy> CodeDictionary<T> {
     /// for the value (first time seeing the value).
     pub fn get_code(&mut self, value: &T) -> (bool, u32) {
         let mut new_code = false;
-        let code = self.dictionary.entry(*value).or_insert_with(|| {
+        let code = self.dictionary.entry(value.clone()).or_insert_with(|| {
             new_code = true;
             let ctr = self.counter.fetch_add(1, Ordering::SeqCst) as u32;
-            self.inverse.insert(ctr, *value);
+            self.inverse.insert(ctr, value.clone());
             ctr
         });
         (new_code, *code)
@@ -62,11 +62,11 @@ impl<T: Eq + Hash + Copy> CodeDictionary<T> {
         value_producer: F,
     ) -> Result<T, E> {
         if let Some(val) = self.inverse.get(&code) {
-            return Ok(*val);
+            return Ok(val.clone());
         }
         let val = value_producer()?;
-        self.inverse.insert(code, val);
-        self.dictionary.insert(val, code);
+        self.inverse.insert(code, val.clone());
+        self.dictionary.insert(val.clone(), code);
         Ok(val)
     }
 }
@@ -89,7 +89,7 @@ impl<'a, T: Eq + Hash + Default, B: MutBits> GroupVarintCodeEncoder<'a, T, B> {
         }
     }
 }
-impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
+impl<'a, T: Eq + Hash + Default + Clone + WriteToBEBits, B: MutBits>
     GroupVarintCodeEncoder<'a, T, B>
 {
     pub fn encode_4(&mut self, vals: &[T; 4]) -> Result<usize, Error> {
@@ -243,7 +243,9 @@ impl<'a, T: Hash + Eq + Default, B: Bits> GroupVarintCodeDecoder<'a, T, B> {
         }
     }
 }
-impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupVarintCodeDecoder<'a, T, B> {
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits>
+    GroupVarintCodeDecoder<'a, T, B>
+{
     fn decode_1(&mut self, code: u32) -> Result<T, Error> {
         self.dict
             .read_code(code, || T::read_from_be_bits(self.inner.deref_mut()))
