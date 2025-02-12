@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Modifications Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Implementations around the rendering history of individual frames
 //!
 
 use egui::util::History;
+use egui::StrokeKind;
 
 ///
 /// Tracks information about the render history of previous frames
@@ -94,12 +96,13 @@ impl FrameHistory {
         let mut shapes = Vec::with_capacity(3 + 2 * history.len());
         shapes.push(Shape::Rect(epaint::RectShape {
             rect,
-            rounding: style.rounding,
+            corner_radius: style.corner_radius,
             fill: ui.visuals().extreme_bg_color,
             stroke: ui.style().noninteractive().bg_stroke,
-            fill_texture_id: Default::default(),
-            uv: Rect::ZERO,
+            stroke_kind: StrokeKind::Inside,
             blur_width: 0.0f32,
+            round_to_pixels: None,
+            brush: None,
         }));
 
         let rect = rect.shrink(4.0);

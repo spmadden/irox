@@ -11,8 +11,8 @@ use crate::fonts::BOLD;
 use crate::profile_scope;
 use egui::epaint::TextShape;
 use egui::{
-    pos2, Align, Align2, Color32, Context, FontFamily, FontId, Mesh, Painter, Pos2, Rect, Response,
-    Rgba, Rounding, Sense, Shape, Stroke, TextStyle, Ui, Vec2,
+    pos2, Align, Align2, Color32, Context, CornerRadius, FontFamily, FontId, Mesh, Painter, Pos2,
+    Rect, Response, Rgba, Sense, Shape, Stroke, StrokeKind, TextStyle, Ui, Vec2,
 };
 use irox_imagery::colormaps::CLASSIC_20;
 use irox_imagery::Color;
@@ -117,7 +117,7 @@ impl PlotInteraction {
                 // paint the horizontal drag rectangle.
                 let _shp = painter.rect_filled(
                     overlay_rect,
-                    Rounding::ZERO,
+                    CornerRadius::ZERO,
                     Color32::from_black_alpha(64),
                 );
             }
@@ -843,10 +843,10 @@ impl BasicPlot {
                 let mut hovered = false;
                 let hvr = ui.visuals().widgets.hovered;
                 let fill = hvr.bg_fill;
-                let rnd = hvr.rounding;
+                let rnd = hvr.corner_radius;
                 let strk = hvr.bg_stroke;
                 if used.contains(pos) {
-                    painter.rect(used, rnd, fill, strk);
+                    painter.rect(used, rnd, fill, strk, StrokeKind::Inside);
 
                     hovered = true;
                     any_hovered = true;

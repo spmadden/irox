@@ -4,7 +4,7 @@ accepted = [
     "ISC",
     "BSL-1.0",
     "OFL-1.1",
-    "LicenseRef-UFL-1.0",
+    "Ubuntu-font-1.0",
     "BSD-3-Clause",
     "BSD-2-Clause",
     "Zlib",
@@ -17,9 +17,9 @@ accepted = [
 no-clearly-defined = true
 workarounds = ["ring", "unicode-ident"]
 
-[epaint.clarify]
-license = "(MIT OR Apache-2.0) AND OFL-1.1 AND LicenseRef-UFL-1.0"
-[[epaint.clarify.files]]
+[epaint_default_fonts.clarify]
+license = "(MIT OR Apache-2.0) AND OFL-1.1 AND Ubuntu-font-1.0"
+[[epaint_default_fonts.clarify.files]]
 path = "fonts/UFL.txt"
-license = "LicenseRef-UFL-1.0"
-checksum = "0cebe8aa1ba75c4fdf57946d6109ed0a8ce12ae6bb420bad4e4f302c5c147d78"
+license = "Ubuntu-font-1.0"
+checksum = "2f0015108d68627bd788d313f529c21ff4da2c2c42a5e1f3883acc83480f9002"

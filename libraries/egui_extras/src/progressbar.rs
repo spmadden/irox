@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -8,7 +8,8 @@
 use eframe::emath::lerp;
 use eframe::epaint::text::TextWrapMode;
 use egui::{
-    Color32, NumExt, Rect, Response, Rgba, Sense, Stroke, TextStyle, Ui, Vec2, Widget, WidgetText,
+    Color32, NumExt, Rect, Response, Rgba, Sense, Stroke, StrokeKind, TextStyle, Ui, Vec2, Widget,
+    WidgetText,
 };
 
 ///
@@ -140,8 +141,13 @@ impl ProgressBar {
             let visuals = ui.style().visuals.clone();
             let rounding = outer_rect.height() / 2.0;
             let time = ui.input(|i| i.time).cos().abs() as f32;
-            ui.painter()
-                .rect(outer_rect, rounding, visuals.extreme_bg_color, Stroke::NONE);
+            ui.painter().rect(
+                outer_rect,
+                rounding,
+                visuals.extreme_bg_color,
+                Stroke::NONE,
+                StrokeKind::Inside,
+            );
             let inner_rect = if is_indeterminate {
                 let max_x = outer_rect.width() * 0.8;
                 let offset = lerp(0.0f32..=max_x, time);
@@ -167,6 +173,7 @@ impl ProgressBar {
                 rounding,
                 Color32::from(Rgba::from(visuals.selection.bg_fill) * color_factor),
                 Stroke::NONE,
+                StrokeKind::Inside,
             );
 
             if let Some(text) = left_text {

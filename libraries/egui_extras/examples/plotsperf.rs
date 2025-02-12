@@ -2,7 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
-use eframe::egui_wgpu::{WgpuConfiguration, WgpuSetup};
+use eframe::egui_wgpu::{WgpuConfiguration, WgpuSetup, WgpuSetupCreateNew};
 use eframe::wgpu::Backends;
 use eframe::{wgpu, App, CreationContext, Frame, HardwareAcceleration, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
@@ -43,13 +43,13 @@ pub fn main() {
         std::mem::forget(_puffin_server);
     }
     let mut wgpu_options = WgpuConfiguration::default();
-    if let WgpuSetup::CreateNew {
-        supported_backends,
+    if let WgpuSetup::CreateNew(WgpuSetupCreateNew {
+        instance_descriptor,
         power_preference,
         ..
-    } = &mut wgpu_options.wgpu_setup
+    }) = &mut wgpu_options.wgpu_setup
     {
-        *supported_backends = Backends::PRIMARY;
+        instance_descriptor.backends = Backends::PRIMARY;
         *power_preference = wgpu::PowerPreference::HighPerformance;
     }
     let native_options = eframe::NativeOptions {
