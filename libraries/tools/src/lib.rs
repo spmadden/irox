@@ -8,6 +8,7 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+extern crate alloc;
 
 pub use primitives::*;
 pub use util::*;
@@ -32,6 +33,9 @@ cfg_feature_std! {
 cfg_feature_alloc! {
     pub mod packetio;
     pub mod vec;
+
+    mod str;
+    pub use str::*;
 }
 
 pub mod errors;
