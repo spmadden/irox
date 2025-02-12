@@ -2,22 +2,24 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::sampling::Sample64;
+use crate::sampling::{IntSample64, Sample64, StrSample64};
 use crate::streams::{
-    AddingDecoder, CompressStream, Decoder, DeltaStream, F64ToU64Stream, InflateStream, Stream,
-    StreamStageStats, Streamable, U64ToF64Decoder, ZigZagDecoder, ZigZagStream,
+    AddingDecoder, CompressStream, Decoder, DeltaStream, F64ToU64Stream, I64ToU64Stream,
+    InflateStream, Stream, StreamStageStats, U64ToF64Decoder, U64ToI64Decoder, ZigZagDecoder,
+    ZigZagStream,
 };
 use alloc::sync::Arc;
 use core::hash::Hash;
 use irox_bits::{
     Bits, BitsError, BitsErrorKind, BitsWrapper, Error, MutBits, ReadFromBEBits,
-    SharedCountingBits, SharedROCounter,
+    SharedCountingBits, SharedROCounter, WriteToBEBits,
 };
 use irox_time::Time64;
 use irox_tools::buf::{Buffer, RoundBuffer};
 use irox_tools::codec::{GroupVarintCodeDecoder, GroupVarintCodeEncoder};
 use irox_tools::map::OrderedHashMap;
 use irox_tools::read::{MultiStreamReader, MultiStreamWriter, StreamWriter};
+use irox_tools::StrWrapper;
 use std::path::Path;
 
 macro_rules! new_bdc {
@@ -229,11 +231,14 @@ impl Stream<f64> for FloatSplitter {
 
 ///
 /// Stream to collect values into groups of 4 and then run them through a [`GroupVarintCodeEncoder`]
-pub struct GroupCodingStream<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> {
+pub struct GroupCodingStream<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits>
+{
     buf: RoundBuffer<4, T>,
     inner: GroupVarintCodeEncoder<'a, T, B>,
 }
-impl<'a, T: core::hash::Hash + Eq + Default + Streamable, B: MutBits> GroupCodingStream<'a, T, B> {
+impl<'a, T: Hash + Eq + Default + Sized + Default + Clone + WriteToBEBits, B: MutBits>
+    GroupCodingStream<'a, T, B>
+{
     pub fn new(inner: BitsWrapper<'a, B>) -> Self {
         Self {
             buf: RoundBuffer::new(),
@@ -244,7 +249,7 @@ impl<'a, T: core::hash::Hash + Eq + Default + Streamable, B: MutBits> GroupCodin
         self.inner.counter()
     }
 }
-impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Stream<T>
+impl<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Stream<T>
     for GroupCodingStream<'a, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
@@ -264,7 +269,9 @@ impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Stream<T>
         self.inner.flush()
     }
 }
-impl<'a, T: core::hash::Hash + Eq + Streamable, B: MutBits> Drop for GroupCodingStream<'a, T, B> {
+impl<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Drop
+    for GroupCodingStream<'a, T, B>
+{
     fn drop(&mut self) {
         let len = self.buf.len();
         if len > 0 {
@@ -281,7 +288,7 @@ pub struct GroupDecodingStream<'a, T: Hash + Eq + Default, B: Bits> {
     inner: GroupVarintCodeDecoder<'a, T, B>,
     buf: RoundBuffer<4, T>,
 }
-impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupDecodingStream<'a, T, B> {
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> GroupDecodingStream<'a, T, B> {
     pub fn new(inner: BitsWrapper<'a, B>) -> Self {
         Self {
             inner: GroupVarintCodeDecoder::new(inner),
@@ -289,7 +296,7 @@ impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> GroupDecodingS
         }
     }
 }
-impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> Decoder<T>
+impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> Decoder<T>
     for GroupDecodingStream<'a, T, B>
 {
     fn next(&mut self) -> Result<Option<T>, Error> {
@@ -298,7 +305,7 @@ impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> Decoder<T>
                 return Ok(None);
             };
             for v in val {
-                let _ = self.buf.push_back(v);
+                let _ = self.buf.push_back(v.clone());
             }
         }
         Ok(self.buf.pop_front())
@@ -323,14 +330,16 @@ impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Copy, B: Bits> Decoder<T>
 /// 2. Run it through the same 2, 3, 4 processing as the data stream.
 ///
 /// It is assumed that the time series will be periodically sampled and atomically increasing
-pub struct CodedTimeSeriesWriter {
+pub struct CodedTimeSeriesWriter<'a> {
     float_stream: Box<dyn Stream<f64>>,
     time_stream: Box<dyn Stream<u64>>,
-    meta_stream: Box<dyn for<'a> Stream<&'a str>>,
+    int_stream: Box<dyn Stream<u64>>,
+    str_stream: Box<dyn Stream<StrWrapper<'a>> + 'a>,
+    meta_stream: Box<dyn Stream<&'a str> + 'a>,
     stats: StreamStageStats,
 }
 
-impl CodedTimeSeriesWriter {
+impl<'a> CodedTimeSeriesWriter<'a> {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
         let mut stats = StreamStageStats::default();
 
@@ -339,58 +348,90 @@ impl CodedTimeSeriesWriter {
         let meta_stream = writer.new_stream();
         let meta_stream = CompressStream::new(BitsWrapper::Owned(meta_stream));
 
-        let float_stream = writer.new_stream();
-        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("1.data_gz", float_stream.get_count());
-        let float_stream = CompressStream::new(BitsWrapper::Owned(float_stream));
-        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("2.data_vgb", float_stream.get_count());
-        let float_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("3.data_codes", float_stream.counter());
-        let float_stream = F64ToU64Stream::new(Box::new(float_stream));
-
         let time_stream = writer.new_stream();
         let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("1.time_gz", time_stream.get_count());
+        stats.stage_counting("1.1.time_gz", time_stream.get_count());
         let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
         let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("2.time_vgb", time_stream.get_count());
+        stats.stage_counting("1.2.time_vgb", time_stream.get_count());
         let time_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("3.time_codes", time_stream.counter());
+        stats.stage_counting("1.3.time_codes", time_stream.counter());
         let time_stream = ZigZagStream::new(Box::new(time_stream));
         let time_stream = DeltaStream::<i64>::new(Box::new(time_stream));
+
+        let float_stream = writer.new_stream();
+        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("2.1.float_gz", float_stream.get_count());
+        let float_stream = CompressStream::new(BitsWrapper::Owned(float_stream));
+        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("2.2.float_vgb", float_stream.get_count());
+        let float_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
+        stats.stage_counting("2.3.float_codes", float_stream.counter());
+        let float_stream = F64ToU64Stream::new(Box::new(float_stream));
+
+        let int_stream = writer.new_stream();
+        let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
+        stats.stage_counting("3.1.int_gz", int_stream.get_count());
+        let int_stream = CompressStream::new(BitsWrapper::Owned(int_stream));
+        let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
+        stats.stage_counting("3.2.int_vgb", int_stream.get_count());
+        let int_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(int_stream));
+        let int_stream = I64ToU64Stream::new(Box::new(int_stream));
+        let int_stream = DeltaStream::<i64>::new(Box::new(int_stream));
+
+        let str_stream = writer.new_stream();
+        let str_stream = SharedCountingBits::new(BitsWrapper::Owned(str_stream));
+        stats.stage_counting("4.1.str_gz", str_stream.get_count());
+        let str_stream = CompressStream::new(BitsWrapper::Owned(str_stream));
+        let str_stream = GroupCodingStream::new(BitsWrapper::Owned(str_stream));
 
         Ok(Self {
             float_stream: Box::new(float_stream),
             time_stream: Box::new(time_stream),
             meta_stream: Box::new(meta_stream),
+            int_stream: Box::new(int_stream),
+            str_stream: Box::new(str_stream),
             stats,
         })
     }
 
-    pub fn write_sample(&mut self, sample: &Sample64) -> Result<(), Error> {
-        let Sample64 { time, value } = sample;
+    #[must_use]
+    pub fn float_stream(self) -> CodedTimeSeriesFloatWriter<'a> {
+        CodedTimeSeriesFloatWriter { writer: self }
+    }
+    #[must_use]
+    pub fn int_stream(self) -> CodedTimeSeriesIntWriter<'a> {
+        CodedTimeSeriesIntWriter { writer: self }
+    }
+
+    pub fn write_str(&mut self, time: Time64, value: StrWrapper<'a>) -> Result<(), Error> {
         self.time_stream.write_value(time.as_u64())?;
-        self.float_stream.write_value(*value)?;
+        self.str_stream.write_value(value)?;
         Ok(())
     }
 
     pub fn flush(&mut self) -> Result<(), Error> {
         self.time_stream.flush()?;
         self.float_stream.flush()?;
+        self.int_stream.flush()?;
+        self.str_stream.flush()?;
+        self.meta_stream.flush()?;
         Ok(())
     }
     pub fn written_stats(&self) -> Vec<String> {
-        let stats = self.float_stream.written_stats();
         let mut out = self.stats.stats();
-        out.push(stats);
+        out.push(self.meta_stream.written_stats());
+        out.push(self.time_stream.written_stats());
+        out.push(self.float_stream.written_stats());
+        out.push(self.int_stream.written_stats());
+        out.push(self.str_stream.written_stats());
         out
     }
 
-    pub fn metadata<K: AsRef<str>, V: AsRef<str>>(
-        &mut self,
-        key: K,
-        value: V,
+    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
+        &'a mut self,
+        key: &'a K,
+        value: &'a V,
     ) -> Result<(), Error> {
         let key = key.as_ref();
         let value = value.as_ref();
@@ -399,11 +440,83 @@ impl CodedTimeSeriesWriter {
         Ok(())
     }
 }
+pub struct CodedTimeSeriesFloatWriter<'a> {
+    writer: CodedTimeSeriesWriter<'a>,
+}
+impl<'a> CodedTimeSeriesFloatWriter<'a> {
+    pub fn write_sample(&mut self, sample: &Sample64) -> Result<(), Error> {
+        let Sample64 { time, value } = sample;
+        self.writer.time_stream.write_value(time.as_u64())?;
+        self.writer.float_stream.write_value(*value)?;
+        Ok(())
+    }
+    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
+        &'a mut self,
+        key: &'a K,
+        value: &'a V,
+    ) -> Result<(), Error> {
+        self.writer.metadata(key, value)
+    }
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+    pub fn written_stats(&self) -> Vec<String> {
+        self.writer.written_stats()
+    }
+}
+pub struct CodedTimeSeriesIntWriter<'a> {
+    writer: CodedTimeSeriesWriter<'a>,
+}
+impl<'a> CodedTimeSeriesIntWriter<'a> {
+    pub fn write_sample(&mut self, time: Time64, value: u64) -> Result<(), Error> {
+        self.writer.time_stream.write_value(time.as_u64())?;
+        self.writer.int_stream.write_value(value)?;
+        Ok(())
+    }
+    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
+        &'a mut self,
+        key: &'a K,
+        value: &'a V,
+    ) -> Result<(), Error> {
+        self.writer.metadata(key, value)
+    }
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+    pub fn written_stats(&self) -> Vec<String> {
+        self.writer.written_stats()
+    }
+}
+pub struct CodedTimeSeriesStrWriter<'a> {
+    writer: CodedTimeSeriesWriter<'a>,
+}
+impl<'a> CodedTimeSeriesStrWriter<'a> {
+    pub fn write_sample(&mut self, time: Time64, value: StrWrapper<'a>) -> Result<(), Error> {
+        self.writer.time_stream.write_value(time.as_u64())?;
+        self.writer.str_stream.write_value(value)?;
+        Ok(())
+    }
+    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
+        &'a mut self,
+        key: &'a K,
+        value: &'a V,
+    ) -> Result<(), Error> {
+        self.writer.metadata(key, value)
+    }
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.writer.flush()
+    }
+    pub fn written_stats(&self) -> Vec<String> {
+        self.writer.written_stats()
+    }
+}
 
 pub enum TimeSeriesError {
     BitsError(BitsError),
     MissingMetadataStream,
     MissingFloatStream,
+    MissingIntStream,
+    MissingStrStream,
     MissingTimeStream,
 }
 impl TimeSeriesError {
@@ -413,6 +526,8 @@ impl TimeSeriesError {
             TimeSeriesError::MissingMetadataStream => "MissingMetadataStream",
             TimeSeriesError::MissingFloatStream => "MissingFloatStream",
             TimeSeriesError::MissingTimeStream => "MissingTimeStream",
+            TimeSeriesError::MissingIntStream => "MissingIntStream",
+            TimeSeriesError::MissingStrStream => "MissingStrStream",
         }
     }
 }
@@ -429,13 +544,14 @@ impl From<TimeSeriesError> for BitsError {
         }
     }
 }
-pub struct CodedTimeSeriesReader {
+pub struct CodedTimeSeriesReader<'a> {
     metadata: OrderedHashMap<String, String>,
     float_decoder: Box<dyn Decoder<f64>>,
     time_decoder: Box<dyn Decoder<u64>>,
-    last_item: Option<Sample64>,
+    int_decoder: Box<dyn Decoder<u64>>,
+    str_decoder: Box<dyn Decoder<StrWrapper<'a>> + 'a>,
 }
-impl CodedTimeSeriesReader {
+impl<'a> CodedTimeSeriesReader<'a> {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, TimeSeriesError> {
         let mut reader = MultiStreamReader::open(path)?;
         let mut streams = reader.drain(..);
@@ -450,13 +566,6 @@ impl CodedTimeSeriesReader {
             metadata.insert(key, value);
         }
 
-        let Some(float_stream) = streams.next() else {
-            return Err(TimeSeriesError::MissingFloatStream);
-        };
-        let float_stream = InflateStream::new(BitsWrapper::Owned(float_stream));
-        let float_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
-        let float_stream = U64ToF64Decoder::new(Box::new(float_stream));
-
         let Some(time_stream) = streams.next() else {
             return Err(TimeSeriesError::MissingTimeStream);
         };
@@ -465,18 +574,65 @@ impl CodedTimeSeriesReader {
         let time_stream = ZigZagDecoder::new(Box::new(time_stream));
         let time_stream = AddingDecoder::new(Box::new(time_stream));
 
+        let Some(float_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingFloatStream);
+        };
+        let float_stream = InflateStream::new(BitsWrapper::Owned(float_stream));
+        let float_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
+        let float_stream = U64ToF64Decoder::new(Box::new(float_stream));
+
+        let Some(int_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingIntStream);
+        };
+        let int_stream = InflateStream::new(BitsWrapper::Owned(int_stream));
+        let int_stream = GroupDecodingStream::<u64, _>::new(BitsWrapper::Owned(int_stream));
+        let int_stream = U64ToI64Decoder::new(Box::new(int_stream));
+        let int_stream = AddingDecoder::new(Box::new(int_stream));
+
+        let Some(str_stream) = streams.next() else {
+            return Err(TimeSeriesError::MissingStrStream);
+        };
+        let str_stream = InflateStream::new(BitsWrapper::Owned(str_stream));
+        let str_stream =
+            GroupDecodingStream::<StrWrapper<'a>, _>::new(BitsWrapper::Owned(str_stream));
+
         Ok(Self {
             metadata,
             float_decoder: Box::new(float_stream),
             time_decoder: Box::new(time_stream),
-            last_item: None,
+            int_decoder: Box::new(int_stream),
+            str_decoder: Box::new(str_stream),
         })
+    }
+
+    pub fn float_reader(self) -> CodedTimeSeriesFloatReader<'a> {
+        CodedTimeSeriesFloatReader {
+            reader: self,
+            last_item: None,
+        }
+    }
+    pub fn int_reader(self) -> CodedTimeSeriesIntReader<'a> {
+        CodedTimeSeriesIntReader {
+            reader: self,
+            last_item: None,
+        }
+    }
+    pub fn str_reader(self) -> CodedTimeSeriesStrReader<'a> {
+        CodedTimeSeriesStrReader {
+            reader: self,
+            last_item: None,
+        }
     }
 
     pub fn metadata(&self) -> impl Iterator<Item = (&String, &String)> {
         self.metadata.iter()
     }
-
+}
+pub struct CodedTimeSeriesFloatReader<'a> {
+    reader: CodedTimeSeriesReader<'a>,
+    last_item: Option<Sample64>,
+}
+impl<'a> CodedTimeSeriesFloatReader<'a> {
     pub fn peek(&mut self) -> Result<&mut Option<Sample64>, Error> {
         if self.last_item.is_some() {
             Ok(&mut self.last_item)
@@ -489,12 +645,12 @@ impl CodedTimeSeriesReader {
         }
     }
 }
-impl Iterator for CodedTimeSeriesReader {
+impl<'a> Iterator for CodedTimeSeriesFloatReader<'a> {
     type Item = Result<Sample64, Error>;
 
     fn next(&mut self) -> Option<Result<Sample64, Error>> {
-        let r1 = self.float_decoder.next();
-        let r2 = self.time_decoder.next();
+        let r1 = self.reader.float_decoder.next();
+        let r2 = self.reader.time_decoder.next();
         let float = match r1 {
             Ok(v) => v,
             Err(e) => return Some(Err(e)),
@@ -510,6 +666,88 @@ impl Iterator for CodedTimeSeriesReader {
             time: Time64::from_unix_raw(time),
         };
         self.last_item = Some(samp);
+        Some(Ok(samp))
+    }
+}
+pub struct CodedTimeSeriesIntReader<'a> {
+    reader: CodedTimeSeriesReader<'a>,
+    last_item: Option<IntSample64>,
+}
+impl<'a> CodedTimeSeriesIntReader<'a> {
+    pub fn peek(&mut self) -> Result<&mut Option<IntSample64>, Error> {
+        if self.last_item.is_some() {
+            Ok(&mut self.last_item)
+        } else {
+            if let Some(v) = self.next() {
+                let v = v?;
+                self.last_item = Some(v);
+            }
+            Ok(&mut self.last_item)
+        }
+    }
+}
+impl<'a> Iterator for CodedTimeSeriesIntReader<'a> {
+    type Item = Result<IntSample64, Error>;
+
+    fn next(&mut self) -> Option<Result<IntSample64, Error>> {
+        let r1 = self.reader.int_decoder.next();
+        let r2 = self.reader.time_decoder.next();
+        let val = match r1 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let time = match r2 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let val = val?;
+        let time = time?;
+        let samp = IntSample64 {
+            value: val,
+            time: Time64::from_unix_raw(time),
+        };
+        self.last_item = Some(samp);
+        Some(Ok(samp))
+    }
+}
+pub struct CodedTimeSeriesStrReader<'a> {
+    reader: CodedTimeSeriesReader<'a>,
+    last_item: Option<StrSample64<'a>>,
+}
+impl<'a> CodedTimeSeriesStrReader<'a> {
+    pub fn peek(&mut self) -> Result<&mut Option<StrSample64<'a>>, Error> {
+        if self.last_item.is_some() {
+            Ok(&mut self.last_item)
+        } else {
+            if let Some(v) = self.next() {
+                let v = v?;
+                self.last_item = Some(v);
+            }
+            Ok(&mut self.last_item)
+        }
+    }
+}
+impl<'a> Iterator for CodedTimeSeriesStrReader<'a> {
+    type Item = Result<StrSample64<'a>, Error>;
+
+    fn next(&mut self) -> Option<Result<StrSample64<'a>, Error>> {
+        let r1 = self.reader.str_decoder.next();
+        let r2 = self.reader.time_decoder.next();
+        let val = match r1 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let time = match r2 {
+            Ok(v) => v,
+            Err(e) => return Some(Err(e)),
+        };
+        let val = val?;
+        let time = time?;
+        let samp = StrSample64 {
+            value: val,
+            time: Time64::from_unix_raw(time),
+        };
+        self.last_item = Some(samp.clone());
         Some(Ok(samp))
     }
 }
@@ -529,7 +767,8 @@ mod tests {
     pub fn test() -> Result<(), Error> {
         let mut data = UnlimitedBuffer::<Sample64>::new();
         {
-            let mut file = CodedTimeSeriesWriter::new("test_file.tsd")?;
+            let file = CodedTimeSeriesWriter::new("test_file.tsd")?;
+            let mut file = file.float_stream();
             // let mut buf2 = UnlimitedBuffer::<u8>::new();
             let mut input = Time64::now();
             let incr = Duration::from_millis(100);
@@ -573,7 +812,8 @@ mod tests {
             drop(file);
         }
 
-        let mut file = CodedTimeSeriesReader::new("test_file.tsd")?;
+        let file = CodedTimeSeriesReader::new("test_file.tsd")?;
+        let mut file = file.float_reader();
         let num_samps = data.len();
         assert!(num_samps > 0);
         let mut idx = 0;

@@ -22,7 +22,7 @@ miniz = ["dep:miniz_oxide"]
 workspace = true
 
 [dependencies]
-irox-tools.workspace = true
+irox-tools = { workspace = true, features = ["alloc"] }
 irox-bits = { workspace = true, features = ["alloc"] }
 irox-types.workspace = true
 irox-time = { workspace = true }
