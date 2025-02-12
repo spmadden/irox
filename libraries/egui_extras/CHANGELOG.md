@@ -1,7 +1,43 @@
 
 
 
+## v0.6.1 (2025-02-12)
+
+### Chore
+
+ - <csr-id-538e405c4960593413c72be7eb9429c98d92642b/> Update rendering and dependencies for egui 0.31 upgrade
+   Upgraded egui, eframe, and related crates to version 0.31, introducing new rendering features like `StrokeKind` and `CornerRadius`. Updated code to align with API changes and improved compatibility, including adjustments for `wgpu` and its dependencies. Also updated licensing terms and resolved dependency clarifications.
+ - <csr-id-e2387bc8ef08056c542b20f8b44e463755b55acb/> fix some lints
+
+### New Features
+
+ - <csr-id-ca5ce821102f6f51d83d17680e32a9ac8631a7fc/> Make utility functions public in logplot.rs
+   Expose `needs_rerendering`, `get_screen_range`, and `get_model_range` as public to improve access for external usage. This change facilitates integration and interaction with the `logplot` module by providing necessary data and states.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 1 calendar day.
+ - 2 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Update rendering and dependencies for egui 0.31 upgrade ([`538e405`](https://github.com/spmadden/irox/commit/538e405c4960593413c72be7eb9429c98d92642b))
+    - Make utility functions public in logplot.rs ([`ca5ce82`](https://github.com/spmadden/irox/commit/ca5ce821102f6f51d83d17680e32a9ac8631a7fc))
+    - Fix some lints ([`e2387bc`](https://github.com/spmadden/irox/commit/e2387bc8ef08056c542b20f8b44e463755b55acb))
+</details>
+
 ## v0.6.0 (2025-02-09)
+
+<csr-id-38267a2559f76808f24d092ddaa2c6c002c319c3/>
 
 ### Chore
 
@@ -24,7 +60,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 1 calendar day.
+ - 6 commits contributed to the release over the course of 1 calendar day.
  - 14 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -36,6 +72,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.6.0 ([`7999c35`](https://github.com/spmadden/irox/commit/7999c358705a82bd6da098bf97c59bc9b35968c0))
     - Pivot from glow to wgpu ([`7ab2f23`](https://github.com/spmadden/irox/commit/7ab2f23fb4208834f81a9fb29c836bc353da79aa))
     - Fix missing build feature for eframe. ([`af2fc48`](https://github.com/spmadden/irox/commit/af2fc489d0826e438edac6ba956193129c23b607))
     - Fixup grammar in plots ([`38267a2`](https://github.com/spmadden/irox/commit/38267a2559f76808f24d092ddaa2c6c002c319c3))
