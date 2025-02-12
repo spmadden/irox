@@ -340,8 +340,8 @@ fn release(in_args: &[&str]) -> Result<(), Error> {
     let pkg = in_args.first().unwrap_or(&"irox");
     let mut rgs = Vec::from_iter([
         "smart-release",
-        "--no-conservative-pre-release-version-handling",
-        "--no-isolate-dependencies-from-breaking-changes",
+        // "--no-conservative-pre-release-version-handling",
+        // "--no-isolate-dependencies-from-breaking-changes",
         "-u",
         "--verbose",
     ]);
