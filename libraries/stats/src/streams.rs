@@ -17,9 +17,9 @@ use core::ops::{Add, BitXor, DerefMut, Sub};
 use irox_bits::{BitsWrapper, Error, MutBits, SharedROCounter, WriteToBEBits};
 use irox_tools::codec::{EncodeVByteTo, ZagZig, ZigZag};
 use irox_tools::{ToSigned, ToUnsigned};
-use irox_types::NumberSigned;
+use irox_types::{AnyUnsignedInteger, NumberSigned};
 
-pub trait Stream<T: Streamable> {
+pub trait Stream<T> {
     fn write_value(&mut self, value: T) -> Result<usize, Error>;
     fn flush(&mut self) -> Result<(), Error> {
         Ok(())
@@ -185,6 +185,36 @@ impl<D: Streamable, S: Streamable + ZagZig<Output = D>> Decoder<D> for ZigZagDec
         };
         let a = ZagZig::zagzig(a);
         Ok(Some(a))
+    }
+}
+
+pub struct I64ToU64Stream {
+    writer: Box<dyn Stream<u64>>,
+}
+impl I64ToU64Stream {
+    pub fn new(writer: Box<dyn Stream<u64>>) -> Self {
+        Self { writer }
+    }
+}
+impl Stream<i64> for I64ToU64Stream {
+    fn write_value(&mut self, value: i64) -> Result<usize, Error> {
+        self.writer.write_value(value.as_u64())
+    }
+}
+pub struct U64ToI64Decoder {
+    reader: Box<dyn Decoder<u64>>,
+}
+impl U64ToI64Decoder {
+    pub fn new(reader: Box<dyn Decoder<u64>>) -> Self {
+        Self { reader }
+    }
+}
+impl Decoder<i64> for U64ToI64Decoder {
+    fn next(&mut self) -> Result<Option<i64>, Error> {
+        let Some(val) = self.reader.next()? else {
+            return Ok(None);
+        };
+        Ok(Some(val as i64))
     }
 }
 
