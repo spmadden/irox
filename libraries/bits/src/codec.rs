@@ -722,6 +722,15 @@ impl WriteToBEBits for &str {
         bits.write_str_u32_blob(self)
     }
 }
+impl WriteToLEBits for &str {
+    fn write_le_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let len = self.len() as u32;
+        bits.write_le_u32(len)?;
+        bits.write_all_bytes(self.as_bytes())?;
+
+        Ok((len + 4) as usize)
+    }
+}
 
 cfg_feature_alloc! {
     extern crate alloc;
@@ -733,6 +742,12 @@ cfg_feature_alloc! {
     impl ReadFromBEBits for alloc::string::String {
         fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
             inp.read_str_u32_blob()
+        }
+    }
+    impl ReadFromLEBits for alloc::string::String {
+        fn read_from_le_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
+            let len = inp.read_le_u32()?;
+            inp.read_str_sized_lossy(len as usize)
         }
     }
 }
