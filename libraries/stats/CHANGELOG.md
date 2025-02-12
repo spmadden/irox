@@ -1,6 +1,38 @@
 
 
 
+## v0.3.4 (2025-02-12)
+
+### New Features
+
+ - <csr-id-e6ca1467817d75d366aefa164217b2c0a8fd00a0/> Add support for integer and string time series in tsdf
+   Introduced separate streams and readers for handling integer and string time series data alongside float data. Updated encoders, decoders, and related traits to support these new data types. Modified tests to adapt to the expanded functionality.
+ - <csr-id-36663c457dcc80568f91925e44e8ae32aa3d3e07/> Add i64-to-u64 stream and u64-to-i64 decoder
+   Introduce `I64ToU64Stream` and `U64ToI64Decoder` for encoding and decoding between i64 and u64 types. This enhances type conversion flexibility in streaming implementations and adheres to the existing abstraction pattern. Adjust imports and traits to support the new functionality.
+ - <csr-id-5aa954d71ea6895bacd65a795f10881870df10a2/> Refactor sampling to use macros and add new sample types
+   Replaced repetitive `Sample64` implementation with a `sample64!` macro for better code reusability. Added support for `IntSample64` and `StrSample64` types, and introduced a `SampleValue` enum to handle multiple sample value types. These changes improve extensibility and reduce code duplication.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 2 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add support for integer and string time series in tsdf ([`e6ca146`](https://github.com/spmadden/irox/commit/e6ca1467817d75d366aefa164217b2c0a8fd00a0))
+    - Add i64-to-u64 stream and u64-to-i64 decoder ([`36663c4`](https://github.com/spmadden/irox/commit/36663c457dcc80568f91925e44e8ae32aa3d3e07))
+    - Refactor sampling to use macros and add new sample types ([`5aa954d`](https://github.com/spmadden/irox/commit/5aa954d71ea6895bacd65a795f10881870df10a2))
+</details>
+
 ## v0.3.3 (2025-02-09)
 
 ### Bug Fixes
@@ -11,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 4 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.3.3 ([`a47402c`](https://github.com/spmadden/irox/commit/a47402c1d987cd357df74d5420556c256d03d258))
     - Pivot from glow to wgpu ([`7ab2f23`](https://github.com/spmadden/irox/commit/7ab2f23fb4208834f81a9fb29c836bc353da79aa))
 </details>
 
