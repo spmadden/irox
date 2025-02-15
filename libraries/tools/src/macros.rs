@@ -31,6 +31,18 @@ macro_rules! cfg_unix {
     }
 }
 
+///
+/// Use for things that are only valid for documentation generation
+#[macro_export]
+macro_rules! cfg_docs {
+    ($($item:item)*) => {
+        $(
+            #[cfg(all(doc, docsrs))]
+            $item
+        )*
+    };
+}
+
 /// Enables feature-specific code.
 /// Use this macro instead of `cfg(feature = "std")` to generate docs properly.
 #[macro_export]
