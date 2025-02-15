@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Contains [`JulianDate`] and others - ways of measuring a discrete amount of days from a specific
@@ -54,17 +55,17 @@ pub struct JulianDayNumber<T> {
 }
 
 impl<T> JulianDayNumber<T> {
-    pub(crate) fn new(epoch: Epoch, day_number: f64) -> Self {
+    pub const fn new(epoch: Epoch, day_number: f64) -> Self {
         JulianDayNumber {
             epoch,
             day_number,
-            _phantom: Default::default(),
+            _phantom: PhantomData,
         }
     }
-    pub fn get_day_number(&self) -> f64 {
+    pub const fn get_day_number(&self) -> f64 {
         self.day_number
     }
-    pub fn get_epoch(&self) -> Epoch {
+    pub const fn get_epoch(&self) -> Epoch {
         self.epoch
     }
 }

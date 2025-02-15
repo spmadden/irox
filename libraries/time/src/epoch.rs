@@ -40,7 +40,7 @@ pub struct Timestamp<T> {
 }
 
 impl<T> Timestamp<T> {
-    pub(crate) fn new(epoch: Epoch, duration: Duration) -> Self {
+    pub const fn new(epoch: Epoch, duration: Duration) -> Self {
         Self {
             epoch,
             offset: duration,
@@ -51,14 +51,14 @@ impl<T> Timestamp<T> {
     ///
     /// Returns the base epoch for this timestamp
     #[must_use]
-    pub fn get_epoch(&self) -> Epoch {
+    pub const fn get_epoch(&self) -> Epoch {
         self.epoch
     }
 
     ///
     /// Returns the relative offset of this timestamp from the specified epoch.
     #[must_use]
-    pub fn get_offset(&self) -> Duration {
+    pub const fn get_offset(&self) -> Duration {
         self.offset
     }
 }
@@ -108,11 +108,7 @@ macro_rules! derive_timestamp_impl {
             ///
             /// Creates a new timestamp given the specified offset
             pub const fn from_offset(offset: Duration) -> $name {
-                $name {
-                    epoch: $epoch,
-                    offset,
-                    _phantom: PhantomData {},
-                }
+                $name::new($epoch, offset)
             }
 
             ///
@@ -129,12 +125,7 @@ macro_rules! derive_timestamp_impl {
         }
         impl Default for $name {
             fn default() -> Self {
-                $name {
-                    epoch: $epoch,
-                    offset: Duration::default(),
-
-                    _phantom: Default::default(),
-                }
+                $name::from_offset(Duration::default())
             }
         }
         impl From<Duration> for $name {
