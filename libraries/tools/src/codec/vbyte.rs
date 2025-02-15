@@ -371,8 +371,7 @@ pub fn encode_u128bits(val: u128) -> FixedBuf<19, u8> {
 macro_rules! zigzag_impl {
     ($id:ident,$un:ident,$sig:ty,$usig:ty,$len:literal) => {
         pub fn $id(n: $sig) -> $usig {
-            let n = n as $usig;
-            (n << 1) ^ (n >> ($len - 1))
+            ((n << 1) ^ (n >> ($len - 1))) as $usig
         }
         pub fn $un(n: $usig) -> $sig {
             let v = (n & 0x01) as $sig;
