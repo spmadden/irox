@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -138,7 +138,7 @@ impl PRNG for PcgXslRrRr {
         let high = (state >> 64) as u64;
         let newlow = (high ^ state as u64).rotate_right(rot1);
         let newhigh = high.rotate_right((newlow & 0x3F) as u32);
-        (newhigh as u128) << 64 | newlow as u128
+        ((newhigh as u128) << 64) | newlow as u128
     }
 }
 
@@ -186,14 +186,14 @@ pub trait PRNG {
     fn next_u64(&mut self) -> u64 {
         let a: u64 = self.next_u32() as u64;
         let b: u64 = self.next_u32() as u64;
-        a << 32 | b
+        (a << 32) | b
     }
     ///
     /// Gets the next random [`u128`] for this random sequence
     fn next_u128(&mut self) -> u128 {
         let a: u128 = self.next_u64() as u128;
         let b: u128 = self.next_u64() as u128;
-        a << 64 | b
+        (a << 64) | b
     }
     ///
     /// Gets the next random [`f32`] for this random sequence
@@ -264,7 +264,7 @@ mod tests {
         let mut rand = PcgXslRrRr::new_seed(0);
         let start = std::time::Instant::now();
         let todo = 100_000_000;
-        std::hint::black_box({
+        core::hint::black_box({
             let mut _v = 0;
             for _i in 0..todo {
                 _v = rand.next_u128();
@@ -287,7 +287,7 @@ mod tests {
         let mut rand = PcgRxsMXs64::new_seed(0);
         let start = std::time::Instant::now();
         let todo = 1_000_000;
-        std::hint::black_box({
+        core::hint::black_box({
             let mut _v = 0;
             for _i in 0..todo {
                 _v = rand.next_u64();

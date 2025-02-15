@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -52,18 +52,18 @@ pub fn encode_be_utf8_char(val: char, buf: &mut [u8; 4]) -> Result<&[u8], Error>
             *a = val as u8;
         }
         (2, [a, b, ..]) => {
-            *a = (val >> 6 & 0x1F) as u8 | TAG_TWO_BYTE;
+            *a = ((val >> 6) & 0x1F) as u8 | TAG_TWO_BYTE;
             *b = (val & 0x3F) as u8 | TAG_CONTINUE;
         }
         (3, [a, b, c, ..]) => {
-            *a = (val >> 12 & 0x0F) as u8 | TAG_THREE_BYTE;
-            *b = (val >> 6 & 0x3F) as u8 | TAG_CONTINUE;
+            *a = ((val >> 12) & 0x0F) as u8 | TAG_THREE_BYTE;
+            *b = ((val >> 6) & 0x3F) as u8 | TAG_CONTINUE;
             *c = (val & 0x3F) as u8 | TAG_CONTINUE;
         }
         (4, [a, b, c, d]) => {
-            *a = (val >> 18 & 0x07) as u8 | TAG_FOUR_BYTE;
-            *b = (val >> 12 & 0x3F) as u8 | TAG_CONTINUE;
-            *c = (val >> 6 & 0x3F) as u8 | TAG_CONTINUE;
+            *a = ((val >> 18) & 0x07) as u8 | TAG_FOUR_BYTE;
+            *b = ((val >> 12) & 0x3F) as u8 | TAG_CONTINUE;
+            *c = ((val >> 6) & 0x3F) as u8 | TAG_CONTINUE;
             *d = (val & 0x3F) as u8 | TAG_CONTINUE;
         }
         _ => return Err(BitsErrorKind::FormatError.into()),

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
@@ -26,9 +26,7 @@ pub fn test_gga() -> Result<(), Error> {
             );
             assert_eq!(
                 gga.longitude(),
-                Some(Longitude(Angle::new_degrees(
-                    -121.31432683333333333333333333333333
-                )))
+                Some(Longitude(Angle::new_degrees(-121.314_326_833_333_34)))
             );
             assert_eq!(gga.quality(), Some(GPSQualityIndicator::GPSFix));
             assert_eq!(gga.num_sats(), Some(12));

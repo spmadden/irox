@@ -286,7 +286,7 @@ pub const fn raw_hex<const L: usize>(vals: &[&[u8]]) -> Result<[u8; L], char> {
                 return Err(b);
             };
             inneridx += 1;
-            out[outidx] = a << 4 | b;
+            out[outidx] = (a << 4) | b;
             outidx += 1;
         }
         idx += 1;

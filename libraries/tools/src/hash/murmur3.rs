@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Implementation of Murmurhash3.  Currently only x128 implemented.
@@ -99,7 +100,7 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
     h1 = h1.wrapping_add(h2);
     h2 = h2.wrapping_add(h1);
 
-    (h1 as u128) << 64 | h2 as u128
+    ((h1 as u128) << 64) | h2 as u128
 }
 
 #[cfg(test)]

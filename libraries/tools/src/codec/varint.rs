@@ -209,8 +209,8 @@ impl EncodeGroupVarintTo for [u32; 4] {
         let c = c.encode_used_bytes_to(&mut buf)? as u8;
         let d = d.encode_used_bytes_to(&mut buf)? as u8;
         let hdr = ((a - 1) & 0x03) << 6;
-        let hdr = hdr | ((b - 1) & 0x03) << 4;
-        let hdr = hdr | ((c - 1) & 0x03) << 2;
+        let hdr = hdr | (((b - 1) & 0x03) << 4);
+        let hdr = hdr | (((c - 1) & 0x03) << 2);
         let hdr = hdr | ((d - 1) & 0x03);
         out.write_u8(hdr)?;
         out.write_all_bytes(buf.as_ref_used())?;

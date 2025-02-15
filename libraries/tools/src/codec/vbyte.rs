@@ -692,7 +692,7 @@ pub fn decode_vbyte<T: Bits>(inp: &mut T) -> Result<u128, Error> {
     let mut out: u128 = 0;
     while let Some(val) = inp.next_u8()? {
         let v = (val & 0x7F) as u128;
-        out = out << 7 | v;
+        out = (out << 7) | v;
         if val & 0x80 == 0 {
             break;
         }
