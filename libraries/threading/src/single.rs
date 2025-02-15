@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -182,7 +182,6 @@ mod tests {
         let borrowed = String::new();
         let hnd = exec.submit(async move {
             println!("Hello from thread! {borrowed}");
-            ()
         })?;
 
         drop(exec);

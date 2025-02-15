@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::Error;
@@ -117,7 +117,7 @@ mod tests {
 
         let mut e = RoadWarrior::new(pubkey);
         let data = random_data();
-        (&data).hexdump();
+        data.hexdump();
 
         let ciphertext = e.seal(&data)?;
         ciphertext.hexdump();

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
@@ -12,7 +12,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_with_input(BenchmarkId::new("encode", ""), &data, |b, data| {
         b.iter(|| {
-            eph.seal(&data).unwrap();
+            eph.seal(data).unwrap();
         });
     });
 }

@@ -320,8 +320,8 @@ impl BufBits for StreamReader {
 #[cfg(all(test, feature = "std"))]
 mod test {
     use crate::read::{MultiStreamReader, MultiStreamWriter, StreamReader, DATA_SIZE};
+    use alloc::sync::Arc;
     use irox_bits::{Bits, Error, MutBits};
-    use std::sync::Arc;
     use std::thread::JoinHandle;
     use std::time::Instant;
 

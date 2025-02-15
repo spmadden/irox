@@ -415,7 +415,7 @@ mod test {
     #[test]
     pub fn test_rotate1() {
         let m = [[3.], [7.], [4.]].as_matrix();
-        let [[x], [y], [z]] = m.rotate_x(core::f64::consts::FRAC_PI_2).deref().clone();
+        let [[x], [y], [z]] = *m.rotate_x(core::f64::consts::FRAC_PI_2).deref();
         assert_eq_eps!(3., x, 2. * f64::EPSILON);
         assert_eq_eps!(-4., y, 2. * f64::EPSILON);
         assert_eq_eps!(7., z, 2. * f64::EPSILON);
@@ -425,7 +425,7 @@ mod test {
     #[test]
     pub fn test_rotate2() {
         let m = [[3.], [7.], [4.]].as_matrix();
-        let [[x], [y], [z]] = m.rotate_y(core::f64::consts::FRAC_PI_2).deref().clone();
+        let [[x], [y], [z]] = *m.rotate_y(core::f64::consts::FRAC_PI_2).deref();
         assert_eq_eps!(4., x, 2. * f64::EPSILON);
         assert_eq_eps!(7., y, 2. * f64::EPSILON);
         assert_eq_eps!(-3., z, 2. * f64::EPSILON);
@@ -435,7 +435,7 @@ mod test {
     #[test]
     pub fn test_rotate3() {
         let m = [[3.], [7.], [4.]].as_matrix();
-        let [[x], [y], [z]] = m.rotate_z(core::f64::consts::FRAC_PI_2).deref().clone();
+        let [[x], [y], [z]] = *m.rotate_z(core::f64::consts::FRAC_PI_2).deref();
         assert_eq_eps!(7., x, 2. * f64::EPSILON);
         assert_eq_eps!(-3., y, 2. * f64::EPSILON);
         assert_eq_eps!(4., z, 2. * f64::EPSILON);

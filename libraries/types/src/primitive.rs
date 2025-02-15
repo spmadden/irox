@@ -125,7 +125,7 @@ impl Primitives {
             Primitives::bool => Ok(PrimitiveValue::bool(bool::from_str(val)?)),
             Primitives::char => Ok(PrimitiveValue::char(char::from_str(val)?)),
             Primitives::null => {
-                if "null" == val.to_ascii_lowercase() {
+                if "null".eq_ignore_ascii_case(val) {
                     Ok(PrimitiveValue::null)
                 } else {
                     Err(PrimitiveParseError::StringWasNotNullError)
