@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use clap::{
@@ -28,7 +28,6 @@ pub struct Config {
     /// `{-y}`: Tile Y index - zero is south pole incremenging positive north
     /// `{z}`: Tile Z index in the range 0..31
     /// `{s}`: Server parts, must specify the --server-parts argument
-
     #[arg(short, long, value_hint=ValueHint::Url)]
     pub url: String,
 

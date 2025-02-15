@@ -109,7 +109,7 @@ impl HalflifesApp {
             run.run_data(20.0, Duration::from_secs(400)),
             run.run_data(20.0, Duration::from_secs(800)),
         ];
-        let mut combined: Vec<f64> = Vec::from([0_f64; 10000]);
+        let mut combined: Vec<f64> = vec![0_f64; 10000];
         combined.iter_mut().enumerate().for_each(|(idx, v)| {
             for x in &runs {
                 if let Some(val) = x.get(idx) {

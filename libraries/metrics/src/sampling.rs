@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::Error;
@@ -45,7 +45,7 @@ pub enum SampleError {}
 pub trait SampleSink<'a> {
     fn new_sample(&mut self, sample: &'a Sample);
 }
-impl<'b, 'a: 'b, F> SampleSink<'a> for F
+impl<'a, F> SampleSink<'a> for F
 where
     F: FnMut(&'a Sample) + 'a + Send + Sync,
 {

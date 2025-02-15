@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use core::fmt::{Display, Formatter};
 use core::str::FromStr;
@@ -242,7 +243,6 @@ impl IPv4Network {
     ///
     ///  assert_eq!("127.0.0.0/24", format!("{network}"));
     /// ```
-
     pub fn from_address_count(
         network_id: IPv4Address,
         address_count: u32,

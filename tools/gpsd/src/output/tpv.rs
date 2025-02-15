@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 use serde::ser::SerializeMap;
 use serde::Serializer;
 
@@ -38,10 +42,6 @@ pub struct TPV {
 
     /// Climb (positive) or sink (negative) rate, meters per second.
     pub climb: Option<Speed>,
-
-    /// Current datum. Hopefully WGS84.
-    /// Pulled from the Coordinate
-    // datum: Option<String>,
 
     /// Depth in meters. Probably depth below the keel...
     pub depth: Option<Length>,

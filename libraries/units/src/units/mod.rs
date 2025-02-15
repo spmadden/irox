@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 ///
 /// Matches (struct, units, default) to make a new basic struct
-
 macro_rules! impl_unitstruct {
     ($struct_type:ident, $units_type: ident, $($slf:ty)+) => {
         impl $crate::units::UnitStruct<$units_type> for $($slf)+ {

@@ -42,7 +42,7 @@ pub struct EightByteStream<'a> {
     pub(crate) fb7: Box<CompressStream<'a, StreamWriter>>,
     pub(crate) fb8: Box<CompressStream<'a, StreamWriter>>,
 }
-impl<'a> EightByteStream<'a> {
+impl EightByteStream<'_> {
     pub fn new(writer: &Arc<MultiStreamWriter>) -> Self {
         Self {
             fb1: new_bdc!(writer),
@@ -82,7 +82,7 @@ impl<'a> EightByteStream<'a> {
         ]
     }
 }
-impl<'a> Stream<u64> for EightByteStream<'a> {
+impl Stream<u64> for EightByteStream<'_> {
     fn write_value(&mut self, v: u64) -> Result<usize, Error> {
         let [a, b, c, d, e, f, g, h] = v.to_be_bytes();
         self.fb1.write_value(a as i8)?;
@@ -136,7 +136,7 @@ pub fn rot54(value: u64) -> u64 {
     irox_bits::FromBEBytes::from_be_bytes([0, h, g, f, e, d, c, b])
 }
 
-impl<'a> SPDPWriter<'a> {
+impl SPDPWriter<'_> {
     pub fn new<T: AsRef<Path>>(path: T) -> Result<Self, Error> {
         let writer = MultiStreamWriter::new(path)?;
         let time_stream = EightByteStream::new(&writer);
@@ -249,8 +249,8 @@ impl<'a, T: Hash + Eq + Default + Sized + Default + Clone + WriteToBEBits, B: Mu
         self.inner.counter()
     }
 }
-impl<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Stream<T>
-    for GroupCodingStream<'a, T, B>
+impl<T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Stream<T>
+    for GroupCodingStream<'_, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let _ = self.buf.push_back(value);
@@ -269,8 +269,8 @@ impl<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Str
         self.inner.flush()
     }
 }
-impl<'a, T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Drop
-    for GroupCodingStream<'a, T, B>
+impl<T: Hash + Eq + Sized + Default + Clone + WriteToBEBits, B: MutBits> Drop
+    for GroupCodingStream<'_, T, B>
 {
     fn drop(&mut self) {
         let len = self.buf.len();
@@ -296,8 +296,8 @@ impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> GroupDecoding
         }
     }
 }
-impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> Decoder<T>
-    for GroupDecodingStream<'a, T, B>
+impl<T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> Decoder<T>
+    for GroupDecodingStream<'_, T, B>
 {
     fn next(&mut self) -> Result<Option<T>, Error> {
         if self.buf.is_empty() {
@@ -632,7 +632,7 @@ pub struct CodedTimeSeriesFloatReader<'a> {
     reader: CodedTimeSeriesReader<'a>,
     last_item: Option<Sample64>,
 }
-impl<'a> CodedTimeSeriesFloatReader<'a> {
+impl CodedTimeSeriesFloatReader<'_> {
     pub fn peek(&mut self) -> Result<&mut Option<Sample64>, Error> {
         if self.last_item.is_some() {
             Ok(&mut self.last_item)
@@ -645,7 +645,7 @@ impl<'a> CodedTimeSeriesFloatReader<'a> {
         }
     }
 }
-impl<'a> Iterator for CodedTimeSeriesFloatReader<'a> {
+impl Iterator for CodedTimeSeriesFloatReader<'_> {
     type Item = Result<Sample64, Error>;
 
     fn next(&mut self) -> Option<Result<Sample64, Error>> {
@@ -673,7 +673,7 @@ pub struct CodedTimeSeriesIntReader<'a> {
     reader: CodedTimeSeriesReader<'a>,
     last_item: Option<IntSample64>,
 }
-impl<'a> CodedTimeSeriesIntReader<'a> {
+impl CodedTimeSeriesIntReader<'_> {
     pub fn peek(&mut self) -> Result<&mut Option<IntSample64>, Error> {
         if self.last_item.is_some() {
             Ok(&mut self.last_item)
@@ -686,7 +686,7 @@ impl<'a> CodedTimeSeriesIntReader<'a> {
         }
     }
 }
-impl<'a> Iterator for CodedTimeSeriesIntReader<'a> {
+impl Iterator for CodedTimeSeriesIntReader<'_> {
     type Item = Result<IntSample64, Error>;
 
     fn next(&mut self) -> Option<Result<IntSample64, Error>> {

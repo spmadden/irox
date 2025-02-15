@@ -474,7 +474,7 @@ mod test {
             .open(path)
             .unwrap();
         let img = TiffImageReader::read(file)?;
-        println!("{:#?}", img);
+        println!("{img:#?}");
 
         Ok(())
     }

@@ -346,7 +346,7 @@ mod test {
                 -1039.2896,
             ),
         ];
-        for test in tests.iter() {
+        for test in &tests {
             let (x, y, z, lat, lon, ht) = *test;
             let exp_ecef = ECEFPosition(CartesianCoordinate::new_meters(x, y, z));
             let exp_lla = EllipticalCoordinate::new(

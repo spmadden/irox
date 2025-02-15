@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 use irox_tools::iterators::{looping_forever::LoopingForever, Itertools};
 
 use crate::tile::{TileAddress, TileAddressURL};
@@ -65,6 +69,7 @@ impl Iterator for URLIterator {
 
         self.x_idx += 1;
 
+        #[allow(clippy::literal_string_with_formatting_args)]
         let mut url = self
             .params
             .url_template

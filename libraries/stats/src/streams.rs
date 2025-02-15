@@ -446,17 +446,17 @@ cfg_feature_miniz! {
             self.written
         }
     }
-    impl<'a, B: MutBits> Drop for CompressStream<'a, B> {
+    impl<B: MutBits> Drop for CompressStream<'_, B> {
         /// Make sure the buffer is fully flushed on drop
         fn drop(&mut self) {
             let _ = self.flush();
         }
     }
-    impl<'a, B: MutBits> MutBits for CompressStream<'a, B> {
+    impl<B: MutBits> MutBits for CompressStream<'_, B> {
         impl_mutbits_for_stream!();
     }
 
-    impl<'a, B: MutBits, T: Streamable> Stream<T> for CompressStream<'a, B> {
+    impl<B: MutBits, T: Streamable> Stream<T> for CompressStream<'_, B> {
         fn write_value(&mut self, value: T) -> Result<usize, Error> {
             WriteToBEBits::write_be_to(&value, self)
         }
@@ -509,7 +509,7 @@ cfg_feature_miniz! {
         }
 
     }
-    impl<'a, T: Streamable+Copy, B: MutBits> Drop for DeltaCompressStream<'a, T, B> {
+    impl<T: Streamable+Copy, B: MutBits> Drop for DeltaCompressStream<'_, T, B> {
         /// Make sure the buffer is fully flushed on drop
         fn drop(&mut self) {
             let _ = self.flush();
@@ -551,7 +551,7 @@ cfg_feature_miniz! {
             Ok(())
         }
     }
-    impl<'a, B: irox_bits::BufBits> Bits for InflateStream<'a, B> {
+    impl<B: irox_bits::BufBits> Bits for InflateStream<'_, B> {
         fn next_u8(&mut self) -> Result<Option<u8>, Error> {
             if let Some(v) = self.out_buffer.pop_front() {
                 return Ok(Some(v));

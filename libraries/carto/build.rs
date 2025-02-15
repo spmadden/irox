@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::collections::BTreeMap;
@@ -10,7 +10,6 @@ use std::path::Path;
 use irox_csv::{CSVError, CSVErrorType, CSVReader};
 
 #[allow(clippy::unwrap_used)]
-
 fn main() -> Result<(), irox_csv::CSVError> {
     println!("cargo:rerun-if-changed=data/iso-3166-1-country-codes.csv");
     println!("cargo:rerun-if-changed=build.rs");
