@@ -89,9 +89,7 @@ impl<'a, T: Eq + Hash + Default, B: MutBits> GroupVarintCodeEncoder<'a, T, B> {
         }
     }
 }
-impl<'a, T: Eq + Hash + Default + Clone + WriteToBEBits, B: MutBits>
-    GroupVarintCodeEncoder<'a, T, B>
-{
+impl<T: Eq + Hash + Default + Clone + WriteToBEBits, B: MutBits> GroupVarintCodeEncoder<'_, T, B> {
     pub fn encode_4(&mut self, vals: &[T; 4]) -> Result<usize, Error> {
         let [a, b, c, d] = vals;
         let ea = self.dict.get_code(a);
@@ -202,8 +200,8 @@ impl<'a, T: Eq + Hash + Default, B: MutBits> SharedGroupVarintCodeEncoder<'a, T,
         Self { inner, dict }
     }
 }
-impl<'a, T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
-    SharedGroupVarintCodeEncoder<'a, T, B>
+impl<T: Eq + Hash + Default + Copy + WriteToBEBits, B: MutBits>
+    SharedGroupVarintCodeEncoder<'_, T, B>
 {
     pub fn encode_4(&mut self, vals: &[T; 4]) -> Result<usize, Error> {
         let [a, b, c, d] = vals;
@@ -243,9 +241,7 @@ impl<'a, T: Hash + Eq + Default, B: Bits> GroupVarintCodeDecoder<'a, T, B> {
         }
     }
 }
-impl<'a, T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits>
-    GroupVarintCodeDecoder<'a, T, B>
-{
+impl<T: Hash + Eq + Default + ReadFromBEBits + Clone, B: Bits> GroupVarintCodeDecoder<'_, T, B> {
     fn decode_1(&mut self, code: u32) -> Result<T, Error> {
         self.dict
             .read_code(code, || T::read_from_be_bits(self.inner.deref_mut()))

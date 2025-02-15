@@ -42,7 +42,7 @@ impl AsMut<str> for StrWrapper<'_> {
         }
     }
 }
-impl<'a> StrWrapper<'a> {
+impl StrWrapper<'_> {
     #[must_use]
     pub fn as_str(&self) -> &str {
         match self {
@@ -97,38 +97,38 @@ impl<'a> From<&'a str> for StrWrapper<'a> {
         StrWrapper::Borrowed(s)
     }
 }
-impl<'a> From<String> for StrWrapper<'a> {
+impl From<String> for StrWrapper<'_> {
     fn from(s: String) -> Self {
         StrWrapper::Owned(s)
     }
 }
-impl<'a> From<Arc<String>> for StrWrapper<'a> {
+impl From<Arc<String>> for StrWrapper<'_> {
     fn from(s: Arc<String>) -> Self {
         StrWrapper::Shared(s)
     }
 }
-impl<'a> From<&Arc<String>> for StrWrapper<'a> {
+impl From<&Arc<String>> for StrWrapper<'_> {
     fn from(s: &Arc<String>) -> Self {
         StrWrapper::Shared(s.clone())
     }
 }
 
-impl<'a> WriteToBEBits for StrWrapper<'a> {
+impl WriteToBEBits for StrWrapper<'_> {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
         self.as_str().write_be_to(bits)
     }
 }
-impl<'a> ReadFromBEBits for StrWrapper<'a> {
+impl ReadFromBEBits for StrWrapper<'_> {
     fn read_from_be_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
         ReadFromBEBits::read_from_be_bits(inp).map(StrWrapper::Owned)
     }
 }
-impl<'a> WriteToLEBits for StrWrapper<'a> {
+impl WriteToLEBits for StrWrapper<'_> {
     fn write_le_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
         self.as_str().write_le_to(bits)
     }
 }
-impl<'a> ReadFromLEBits for StrWrapper<'a> {
+impl ReadFromLEBits for StrWrapper<'_> {
     fn read_from_le_bits<T: Bits>(inp: &mut T) -> Result<Self, Error> {
         ReadFromLEBits::read_from_le_bits(inp).map(StrWrapper::Owned)
     }

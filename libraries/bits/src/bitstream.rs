@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::{Bits, BitsError, BitsErrorKind, BitsWrapper, MutBits};
@@ -10,7 +10,7 @@ pub struct BitStreamEncoder<'a, T: MutBits> {
     buf: u32,
     remaining: u8,
 }
-impl<'a, T: MutBits> Drop for BitStreamEncoder<'a, T> {
+impl<T: MutBits> Drop for BitStreamEncoder<'_, T> {
     fn drop(&mut self) {
         let [a, b, c, d] = self.buf.to_be_bytes();
         if self.remaining < 8 {

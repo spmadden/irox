@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 extern crate alloc;
@@ -63,7 +63,7 @@ impl<'a, T: MutBits> LZWEncoder<'a, T> {
         self.strtable.get(&bx).cloned()
     }
 }
-impl<'a, T: MutBits> Drop for LZWEncoder<'a, T> {
+impl<T: MutBits> Drop for LZWEncoder<'_, T> {
     fn drop(&mut self) {
         if !self.current_buf.is_empty() {
             let code = {
@@ -79,7 +79,7 @@ impl<'a, T: MutBits> Drop for LZWEncoder<'a, T> {
     }
 }
 
-impl<'a, T: MutBits> MutBits for LZWEncoder<'a, T> {
+impl<T: MutBits> MutBits for LZWEncoder<'_, T> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         // check if in table:
         let mut buf = self.current_buf.clone();

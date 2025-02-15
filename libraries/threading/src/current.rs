@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::collections::VecDeque;
@@ -141,7 +141,7 @@ where
     }
 }
 
-impl<'a, T> Future for LocalTask<'a, T> {
+impl<T> Future for LocalTask<'_, T> {
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {

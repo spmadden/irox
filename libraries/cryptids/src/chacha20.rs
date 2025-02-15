@@ -226,7 +226,7 @@ impl<'a, B> ChaCha20Filter<'a, B> {
         self.keystream.set_counter_and_nonce(counter, nonce);
     }
 }
-impl<'a, B: MutBits> MutBits for ChaCha20Filter<'a, B> {
+impl<B: MutBits> MutBits for ChaCha20Filter<'_, B> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         let p = val ^ self.keystream.next_key();
         self.io.write_u8(p)
@@ -236,7 +236,7 @@ impl<'a, B: MutBits> MutBits for ChaCha20Filter<'a, B> {
         self.io.flush()
     }
 }
-impl<'a, B: Bits> Bits for ChaCha20Filter<'a, B> {
+impl<B: Bits> Bits for ChaCha20Filter<'_, B> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         let v = self.io.next_u8()?;
         let Some(v) = v else {

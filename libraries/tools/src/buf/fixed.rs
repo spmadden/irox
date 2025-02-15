@@ -214,7 +214,7 @@ impl<'a, const N: usize, T: Sized> Iterator for FixedBufIter<'a, N, T> {
         None
     }
 }
-impl<'a, const N: usize, T: Sized> DoubleEndedIterator for FixedBufIter<'a, N, T> {
+impl<const N: usize, T: Sized> DoubleEndedIterator for FixedBufIter<'_, N, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.idx >= self.buf.len {
             return None;
@@ -228,7 +228,7 @@ impl<'a, const N: usize, T: Sized> DoubleEndedIterator for FixedBufIter<'a, N, T
         None
     }
 }
-impl<'a, const N: usize, T: Sized> ExactSizeIterator for FixedBufIter<'a, N, T> {
+impl<const N: usize, T: Sized> ExactSizeIterator for FixedBufIter<'_, N, T> {
     fn len(&self) -> usize {
         self.buf.len()
     }
@@ -240,7 +240,10 @@ pub struct FixedBufIterMut<'a, const N: usize, T: Sized> {
 }
 
 impl<'a, const N: usize, T: Sized> LendingIterator<'a> for FixedBufIterMut<'a, N, T> {
-    type Item<'b> = &'a mut T where Self: 'b;
+    type Item<'b>
+        = &'a mut T
+    where
+        Self: 'b;
 
     fn next_ref(&'a mut self) -> Option<Self::Item<'a>> {
         if let Some(val) = self.buf.get_mut(self.idx) {

@@ -299,7 +299,7 @@ impl<'a, B: MutBits> VByteIntStream<'a, B> {
         Self { writer }
     }
 }
-impl<'a, B: MutBits, T: StreamableVByte + WriteToBEBits> Stream<T> for VByteIntStream<'a, B> {
+impl<B: MutBits, T: StreamableVByte + WriteToBEBits> Stream<T> for VByteIntStream<'_, B> {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
         EncodeVByteTo::encode_vbyte_to(&value, self.writer.deref_mut())
     }
@@ -332,7 +332,7 @@ macro_rules! impl_mutbits_for_stream {
         }
     };
 }
-impl<'a, B: MutBits> MutBits for VByteIntStream<'a, B> {
+impl<B: MutBits> MutBits for VByteIntStream<'_, B> {
     impl_mutbits_for_stream!();
 }
 
@@ -355,10 +355,9 @@ impl<'a, T: Streamable, B: MutBits> VByteDeltaIntStream<'a, T, B> {
     }
 }
 impl<
-        'a,
         T: Streamable + Sub<Output = T> + EncodeVByteTo + UpperHex + Sub<T> + NumberSigned,
         B: MutBits,
-    > Stream<T> for VByteDeltaIntStream<'a, T, B>
+    > Stream<T> for VByteDeltaIntStream<'_, T, B>
 {
     fn write_value(&mut self, value: T) -> Result<usize, Error> {
         let delta = value - self.last_value;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -67,7 +67,7 @@ pub struct SupportedReaders<'a> {
     from_string: Option<&'a dyn ReadFromString>,
 }
 
-impl<'a> SupportedReaders<'a> {
+impl SupportedReaders<'_> {
     ///
     /// Returns [`Some(ReadFromFile)`] If this [`crate::Codec`] supports reading from a file.
     pub fn file(&self) -> Option<&dyn ReadFromFile> {
@@ -100,7 +100,7 @@ impl<'a> SupportedReaders<'a> {
     }
 }
 
-impl<'a> Debug for SupportedReaders<'a> {
+impl Debug for SupportedReaders<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("supported readers")
             .field("file", &self.file().is_some())
@@ -213,7 +213,7 @@ pub struct SupportedWriters<'a> {
     write: Option<&'a dyn WriteToWrite>,
     string: Option<&'a dyn WriteToString>,
 }
-impl<'a> SupportedWriters<'a> {
+impl SupportedWriters<'_> {
     ///
     /// Returns [`Some(WriteToFile)`] if this message supports writing itself to a file.
     pub fn file(&self) -> Option<&dyn WriteToFile> {

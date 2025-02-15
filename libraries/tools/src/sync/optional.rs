@@ -232,7 +232,7 @@ impl<'a, T> From<Option<RwLockReadGuard<'a, Option<T>>>> for ReadGuard<'a, T> {
         ReadGuard { lock: value }
     }
 }
-impl<'a, T> Deref for ReadGuard<'a, T> {
+impl<T> Deref for ReadGuard<'_, T> {
     type Target = Option<T>;
 
     fn deref(&self) -> &Self::Target {
@@ -248,7 +248,7 @@ impl<'a, T> Deref for ReadGuard<'a, T> {
 pub struct WriteGuard<'a, T> {
     lock: Option<RwLockWriteGuard<'a, Option<T>>>,
 }
-impl<'a, T> Deref for WriteGuard<'a, T> {
+impl<T> Deref for WriteGuard<'_, T> {
     type Target = Option<T>;
 
     fn deref(&self) -> &Self::Target {

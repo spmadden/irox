@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 #[cfg(target_os = "windows")]
 pub use crate::windows::*;
@@ -122,7 +123,7 @@ mod windows {
         token: EventRegistrationToken,
     }
 
-    impl<'a> Drop for LocationHandler<'a> {
+    impl Drop for LocationHandler<'_> {
         fn drop(&mut self) {
             let _res = self.locator.RemovePositionChanged(self.token);
             trace!("Dropped location handler.");
@@ -134,7 +135,7 @@ mod windows {
         token: EventRegistrationToken,
     }
 
-    impl<'a> Drop for StatusHandler<'a> {
+    impl Drop for StatusHandler<'_> {
         fn drop(&mut self) {
             let _res = self.locator.RemoveStatusChanged(self.token);
             trace!("Dropped location handler.");

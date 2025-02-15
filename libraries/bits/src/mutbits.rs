@@ -291,20 +291,20 @@ impl<'a, T: MutBits + ?Sized> From<&'a mut T> for FormatBits<'a, T> {
         FormatBits(val)
     }
 }
-impl<'a, T: MutBits + ?Sized> Deref for FormatBits<'a, T> {
+impl<T: MutBits + ?Sized> Deref for FormatBits<'_, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
         self.0
     }
 }
-impl<'a, T: MutBits + ?Sized> DerefMut for FormatBits<'a, T> {
+impl<T: MutBits + ?Sized> DerefMut for FormatBits<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0
     }
 }
 
-impl<'a, T: MutBits + ?Sized> core::fmt::Write for FormatBits<'a, T> {
+impl<T: MutBits + ?Sized> core::fmt::Write for FormatBits<'_, T> {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         for ch in s.chars() {
             self.write_char(ch)?;

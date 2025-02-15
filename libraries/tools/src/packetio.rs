@@ -62,7 +62,7 @@ pub struct Packetizer<'a, R: Bits, P: Packetization<R>> {
     chunker: &'a mut P,
 }
 
-impl<'a, R, P> PacketTransport for Packetizer<'a, R, P>
+impl<R, P> PacketTransport for Packetizer<'_, R, P>
 where
     R: Bits,
     P: Packetization<R>,

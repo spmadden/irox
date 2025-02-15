@@ -747,7 +747,7 @@ impl<'a, const N: usize> From<&'a mut [u8; N]> for MutBitsArray<'a, N> {
         MutBitsArray { arr, pos: 0 }
     }
 }
-impl<'a, const N: usize> MutBits for MutBitsArray<'a, N> {
+impl<const N: usize> MutBits for MutBitsArray<'_, N> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         if let Some(v) = self.arr.get_mut(self.pos) {
             *v = val;
@@ -792,7 +792,7 @@ impl<'a, const N: usize> From<&'a [u8; N]> for BitsArray<'a, N> {
         Self::new(value)
     }
 }
-impl<'a, const N: usize> Bits for BitsArray<'a, N> {
+impl<const N: usize> Bits for BitsArray<'_, N> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         if self.pos >= self.max_len {
             return Ok(None);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -406,7 +406,7 @@ impl<'a> Named<'a> {
     }
 }
 
-impl<'a> SerializeTupleStruct for Named<'a> {
+impl SerializeTupleStruct for Named<'_> {
     type Ok = ();
     type Error = Error;
 
@@ -422,7 +422,7 @@ impl<'a> SerializeTupleStruct for Named<'a> {
     }
 }
 
-impl<'a> SerializeTupleVariant for Named<'a> {
+impl SerializeTupleVariant for Named<'_> {
     type Ok = ();
     type Error = Error;
 
@@ -442,7 +442,7 @@ impl<'a> SerializeTupleVariant for Named<'a> {
     }
 }
 
-impl<'a> SerializeStruct for Named<'a> {
+impl SerializeStruct for Named<'_> {
     type Ok = ();
     type Error = Error;
 
@@ -466,7 +466,7 @@ impl<'a> SerializeStruct for Named<'a> {
     }
 }
 
-impl<'a> SerializeStructVariant for Named<'a> {
+impl SerializeStructVariant for Named<'_> {
     type Ok = ();
     type Error = Error;
 
@@ -496,7 +496,7 @@ pub struct Mapped<'a> {
     ser: &'a mut EguiSerializer,
 }
 
-impl<'a> SerializeMap for Mapped<'a> {
+impl SerializeMap for Mapped<'_> {
     type Ok = ();
     type Error = Error;
 

@@ -20,7 +20,7 @@ pub struct PrettyVec<'a, T>(pub &'a Vec<T>);
 /// This struct purely exists to implement [`Display`] and [`UpperHex`] for a borrowed VecDeque, whose elements implement [`Display`] or [`UpperHex`]
 pub struct PrettyVecDeque<'a, T>(pub &'a VecDeque<T>);
 
-impl<'a, T> Display for PrettyVec<'a, T>
+impl<T> Display for PrettyVec<'_, T>
 where
     T: Display,
 {
@@ -34,7 +34,7 @@ where
     }
 }
 
-impl<'a, T> UpperHex for PrettyVec<'a, T>
+impl<T> UpperHex for PrettyVec<'_, T>
 where
     T: UpperHex,
 {
@@ -47,7 +47,7 @@ where
     }
 }
 
-impl<'a, T> UpperHex for PrettyVecDeque<'a, T>
+impl<T> UpperHex for PrettyVecDeque<'_, T>
 where
     T: UpperHex,
 {

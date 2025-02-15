@@ -162,7 +162,7 @@ impl<'a, T> Aes256EncStream<'a, T> {
         }
     }
 }
-impl<'a, T: MutBits> MutBits for Aes256EncStream<'a, T> {
+impl<T: MutBits> MutBits for Aes256EncStream<'_, T> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         self.buf.write_u8(val)?;
         if self.buf.is_full() {

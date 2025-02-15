@@ -116,7 +116,7 @@ impl<'a, B> SharedCountingBits<'a, B> {
         SharedROCounter::new(self.count.clone())
     }
 }
-impl<'a, B: Bits> Bits for SharedCountingBits<'a, B> {
+impl<B: Bits> Bits for SharedCountingBits<'_, B> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         let res = self.inner.next_u8();
         if let Ok(Some(_)) = &res {
@@ -125,7 +125,7 @@ impl<'a, B: Bits> Bits for SharedCountingBits<'a, B> {
         res
     }
 }
-impl<'a, B: MutBits> MutBits for SharedCountingBits<'a, B> {
+impl<B: MutBits> MutBits for SharedCountingBits<'_, B> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
         self.inner.write_u8(val)?;
         self.count.fetch_add(1, Ordering::Relaxed);

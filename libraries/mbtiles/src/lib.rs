@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 pub mod error;
@@ -421,7 +421,7 @@ pub struct Tile<'a> {
     pub tile_data: &'a [u8],
 }
 
-impl<'a> Tile<'a> {
+impl Tile<'_> {
     pub fn index(&self) -> u64 {
         let mut val = ((self.zoom_level & ZOOM_MASK) as u64) << ZOOM_SHIFT;
         val |= (self.tile_row & ROWCOL_MASK) << Y_SHIFT;

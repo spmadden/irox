@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use core::ops::{Deref, DerefMut};
@@ -10,7 +10,7 @@ pub enum BitsWrapper<'a, T> {
     Owned(T),
     Borrowed(&'a mut T),
 }
-impl<'a, B> Deref for BitsWrapper<'a, B> {
+impl<B> Deref for BitsWrapper<'_, B> {
     type Target = B;
 
     fn deref(&self) -> &Self::Target {
@@ -20,7 +20,7 @@ impl<'a, B> Deref for BitsWrapper<'a, B> {
         }
     }
 }
-impl<'a, B> DerefMut for BitsWrapper<'a, B> {
+impl<B> DerefMut for BitsWrapper<'_, B> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         match self {
             BitsWrapper::Borrowed(v) => v,
@@ -33,7 +33,7 @@ impl<'a, B> DerefMut for BitsWrapper<'a, B> {
 mod stds {
     use crate::{Bits, BitsWrapper, Error, MutBits};
 
-    impl<'a, T> Bits for BitsWrapper<'a, T>
+    impl<T> Bits for BitsWrapper<'_, T>
     where
         T: std::io::Read,
     {
@@ -47,7 +47,7 @@ mod stds {
         }
     }
 
-    impl<'a, T> MutBits for BitsWrapper<'a, T>
+    impl<T> MutBits for BitsWrapper<'_, T>
     where
         T: std::io::Write,
     {
