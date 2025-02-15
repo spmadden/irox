@@ -8,13 +8,36 @@
 //!
 //! A [`Timestamp`] is a [`Duration`], a physical amount of time measured against an [`Epoch`]
 //!
+//! Epochs
+//! -------
+//! | Epoch     | JDN         | Year    | DOY   | Julian Epoch               | Gregorian Epoch               | Timestamp              |
+//! |-----------|-------------|---------|-------|----------------------------|-------------------------------|------------------------|
+//! | Julian    | `0.0`       | `-4712` | `0`   | [`JULIAN_EPOCH`]           |                               |
+//! | Rata Die  | `1721424.5` | `0001`  | `0`   | [`RATA_DIE_EPOCH`]         | [`COMMON_ERA_EPOCH`]          |
+//! | Lilian    | `2299159.5` | `1582`  | `257` | [`LILIAN_EPOCH`]           | [`GREGORIAN_EPOCH`]           | [`GregorianTimestamp`] |
+//! | Windows   | `2305813.5` | `1601`  | `0`   |                            | [`WINDOWS_NT_EPOCH`]          | [`WindowsNTTimestamp`] |
+//! | Reduced   | `2400000`   | `1858`  | `320` | [`REDUCED_JULIAN_EPOCH`]   |                               |
+//! | Modified  | `2400000.5` | `1858`  | `320` | [`MODIFIED_JULIAN_EPOCH`]  |                               |
+//! | Prime     | `2415020.5` | `1900`  | `0`   | [`PRIME_JD_EPOCH`]         | [`PRIME_EPOCH`] [`NTP_EPOCH`] | [`PrimeTimestamp`]     |
+//! | Truncated | `2440000.5` | `1968`  | `145` | [`TRUNCATED_JULIAN_EPOCH`] |                               |
+//! | Unix      | `2440587.5` | `1970`  | `0`   | [`UNIX_JD_EPOCH`]          | [`UNIX_EPOCH`]                | [`UnixTimestamp`]      |
+//! | GPS       | `2444244.5` | `1980`  | `5`   |                            | [`GPS_EPOCH`]                 | [`GPSTimestamp`]       |
+//! | MJD2000   | `2451544.5` | `2000`  | `0`   | [`MJD2000_EPOCH`]          | [`Y2K_EPOCH`]                 |
+//! | Leapoch   | `2451604.5` | `2000`  | `60`  |                            | [`LEAPOCH`]                   | [`LeapochTimestamp`]   |
+//! | Vicinti   | `2458849.5` | `2020`  | `0`   | [`VICINTI_JD_EPOCH`]       | [`VICINTIPOCH`]               | [`VicintiTimestamp`]   |
 
 use core::cmp::Ordering;
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Sub, SubAssign};
+use irox_tools::cfg_docs;
 use irox_units::units::duration::Duration;
 
 use crate::gregorian::Date;
+use crate::julian::JulianDate;
+
+cfg_docs! {
+    use crate::julian::{JULIAN_EPOCH, RATA_DIE_EPOCH, LILIAN_EPOCH, REDUCED_JULIAN_EPOCH, MODIFIED_JULIAN_EPOCH, PRIME_JD_EPOCH, TRUNCATED_JULIAN_EPOCH, UNIX_JD_EPOCH, MJD2000_EPOCH, VICINTI_JD_EPOCH};
+}
 
 ///
 /// An `Epoch` serves as a reference point from which time is measured.
@@ -253,6 +276,11 @@ impl UnixTimestamp {
     pub fn as_date(&self) -> Date {
         self.into()
     }
+
+    #[must_use]
+    pub fn as_julian(&self) -> JulianDate {
+        (*self).into()
+    }
 }
 derive_timestamp_impl!(UNIX_EPOCH, UnixTimestamp);
 
@@ -338,3 +366,38 @@ derive_timestamp_impl!(PRIME_EPOCH, PrimeTimestamp);
 ///
 /// The NTP epoch is the same as the [`PRIME_EPOCH`]
 pub const NTP_EPOCH: Epoch = PRIME_EPOCH;
+
+/// 01-MAR-2000, a mod400 year after the leap day.
+pub const LEAPOCH_TIMESTAMP: UnixTimestamp = UnixTimestamp::from_seconds(951868800);
+/// 01-MAR-2000, a mod400 year after the leap day.
+pub const LEAPOCH: Epoch = Epoch(Date {
+    year: 2000,
+    day_of_year: 60,
+});
+/// `Leapoch` is a compile-time check for [`LeapochTimestamp`] = [`Timestamp<crate::epoch::Leapoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Leapoch;
+
+///
+/// Represents a duration offset from the [`LEAPOCH`]
+pub type LeapochTimestamp = Timestamp<Leapoch>;
+derive_timestamp_impl!(LEAPOCH, LeapochTimestamp);
+
+pub const JULIAN_DAY_1_JAN_YR0: f64 = 1721059.5;
+
+/// The Year 2000 (Y2K) Epoch 01-JAN-2000
+pub const Y2K_EPOCH: Epoch = Epoch(Date {
+    year: 2000,
+    day_of_year: 0,
+});
+
+/// The Vigintipoch (Viginti-poch, 'twenty') 01-JAN-2020
+pub const VICINTIPOCH: Epoch = Epoch(Date {
+    year: 2020,
+    day_of_year: 0,
+});
+/// `Vicintipoch` is a compile-time check for [`VicintiTimestamp`] = [`Timestamp<crate::epoch::Vicintipoch>`]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Vicintipoch;
+pub type VicintiTimestamp = Timestamp<Vicintipoch>;
+derive_timestamp_impl!(VICINTIPOCH, VicintiTimestamp);

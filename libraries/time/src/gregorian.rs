@@ -14,10 +14,10 @@ use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 use irox_units::bounds::{GreaterThanEqualToValueError, LessThanValue, Range};
 use irox_units::units::duration::{Duration, DurationUnit};
 
-use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
+use crate::epoch::{UnixTimestamp, JULIAN_DAY_1_JAN_YR0, LEAPOCH_TIMESTAMP, UNIX_EPOCH};
 use crate::format::iso8601::ExtendedDateFormat;
 use crate::format::{Format, FormatError, FormatParser};
-use crate::julian::{JulianDate, JulianDayNumber, PrimeDate, JULIAN_EPOCH};
+use crate::julian::JulianDate;
 use crate::SECONDS_IN_DAY;
 
 pub use alloc::string::String;
@@ -319,7 +319,7 @@ impl Date {
 
     /// Adds the specified number of days to this date.
     #[must_use]
-    pub fn add_days(&self, days: u32) -> Date {
+    pub const fn add_days(&self, days: u32) -> Date {
         let mut days_remaining = days;
         let mut years = self.year;
         let mut days = self.day_of_year as u32;
@@ -343,7 +343,7 @@ impl Date {
 
     /// Subtracts the given number of days from this date
     #[must_use]
-    pub fn sub_days(&self, days: u16) -> Date {
+    pub const fn sub_days(&self, days: u16) -> Date {
         let mut days_remaining = days;
         let mut years = self.year;
         let mut days = self.day_of_year;
@@ -367,7 +367,7 @@ impl Date {
 
     /// Adds the specified number of years to this date.
     #[must_use]
-    pub fn add_years(&self, years: u16) -> Date {
+    pub const fn add_years(&self, years: u16) -> Date {
         Date {
             year: self.year + years as i32,
             day_of_year: self.day_of_year,
@@ -376,7 +376,7 @@ impl Date {
 
     /// Subtracts the specified number of years from this date.
     #[must_use]
-    pub fn sub_years(&self, years: u16) -> Date {
+    pub const fn sub_years(&self, years: u16) -> Date {
         Date {
             year: self.year - years as i32,
             day_of_year: self.day_of_year,
@@ -416,7 +416,7 @@ impl Date {
     ///
     /// Returns the day-of-the-week name of this date, using ISO8601 convention that the week starts on Monday.
     pub fn day_of_week(&self) -> DayOfWeek {
-        let prime: PrimeDate = self.as_julian_day().into();
+        let prime = self.as_julian_day().as_prime_date();
         let dow = prime.get_day_number() as i32 % 7;
         match dow {
             1 => DayOfWeek::Tuesday,
@@ -578,15 +578,12 @@ impl From<&Date> for UnixTimestamp {
     }
 }
 
-/// 01-MAR-2000, a mod400 year after the leap day.
-const LEAPOCH: UnixTimestamp = UnixTimestamp::from_seconds(951868800);
-
 impl From<&UnixTimestamp> for Date {
     #[allow(clippy::integer_division)]
     fn from(value: &UnixTimestamp) -> Self {
         // Algorithm impl based on libmusl __secs_to_tm.c
         let sec_in_day = SECONDS_IN_DAY as i64;
-        let leapoch = LEAPOCH.get_offset().as_seconds() as i64;
+        let leapoch = LEAPOCH_TIMESTAMP.get_offset().as_seconds() as i64;
         let offset = value.get_offset().as_seconds() as i64;
 
         // clever impl - the leapoch is a nice round 400 cycle leap year
@@ -649,8 +646,6 @@ impl From<&UnixTimestamp> for Date {
     }
 }
 
-const JULIAN_DAY_1_JAN_YR0: f64 = 1721059.5;
-
 impl From<&Date> for JulianDate {
     #[allow(clippy::integer_division)]
     fn from(value: &Date) -> Self {
@@ -665,7 +660,7 @@ impl From<&Date> for JulianDate {
         let duration_days = value.year * 365 + leap_days + value.day_of_year as i32;
 
         let duration_days = duration_days as f64 + JULIAN_DAY_1_JAN_YR0;
-        JulianDayNumber::new(JULIAN_EPOCH, duration_days)
+        JulianDate::new(duration_days)
     }
 }
 
@@ -677,7 +672,8 @@ impl From<Date> for JulianDate {
 
 impl From<&JulianDate> for Date {
     fn from(value: &JulianDate) -> Self {
-        value.get_epoch().0 + Duration::new(value.get_day_number(), DurationUnit::Day)
+        value.get_julian_epoch().get_epoch().0
+            + Duration::new(value.get_day_number(), DurationUnit::Day)
     }
 }
 
