@@ -69,7 +69,6 @@ impl Iterator for URLIterator {
 
         self.x_idx += 1;
 
-        #[allow(clippy::literal_string_with_formatting_args)]
         let mut url = self
             .params
             .url_template

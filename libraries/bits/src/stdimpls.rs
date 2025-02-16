@@ -20,12 +20,11 @@ impl Bits for std::fs::File {
 
 impl MutBits for std::fs::File {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        use std::io::Write;
         Ok(self.write_all(&[val])?)
     }
 
     fn flush(&mut self) -> Result<(), Error> {
-        std::io::Write::flush(self)?;
+        Write::flush(self)?;
         Ok(())
     }
 }
@@ -45,7 +44,7 @@ impl<T: Write> MutBits for std::io::BufWriter<T> {
         BitsWrapper::Borrowed(self).write_u8(val)
     }
     fn flush(&mut self) -> Result<(), Error> {
-        std::io::Write::flush(self)?;
+        Write::flush(self)?;
         Ok(())
     }
 }

@@ -12,7 +12,7 @@ use crate::BitsErrorKind;
 
 cfg_feature_alloc! {
     extern crate alloc;
-    use alloc::string::{String, ToString};
+    use alloc::string::{String, ToString as _};
     use alloc::vec::Vec;
     use alloc::vec;
 }

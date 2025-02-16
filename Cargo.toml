@@ -132,7 +132,7 @@ irox-units = { version = "^0", path = "libraries/units" }
 # opt-level = 1
 
 
-# Lints last updated for Rust 1.82.0
+# Lints last updated for Rust 1.84.0
 [workspace.lints.rust]
 unsafe_code = "forbid"
 
@@ -187,6 +187,7 @@ linkedlist = "warn"
 lossy_float_literal = "warn"
 manual_assert = "warn"
 manual_instant_elapsed = "warn"
+manual_is_power_of_two = "warn"
 manual_is_variant_and = "warn"
 manual_let_else = "warn"
 manual_ok_or = "warn"
@@ -206,6 +207,7 @@ needless_for_each = "warn"
 needless_pass_by_value = "warn"
 no_mangle_with_rust_abi = "warn"
 non_ascii_literal = "warn"
+non_zero_suggestions = "warn"
 option_as_ref_cloned = "warn"
 option_option = "warn"
 panic = "warn"
@@ -222,6 +224,7 @@ redundant_closure_for_method_calls = "warn"
 redundant_else = "warn"
 redundant_feature_names = "warn"
 ref_as_ptr = "warn"
+ref_option = "warn"
 ref_option_ref = "warn"
 return_self_not_must_use = "warn"
 same_functions_in_if_condition = "warn"
@@ -242,6 +245,7 @@ unused_result_ok = "warn"
 unused_self = "warn"
 unwrap_in_result = "warn"
 unwrap_used = "warn"
+used_underscore_items = "warn"
 verbose_file_reads = "warn"
 wildcard_dependencies = "warn"
 zero_sized_map_values = "warn"
