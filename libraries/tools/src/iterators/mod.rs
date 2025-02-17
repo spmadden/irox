@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -7,10 +7,9 @@
 //! helper methods to the [`Iterator`] Trait.
 //!
 
+extern crate alloc;
 use self::join::Joining;
 use self::looping_forever::LoopingForever;
-
-extern crate alloc;
 
 use crate::iterators::join::MultiJoining;
 use alloc::vec::Vec;
@@ -18,7 +17,10 @@ use alloc::vec::Vec;
 mod join;
 pub mod looping_forever;
 mod streaming;
+mod zip;
+
 pub use streaming::*;
+pub use zip::*;
 
 ///
 /// Itertools adds helpful additional methods to [`Iterator`]
@@ -132,3 +134,64 @@ pub trait Itertools: Iterator {
 }
 
 impl<T: ?Sized> Itertools for T where T: Iterator {}
+
+pub struct Moderator {
+    start: usize,
+    modulus: usize,
+    max_count: usize,
+    idx: usize,
+}
+impl Moderator {
+    pub fn new(start: usize, modulus: usize) -> Self {
+        Self {
+            start,
+            modulus,
+            max_count: modulus,
+            idx: 0,
+        }
+    }
+    pub fn new_limited(start: usize, modulus: usize, max_count: usize) -> Self {
+        Self {
+            start,
+            modulus,
+            max_count,
+            idx: 0,
+        }
+    }
+}
+impl Iterator for Moderator {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.idx >= self.max_count {
+            return None;
+        }
+        let out = (self.start + self.idx) % self.modulus;
+        self.idx += 1;
+        Some(out)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::iterators::Moderator;
+
+    #[test]
+    pub fn test_moderator() {
+        let exp = &[0, 1, 2, 3, 4, 5];
+        let mut iter = Moderator::new(0, 6);
+        for e in exp {
+            assert_eq!(iter.next(), Some(*e));
+        }
+        assert_eq!(iter.next(), None);
+    }
+    #[test]
+    pub fn test_moderator2() {
+        let exp = &[3, 4, 5, 0, 1, 2];
+        let mut iter = Moderator::new(3, 6);
+        for e in exp {
+            assert_eq!(iter.next(), Some(*e));
+        }
+        assert_eq!(iter.next(), None);
+    }
+}

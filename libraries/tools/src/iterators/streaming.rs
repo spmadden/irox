@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 ///
 /// Basic iterator trait that allows the borrowing of inner items with mapped lifetimes.
-pub trait LendingIterator<'a> {
-    type Item<'b>
+pub trait LendingIterator {
+    type Item<'a>
     where
-        Self: 'b,
         Self: 'a;
 
-    fn next_ref(&'a mut self) -> Option<Self::Item<'a>>;
+    fn next_ref<'a>(&'a mut self) -> Option<Self::Item<'a>>;
 }
