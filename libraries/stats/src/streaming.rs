@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
 //! Streaming Statistics
 //!
 
+use core::fmt::{Debug, Formatter};
 use core::ops::{Add, Div, Mul, Sub};
 use irox_tools::f64::FloatExt;
 
@@ -466,6 +467,17 @@ impl<T: Default> Default for Summary<T> {
             max: Max::default(),
             stdev: UnbiasedStandardDeviation::default(),
         }
+    }
+}
+impl<T: Debug + Copy + Default> Debug for Summary<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.write_fmt(format_args!(
+            "avg: {:?} +/- {:?} (1std) [{:?}-{:?}]",
+            self.mean.get_mean(),
+            self.stdev.get_unbiased_stdev(),
+            self.min.get_min_val(),
+            self.max.get_max_val()
+        ))
     }
 }
 impl<T> Summary<T>
