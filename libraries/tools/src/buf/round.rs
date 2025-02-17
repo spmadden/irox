@@ -5,6 +5,7 @@
 #![allow(clippy::unwrap_used)]
 
 use crate::buf::Buffer;
+use crate::iterators::Moderator;
 use core::ops::{Index, IndexMut};
 use irox_bits::{Bits, BitsError, BitsErrorKind, Error, ErrorKind, MutBits};
 
@@ -64,6 +65,18 @@ impl<const N: usize, T: Sized> IntoIterator for RoundBuffer<N, T> {
         RoundBufferIter { buf: self }
     }
 }
+pub struct Iter<'a, const N: usize, T: Sized> {
+    buf: &'a RoundBuffer<N, T>,
+    iter: Moderator,
+}
+impl<'a, const N: usize, T: Sized> Iterator for Iter<'a, N, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let idx = self.iter.next()?;
+        self.buf.get(idx)
+    }
+}
 impl<const N: usize, T: Sized> RoundBuffer<N, T> {
     const VAL: Option<T> = None;
 
@@ -75,6 +88,26 @@ impl<const N: usize, T: Sized> RoundBuffer<N, T> {
             size: 0,
             mod_count: 0,
         }
+    }
+    pub fn iter(&self) -> Iter<N, T> {
+        let iter = Moderator::new_limited(self.head, N, self.size);
+        Iter { buf: self, iter }
+    }
+    pub fn moderator(&self) -> Moderator {
+        Moderator::new_limited(self.head, N, self.size)
+    }
+    pub fn capacity(&self) -> usize {
+        N
+    }
+    pub fn len(&self) -> usize {
+        self.size
+    }
+    pub fn clear(&mut self) {}
+    pub fn is_empty(&self) -> bool {
+        self.size == 0
+    }
+    pub fn is_full(&self) -> bool {
+        self.size == N
     }
 }
 
