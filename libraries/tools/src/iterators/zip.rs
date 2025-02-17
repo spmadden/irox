@@ -60,7 +60,7 @@ macro_rules! impl_windows {
         impl<'a, T: Copy> LendingIterator for Windows<'a, $n, T> where Self: 'a {
         type Item<'b> = [&'b T; $n] where Self: 'b;
 
-        fn next_ref<'b>(&'b mut self) -> Option<Self::Item<'b>> {
+        fn next_ref(&mut self) -> Option<Self::Item<'_>> {
             if !self.buf.is_full() {
                 while !self.buf.is_full() {
                     self.buf.push(self.iter.next().copied()?).ok()?;

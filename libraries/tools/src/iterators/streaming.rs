@@ -9,5 +9,5 @@ pub trait LendingIterator {
     where
         Self: 'a;
 
-    fn next_ref<'a>(&'a mut self) -> Option<Self::Item<'a>>;
+    fn next_ref(&mut self) -> Option<Self::Item<'_>>;
 }

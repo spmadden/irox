@@ -326,13 +326,13 @@ pub struct FixedU8BufIterMut<'a, const N: usize> {
     idx: usize,
 }
 
-impl<'a, const N: usize> LendingIterator for FixedU8BufIterMut<'a, N> {
+impl<const N: usize> LendingIterator for FixedU8BufIterMut<'_, N> {
     type Item<'b>
         = &'b mut u8
     where
         Self: 'b;
 
-    fn next_ref<'b>(&'b mut self) -> Option<Self::Item<'b>> {
+    fn next_ref(&mut self) -> Option<Self::Item<'_>> {
         if let Some(val) = self.buf.get_mut(self.idx) {
             self.idx += 1;
             return Some(val);

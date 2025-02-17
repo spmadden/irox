@@ -239,13 +239,13 @@ pub struct FixedBufIterMut<'a, const N: usize, T: Sized> {
     idx: usize,
 }
 
-impl<'a, const N: usize, T: Sized> LendingIterator for FixedBufIterMut<'a, N, T> {
+impl<const N: usize, T: Sized> LendingIterator for FixedBufIterMut<'_, N, T> {
     type Item<'b>
         = &'b mut T
     where
         Self: 'b;
 
-    fn next_ref<'b>(&'b mut self) -> Option<Self::Item<'b>> {
+    fn next_ref(&mut self) -> Option<Self::Item<'_>> {
         if let Some(val) = self.buf.get_mut(self.idx) {
             self.idx += 1;
             return Some(val);
