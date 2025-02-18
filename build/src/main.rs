@@ -190,7 +190,7 @@ fn test() -> Result<(), Error> {
         exec_passthru_env(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
-            [("RUSTFLAGS", "-Copt-level=1")],
+            [("RUSTFLAGS", "-Copt-level=1 -Ctarget-cpu=native -Ccodegen-units=1 -Cembed-bitcode=no")],
         )?;
         logend();
     }
