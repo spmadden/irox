@@ -60,7 +60,7 @@ members = [
 egui = { version = "^0.31", default-features = false }
 eframe = { version = "^0.31", default-features = false }
 emath = { version = "^0.31", default-features = false }
-profiling = {version = "^1.0", features = ["profile-with-puffin"]}
+profiling = { version = "^1.0", features = ["profile-with-puffin"] }
 puffin = { version = "^0.19", features = [] }
 puffin_http = { version = "^0.16", features = [] }
 ron = { version = "^0.8", features = ["integer128"] }
@@ -87,9 +87,11 @@ criterion = "0.5"
 core_affinity = "0.8.1"
 toml = "0.8.19"
 
-irox-cargo-metadata = {version = "^0", path = "data-formats/cargo-metadata"}
+irox-arch-x86-64 = { version = "0.1.0" }
+
+irox-cargo-metadata = { version = "^0", path = "data-formats/cargo-metadata" }
 irox-csv = { version = "^0", path = "data-formats/csv" }
-irox-dot = {version = "^0", path = "data-formats/dot"}
+irox-dot = { version = "^0", path = "data-formats/dot" }
 irox-gpx = { version = "^0", path = "data-formats/gpx" }
 irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
 irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
@@ -111,11 +113,11 @@ irox-derive-helpers = { version = "^0", path = "libraries/derive-helpers" }
 irox-egui-extras = { version = "^0", path = "libraries/egui_extras" }
 irox-enums = { version = "^0", path = "libraries/enums" }
 irox-enums_derive = { version = "^0", path = "libraries/enums_derive" }
-irox-fixedmath = {version = "^0", path = "libraries/fixedmath"}
+irox-fixedmath = { version = "^0", path = "libraries/fixedmath" }
 irox-git-tools = { version = "^0", path = "libraries/git-tools" }
-irox-imagery = {version = "^0", path = "libraries/imagery"}
+irox-imagery = { version = "^0", path = "libraries/imagery" }
 irox-log = { version = "^0", path = "libraries/log" }
-irox-metrics = {version = "^0", path = "libraries/metrics"}
+irox-metrics = { version = "^0", path = "libraries/metrics" }
 irox-mbtiles = { version = "^0", path = "libraries/mbtiles" }
 irox-networking = { version = "^0", path = "libraries/network" }
 irox-progress = { version = "^0", path = "libraries/progress" }
@@ -129,8 +131,7 @@ irox-types = { version = "^0", path = "libraries/types" }
 irox-units = { version = "^0", path = "libraries/units" }
 
 [profile.test]
-# opt-level = 1
-
+#opt-level = 3
 
 # Lints last updated for Rust 1.84.0
 [workspace.lints.rust]

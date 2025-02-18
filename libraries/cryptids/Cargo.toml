@@ -15,9 +15,23 @@ readme = "README.md"
 [lints]
 workspace = true
 
+[features]
+_toobig-tests = [] # slow tests that take way too long to run normally.
+
 [dependencies]
 irox-bits = {workspace = true}
 irox-tools = {workspace = true}
 
 [dev-dependencies]
 irox-tools = {workspace = true, features = ["std"]}
+core_affinity.workspace = true
+criterion.workspace = true
+irox-arch-x86-64 = {workspace = true}
+irox-stats = {workspace = true}
+
+[lib]
+bench = false
+
+[[bench]]
+name = "x25519"
+harness = false
