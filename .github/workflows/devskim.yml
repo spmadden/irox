@@ -28,7 +28,8 @@ jobs:
         uses: microsoft/DevSkim-Action@v1
         with:
           # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
-          exclude-rules: DS126858,DS109733,DS173237
+          # DS440001 and DS126858 are continuously false-positives
+          exclude-rules: DS126858,DS109733,DS173237,DS440001,DS126858
 
       - name: Upload DevSkim scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
