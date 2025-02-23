@@ -5,44 +5,15 @@
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use irox_arch_x86_64::cpu::rdtsc;
-use irox_stats::streaming::Summary;
-use irox_tools::static_init;
-use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
-static_init!(stats, Arc<Mutex<Summary<f64>>>, { Default::default() });
-
-pub struct Time {
-    cycle: u64,
-    time: Instant,
-}
-impl Time {
-    pub fn new() -> Self {
-        Self {
-            cycle: rdtsc(),
-            time: Instant::now(),
-        }
-    }
-    pub fn elapsed(&self) -> (u64, Duration) {
-        let e = Time::new();
-        (e.cycle - self.cycle, e.time - self.time)
-    }
-}
-pub struct Timer {
-    stats: Arc<Mutex<Summary<f64>>>,
-}
+pub struct Timer;
 impl Default for Timer {
     fn default() -> Self {
-        Self {
-            stats: stats().clone(),
-        }
+        Self {}
     }
 }
 impl Timer {
-    fn _add_sample(&self, sample: f64) {
-        let mut stats = self.stats.lock().unwrap();
-        stats.add_sample(sample);
-    }
     fn elements_per_second(&self, elems: f64, typical: f64, values: &mut [f64]) -> &'static str {
         let elems_per_second = elems * (1e9 / typical);
         let (denominator, unit) = if elems_per_second < 1000.0 {
@@ -90,28 +61,27 @@ impl ValueFormatter for Timer {
     }
 }
 impl Measurement for Timer {
-    type Intermediate = Time;
-    type Value = (u64, Duration);
+    type Intermediate = u64;
+    type Value = u64;
 
     fn start(&self) -> Self::Intermediate {
-        Time::new()
+        rdtsc()
     }
 
     fn end(&self, i: Self::Intermediate) -> Self::Value {
-        let o = i.elapsed();
-        o
+        rdtsc() - i
     }
 
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
-        (v1.0 + v2.0, v1.1 + v2.1)
+        *v1 + *v2
     }
 
     fn zero(&self) -> Self::Value {
-        (0, Duration::from_secs(0))
+        0
     }
 
     fn to_f64(&self, value: &Self::Value) -> f64 {
-        value.0 as f64
+        *value as f64
     }
 
     fn formatter(&self) -> &dyn ValueFormatter {
@@ -145,13 +115,15 @@ impl Bencher {
 }
 
 pub fn criterion_benchmark(c: &mut Criterion<Timer>) {
-    core_affinity::set_for_current(core_affinity::CoreId { id: 0 });
+    core_affinity::set_for_current(core_affinity::CoreId { id: 2 });
     let mut grp = c.benchmark_group("x25519");
+    grp.warm_up_time(Duration::from_millis(100));
+    grp.sample_size(250);
+    grp.measurement_time(Duration::from_secs(60));
     let mut bencher = Bencher::default();
     grp.bench_function("x25519_scalarmult", |b| b.iter(|| bencher.iter_once()));
 
     grp.finish();
-    println!("{:?}", stats().clone());
 }
 
 criterion_group! {

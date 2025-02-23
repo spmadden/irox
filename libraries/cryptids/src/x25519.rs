@@ -142,15 +142,14 @@ const DB41: FieldElement = FieldElement([0xDB41, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 impl FieldElement {
     fn carry(&mut self) {
         let mut carry;
-        for i in 0..16 {
+        for i in 0..15 {
             carry = self[i] >> 16;
             self[i] -= carry << 16;
-            if i < 15 {
-                self[i + 1] += carry;
-            } else {
-                self[0] += 38 * carry;
-            }
+            self[i + 1] += carry;
         }
+        carry = self[15] >> 16;
+        self[15] -= carry << 16;
+        self[0] += 38 * carry;
     }
 
     fn swap(&mut self, other: &mut Self, bit: i64) {
@@ -315,13 +314,24 @@ impl MulAssign<&FieldElement> for FieldElement {
 }
 fn invert(v: &mut FieldElement) {
     let mut out = v.clone();
-    for i in 0..=253 {
-        let i = 253 - i;
+    for _ in 0..249 {
         out.square();
-        if i != 2 && i != 4 {
-            out *= v;
-        }
+        out *= v;
     }
+    // 4
+    out.square();
+    // 3
+    out.square();
+    out *= v;
+    // 2
+    out.square();
+    //1
+    out.square();
+    out *= v;
+    // 0
+    out.square();
+    out *= v;
+
     *v = out;
 }
 
@@ -452,12 +462,12 @@ mod tests {
             .read(true)
             .create(false)
             .open("doc/x25519-test-vectors.txt")?;
-        let mut f = std::io::BufReader::new(f);
+        let f = std::io::BufReader::new(f);
 
         for line in f.lines() {
             let line = line?;
 
-            let Some((ty, data)) = line.split_once("=") else {
+            let Some((_ty, _data)) = line.split_once("=") else {
                 continue;
             };
         }
