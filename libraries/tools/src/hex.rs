@@ -8,10 +8,10 @@
 crate::cfg_feature_alloc! {
     extern crate alloc;
 }
-use crate::buf::StrBuf;
+use crate::buf::{FixedU8Buf, StrBuf};
 use crate::cfg_feature_alloc;
 use core::fmt::Write;
-use irox_bits::{Error, ErrorKind, FormatBits, MutBits};
+use irox_bits::{BitsError, BitsErrorKind, Error, ErrorKind, FormatBits, MutBits};
 
 /// 0-9, A-F
 pub static HEX_UPPER_CHARS: [char; 16] = [
@@ -186,6 +186,17 @@ pub fn from_hex_into<T: MutBits>(hex: &str, out: &mut T) -> Result<usize, Error>
     }
 
     Ok(wrote)
+}
+
+///
+/// Attempts to fill a static array buffer with the hex data within the provided string,
+/// returns the buffer if the string and buffer are perfectly matched.
+pub fn try_from_hex_str<const N: usize>(str: &str) -> Result<[u8; N], BitsError> {
+    let mut buf = FixedU8Buf::<N>::new();
+    if from_hex_into(str, &mut buf)? != N {
+        return Err(BitsErrorKind::UnexpectedEof.into());
+    }
+    Ok(buf.take())
 }
 
 crate::cfg_feature_alloc! {
