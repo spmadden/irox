@@ -7,10 +7,12 @@
 
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::ops::{Index, IndexMut};
+use irox_tools::hex;
 
 macro_rules! zeroize {
     ($name:ident,$ty:ty) => {
-        fn $name(v: &mut [$ty]) {
+        #[inline]
+        pub fn $name(v: &mut [$ty]) {
             v.iter_mut().for_each(|x| *x = 0);
         }
     };
@@ -25,7 +27,7 @@ const fn basepoint() -> [u8; 32] {
 }
 ///
 /// Curve25519 Base Point - '9'
-pub const BASE: [u8; 32] = basepoint();
+pub static BASE: &[u8; 32] = &basepoint();
 
 ///
 /// Secret Key - usually random bytes.  Generation of a good random value is important here.
@@ -44,7 +46,7 @@ impl SecretKey {
     /// Generates a public key using the original Curve25519 method of multiplying the
     /// secret key with the base point.  This is probably not what you want.
     pub fn generate_curve25519_pubkey(&self) -> Curve25519PublicKey {
-        Curve25519PublicKey(scalarmult(&self.0, &BASE))
+        Curve25519PublicKey(scalarmult(&self.0, BASE))
     }
     ///
     /// Generates a shared key using the original Curve25519 method of multiplying owned secret key with
@@ -132,15 +134,15 @@ pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> [u8; 32] {
 }
 
 #[derive(Clone)]
-struct FieldElement([i64; 16]);
+pub(crate) struct FieldElement(pub(crate) [i64; 16]);
 impl Drop for FieldElement {
     fn drop(&mut self) {
         zeroize_i64(&mut self.0);
     }
 }
-const DB41: FieldElement = FieldElement([0xDB41, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+static DB41: FieldElement = FieldElement([0xDB41, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 impl FieldElement {
-    fn carry(&mut self) {
+    pub(crate) fn carry(&mut self) {
         let mut carry;
         for i in 0..15 {
             carry = self[i] >> 16;
@@ -152,7 +154,7 @@ impl FieldElement {
         self[0] += 38 * carry;
     }
 
-    fn swap(&mut self, other: &mut Self, bit: i64) {
+    pub(crate) fn swap<T: IndexMut<usize, Output = i64>>(&mut self, other: &mut T, bit: i64) {
         let c = !(bit - 1);
         for i in 0..16 {
             let t = c & (self[i] ^ other[i]);
@@ -160,12 +162,12 @@ impl FieldElement {
             other[i] ^= t;
         }
     }
-    fn pack(self) -> [u8; 32] {
+    pub(crate) fn pack(self) -> [u8; 32] {
         let mut t = self;
         t.carry();
         t.carry();
         t.carry();
-        let mut m = FieldElement([0; 16]);
+        let mut m = [0; 16];
         for _ in 0..2 {
             m[0] = t[0] - 0xFFED;
             for i in 1..15 {
@@ -185,7 +187,7 @@ impl FieldElement {
         }
         out
     }
-    fn unpack(inp: &[u8; 32]) -> Self {
+    pub(crate) fn unpack(inp: &[u8; 32]) -> Self {
         let mut out = FieldElement([0; 16]);
         for i in 0..16 {
             out[i] = (inp[2 * i] as i64) | ((inp[2 * i + 1] as i64) << 8);
@@ -193,7 +195,7 @@ impl FieldElement {
         out[15] &= 0x7FFF;
         out
     }
-    fn square(&mut self) {
+    pub(crate) fn square(&mut self) {
         let mut t = [0i64; 32];
         for i in 0..16 {
             for j in 0..16 {
@@ -209,7 +211,7 @@ impl FieldElement {
         self.carry();
         self.carry();
     }
-    fn square_assign(&mut self, a: &FieldElement) {
+    pub(crate) fn square_assign(&mut self, a: &FieldElement) {
         let mut t = [0i64; 32];
         for i in 0..16 {
             for j in 0..16 {
@@ -225,7 +227,7 @@ impl FieldElement {
         self.carry();
         self.carry();
     }
-    fn mul_rassign(&mut self, rhs: &FieldElement) {
+    pub(crate) fn mul_rassign(&mut self, rhs: &FieldElement) {
         let mut t = [0i64; 32];
         for i in 0..16 {
             for j in 0..16 {
@@ -241,6 +243,9 @@ impl FieldElement {
         self.carry();
         self.carry();
     }
+    pub(crate) fn parity(&self) -> u8 {
+        self.clone().pack()[0] & 1
+    }
 }
 impl Index<usize> for FieldElement {
     type Output = i64;
@@ -254,7 +259,7 @@ impl IndexMut<usize> for FieldElement {
         &mut self.0[index]
     }
 }
-fn add(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
+pub(crate) fn add(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
     for i in 0..16 {
         out[i] = a[i] + b[i];
     }
@@ -266,7 +271,7 @@ impl AddAssign<&FieldElement> for FieldElement {
         }
     }
 }
-fn sub(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
+pub(crate) fn sub(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
     for i in 0..16 {
         out[i] = a[i] - b[i];
     }
@@ -278,7 +283,7 @@ impl SubAssign<&FieldElement> for FieldElement {
         }
     }
 }
-fn mul(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
+pub(crate) fn mul(out: &mut FieldElement, a: &FieldElement, b: &FieldElement) {
     let mut t = [0i64; 32];
     for i in 0..16 {
         for j in 0..16 {
@@ -312,7 +317,7 @@ impl MulAssign<&FieldElement> for FieldElement {
         self.carry();
     }
 }
-fn invert(v: &mut FieldElement) {
+pub(crate) fn invert(v: &mut FieldElement) {
     let mut out = v.clone();
     for _ in 0..249 {
         out.square();
@@ -334,14 +339,60 @@ fn invert(v: &mut FieldElement) {
 
     *v = out;
 }
+/// 2^255 - 19
+pub static X255M19: &[u8; 32] =
+    &hex!("EDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F");
+/// 2^255 + 19
+pub static X255P19: &[u8; 32] =
+    &hex!("1300000000000000000000000000000000000000000000000000000000000080");
+// order of ed25519 signature as per [RFC8032](https://tools.ietf.org/html/rfc8032)
+pub static ED25519_ORDER: &[u8; 32] =
+    &hex!("EDD3F55C1A631258D69CF7A2DEF9DE1400000000000000000000000000000010");
+///
+/// The following are malicious public keys crafted to exploit weaknesses in the montgomery
+/// curve multiplication logic.
+pub static BLOCKLIST: &[&[u8; 32]] = &[
+    // 0 (order 4), check 4
+    &hex!("0000000000000000000000000000000000000000000000000000000000000000"),
+    // 1 ( order 1), check 1
+    &hex!("0100000000000000000000000000000000000000000000000000000000000000"),
+    // 325606250916557431795983626356110631294008115727848805560023387167927233504 (order 8)
+    &hex!("e0eb7a7c3b41b8ae1656e3faf19fc46ada098deb9c32b1fd866205165f49b800"),
+    // 39382357235489614581723060781553021112529911719440698176882885853963445705823 (oder 8)
+    &hex!("5f9c95bca3508c24b1d0b1559c83ef5b04445cc4581c8e86d8224eddd09f1157"),
+    // p-1 (order 2), check 2
+    &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
+    // Check 10
+    &hex!("ECFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
+    // Check 13
+    &hex!("EDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
+    // p (=0, order 4), Check 14
+    X255M19,
+    // p+1 (=1, order 1, Check 11
+    &hex!("eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
+    // Check 12
+    &hex!("EEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
+    // BFN, check 3
+    &hex!("0000000000000000000000000000000000000000000000000000000000000080"),
+    // Check 5
+    &hex!("C7176A703D4DD84FBA3C0B760D10670F2A2053FA2C39CCC64EC7FD7792AC037A"),
+    // Check 6
+    &hex!("C7176A703D4DD84FBA3C0B760D10670F2A2053FA2C39CCC64EC7FD7792AC03FA"),
+    // Check 7
+    &hex!("26E8958FC2B227B045C3F489F2EF98F0D5DFAC05D3C63339B13802886D53FC05"),
+    // Check 8
+    &hex!("26E8958FC2B227B045C3F489F2EF98F0D5DFAC05D3C63339B13802886D53FC85"),
+    // Check 9
+    &hex!("0100000000000000000000000000000000000000000000000000000000000080"),
+    // order of ed25519 as per [RFC8032](https://tools.ietf.org/html/rfc8032)
+    ED25519_ORDER,
+];
 
 #[cfg(test)]
 mod tests {
     use crate::x25519::{scalarmult, BASE};
     use crate::x25519::{Curve25519PublicKey, SecretKey, SharedCurve25519Secret};
-    use irox_bits::BitsError;
     use irox_tools::{assert_eq_hex_slice, hex};
-    use std::io::BufRead;
 
     type TV = ([u8; 32], [u8; 32], [u8; 32]);
     macro_rules! tv {
@@ -403,8 +454,8 @@ mod tests {
             #[test]
             pub fn $name() {
                 core_affinity::set_for_current(core_affinity::CoreId { id: 0 });
-                let mut k = BASE;
-                let mut u = BASE;
+                let mut k = *BASE;
+                let mut u = *BASE;
                 let start = std::time::Instant::now();
                 let mut start_ctr = irox_arch_x86_64::cpu::rdtsc();
 
@@ -451,31 +502,4 @@ mod tests {
         1000000,
         "7c3911e0ab2586fd864497297e575e6f3bc601c0883c30df5f4dd2d24f665424"
     );
-
-    pub fn _test_vectors_1() -> Result<(), BitsError> {
-        struct TV {
-            msg: String,
-            pbk: String,
-            sig: String,
-        }
-        let f = std::fs::OpenOptions::new()
-            .read(true)
-            .create(false)
-            .open("doc/x25519-test-vectors.txt")?;
-        let f = std::io::BufReader::new(f);
-
-        for line in f.lines() {
-            let line = line?;
-
-            let Some((_ty, _data)) = line.split_once("=") else {
-                continue;
-            };
-        }
-
-        Ok(())
-    }
-
-    pub fn _test_reject_small_order() {
-        // let m1 = hex!("53656 e 6 4 2 0 3 1 3 0 3 0 2 0 5 5 5 3 4 4 2 0 7 4 6 f 2 0 4 1 6 c 6 9 6 3 6 5 ");
-    }
 }

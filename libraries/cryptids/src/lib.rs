@@ -10,9 +10,11 @@
 #![warn(clippy::alloc_instead_of_core)]
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
+#![cfg_attr(not(test), no_std)]
 
 mod aes;
 mod chacha20;
+pub mod ed25519;
 mod pbkdf2;
 mod poly1305;
 pub mod x25519;
