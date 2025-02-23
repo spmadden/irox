@@ -28,6 +28,12 @@ impl<const N: usize> FixedU8Buf<N> {
     }
 
     ///
+    /// Returns the inner buffer, consuming the object.
+    pub fn take(self) -> [u8; N] {
+        self.buf
+    }
+
+    ///
     /// Returns a copy of the full buffer
     pub fn as_buf_default(&mut self) -> [u8; N] {
         let out = core::mem::replace(&mut self.buf, [0u8; N]);
