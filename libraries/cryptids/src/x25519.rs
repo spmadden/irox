@@ -243,8 +243,23 @@ impl FieldElement {
         self.carry();
         self.carry();
     }
+    pub(crate) fn sub_rassign(&mut self, lhs: &FieldElement) {
+        for i in 0..16 {
+            self[i] = lhs[i] - self[i]
+        }
+    }
     pub(crate) fn parity(&self) -> u8 {
         self.clone().pack()[0] & 1
+    }
+    pub(crate) fn pow2523(&mut self) {
+        let i = self.clone();
+        for _ in 0..249 {
+            self.square();
+            self.mul_assign(&i);
+        }
+        self.square();
+        self.square();
+        self.mul_assign(&i);
     }
 }
 impl Index<usize> for FieldElement {
