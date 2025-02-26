@@ -101,8 +101,8 @@ pub struct Bencher {
 impl Default for Bencher {
     fn default() -> Self {
         Self {
-            k: irox_cryptids::x25519::BASE,
-            u: irox_cryptids::x25519::BASE,
+            k: *irox_cryptids::x25519::BASE,
+            u: *irox_cryptids::x25519::BASE,
         }
     }
 }
