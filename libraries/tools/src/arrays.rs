@@ -68,6 +68,15 @@ pub fn max_index<T: PartialOrd>(arr: &[T]) -> Option<usize> {
 }
 
 ///
+/// Copies from the provided source slice into a statically sized output array.  Uses [`&T::copy_from_slice`]
+/// under-the-hood, and will panic if `N` is greater than the provided slice length.
+pub fn copy_subset<T: Copy + Default, const N: usize>(arr: &[T]) -> [T; N] {
+    let mut out = [T::default(); N];
+    out.copy_from_slice(arr.split_at(N).0);
+    out
+}
+
+///
 /// Searches the provided array for the longest consecutive repeated sequence of 'val'.
 ///
 /// # Example
