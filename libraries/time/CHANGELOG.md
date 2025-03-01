@@ -1,5 +1,34 @@
 
 
+## v0.4.9 (2025-03-01)
+
+### New Features
+
+ - <csr-id-78b893a3d5028db4e01f65382fd5d5043995aa90/> Add epochs with corresponding offsets and integrate Julian date transformations
+   Introduce several new epochs and their offsets, such as `Leapoch`, `Vicintipoch`, and `TruncatedJulianEpoch`, along with associated timestamp types. Refactor `JulianDayNumber` to support conversions between Julian and various epochs while ensuring compile-time checks. Update `Date` methods to utilize these enhancements and improve date arithmetic functionality.
+ - <csr-id-661dc938fe0f3e3992b336d20cab33ef945b040e/> Make timestamp methods `const` and refactor constructors.
+   Converted several functions in `Timestamp` and `JulianDayNumber` to `const` to enable compile-time usage. Refactored constructors to reduce redundancy and improve code clarity. Updated copyright year in `julian.rs`.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 14 calendar days.
+ - 17 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add epochs with corresponding offsets and integrate Julian date transformations ([`78b893a`](https://github.com/spmadden/irox/commit/78b893a3d5028db4e01f65382fd5d5043995aa90))
+    - Make timestamp methods `const` and refactor constructors. ([`661dc93`](https://github.com/spmadden/irox/commit/661dc938fe0f3e3992b336d20cab33ef945b040e))
+</details>
+
 ## v0.4.8 (2025-02-12)
 
 ### New Features
@@ -11,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 17 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.8 ([`091de5d`](https://github.com/spmadden/irox/commit/091de5dd795f50bff0199270734ac3691fbfc775))
     - Add `Hash` implementation for `Epoch`, `Date`, and time structs ([`bdc1331`](https://github.com/spmadden/irox/commit/bdc13318e33b2bd3aedf9cf743ad943b1b2a8131))
 </details>
 
