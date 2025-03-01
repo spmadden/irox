@@ -1,5 +1,39 @@
 
 
+## v0.4.2 (2025-03-01)
+
+### Chore
+
+ - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### New Features
+
+ - <csr-id-f91538d1cb3ebae7eaee1273cbaaca08979b99e2/> add impl WriteToBEBits for Arc<String>
+ - <csr-id-4f516d71e4db3ff1874da92d226939ad2e1478de/> fix lints for 1.84, update to 1.84
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 13 calendar days.
+ - 17 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add impl WriteToBEBits for Arc<String> ([`f91538d`](https://github.com/spmadden/irox/commit/f91538d1cb3ebae7eaee1273cbaaca08979b99e2))
+    - Fix lints for 1.84, update to 1.84 ([`4f516d7`](https://github.com/spmadden/irox/commit/4f516d71e4db3ff1874da92d226939ad2e1478de))
+    - Cleanup bitmask order-of-operations ([`1f48b70`](https://github.com/spmadden/irox/commit/1f48b70c64fb0cde031bf379fe3d6b5b276b6f51))
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+</details>
+
 ## v0.4.1 (2025-02-12)
 
 ### New Features
@@ -11,7 +45,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 17 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +57,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.4.1 ([`ff0885f`](https://github.com/spmadden/irox/commit/ff0885f4c2955b71b920efe59df0ca0dd7e5424b))
     - Add LE bit encoding/decoding for strings ([`d428007`](https://github.com/spmadden/irox/commit/d428007e46592c8b1c15d2e83abd34f94a7a8540))
 </details>
 
