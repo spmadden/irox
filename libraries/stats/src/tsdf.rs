@@ -335,7 +335,7 @@ pub struct CodedTimeSeriesWriter<'a> {
     time_stream: Box<dyn Stream<u64>>,
     int_stream: Box<dyn Stream<u64>>,
     str_stream: Box<dyn Stream<StrWrapper<'a>> + 'a>,
-    meta_stream: Box<dyn Stream<&'a str> + 'a>,
+    meta_stream: Box<dyn Stream<Arc<String>> + 'a>,
     stats: StreamStageStats,
 }
 
@@ -345,52 +345,67 @@ impl<'a> CodedTimeSeriesWriter<'a> {
 
         let writer = MultiStreamWriter::new(path)?;
 
-        let meta_stream = writer.new_stream();
-        let meta_stream = CompressStream::new(BitsWrapper::Owned(meta_stream));
+        let meta_stream = {
+            let meta_stream = writer.new_stream();
+            let meta_stream = CompressStream::new(BitsWrapper::Owned(meta_stream));
+            Box::new(meta_stream)
+        };
 
-        let time_stream = writer.new_stream();
-        let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("1.1.time_gz", time_stream.get_count());
-        let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
-        let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("1.2.time_vgb", time_stream.get_count());
-        let time_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
-        stats.stage_counting("1.3.time_codes", time_stream.counter());
-        let time_stream = ZigZagStream::new(Box::new(time_stream));
-        let time_stream = DeltaStream::<i64>::new(Box::new(time_stream));
+        let time_stream = {
+            let time_stream = writer.new_stream();
+            let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
+            stats.stage_counting("1.1.time_gz", time_stream.get_count());
+            let time_stream = CompressStream::new(BitsWrapper::Owned(time_stream));
+            let time_stream = SharedCountingBits::new(BitsWrapper::Owned(time_stream));
+            stats.stage_counting("1.2.time_vgb", time_stream.get_count());
+            let time_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(time_stream));
+            stats.stage_counting("1.3.time_codes", time_stream.counter());
+            let time_stream = ZigZagStream::new(Box::new(time_stream));
+            let time_stream = DeltaStream::<i64>::new(Box::new(time_stream));
+            Box::new(time_stream)
+        };
 
-        let float_stream = writer.new_stream();
-        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("2.1.float_gz", float_stream.get_count());
-        let float_stream = CompressStream::new(BitsWrapper::Owned(float_stream));
-        let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("2.2.float_vgb", float_stream.get_count());
-        let float_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
-        stats.stage_counting("2.3.float_codes", float_stream.counter());
-        let float_stream = F64ToU64Stream::new(Box::new(float_stream));
+        let float_stream = {
+            let float_stream = writer.new_stream();
+            let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+            stats.stage_counting("2.1.float_gz", float_stream.get_count());
+            let float_stream = CompressStream::new(BitsWrapper::Owned(float_stream));
+            let float_stream = SharedCountingBits::new(BitsWrapper::Owned(float_stream));
+            stats.stage_counting("2.2.float_vgb", float_stream.get_count());
+            let float_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(float_stream));
+            stats.stage_counting("2.3.float_codes", float_stream.counter());
+            let float_stream = F64ToU64Stream::new(Box::new(float_stream));
+            Box::new(float_stream)
+        };
 
-        let int_stream = writer.new_stream();
-        let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
-        stats.stage_counting("3.1.int_gz", int_stream.get_count());
-        let int_stream = CompressStream::new(BitsWrapper::Owned(int_stream));
-        let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
-        stats.stage_counting("3.2.int_vgb", int_stream.get_count());
-        let int_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(int_stream));
-        let int_stream = I64ToU64Stream::new(Box::new(int_stream));
-        let int_stream = DeltaStream::<i64>::new(Box::new(int_stream));
+        let int_stream = {
+            let int_stream = writer.new_stream();
+            let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
+            stats.stage_counting("3.1.int_gz", int_stream.get_count());
+            let int_stream = CompressStream::new(BitsWrapper::Owned(int_stream));
+            let int_stream = SharedCountingBits::new(BitsWrapper::Owned(int_stream));
+            stats.stage_counting("3.2.int_vgb", int_stream.get_count());
+            let int_stream = GroupCodingStream::<u64, _>::new(BitsWrapper::Owned(int_stream));
+            let int_stream = I64ToU64Stream::new(Box::new(int_stream));
+            let int_stream = DeltaStream::<i64>::new(Box::new(int_stream));
+            Box::new(int_stream)
+        };
 
-        let str_stream = writer.new_stream();
-        let str_stream = SharedCountingBits::new(BitsWrapper::Owned(str_stream));
-        stats.stage_counting("4.1.str_gz", str_stream.get_count());
-        let str_stream = CompressStream::new(BitsWrapper::Owned(str_stream));
-        let str_stream = GroupCodingStream::new(BitsWrapper::Owned(str_stream));
+        let str_stream = {
+            let str_stream = writer.new_stream();
+            let str_stream = SharedCountingBits::new(BitsWrapper::Owned(str_stream));
+            stats.stage_counting("4.1.str_gz", str_stream.get_count());
+            let str_stream = CompressStream::new(BitsWrapper::Owned(str_stream));
+            let str_stream = GroupCodingStream::new(BitsWrapper::Owned(str_stream));
+            Box::new(str_stream)
+        };
 
         Ok(Self {
-            float_stream: Box::new(float_stream),
-            time_stream: Box::new(time_stream),
-            meta_stream: Box::new(meta_stream),
-            int_stream: Box::new(int_stream),
-            str_stream: Box::new(str_stream),
+            float_stream,
+            time_stream,
+            meta_stream,
+            int_stream,
+            str_stream,
             stats,
         })
     }
@@ -428,13 +443,7 @@ impl<'a> CodedTimeSeriesWriter<'a> {
         out
     }
 
-    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
-        &'a mut self,
-        key: &'a K,
-        value: &'a V,
-    ) -> Result<(), Error> {
-        let key = key.as_ref();
-        let value = value.as_ref();
+    pub fn metadata(&'a mut self, key: Arc<String>, value: Arc<String>) -> Result<(), Error> {
         self.meta_stream.write_value(key)?;
         self.meta_stream.write_value(value)?;
         Ok(())
@@ -455,6 +464,8 @@ impl<'a> CodedTimeSeriesFloatWriter<'a> {
         key: &'a K,
         value: &'a V,
     ) -> Result<(), Error> {
+        let key = Arc::new(key.as_ref().to_string());
+        let value = Arc::new(value.as_ref().to_string());
         self.writer.metadata(key, value)
     }
     pub fn flush(&mut self) -> Result<(), Error> {
@@ -473,12 +484,14 @@ impl<'a> CodedTimeSeriesIntWriter<'a> {
         self.writer.int_stream.write_value(value)?;
         Ok(())
     }
-    pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
+    pub fn metadata<K: AsRef<str>, V: AsRef<str>>(
         &'a mut self,
-        key: &'a K,
-        value: &'a V,
+        key: &K,
+        value: &V,
     ) -> Result<(), Error> {
-        self.writer.metadata(key, value)
+        let k = Arc::new(key.as_ref().to_string());
+        let v = Arc::new(value.as_ref().to_string());
+        self.writer.metadata(k, v)
     }
     pub fn flush(&mut self) -> Result<(), Error> {
         self.writer.flush()
@@ -498,9 +511,11 @@ impl<'a> CodedTimeSeriesStrWriter<'a> {
     }
     pub fn metadata<K: AsRef<str> + 'a, V: AsRef<str> + 'a>(
         &'a mut self,
-        key: &'a K,
-        value: &'a V,
+        key: &K,
+        value: &V,
     ) -> Result<(), Error> {
+        let key = Arc::new(key.as_ref().to_string());
+        let value = Arc::new(value.as_ref().to_string());
         self.writer.metadata(key, value)
     }
     pub fn flush(&mut self) -> Result<(), Error> {

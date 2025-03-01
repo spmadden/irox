@@ -456,7 +456,7 @@ cfg_feature_miniz! {
         impl_mutbits_for_stream!();
     }
 
-    impl<B: MutBits, T: Streamable> Stream<T> for CompressStream<'_, B> {
+    impl<B: MutBits, T: Sized + Default + WriteToBEBits> Stream<T> for CompressStream<'_, B> {
         fn write_value(&mut self, value: T) -> Result<usize, Error> {
             WriteToBEBits::write_be_to(&value, self)
         }
