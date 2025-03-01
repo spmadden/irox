@@ -7,7 +7,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release.
+ - 12 commits contributed to the release.
  - 17 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -19,6 +19,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
     - Release irox-nmea0183 v0.5.5 ([`7a446e7`](https://github.com/spmadden/irox/commit/7a446e7be23eb93932b4e77ae0c92c3678349816))
     - Release irox-networking v0.4.7 ([`c7ae7ab`](https://github.com/spmadden/irox/commit/c7ae7ab0aa8d767dd6978121c82689efb71d55f9))
     - Release irox-egui-extras v0.6.2 ([`b0f78c2`](https://github.com/spmadden/irox/commit/b0f78c231299c1f7bdad7dce1da9915266bd6d90))
