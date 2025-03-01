@@ -1,18 +1,18 @@
 
 
 
-## v0.5.4 (2024-12-13)
+## v0.5.5 (2025-03-01)
 
-### New Features
+### Chore
 
- - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+ - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 50 days passed between releases.
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 77 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +23,31 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Cleanup bitmask order-of-operations ([`1f48b70`](https://github.com/spmadden/irox/commit/1f48b70c64fb0cde031bf379fe3d6b5b276b6f51))
+</details>
+
+## v0.5.4 (2024-12-13)
+
+### New Features
+
+ - <csr-id-79b4c0111cfb4daff7419dda335fca312e4afa4e/> bump MSRV to 1.82
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 20 calendar days.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-nmea0183 v0.5.4 ([`3060386`](https://github.com/spmadden/irox/commit/3060386874641367704a615e129cd8da7eab4c1d))
     - Bump MSRV to 1.82 ([`79b4c01`](https://github.com/spmadden/irox/commit/79b4c0111cfb4daff7419dda335fca312e4afa4e))
 </details>
 
@@ -36,7 +61,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 2 commits contributed to the release over the course of 38 calendar days.
  - 118 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -70,7 +95,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 26 calendar days.
  - 68 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -99,8 +124,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
- - 48 days passed between releases.
+ - 2 commits contributed to the release over the course of 1 calendar day.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -136,7 +160,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 59 calendar days.
  - 95 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -178,8 +202,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release.
- - 30 days passed between releases.
+ - 9 commits contributed to the release over the course of 23 calendar days.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -215,7 +238,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
+ - 4 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -282,7 +305,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 7 commits contributed to the release over the course of 44 calendar days.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
