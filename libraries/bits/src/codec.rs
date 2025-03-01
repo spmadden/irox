@@ -750,4 +750,9 @@ cfg_feature_alloc! {
             inp.read_str_sized_lossy(len as usize)
         }
     }
+    impl WriteToBEBits for alloc::sync::Arc<alloc::string::String> {
+        fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+            bits.write_str_u32_blob(self.as_str())
+        }
+    }
 }
