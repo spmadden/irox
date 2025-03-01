@@ -1,6 +1,33 @@
 
 
 
+## v0.6.5 (2025-03-01)
+
+### Chore
+
+ - <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/> cleanup remaining misc lints
+ - <csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/> cleanup remaining misc lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 13 calendar days.
+ - 34 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
+    - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
+</details>
+
 ## v0.6.4 (2025-01-26)
 
 ### Bug Fixes
@@ -11,7 +38,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.6.4 ([`63cbe87`](https://github.com/spmadden/irox/commit/63cbe871ebefa5e4382011f207f3c692cfbca5a2))
     - Release irox-units v0.4.5 ([`731469d`](https://github.com/spmadden/irox/commit/731469da7b0ff6d41bf7488a59767f199d62fb57))
     - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
 </details>
