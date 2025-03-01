@@ -1,6 +1,31 @@
 
 
 
+## v0.4.7 (2025-03-01)
+
+### Chore
+
+ - <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/> cleanup remaining misc lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 34 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
+</details>
+
 ## v0.4.6 (2025-01-26)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 7 calendar days.
+ - 2 commits contributed to the release over the course of 7 calendar days.
  - 43 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.4.6 ([`84ebac5`](https://github.com/spmadden/irox/commit/84ebac59919bc2ac652e98bc6bdb0ebd18f82d08))
     - Put console logger behind std feature ([`cd21b25`](https://github.com/spmadden/irox/commit/cd21b254bfac53e6304a311a5bbfe045f7a7b643))
 </details>
 
