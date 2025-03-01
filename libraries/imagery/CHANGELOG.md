@@ -1,5 +1,30 @@
 
 
+## v0.1.3 (2025-03-01)
+
+### Chore
+
+ - <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/> cleanup remaining misc lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 34 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
+</details>
+
 ## v0.1.2 (2025-01-26)
 
 ### New Features
@@ -15,7 +40,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 35 calendar days.
+ - 4 commits contributed to the release over the course of 35 calendar days.
  - 41 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-imagery v0.1.2 ([`e9e4201`](https://github.com/spmadden/irox/commit/e9e420196950a89558180faf34146e9f9670fc87))
     - Cleanup nostd support in imagery ([`d1cf634`](https://github.com/spmadden/irox/commit/d1cf63488838f82f9c64755256fb75ca27851801))
     - Reorder the classic 10 color map so the colors are more diverse ([`3faf803`](https://github.com/spmadden/irox/commit/3faf80368fcaaa9f4151b03b8f6c971adc7d69e6))
     - Ignore test requiring some local data for the moment ([`d14960a`](https://github.com/spmadden/irox/commit/d14960aea6509ae8ffbf4218a7b761f05b20d2f6))
