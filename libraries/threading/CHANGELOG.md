@@ -1,6 +1,35 @@
 
 
+## v0.2.6 (2025-03-01)
+
+### Chore
+
+ - <csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/> cleanup remaining misc lints
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 13 calendar days.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
+    - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+</details>
+
 ## v0.2.5 (2024-06-28)
+
+<csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/>
 
 ### Chore
 
@@ -10,7 +39,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 37 calendar days.
+ - 2 commits contributed to the release over the course of 37 calendar days.
  - 41 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +51,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.2.5 ([`10215f4`](https://github.com/spmadden/irox/commit/10215f4d6e28558ed97ffd6ff21c28c75c5d0beb))
     - Fixup some 1.78 lint warnings ([`7b8a2bf`](https://github.com/spmadden/irox/commit/7b8a2bfcae359473feeeb4eb7098f9eab14685ee))
 </details>
 
@@ -36,7 +66,6 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 13 calendar days.
- - 75 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -156,8 +185,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release over the course of 2 calendar days.
- - 7 days passed between releases.
+ - 7 commits contributed to the release.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -177,7 +205,7 @@
     - Cleaning up docs for Task ([`f8b4568`](https://github.com/spmadden/irox/commit/f8b45682a3fc53de2aa1adaaae417bcde907149f))
 </details>
 
-## v0.1.0 (2023-10-30)
+## v0.1.0 (2023-10-29)
 
 ### New Features
 
