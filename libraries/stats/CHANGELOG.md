@@ -1,6 +1,44 @@
 
 
 
+## v0.3.5 (2025-03-01)
+
+### Chore
+
+ - <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/> cleanup remaining misc lints
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### New Features
+
+ - <csr-id-e3b63bef4f213c78a8047afd446e9bc21a7c525d/> Add Debug implementation for Summary struct
+   Implementing Debug for the Summary struct enables formatted output, making it easier to inspect its data during debugging. The format includes the average, standard deviation, and value range, improving overall usability and diagnostics.
+
+### Refactor
+
+ - <csr-id-112ec8d3c36abf521c95fa4685682d320d617287/> push more onto the stack in tsdf
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 13 calendar days.
+ - 17 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Push more onto the stack in tsdf ([`112ec8d`](https://github.com/spmadden/irox/commit/112ec8d3c36abf521c95fa4685682d320d617287))
+    - Add Debug implementation for Summary struct ([`e3b63be`](https://github.com/spmadden/irox/commit/e3b63bef4f213c78a8047afd446e9bc21a7c525d))
+    - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+</details>
+
 ## v0.3.4 (2025-02-12)
 
 ### New Features
@@ -16,7 +54,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 2 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +66,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.3.4 ([`70f99b0`](https://github.com/spmadden/irox/commit/70f99b02702ec7668aaa4cd825da62e9de2a4d2a))
     - Add support for integer and string time series in tsdf ([`e6ca146`](https://github.com/spmadden/irox/commit/e6ca1467817d75d366aefa164217b2c0a8fd00a0))
     - Add i64-to-u64 stream and u64-to-i64 decoder ([`36663c4`](https://github.com/spmadden/irox/commit/36663c457dcc80568f91925e44e8ae32aa3d3e07))
     - Refactor sampling to use macros and add new sample types ([`5aa954d`](https://github.com/spmadden/irox/commit/5aa954d71ea6895bacd65a795f10881870df10a2))
