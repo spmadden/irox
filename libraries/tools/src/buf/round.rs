@@ -109,6 +109,12 @@ impl<const N: usize, T: Sized> RoundBuffer<N, T> {
     pub fn is_full(&self) -> bool {
         self.size == N
     }
+
+    ///
+    /// Provides access to the raw internal buffer.
+    pub fn raw_buf<R, F: FnMut(&[Option<T>]) -> R>(&self, mut f: F) -> R {
+        f(&self.buf)
+    }
 }
 
 impl<const N: usize, T: Sized> Default for RoundBuffer<N, T> {

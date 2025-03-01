@@ -84,6 +84,8 @@ impl<T: Clone> UnlimitedBuffer<T> {
         self.data.back_mut().and_then(|v| v.back_mut())
     }
 
+    ///
+    /// Retrieves and returns the front value
     pub fn pop_front(&mut self) -> Option<T> {
         while let Some(front) = self.data.front_mut() {
             if front.is_empty() {
@@ -100,6 +102,8 @@ impl<T: Clone> UnlimitedBuffer<T> {
         None
     }
 
+    ///
+    /// Retrieves and returns the last value
     pub fn pop_back(&mut self) -> Option<T> {
         while let Some(back) = self.data.back_mut() {
             if back.is_empty() {
@@ -116,6 +120,16 @@ impl<T: Clone> UnlimitedBuffer<T> {
         None
     }
 
+    ///
+    /// Appends all elements of the slice to the back.
+    pub fn append_slice(&mut self, slice: &[T]) {
+        for v in slice {
+            self.push_back(v.clone());
+        }
+    }
+
+    ///
+    /// Push a value to the front
     pub fn push_front(&mut self, value: T) {
         let mut buf = RoundBuffer::default();
         let _ = buf.push_back(value);
@@ -123,6 +137,8 @@ impl<T: Clone> UnlimitedBuffer<T> {
         self.len += 1;
     }
 
+    ///
+    /// Push a value to the end
     pub fn push_back(&mut self, value: T) {
         if let Some(back) = self.data.back_mut() {
             if let Err(e) = back.push_back(value) {
@@ -137,6 +153,14 @@ impl<T: Clone> UnlimitedBuffer<T> {
         }
         self.len += 1;
     }
+
+    ///
+    /// Iterate over each block of data stored
+    pub fn iter_blocks<F: FnMut(&[Option<T>])>(&mut self, mut f: F) {
+        self.data.iter().for_each(|v| {
+            v.raw_buf(&mut f)
+        })
+    }
 }
 
 impl MutBits for UnlimitedBuffer<u8> {
@@ -149,5 +173,13 @@ impl MutBits for UnlimitedBuffer<u8> {
 impl Bits for UnlimitedBuffer<u8> {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         Ok(self.pop_front())
+    }
+}
+
+impl<T: Clone> Iterator for UnlimitedBuffer<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.pop_front()
     }
 }
