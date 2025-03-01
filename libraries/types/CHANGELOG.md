@@ -1,6 +1,31 @@
 
 
 
+## v0.5.2 (2025-03-01)
+
+### Chore
+
+ - <csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/> cleanup remaining misc lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 34 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
+</details>
+
 ## v0.5.1 (2025-01-26)
 
 ### New Features
@@ -11,7 +36,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 7 calendar days.
+ - 2 commits contributed to the release over the course of 7 calendar days.
  - 43 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +48,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.5.1 ([`3438470`](https://github.com/spmadden/irox/commit/343847084b32757ba50edeefbb89e17999b2d06f))
     - Cleanup nostd support in types ([`41e0d0f`](https://github.com/spmadden/irox/commit/41e0d0f0b47d987ebe3aa69afa2a84e5fc478284))
 </details>
 
