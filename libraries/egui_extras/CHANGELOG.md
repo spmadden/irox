@@ -1,7 +1,35 @@
 
 
 
+## v0.6.2 (2025-03-01)
+
+### Chore
+
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 13 calendar days.
+ - 17 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+</details>
+
 ## v0.6.1 (2025-02-12)
+
+<csr-id-538e405c4960593413c72be7eb9429c98d92642b/>
+<csr-id-e2387bc8ef08056c542b20f8b44e463755b55acb/>
 
 ### Chore
 
@@ -18,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 1 calendar day.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 2 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -30,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.6.1 ([`dc3f710`](https://github.com/spmadden/irox/commit/dc3f710fb37158cd706b93839b20b357c3a61c23))
     - Update rendering and dependencies for egui 0.31 upgrade ([`538e405`](https://github.com/spmadden/irox/commit/538e405c4960593413c72be7eb9429c98d92642b))
     - Make utility functions public in logplot.rs ([`ca5ce82`](https://github.com/spmadden/irox/commit/ca5ce821102f6f51d83d17680e32a9ac8631a7fc))
     - Fix some lints ([`e2387bc`](https://github.com/spmadden/irox/commit/e2387bc8ef08056c542b20f8b44e463755b55acb))
