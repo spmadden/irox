@@ -1,7 +1,35 @@
 
 
 
+## v0.5.3 (2025-03-01)
+
+### Chore
+
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 13 calendar days.
+ - 34 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+</details>
+
 ## v0.5.2 (2025-01-26)
+
+<csr-id-f84f96d844d5be0456e68b99322812fa2cccf464/>
 
 ### Chore
 
@@ -15,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 11 calendar days.
+ - 3 commits contributed to the release over the course of 11 calendar days.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -26,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-winlocation-api v0.5.2 ([`e6dd014`](https://github.com/spmadden/irox/commit/e6dd0143750006998e9e6bf8d093aa87bc618884))
     - Fix missing 'windows' feature on carto ([`04df8d2`](https://github.com/spmadden/irox/commit/04df8d236f6416458b3b15817204c8914c4b7008))
     - Update to latest deps ([`f84f96d`](https://github.com/spmadden/irox/commit/f84f96d844d5be0456e68b99322812fa2cccf464))
 </details>
