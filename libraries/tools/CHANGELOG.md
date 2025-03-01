@@ -1,7 +1,79 @@
 
 
 
+## v0.10.3 (2025-03-01)
+
+### Chore
+
+ - <csr-id-fef64a162b568961be8445ec418918d64f3cadde/> fixing lints
+ - <csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/> cleanup remaining misc lints
+ - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
+ - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
+
+### New Features
+
+ - <csr-id-47084c92d924079e50d8b020d411ece48cda76f9/> better iteration for UnlimitedBuffer
+ - <csr-id-2794f0f8209f681621fb462accc30ec8ae65ecc9/> Add Murmur3_32 implementation and hashing benchmarks
+   This commit introduces the Murmur3_32 struct and its associated functionality. It also refactors parts of the Murmur3_128 implementation and integrates both into benchmarking tests. Additionally, new benchmarks were added to evaluate Murmur3 and SHA hashing performance.
+ - <csr-id-cae124cb47519325cbd8ee1938faf5b8867c532d/> Add `copy_subset` function for copying slices into statically sized arrays
+   Introduce `copy_subset`, a utility function to copy elements from a slice into a fixed-size array. This function leverages `copy_from_slice` and enforces bounds, panicking if the slice is too short.
+ - <csr-id-acff02b726f6e03e142d6bca5825d4fc15a82a5d/> Add `take` method to FixedU8Buf to return and consume the inner buffer
+   The new `take` method allows users to retrieve the inner buffer while consuming the object. This provides a cleaner way to extract the buffer content when the object is no longer needed.
+ - <csr-id-f9f52242a4229873e44d154e9e35e25b10b212bb/> Add `try_from_hex_str` function to parse hex into static arrays
+   This new function attempts to parse a hex string into a fixed-size static array buffer, enhancing usability for scenarios requiring precise buffer fits. Updated imports and minor adjustments ensure compatibility and improved error handling.
+ - <csr-id-4a7a1aad86732249eb3de36cb42b1a3f44225e3d/> Add `Zipping` and `Windows` iterator utilities
+   Introduce flexible `Zipping` for combining multiple iterators and `Windows` for sliding window iteration over slices. These utilities enhance iterator capabilities with support for constant generic sizes and comprehensive test coverage.
+ - <csr-id-f2dfce6798354251ef30cd6500feaae729326c89/> Add iterator support to RoundBuffer and update iterators
+   Introduce an `Iter` struct and associated methods for iterating over `RoundBuffer`. Enhance `FixedBufIterMut` and `FixedU8BufIterMut` with updated lifetimes for iterator methods. These changes improve the usability and flexibility of buffer structures.
+ - <csr-id-80f28233580410443440763d577b92b2a590746e/> Refactor LendingIterator and add Moderator iterator
+   Updated the LendingIterator trait to simplify lifetimes, improving clarity and flexibility. Introduced a new Moderator iterator with modular arithmetic and optional limits, including tests to validate its functionality.
+ - <csr-id-ed10f3e02cf7bb2e432c25067be2cee58a57778e/> Add `array!` macro for array construction
+   This new macro simplifies the creation of arrays with repeated elements. It supports various sizes using recursive accumulation logic, improving code clarity and reducing repetitive boilerplate.
+ - <csr-id-f313e1a342d03f422c9dfbd625e380b8a7885dc3/> Add `cfg_docs!` macro for documentation-specific items
+   This macro simplifies conditional compilation for items only relevant during documentation generation. It ensures compatibility with `doc` and `docsrs` configurations, streamlining code targeting documentation builds.
+
+### Bug Fixes
+
+ - <csr-id-a0d60b0b5ff1c1414b77ed3bee43af75c5663858/> Fix type casting in zigzag_impl to ensure correct output
+   The type casting was moved to the final result of the computation to avoid unintended behavior. This ensures that the operation produces the correct type and improves overall code safety.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 15 commits contributed to the release over the course of 14 calendar days.
+ - 17 days passed between releases.
+ - 15 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Better iteration for UnlimitedBuffer ([`47084c9`](https://github.com/spmadden/irox/commit/47084c92d924079e50d8b020d411ece48cda76f9))
+    - Add Murmur3_32 implementation and hashing benchmarks ([`2794f0f`](https://github.com/spmadden/irox/commit/2794f0f8209f681621fb462accc30ec8ae65ecc9))
+    - Add `copy_subset` function for copying slices into statically sized arrays ([`cae124c`](https://github.com/spmadden/irox/commit/cae124cb47519325cbd8ee1938faf5b8867c532d))
+    - Add `take` method to FixedU8Buf to return and consume the inner buffer ([`acff02b`](https://github.com/spmadden/irox/commit/acff02b726f6e03e142d6bca5825d4fc15a82a5d))
+    - Add `try_from_hex_str` function to parse hex into static arrays ([`f9f5224`](https://github.com/spmadden/irox/commit/f9f52242a4229873e44d154e9e35e25b10b212bb))
+    - Fixing lints ([`fef64a1`](https://github.com/spmadden/irox/commit/fef64a162b568961be8445ec418918d64f3cadde))
+    - Add `Zipping` and `Windows` iterator utilities ([`4a7a1aa`](https://github.com/spmadden/irox/commit/4a7a1aad86732249eb3de36cb42b1a3f44225e3d))
+    - Add iterator support to RoundBuffer and update iterators ([`f2dfce6`](https://github.com/spmadden/irox/commit/f2dfce6798354251ef30cd6500feaae729326c89))
+    - Refactor LendingIterator and add Moderator iterator ([`80f2823`](https://github.com/spmadden/irox/commit/80f28233580410443440763d577b92b2a590746e))
+    - Add `array!` macro for array construction ([`ed10f3e`](https://github.com/spmadden/irox/commit/ed10f3e02cf7bb2e432c25067be2cee58a57778e))
+    - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
+    - Cleanup bitmask order-of-operations ([`1f48b70`](https://github.com/spmadden/irox/commit/1f48b70c64fb0cde031bf379fe3d6b5b276b6f51))
+    - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
+    - Add `cfg_docs!` macro for documentation-specific items ([`f313e1a`](https://github.com/spmadden/irox/commit/f313e1a342d03f422c9dfbd625e380b8a7885dc3))
+    - Fix type casting in zigzag_impl to ensure correct output ([`a0d60b0`](https://github.com/spmadden/irox/commit/a0d60b0b5ff1c1414b77ed3bee43af75c5663858))
+</details>
+
 ## v0.10.2 (2025-02-12)
+
+<csr-id-6e72be2bb9d1b96561fadd46e5190c80f223a694/>
+<csr-id-b3c08ca4dc5c6a20c9661248b7c42a1a7dfceccd/>
 
 ### Chore
 
@@ -28,7 +100,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 1 calendar day.
+ - 10 commits contributed to the release over the course of 1 calendar day.
  - 7 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -40,6 +112,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.10.2 ([`7e94f76`](https://github.com/spmadden/irox/commit/7e94f76451914e7bedc51f5ebb769b8837865699))
     - Add `StrWrapper` abstraction for flexible string handling ([`e3b6d01`](https://github.com/spmadden/irox/commit/e3b6d01e1c085303d86114c996690e6be3666fe1))
     - Add `ToU64` trait and implement it for common types. ([`1e197c5`](https://github.com/spmadden/irox/commit/1e197c5b019b398bd1570429d225d2bf91018a0b))
     - Refactor `Copy` to `Clone` for improved trait flexibility ([`cd01a72`](https://github.com/spmadden/irox/commit/cd01a72ea62b17ad72c22a05d7ae975486f520cc))
