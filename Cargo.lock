@@ -1998,7 +1998,7 @@ checksum = "469fb0b9cefa57e3ef31275ee7cacb78f2fdca44e4765491884a2b119d4eb130"
 
 [[package]]
 name = "irox"
-version = "0.8.3"
+version = "0.8.4"
 dependencies = [
  "irox-bits",
  "irox-build-rs",
@@ -2428,7 +2428,7 @@ dependencies = [
 
 [[package]]
 name = "irox-threading"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "irox-log",
  "log",
@@ -2489,7 +2489,7 @@ dependencies = [
 
 [[package]]
 name = "irox-winlocation-api"
-version = "0.5.2"
+version = "0.5.3"
 dependencies = [
  "irox-carto",
  "irox-time",

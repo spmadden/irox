@@ -1,7 +1,40 @@
 
 
 
+## v0.8.4 (2025-03-01)
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release.
+ - 17 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-nmea0183 v0.5.5 ([`7a446e7`](https://github.com/spmadden/irox/commit/7a446e7be23eb93932b4e77ae0c92c3678349816))
+    - Release irox-networking v0.4.7 ([`c7ae7ab`](https://github.com/spmadden/irox/commit/c7ae7ab0aa8d767dd6978121c82689efb71d55f9))
+    - Release irox-egui-extras v0.6.2 ([`b0f78c2`](https://github.com/spmadden/irox/commit/b0f78c231299c1f7bdad7dce1da9915266bd6d90))
+    - Release irox-stats v0.3.5 ([`16b35a4`](https://github.com/spmadden/irox/commit/16b35a4fc648cc22c1caf6af0f986886d4b26a22))
+    - Release irox-imagery v0.1.3 ([`4c12afd`](https://github.com/spmadden/irox/commit/4c12afdefd9b858c2c6bc060b6ad438423e39034))
+    - Release irox-types v0.5.2 ([`86f2594`](https://github.com/spmadden/irox/commit/86f2594105c9ee7269322d01e751aef5c3df5239))
+    - Release irox-carto v0.6.5 ([`f4804a6`](https://github.com/spmadden/irox/commit/f4804a686622431b9cb2be6b5796fe6c20b21e60))
+    - Release irox-time v0.4.9 ([`479095c`](https://github.com/spmadden/irox/commit/479095c717af455b70c49a716e9f39bb8b8f1fcc))
+    - Release irox-units v0.4.7 ([`3804364`](https://github.com/spmadden/irox/commit/380436484f31e4e074e05a62aae3e85d6bb2cdd0))
+    - Release irox-tools v0.10.3 ([`f6c9070`](https://github.com/spmadden/irox/commit/f6c9070254c2494cebd3d3dc7d4572f303a8b969))
+    - Release irox-bits v0.4.2 ([`da45a93`](https://github.com/spmadden/irox/commit/da45a93d8a0e1621f4ac63dc77f8e00528cffba4))
+</details>
+
 ## v0.8.3 (2025-02-12)
+
+<csr-id-e8554fdbf92b2a1d46175f0e3a5180c17d340925/>
 
 ### Chore
 
@@ -11,7 +44,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
  - 2 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.8.3 ([`c46d7c2`](https://github.com/spmadden/irox/commit/c46d7c29eb632f22d92721ff7aa83d92f1f6029b))
     - Bump irox to 0.8.3 for release ([`e8554fd`](https://github.com/spmadden/irox/commit/e8554fdbf92b2a1d46175f0e3a5180c17d340925))
     - Release irox-egui-extras v0.6.1 ([`dc3f710`](https://github.com/spmadden/irox/commit/dc3f710fb37158cd706b93839b20b357c3a61c23))
 </details>
