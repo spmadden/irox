@@ -93,4 +93,4 @@ irox-threading = { version = "^0.2.5", optional = true, path = "../libraries/thr
 irox-time = { version = "^0.4.7", optional = true, path = "../libraries/time" }
 irox-tools = { version = "^0.10.3", optional = true, path = "../libraries/tools" }
 irox-types = { version = "^0.5.1", optional = true, path = "../libraries/types" }
-irox-units = { version = "^0.4.5", optional = true, path = "../libraries/units" }
+irox-units = { version = "^0.4.7", optional = true, path = "../libraries/units" }
