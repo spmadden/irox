@@ -38,6 +38,9 @@ harness = false
 [[bench]]
 name = "atomics"
 harness = false
+[[bench]]
+name = "hashes"
+harness = false
 
 [[test]]
 name = "shatests"
