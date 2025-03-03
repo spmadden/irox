@@ -84,7 +84,7 @@ num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.20.0", default-features = false, features = ["vendored-libgit2"] }
 wasm-bindgen-futures = "0.4"
 criterion = "0.5"
-core_affinity = "0.8.1"
+core_affinity = "0.8.3"
 toml = "0.8.19"
 
 irox-arch-x86-64 = { version = "0.1.0" }
