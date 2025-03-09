@@ -35,6 +35,7 @@ Drop-in replacement of egui's ProgressBar widget with some tweaks:
   have text in all three positions simultaneously.
 
 ![](doc/prog1.gif)
+![](doc/prog2.gif)
 
 ### Frames, Apps, & Infrastructure
 
