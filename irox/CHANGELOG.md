@@ -1,15 +1,18 @@
 
 
 
-## v0.8.4 (2025-03-01)
+## v0.9.0 (2025-03-09)
+
+### Refactor (BREAKING)
+
+ - <csr-id-8222675712d45fb15804713e9f557b993c71057f/> BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module.
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 12 commits contributed to the release.
- - 17 days passed between releases.
- - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 15 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -19,6 +22,9 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.6.0, safety bump 2 crates ([`d27f82c`](https://github.com/spmadden/irox/commit/d27f82c385255f496741b01be6dcb68e04ef65f4))
+    - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
+    - Adjusting changelogs prior to release of irox v0.8.4 ([`36577f9`](https://github.com/spmadden/irox/commit/36577f949cf1a482ce8ff1e842e9380818333ff0))
     - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
     - Release irox-nmea0183 v0.5.5 ([`7a446e7`](https://github.com/spmadden/irox/commit/7a446e7be23eb93932b4e77ae0c92c3678349816))
     - Release irox-networking v0.4.7 ([`c7ae7ab`](https://github.com/spmadden/irox/commit/c7ae7ab0aa8d767dd6978121c82689efb71d55f9))
@@ -32,6 +38,8 @@
     - Release irox-tools v0.10.3 ([`f6c9070`](https://github.com/spmadden/irox/commit/f6c9070254c2494cebd3d3dc7d4572f303a8b969))
     - Release irox-bits v0.4.2 ([`da45a93`](https://github.com/spmadden/irox/commit/da45a93d8a0e1621f4ac63dc77f8e00528cffba4))
 </details>
+
+## v0.8.4 (2025-03-01)
 
 ## v0.8.3 (2025-02-12)
 
