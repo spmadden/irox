@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -19,8 +19,6 @@ use irox_tools::sync::SynchronizedOptional;
 use irox_tools::vec::RetainTake;
 
 pub mod console;
-#[cfg(feature = "egui")]
-pub mod egui;
 pub mod read;
 pub mod write;
 

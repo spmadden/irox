@@ -51,7 +51,7 @@ units = ["dep:irox-units"]
 
 std = ["irox-bits?/std", "irox-carto?/std", "irox-imagery?/std", "irox-networking?/std", "irox-stats?/std", "irox-time?/std", "irox-tools?/std", "irox-units?/std"]
 alloc = ["irox-bits?/alloc", "irox-structs?/alloc", "irox-tools?/alloc", "irox-units?/alloc"]
-egui = ["irox-egui-extras?/plots", "irox-progress?/egui"]
+egui = ["irox-egui-extras?/plots"]
 emath = ["irox-stats?/emath"]
 git = ["irox-build-rs?/git"]
 miniz = ["irox-stats?/miniz"]

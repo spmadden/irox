@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -7,13 +7,12 @@ use std::sync::{Arc, Mutex, RwLock};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
+use crate::progressbar::ProgressBar;
 use egui::collapsing_header::CollapsingState;
 use egui::{Align, Context, CursorIcon, Layout, Ui};
-
+use irox_progress::{get_human, ProgressPrinter, Task};
 use irox_time::format::iso8601::ISO8601Duration;
 use irox_time::format::Format;
-
-use crate::{get_human, ProgressPrinter, Task};
 
 #[derive(Clone)]
 pub struct EguiProgressWindow {
@@ -131,7 +130,7 @@ impl EguiProgressWindow {
         let rem_str = ISO8601Duration.format(&task.get_remaining_time());
         let left_text = format!("{:<3.0}% {name}{status}", frac * 100.);
         let right_text = format!("({current:.02}{unit}/{max:.02}{maxunit}) {rem_str} {speed} ");
-        irox_egui_extras::progressbar::ProgressBar::new(frac)
+        ProgressBar::new(frac)
             .text_left(left_text)
             .text_right(right_text)
             .ui(ui);
@@ -151,7 +150,7 @@ impl EguiProgressWindow {
         let left_text = format!("{name}{status}");
         let right_text = format!("{current:.02}{unit} {speed}");
 
-        irox_egui_extras::progressbar::ProgressBar::indeterminate()
+        ProgressBar::indeterminate()
             // .desired_width(desired_width)
             .text_left(left_text)
             .text_right(right_text)

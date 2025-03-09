@@ -2128,6 +2128,7 @@ dependencies = [
  "irox-build-rs",
  "irox-csv",
  "irox-imagery",
+ "irox-progress",
  "irox-stats",
  "irox-time",
  "irox-tools",
@@ -2339,10 +2340,7 @@ dependencies = [
 name = "irox-progress"
 version = "0.5.2"
 dependencies = [
- "eframe",
- "egui",
  "irox-bits",
- "irox-egui-extras",
  "irox-time",
  "irox-tools",
  "log",

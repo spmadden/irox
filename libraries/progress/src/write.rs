@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::Task;
@@ -41,6 +41,12 @@ impl<T: Write> Write for WriterTask<T> {
 
 impl<T: Write> MutBits for WriterTask<T> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        self.task.mark_some_completed(1);
         Ok(self.writer.write_all(&[val])?)
+    }
+
+    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+        self.task.mark_some_completed(val.len() as u64);
+        Ok(self.writer.write_all(val)?)
     }
 }

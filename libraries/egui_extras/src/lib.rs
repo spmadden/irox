@@ -31,6 +31,8 @@ pub mod composite;
 pub mod about;
 /// A customization of [`egui::widgets::ProgressBar`]
 pub mod progressbar;
+/// A popup progress widget
+pub mod progresswindow;
 
 pub mod fonts;
 #[cfg(feature = "plots")]

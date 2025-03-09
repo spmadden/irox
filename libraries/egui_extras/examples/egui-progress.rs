@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::fs::OpenOptions;
@@ -11,7 +11,7 @@ use egui::{CentralPanel, Context, Window};
 use log::error;
 
 use irox_bits::MutBits;
-use irox_progress::egui::EguiProgressWindow;
+use irox_egui_extras::progresswindow::EguiProgressWindow;
 use irox_progress::write::WriterTask;
 use irox_progress::{ProgressPrinter, Task};
 use irox_tools::random::{Random, PRNG};
