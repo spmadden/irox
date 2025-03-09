@@ -43,6 +43,13 @@ digraph DEPS {
             irox_units
         }
 
+        irox_progress -> {
+            irox_tools [label="feature[std]"]
+            irox_bits [label="feature[std]"]
+            irox_time [label="feature[std]"]
+            log
+        }
+
         irox_structs -> irox_bits
 
         irox_build_rs -> irox_time [label="feature[std]"]
@@ -232,6 +239,18 @@ digraph DEPS {
                    <TD BGCOLOR="#007ec6" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">feature</FONT></TD>
                </TR>
                </TABLE>>]
+        irox_progress [label=<
+              <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED">
+              <TR><TD COLSPAN="2"><B>irox_progress</B></TD></TR>
+              <TR>
+                 <TD BGCOLOR="#555555" WIDTH="30" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> std</FONT></TD>
+                 <TD BGCOLOR="#9f9f9f" WIDTH="41" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+             </TR>
+              <TR>
+                    <TD BGCOLOR="#555555" WIDTH="31" ALIGN="RIGHT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12"> alloc</FONT></TD>
+                   <TD BGCOLOR="#9f9f9f" WIDTH="50" ALIGN="LEFT"><FONT COLOR="#FFFFFF" FACE="sans-serif" POINT-SIZE="12">required</FONT></TD>
+                </TR>
+              </TABLE>>]
 }
 
 @end
