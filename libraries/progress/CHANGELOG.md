@@ -1,5 +1,29 @@
 
 
+## v0.6.0 (2025-03-09)
+
+### Refactor (BREAKING)
+
+ - <csr-id-8222675712d45fb15804713e9f557b993c71057f/> BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
+</details>
+
 ## v0.5.2 (2025-02-09)
 
 ### Bug Fixes
@@ -10,7 +34,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 4 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +46,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.5.2 ([`67012b0`](https://github.com/spmadden/irox/commit/67012b0948f9ffada6ce593ffbbf95ab7f0c4133))
     - Pivot from glow to wgpu ([`7ab2f23`](https://github.com/spmadden/irox/commit/7ab2f23fb4208834f81a9fb29c836bc353da79aa))
 </details>
 
