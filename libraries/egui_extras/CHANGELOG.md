@@ -1,7 +1,39 @@
 
 
 
+## v0.7.0 (2025-03-09)
+
+### Other
+
+ - <csr-id-270a40465f1364e048c5ba9cc962f940070e252e/> add new progress gif
+
+### Refactor (BREAKING)
+
+ - <csr-id-8222675712d45fb15804713e9f557b993c71057f/> BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-progress v0.6.0, safety bump 2 crates ([`d27f82c`](https://github.com/spmadden/irox/commit/d27f82c385255f496741b01be6dcb68e04ef65f4))
+    - Add new progress gif ([`270a404`](https://github.com/spmadden/irox/commit/270a40465f1364e048c5ba9cc962f940070e252e))
+    - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
+</details>
+
 ## v0.6.2 (2025-03-01)
+
+<csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
 
 ### Chore
 
@@ -11,7 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 17 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +55,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.6.2 ([`b0f78c2`](https://github.com/spmadden/irox/commit/b0f78c231299c1f7bdad7dce1da9915266bd6d90))
     - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
 </details>
 
