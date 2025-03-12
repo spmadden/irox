@@ -8,7 +8,7 @@ use crate::x25519;
 use crate::x25519::{invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER};
 use core::ops::MulAssign;
 use core::ops::{AddAssign, SubAssign};
-use irox_bits::BitsError;
+use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 use irox_tools::arrays::copy_subset;
 use irox_tools::hash::SHA512;
 
@@ -72,7 +72,7 @@ macro_rules! add {
 
 ///
 /// A public key generated using the algorithm in RFC 8032
-#[derive(Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct Ed25519PublicKey(pub [u8; 32]);
 impl From<[u8; 32]> for Ed25519PublicKey {
     fn from(value: [u8; 32]) -> Self {
@@ -149,6 +149,7 @@ impl Ed25519SecretKey {
         scalarbase(&mut p, &e);
         Ed25519PublicKey(pack(&p))
     }
+
 }
 pub struct Ed25519KeyPair {
     pub public_key: Ed25519PublicKey,
@@ -156,6 +157,8 @@ pub struct Ed25519KeyPair {
 }
 
 impl Ed25519KeyPair {
+    ///
+    /// Loads the provided secret key and generates the associated public key
     pub fn from_secret_bytes(sb: [u8; 32]) -> Ed25519KeyPair {
         let secret_key: Ed25519SecretKey = Ed25519SecretKey(sb);
         let public_key: Ed25519PublicKey = secret_key.generate_public_key();
@@ -164,6 +167,9 @@ impl Ed25519KeyPair {
             public_key,
         }
     }
+    ///
+    /// Loads the provided keypair `<sk[0..32]>||<pk[0..32]>` and does not verify the loaded
+    /// PK was derived from the SK.
     pub fn from_full_bytes_unchecked(mut fb: [u8; 64]) -> Ed25519KeyPair {
         let mut sk = [0u8; 32];
         let mut pk = [0u8; 32];
@@ -175,6 +181,9 @@ impl Ed25519KeyPair {
             public_key: Ed25519PublicKey(pk),
         }
     }
+    ///
+    /// Loads the provided keypair `<sk[0..32]>||<pk[0..32]>` and verifies the loaded
+    /// PK was derived from the SK.
     pub fn from_full_bytes(fb: [u8; 64]) -> Result<Ed25519KeyPair, Ed25519Error> {
         let kp = Ed25519KeyPair::from_full_bytes_unchecked(fb);
         let gpk = kp.secret_key.generate_public_key();
@@ -182,6 +191,74 @@ impl Ed25519KeyPair {
             return Err(Ed25519Error::InvalidPublicKey);
         }
         Ok(kp)
+    }
+
+    ///
+    /// Signs the provided message using the associated secret key.  Returns a
+    /// detatched signature.
+    #[allow(non_snake_case)]
+    pub fn sign_message(&self, msg: &[u8]) -> Ed25519Signature {
+        let mut d = SHA512::default().hash(&self.secret_key.0);
+        d[0] &= 0xF8;
+        d[31] &= 0x7F;
+        d[31] |= 0x40;
+        let mut h = SHA512::default();
+        h.write(&d[32..]);
+        let mut r = h.hash(msg);
+        swap_reduce(&mut r);
+        let mut p = empty_gf4();
+        let mut t = copy_subset(&r);
+        scalarbase(&mut p, &mut t);
+
+        let R = pack(&p);
+        let mut h = SHA512::default();
+        h.write(&R);
+        h.write(&self.public_key.0);
+        let mut h = h.hash(msg);
+        swap_reduce(&mut h);
+        let mut x = [0i64; 64];
+
+        for i in 0..32 {
+            x[i] = r[i] as i64;
+        }
+        for i in 0..32 {
+            for j in 0..32 {
+                x[i + j] += h[i] as i64 * d[j] as i64;
+            }
+        }
+        mod_l(&mut h, &mut x);
+        let mut sig = [0u8; 64];
+        for i in 0..32 {
+            sig[i] = R[i];
+            sig[i + 32] = h[i];
+        }
+        Ed25519Signature {
+            pubkey: self.public_key.clone(),
+            signature: sig,
+        }
+    }
+}
+
+#[derive(Eq, PartialEq, Clone)]
+pub struct Ed25519Signature {
+    pub pubkey: Ed25519PublicKey,
+    pub signature: [u8; 64],
+}
+impl ReadFromBEBits for Ed25519Signature {
+    fn read_from_be_bits<R: Bits>(reader: &mut R) -> Result<Self, BitsError> {
+        let pubkey = reader.read_exact()?;
+        let signature = reader.read_exact()?;
+        Ok(Ed25519Signature {
+            pubkey: Ed25519PublicKey(pubkey),
+            signature,
+        })
+    }
+}
+impl WriteToBEBits for Ed25519Signature {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_all_bytes(&self.pubkey.0)?;
+        bits.write_all_bytes(&self.signature)?;
+        Ok(96)
     }
 }
 
@@ -355,7 +432,7 @@ static I: FieldElement = FieldElement([
 
 #[cfg(test)]
 mod tests {
-    use crate::ed25519::{Ed25519Error, Ed25519PublicKey, Ed25519SecretKey};
+    use crate::ed25519::{Ed25519Error, Ed25519KeyPair, Ed25519PublicKey, Ed25519SecretKey};
     use irox_bits::{BitsError, BitsErrorKind};
     use irox_tools::hex::{from_hex_str, try_from_hex_str};
     use irox_tools::options::MaybeMap;
@@ -401,11 +478,32 @@ mod tests {
                 return Err(Ed25519Error::InvalidInput.into());
             }
             let pk = self.pk()?;
+            let msg = self.msg()?;
+            let sig = self.sig()?;
+            pk.verify_signed_message(&msg, sig)?;
+            Ok(())
+        }
+
+        fn msg(&mut self) -> Result<Box<[u8]>, Ed25519Error> {
             let Some(msg) = self.msg.as_ref().maybe_map(|s| from_hex_str(&s).ok()) else {
                 return Err(Ed25519Error::InvalidInput.into());
             };
-            let sig = self.sig()?;
-            pk.verify_signed_message(&msg, sig)?;
+            Ok(msg)
+        }
+
+        pub fn make_sig(&mut self) -> Result<(), Ed25519Error> {
+            if !self.has_enough() {
+                return Err(Ed25519Error::InvalidInput.into());
+            }
+            let sk = self.sk()?;
+            let pk = self.pk()?;
+            let kp = Ed25519KeyPair::from_secret_bytes(sk.0);
+            let m = self.msg()?;
+            let sig = kp.sign_message(&m);
+            let check = self.sig()?;
+
+            pk.verify_signed_message(&m, &sig.signature)?;
+            assert_eq_hex_slice!(&sig.signature, check);
             Ok(())
         }
         pub fn sig(&mut self) -> Result<&[u8; 64], BitsError> {
@@ -466,6 +564,13 @@ mod tests {
             let gpk = gsk.generate_public_key();
             assert_eq_hex_slice!(pk, &gpk.0);
             gpk.verify_signed_message(msg, sig).unwrap();
+
+            let kp = Ed25519KeyPair {
+                public_key: gpk,
+                secret_key: gsk,
+            };
+            let gsig = kp.sign_message(*msg);
+            assert_eq_hex_slice!(sig, &gsig.signature);
         }
     }
 
@@ -503,6 +608,10 @@ mod tests {
                 "sig" => {
                     tv.sig = Some(HexStr::Str(data.to_string()));
                     if let Err(e) = tv.check_sig() {
+                        println!("{:?} on test {num_tests}", e);
+                        return Err(e);
+                    };
+                    if let Err(e) = tv.make_sig() {
                         println!("{:?} on test {num_tests}", e);
                         return Err(e);
                     };
