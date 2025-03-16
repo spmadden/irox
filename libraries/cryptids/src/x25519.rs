@@ -2,9 +2,35 @@
 // Copyright 2025 IROX Contributors
 //
 
+//!
+//! Implementation of x25519 for ECDH (Diffie-Helman) based on multiple sources.
+//! 
+//! Terminology:
+//! * `Private Key`/`SK`/`Secret Scalar`/`d`
+//! * `Public Key`/`PK`/`Point`/`A`
+//! * `Shared Secret`/`SS`/`R`
+//! * `Base Point`/`B`
+//! 
+//! Alice:
+//! * Generate `SK:d` = `
+//! * Generate `PK:Alice` = `SK:d * B`
+//! * Generate `SS:R` = `SK:d * PK:Bob`
+//! 
+//! Bob:
+//! * Generate `SK:d`
+//! * Generate `PK:Bob` = `SK:d * B`
+//! * Generate `SS:R` = `SK:d * PK:Alice`
+//! 
+//! Sources:
+//! * [RFC7748](https://www.rfc-editor.org/rfc/rfc7748)
+//! * [LibSodium](https://github.com/jedisct1/libsodium)
+//! * [nacl](https://nacl.cr.yp.to/)
+//! * [tweetnacl](https://tweetnacl.cr.yp.to)
+
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::manual_memcpy)]
 
+use crate::ed25519::Ed25519Error;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::ops::{Index, IndexMut};
 use irox_tools::hex;
@@ -20,14 +46,9 @@ macro_rules! zeroize {
 zeroize!(zeroize_u8, u8);
 zeroize!(zeroize_i64, i64);
 
-const fn basepoint() -> [u8; 32] {
-    let mut out = [0u8; 32];
-    out[0] = 9;
-    out
-}
 ///
 /// Curve25519 Base Point - '9'
-pub static BASE: &[u8; 32] = &basepoint();
+pub static BASE: &[u8; 32] = &hex!("0900000000000000000000000000000000000000000000000000000000000000");
 
 ///
 /// Secret Key - usually random bytes.  Generation of a good random value is important here.
@@ -45,8 +66,8 @@ impl SecretKey {
     ///
     /// Generates a public key using the original Curve25519 method of multiplying the
     /// secret key with the base point.  This is probably not what you want.
-    pub fn generate_curve25519_pubkey(&self) -> Curve25519PublicKey {
-        Curve25519PublicKey(scalarmult(&self.0, BASE))
+    pub fn generate_curve25519_pubkey(&self) -> Result<Curve25519PublicKey, Ed25519Error> {
+        Ok(Curve25519PublicKey(scalarmult(&self.0, BASE)?))
     }
     ///
     /// Generates a shared key using the original Curve25519 method of multiplying owned secret key with
@@ -54,8 +75,8 @@ impl SecretKey {
     pub fn generate_curve25519_shared_secret(
         &self,
         pubkey: &Curve25519PublicKey,
-    ) -> SharedCurve25519Secret {
-        SharedCurve25519Secret(scalarmult(&self.0, &pubkey.0))
+    ) -> Result<SharedCurve25519Secret, Ed25519Error> {
+        Ok(SharedCurve25519Secret(scalarmult(&self.0, &pubkey.0)?))
     }
 }
 impl Drop for SecretKey {
@@ -67,8 +88,8 @@ impl Curve25519PublicKey {
     ///
     /// Generates a shared key using the original Curve25519 method of multiplying owned secret key with
     /// a Curve25519PublicKey.  This is probably not what you want.
-    pub fn generate_shared_secret(&self, secret_key: &SecretKey) -> SharedCurve25519Secret {
-        SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0))
+    pub fn generate_shared_secret(&self, secret_key: &SecretKey) -> Result<SharedCurve25519Secret, Ed25519Error> {
+        Ok(SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0)?))
     }
 }
 impl Drop for SharedCurve25519Secret {
@@ -87,7 +108,8 @@ impl AsRef<[u8; 32]> for SharedCurve25519Secret {
     }
 }
 
-pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> [u8; 32] {
+pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> Result<[u8; 32], Ed25519Error> {
+    check_scalar_clamped(scalar)?;
     let mut clamp = *scalar;
     clamp[0] &= 0xF8;
     clamp[31] &= 0x7F;
@@ -130,7 +152,7 @@ pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> [u8; 32] {
     }
     invert(&mut c);
     a *= &c;
-    a.pack()
+    Ok(a.pack())
 }
 
 #[derive(Clone)]
@@ -354,6 +376,36 @@ pub(crate) fn invert(v: &mut FieldElement) {
 
     *v = out;
 }
+pub(crate) fn check_scalar_clamped(scalar: &[u8;32]) -> Result<(), Ed25519Error> {
+    if scalar[0] < 0xED {
+        return Ok(())
+    }
+
+    for i in 1..31 {
+        if scalar[i] != 0xFF {
+            return Ok(())
+        }
+    }
+    if scalar[31] | 0x7F != 0xFF {
+        return Ok(())
+    }
+    Err(Ed25519Error::InvalidPublicKeyNotCannonical)
+}
+
+pub fn check_valid_publickey(key: &[u8;32]) -> Result<(), Ed25519Error> {
+    let mut err = check_scalar_clamped(key).err();
+
+    for blk in &BLOCKLIST {
+        if key == *blk {
+            err.get_or_insert(Ed25519Error::InvalidPublicKeyLowOrder);
+        }
+    }
+
+    match err {
+        Some(e) => Err(e),
+        None => Ok(())
+    }
+}
 /// 2^255 - 19
 pub static X255M19: &[u8; 32] =
     &hex!("EDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F");
@@ -363,10 +415,14 @@ pub static X255P19: &[u8; 32] =
 // order of ed25519 signature as per [RFC8032](https://tools.ietf.org/html/rfc8032)
 pub static ED25519_ORDER: &[u8; 32] =
     &hex!("EDD3F55C1A631258D69CF7A2DEF9DE1400000000000000000000000000000010");
+pub static CLAMP_MASK: &[u8; 32] =
+    &hex!("F8FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F");
+pub static CLAMP_SET: &[u8;32] =
+    &hex!("0000000000000000000000000000000000000000000000000000000000000040");
 ///
 /// The following are malicious public keys crafted to exploit weaknesses in the montgomery
 /// curve multiplication logic.
-pub static BLOCKLIST: &[&[u8; 32]] = &[
+pub static BLOCKLIST: [&[u8; 32];17] = [
     // 0 (order 4), check 4
     &hex!("0000000000000000000000000000000000000000000000000000000000000000"),
     // 1 ( order 1), check 1
@@ -376,7 +432,7 @@ pub static BLOCKLIST: &[&[u8; 32]] = &[
     // 39382357235489614581723060781553021112529911719440698176882885853963445705823 (oder 8)
     &hex!("5f9c95bca3508c24b1d0b1559c83ef5b04445cc4581c8e86d8224eddd09f1157"),
     // p-1 (order 2), check 2
-    &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
+    &hex!("ECFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F"),
     // Check 10
     &hex!("ECFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
     // Check 13
@@ -384,7 +440,7 @@ pub static BLOCKLIST: &[&[u8; 32]] = &[
     // p (=0, order 4), Check 14
     X255M19,
     // p+1 (=1, order 1, Check 11
-    &hex!("eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
+    &hex!("EEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F"),
     // Check 12
     &hex!("EEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
     // BFN, check 3
@@ -405,6 +461,7 @@ pub static BLOCKLIST: &[&[u8; 32]] = &[
 
 #[cfg(test)]
 mod tests {
+    use crate::ed25519::Ed25519Error;
     use crate::x25519::{scalarmult, BASE};
     use crate::x25519::{Curve25519PublicKey, SecretKey, SharedCurve25519Secret};
     use irox_tools::{assert_eq_hex_slice, hex};
@@ -436,38 +493,42 @@ mod tests {
     ));
 
     #[test]
-    pub fn test_alice_pubkey() {
-        let pk = ALICE_SECRET.generate_curve25519_pubkey();
+    pub fn test_alice_pubkey() -> Result<(), Ed25519Error> {
+        let pk = ALICE_SECRET.generate_curve25519_pubkey()?;
         assert_eq_hex_slice!(pk.0, ALICE_PUBLIC.0);
+        Ok(())
     }
     #[test]
-    pub fn test_bob_pubkey() {
-        let pk = BOB_SECRET.generate_curve25519_pubkey();
+    pub fn test_bob_pubkey() -> Result<(), Ed25519Error>{
+        let pk = BOB_SECRET.generate_curve25519_pubkey()?;
         assert_eq_hex_slice!(pk.0, BOB_PUBLIC.0);
+        Ok(())
     }
     #[test]
-    pub fn test_alice_bob_shared() {
-        let alice_shared = ALICE_SECRET.generate_curve25519_shared_secret(&BOB_PUBLIC);
-        let bob_shared = BOB_SECRET.generate_curve25519_shared_secret(&ALICE_PUBLIC);
+    pub fn test_alice_bob_shared() -> Result<(), Ed25519Error>{
+        let alice_shared = ALICE_SECRET.generate_curve25519_shared_secret(&BOB_PUBLIC)?;
+        let bob_shared = BOB_SECRET.generate_curve25519_shared_secret(&ALICE_PUBLIC)?;
         assert_eq_hex_slice!(alice_shared.0, bob_shared.0);
         assert_eq_hex_slice!(ALICE_BOB_SHARED.0, alice_shared.0);
+        Ok(())
     }
 
     #[test]
-    pub fn scalarmult_test_vectors() {
+    pub fn scalarmult_test_vectors() -> Result<(), Ed25519Error>{
         for tv in SMULT_TEST_VECTORS {
             let scalar = tv.0;
             let point = tv.1;
             let exp = tv.2;
-            let res = scalarmult(&scalar, &point);
+            let res = scalarmult(&scalar, &point)?;
             assert_eq_hex_slice!(res, exp);
         }
+        Ok(())
     }
 
     macro_rules! impl_iter_vectors {
         ($name:ident, $iter:literal, $exp:literal) => {
             #[test]
-            pub fn $name() {
+            pub fn $name() -> Result<(), Ed25519Error> {
                 core_affinity::set_for_current(core_affinity::CoreId { id: 0 });
                 let mut k = *BASE;
                 let mut u = *BASE;
@@ -475,7 +536,7 @@ mod tests {
                 let mut start_ctr = irox_arch_x86_64::cpu::rdtsc();
 
                 for i in 0..$iter {
-                    let res = scalarmult(&k, &u);
+                    let res = scalarmult(&k, &u)?;
                     u = k;
                     k = res;
                     if i % 1000 == 0 {
@@ -497,7 +558,8 @@ mod tests {
                         );
                     }
                 }
-                assert_eq_hex_slice!(k, hex!($exp))
+                assert_eq_hex_slice!(k, hex!($exp));
+                Ok(())
             }
         };
     }

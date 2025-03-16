@@ -2,10 +2,41 @@
 // Copyright 2025 IROX Contributors
 //
 
+//!
+//! Implementation of Ed25519 for ECDSA (Signatures) based on multiple sources.
+//! 
+//! Validations:
+//! * Constant Time to avoid timing attacks
+//! * Checks canonical encodings
+//! * Checks low-order scalars
+//! 
+//! Terminology:
+//! * `Secure Random [32B/256b]`/`RND`
+//! * `Private Key`/`SK`/`Secret Scalar`/`d`/`s`
+//! * `Public Key`/`PK`/`Point`/`A`
+//! * `Shared Secret`/`SS`/`R`
+//! * `Base Point`/`B` = [`x25519::BASE`]
+//! * `Clamp` = 
+//! * `Expanded SK`/`h` = `SHA512(RND)`
+//! 
+//! Alice:
+//! * Generates 256b `RND`
+//! * Generates `h` = `clamp(SHA512())`
+//! *  
+//! 
+//! Bob:
+//! 
+//! Sources:
+//! [RFC8032](https://www.rfc-editor.org/rfc8032)
+//! [nacl](https://nacl.cr.yp.to)
+//! [tweetnacl](https://tweetnacl.cr.yp.to)
+
 #![allow(clippy::indexing_slicing)]
 
 use crate::x25519;
-use crate::x25519::{invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER};
+use crate::x25519::{
+    check_valid_publickey, invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER,
+};
 use core::ops::MulAssign;
 use core::ops::{AddAssign, SubAssign};
 use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
@@ -15,6 +46,8 @@ use irox_tools::hash::SHA512;
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Ed25519Error {
     InvalidSignature,
+    InvalidPublicKeyNotCannonical,
+    InvalidPublicKeyLowOrder,
     InvalidPublicKey,
     InvalidSecretKey,
     InvalidMessage,
@@ -73,19 +106,30 @@ macro_rules! add {
 ///
 /// A public key generated using the algorithm in RFC 8032
 #[derive(Clone, Eq, PartialEq)]
-pub struct Ed25519PublicKey(pub [u8; 32]);
-impl From<[u8; 32]> for Ed25519PublicKey {
-    fn from(value: [u8; 32]) -> Self {
-        Ed25519PublicKey(value)
+pub struct Ed25519PublicKey([u8; 32]);
+impl TryFrom<[u8; 32]> for Ed25519PublicKey {
+    type Error = Ed25519Error;
+
+    fn try_from(value: [u8; 32]) -> Result<Self, Self::Error> {
+        check_valid_publickey(&value)?;
+        Ok(Ed25519PublicKey(value))
     }
 }
-impl From<&[u8; 32]> for Ed25519PublicKey {
-    fn from(value: &[u8; 32]) -> Self {
-        Ed25519PublicKey(*value)
+impl TryFrom<&[u8; 32]> for Ed25519PublicKey {
+    type Error = Ed25519Error;
+
+    fn try_from(value: &[u8; 32]) -> Result<Self, Self::Error> {
+        check_valid_publickey(value)?;
+        Ok(Ed25519PublicKey(*value))
     }
 }
 
 impl Ed25519PublicKey {
+    pub fn from_bytes(value: &[u8; 32]) -> Result<Ed25519PublicKey, Ed25519Error> {
+        check_valid_publickey(value)?;
+        Ok(Ed25519PublicKey(*value))
+    }
+
     ///
     /// Verifies the signature (sig) of the message (msg) that was signed using this public key.
     pub fn verify_signed_message(&self, msg: &[u8], sig: &[u8; 64]) -> Result<(), Ed25519Error> {
@@ -149,7 +193,6 @@ impl Ed25519SecretKey {
         scalarbase(&mut p, &e);
         Ed25519PublicKey(pack(&p))
     }
-
 }
 pub struct Ed25519KeyPair {
     pub public_key: Ed25519PublicKey,
@@ -187,7 +230,19 @@ impl Ed25519KeyPair {
     pub fn from_full_bytes(fb: [u8; 64]) -> Result<Ed25519KeyPair, Ed25519Error> {
         let kp = Ed25519KeyPair::from_full_bytes_unchecked(fb);
         let gpk = kp.secret_key.generate_public_key();
-        if kp.public_key != gpk {
+        if kp.public_key != gpk || check_valid_publickey(&kp.public_key.0).is_err() {
+            return Err(Ed25519Error::InvalidPublicKey);
+        }
+
+        Ok(kp)
+    }
+
+    ///
+    /// Loads the provided secret key and public key, verifying the pk was generated from the sk.
+    pub fn from_parts(sk: [u8; 32], pk: [u8; 32]) -> Result<Ed25519KeyPair, Ed25519Error> {
+        let kp = Self::from_secret_bytes(sk);
+        if kp.public_key != Ed25519PublicKey(pk) || check_valid_publickey(&kp.public_key.0).is_err()
+        {
             return Err(Ed25519Error::InvalidPublicKey);
         }
         Ok(kp)
@@ -430,37 +485,14 @@ static I: FieldElement = FieldElement([
     0xdf0b, 0x4fc1, 0x2480, 0x2b83,
 ]);
 
-#[cfg(test)]
+#[cfg(all(test, feature = "_std"))]
 mod tests {
     use crate::ed25519::{Ed25519Error, Ed25519KeyPair, Ed25519PublicKey, Ed25519SecretKey};
     use irox_bits::{BitsError, BitsErrorKind};
-    use irox_tools::hex::{from_hex_str, try_from_hex_str};
+    use irox_tools::hex::{from_hex_str, HexStr};
     use irox_tools::options::MaybeMap;
     use irox_tools::{assert_eq_hex_slice, hex};
     use std::io::BufRead;
-
-    #[derive(Debug)]
-    enum HexStr<const N: usize> {
-        Str(String),
-        Hex([u8; N]),
-    }
-    impl<const N: usize> Default for HexStr<N> {
-        fn default() -> Self {
-            HexStr::Hex([0; N])
-        }
-    }
-    impl<const N: usize> HexStr<N> {
-        pub fn as_u8(&mut self) -> Result<&[u8; N], BitsError> {
-            Ok(match self {
-                HexStr::Str(s) => {
-                    let v = try_from_hex_str(s)?;
-                    *self = HexStr::Hex(v);
-                    self.as_u8()?
-                }
-                HexStr::Hex(a) => a,
-            })
-        }
-    }
 
     #[derive(Default, Debug)]
     struct TV {
@@ -520,14 +552,14 @@ mod tests {
             let sk: Ed25519SecretKey = sk.as_u8()?.into();
             Ok(sk)
         }
-        pub fn pk(&mut self) -> Result<Ed25519PublicKey, BitsError> {
+        pub fn pk(&mut self) -> Result<Ed25519PublicKey, Ed25519Error> {
             let Some(pk) = self.pbk.as_mut() else {
-                return Err(BitsErrorKind::InvalidInput.into());
+                return Err(Ed25519Error::InvalidInput);
             };
-            let pk: Ed25519PublicKey = pk.as_u8()?.into();
+            let pk: Ed25519PublicKey = pk.as_u8()?.try_into()?;
             Ok(pk)
         }
-        pub fn check_pk(&mut self) -> Result<(), BitsError> {
+        pub fn check_pk(&mut self) -> Result<(), Ed25519Error> {
             let sk = self.sk()?;
             let pk = self.pk()?;
             let gpk = sk.generate_public_key();
@@ -631,49 +663,57 @@ mod tests {
         Ok(())
     }
 
+    static REJECTIONS: &[(&[u8; 32], Ed25519Error)] = &[
+        (
+            &hex!("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa"),
+            Ed25519Error::InvalidPublicKeyLowOrder,
+        ),
+        (
+            &hex!("f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("442aad9f089ad9e14647b1ef9099a1ff4798d78589e66f28eca69c11f582a623"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("0100000000000000000000000000000000000000000000000000000000000000"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+        (
+            &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
+            Ed25519Error::InvalidPublicKeyNotCannonical,
+        ),
+    ];
+
     #[test]
     #[ignore]
     pub fn test_vectors_1() -> Result<(), BitsError> {
-        let f = std::fs::OpenOptions::new()
-            .read(true)
-            .create(false)
-            .open("doc/x25519-test-vectors.txt")?;
-        let f = std::io::BufReader::new(f);
-
         let mut num_tests = 0;
 
-        let mut tv = TV::default();
-        for line in f.lines() {
-            let line = line?;
-
-            let Some((ty, data)) = line.split_once("=") else {
-                continue;
-            };
-
-            match ty {
-                "msg" => {
-                    tv.msg = Some(data.to_string());
-                }
-                "pbk" => {
-                    tv.pbk = Some(HexStr::Str(data.to_string()));
-                }
-                "sig" => {
-                    tv.sig = Some(HexStr::Str(data.to_string()));
-                    if let Err(e) = tv.check_sig() {
-                        println!("{e:?}: test {num_tests}");
-                    }
-                    num_tests += 1;
-                }
-                _ => return Err(BitsErrorKind::InvalidInput.into()),
+        for (pk, exp) in REJECTIONS {
+            let pk = Ed25519PublicKey::from_bytes(*pk);
+            if let Err(e) = pk {
+                assert_eq!(e, *exp, "test {num_tests}");
+            } else {
+                panic!("In-ValidSignature: test {num_tests}");
             }
+            num_tests += 1;
         }
-
-        assert_eq!(num_tests, 12);
+        assert_eq!(num_tests, REJECTIONS.len());
 
         Ok(())
-    }
-
-    pub fn _test_reject_small_order() {
-        // let m1 = hex!("53656 e 6 4 2 0 3 1 3 0 3 0 2 0 5 5 5 3 4 4 2 0 7 4 6 f 2 0 4 1 6 c 6 9 6 3 6 5 ");
     }
 }

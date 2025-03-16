@@ -328,6 +328,44 @@ macro_rules! hex {
     }};
 }
 
+cfg_feature_alloc!{
+    #[derive(Debug)]
+    pub enum HexStr<const N: usize> {
+        Str(String),
+        Hex([u8; N]),
+    }
+    impl<const N: usize> Default for HexStr<N> {
+        fn default() -> Self {
+            HexStr::Hex([0; N])
+        }
+    }
+    impl<const N: usize> HexStr<N> {
+        pub fn as_u8(&mut self) -> Result<&[u8; N], BitsError> {
+            Ok(match self {
+                HexStr::Str(s) => {
+                    let v = try_from_hex_str(s)?;
+                    *self = HexStr::Hex(v);
+                    self.as_u8()?
+                }
+                HexStr::Hex(a) => a,
+            })
+        }
+        pub fn as_str(&mut self) -> Result<&str, BitsError> {
+            Ok(match self {
+                HexStr::Str(s) => {
+                    s.as_str()
+                }
+                HexStr::Hex(a) => {
+                    let s= to_hex_str_upper(a);
+                    *self = HexStr::Str(s);
+                    self.as_str()?
+                }
+            })
+        }
+    }
+
+}
+
 #[cfg(test)]
 #[cfg(feature = "std")]
 mod tests {

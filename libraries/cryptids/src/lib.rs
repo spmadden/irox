@@ -10,7 +10,7 @@
 #![warn(clippy::alloc_instead_of_core)]
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
-#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(feature = "_std"), no_std)]
 
 mod aes;
 mod chacha20;
