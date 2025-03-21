@@ -108,7 +108,7 @@ impl Default for Bencher {
 }
 impl Bencher {
     pub fn iter_once(&mut self) {
-        let r = irox_cryptids::x25519::scalarmult(&self.k, &self.u);
+        let r = irox_cryptids::x25519::scalarmult(&self.k, &self.u).unwrap();
         self.u = self.k;
         self.k = r;
     }

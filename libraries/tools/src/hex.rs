@@ -328,7 +328,7 @@ macro_rules! hex {
     }};
 }
 
-cfg_feature_alloc!{
+cfg_feature_alloc! {
     #[derive(Debug)]
     pub enum HexStr<const N: usize> {
         Str(String),

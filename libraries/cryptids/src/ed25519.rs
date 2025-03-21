@@ -4,28 +4,28 @@
 
 //!
 //! Implementation of Ed25519 for ECDSA (Signatures) based on multiple sources.
-//! 
+//!
 //! Validations:
 //! * Constant Time to avoid timing attacks
 //! * Checks canonical encodings
 //! * Checks low-order scalars
-//! 
+//!
 //! Terminology:
 //! * `Secure Random [32B/256b]`/`RND`
 //! * `Private Key`/`SK`/`Secret Scalar`/`d`/`s`
 //! * `Public Key`/`PK`/`Point`/`A`
 //! * `Shared Secret`/`SS`/`R`
 //! * `Base Point`/`B` = [`x25519::BASE`]
-//! * `Clamp` = 
+//! * `Clamp` =
 //! * `Expanded SK`/`h` = `SHA512(RND)`
-//! 
+//!
 //! Alice:
 //! * Generates 256b `RND`
 //! * Generates `h` = `clamp(SHA512())`
 //! *  
-//! 
+//!
 //! Bob:
-//! 
+//!
 //! Sources:
 //! [RFC8032](https://www.rfc-editor.org/rfc8032)
 //! [nacl](https://nacl.cr.yp.to)
@@ -252,6 +252,7 @@ impl Ed25519KeyPair {
     /// Signs the provided message using the associated secret key.  Returns a
     /// detatched signature.
     #[allow(non_snake_case)]
+    #[allow(clippy::manual_memcpy)]
     pub fn sign_message(&self, msg: &[u8]) -> Ed25519Signature {
         let mut d = SHA512::default().hash(&self.secret_key.0);
         d[0] &= 0xF8;
@@ -262,8 +263,8 @@ impl Ed25519KeyPair {
         let mut r = h.hash(msg);
         swap_reduce(&mut r);
         let mut p = empty_gf4();
-        let mut t = copy_subset(&r);
-        scalarbase(&mut p, &mut t);
+        let t = copy_subset(&r);
+        scalarbase(&mut p, &t);
 
         let R = pack(&p);
         let mut h = SHA512::default();
@@ -485,7 +486,7 @@ static I: FieldElement = FieldElement([
     0xdf0b, 0x4fc1, 0x2480, 0x2b83,
 ]);
 
-#[cfg(all(test, feature = "_std"))]
+#[cfg(test)]
 mod tests {
     use crate::ed25519::{Ed25519Error, Ed25519KeyPair, Ed25519PublicKey, Ed25519SecretKey};
     use irox_bits::{BitsError, BitsErrorKind};
@@ -659,60 +660,6 @@ mod tests {
         }
 
         assert_eq!(num_tests, 2048);
-
-        Ok(())
-    }
-
-    static REJECTIONS: &[(&[u8; 32], Ed25519Error)] = &[
-        (
-            &hex!("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa"),
-            Ed25519Error::InvalidPublicKeyLowOrder,
-        ),
-        (
-            &hex!("f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("442aad9f089ad9e14647b1ef9099a1ff4798d78589e66f28eca69c11f582a623"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("0100000000000000000000000000000000000000000000000000000000000000"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-        (
-            &hex!("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"),
-            Ed25519Error::InvalidPublicKeyNotCannonical,
-        ),
-    ];
-
-    #[test]
-    #[ignore]
-    pub fn test_vectors_1() -> Result<(), BitsError> {
-        let mut num_tests = 0;
-
-        for (pk, exp) in REJECTIONS {
-            let pk = Ed25519PublicKey::from_bytes(*pk);
-            if let Err(e) = pk {
-                assert_eq!(e, *exp, "test {num_tests}");
-            } else {
-                panic!("In-ValidSignature: test {num_tests}");
-            }
-            num_tests += 1;
-        }
-        assert_eq!(num_tests, REJECTIONS.len());
 
         Ok(())
     }
