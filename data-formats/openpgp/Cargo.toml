@@ -1,0 +1,27 @@
+[package]
+name = "irox-openpgp"
+description = "OpenPGP Packet IO"
+keywords = ["gpg", "pgp", "openpgp", "irox"]
+categories = ["encoding"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = {workspace = true, features = ["std"]}
+irox-bits = {workspace = true, features = ["std"]}
+irox-time = {workspace = true, features = ["std"]}
+irox-enums = {workspace = true}
+irox-cryptids = {workspace = true}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

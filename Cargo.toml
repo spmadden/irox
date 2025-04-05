@@ -53,7 +53,7 @@ members = [
     "tools/halflifes",
     "tools/influx-cli",
     "tools/sonar-sdf-convert",
-    "tools/tiledownloader",
+    "tools/tiledownloader", "data-formats/openpgp",
 ]
 
 [workspace.dependencies]

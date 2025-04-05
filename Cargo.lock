@@ -2337,6 +2337,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-openpgp"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
+ "irox-cryptids",
+ "irox-enums",
+ "irox-time",
+ "irox-tools",
+]
+
+[[package]]
 name = "irox-progress"
 version = "0.6.0"
 dependencies = [
