@@ -6,6 +6,10 @@
 //! Functions and tools for manipulating arrays of items.
 //!
 
+use crate::cfg_feature_alloc;
+cfg_feature_alloc! {
+    extern crate alloc;
+}
 #[macro_export]
 macro_rules! array {
     (@accum (0, $($_es:expr),*) -> ($($body:tt)*))
@@ -74,6 +78,60 @@ pub fn copy_subset<T: Copy + Default, const N: usize>(arr: &[T]) -> [T; N] {
     let mut out = [T::default(); N];
     out.copy_from_slice(arr.split_at(N).0);
     out
+}
+
+pub trait SliceTools<T> {
+    ///
+    /// Copies from the provided source slice into a statically sized output array.  Uses [`&T::copy_from_slice`]
+    /// under-the-hood, and will panic if `N` is greater than the provided slice length.
+    fn copy_subset<const N: usize>(&self) -> [T; N]
+    where
+        T: Copy + Default;
+    fn limit(&self, limit: usize) -> &[T];
+    cfg_feature_alloc! {
+        fn reversed(&self) -> alloc::boxed::Box<[T]> where T: Copy+Default;
+    }
+}
+impl<T> SliceTools<T> for [T]
+where
+    T: Copy + Default,
+{
+    fn copy_subset<const N: usize>(&self) -> [T; N]
+    where
+        T: Copy + Default,
+    {
+        copy_subset(self)
+    }
+
+    fn limit(&self, limit: usize) -> &[T] {
+        if limit < self.len() {
+            self.split_at(limit).0
+        } else {
+            self
+        }
+    }
+
+    cfg_feature_alloc! {
+        fn reversed(&self) -> alloc::boxed::Box<[T]>
+        where
+            T: Copy + Default
+        {
+            let mut v : alloc::boxed::Box<[T]> = alloc::boxed::Box::from(self);
+            v.as_mut().reverse();
+            v
+        }
+    }
+}
+
+pub trait ArrayTools<T: Copy + Default, const N: usize> {
+    fn reversed(&self) -> [T; N];
+}
+impl<T: Copy + Default, const N: usize> ArrayTools<T, N> for [T; N] {
+    fn reversed(&self) -> [T; N] {
+        let mut c = *self;
+        c.reverse();
+        c
+    }
 }
 
 ///
