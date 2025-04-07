@@ -329,6 +329,7 @@ macro_rules! hex {
 }
 
 cfg_feature_alloc! {
+    use alloc::string::String;
     #[derive(Debug)]
     pub enum HexStr<const N: usize> {
         Str(String),
