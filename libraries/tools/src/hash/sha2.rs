@@ -86,7 +86,8 @@ macro_rules! sha2_impl {
         }
         impl MutBits for $name {
             fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-                self.alg.write_u8(val)
+                self.write(&[val]);
+                Ok(())
             }
         }
     };
