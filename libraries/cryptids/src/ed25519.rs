@@ -42,6 +42,7 @@ use core::ops::{AddAssign, SubAssign};
 use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 use irox_tools::arrays::copy_subset;
 use irox_tools::hash::SHA512;
+use irox_tools::hex;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Ed25519Error {
@@ -123,7 +124,18 @@ impl TryFrom<&[u8; 32]> for Ed25519PublicKey {
         Ok(Ed25519PublicKey(*value))
     }
 }
+impl AsRef<[u8; 32]> for Ed25519PublicKey {
+    fn as_ref(&self) -> &[u8; 32] {
+        &self.0
+    }
+}
+impl core::ops::Deref for Ed25519PublicKey {
+    type Target = [u8; 32];
 
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 impl Ed25519PublicKey {
     pub fn from_bytes(value: &[u8; 32]) -> Result<Ed25519PublicKey, Ed25519Error> {
         check_valid_publickey(value)?;
@@ -299,6 +311,11 @@ impl Ed25519KeyPair {
 pub struct Ed25519Signature {
     pub pubkey: Ed25519PublicKey,
     pub signature: [u8; 64],
+}
+impl Ed25519Signature {
+    pub fn validate_hash(&self, hash: &[u8]) -> Result<(), Ed25519Error> {
+        self.pubkey.verify_signed_message(hash, &self.signature)
+    }
 }
 impl ReadFromBEBits for Ed25519Signature {
     fn read_from_be_bits<R: Bits>(reader: &mut R) -> Result<Self, BitsError> {
@@ -485,6 +502,16 @@ static I: FieldElement = FieldElement([
     0xa0b0, 0x4a0e, 0x1b27, 0xc4ee, 0xe478, 0xad2f, 0x1806, 0x2f43, 0xd7a7, 0x3dfb, 0x0099, 0x2b4d,
     0xdf0b, 0x4fc1, 0x2480, 0x2b83,
 ]);
+pub static ED25519_BASE: &[u8; 32] =
+    &hex!("4A87A6EC35B2148A5427BEBEB2F58FFF6717868886BF38738C0190D41193FC2D");
+pub static ED25519_GX: &[u8; 32] =
+    &hex!("1AD5258F602D56C9B2A7259560C72C695CDCD6FD31E2A4C0FE536ECDD3366921");
+pub static ED25519_GY: &[u8; 32] =
+    &hex!("5866666666666666666666666666666666666666666666666666666666666666");
+pub static ED25519_G: &[u8; 65] = &hex!(
+    "5866666666666666666666666666666666666666666666666666666666666666"
+    "1AD5258F602D56C9B2A7259560C72C695CDCD6FD31E2A4C0FE536ECDD3366921"
+    "04");
 
 #[cfg(test)]
 mod tests {
