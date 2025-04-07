@@ -20,6 +20,21 @@ use crate::format::{Format, FormatError, FormatParser};
 use crate::gregorian::Date;
 use crate::Time;
 
+pub trait ISO8601Format {
+    #[must_use]
+    /// Formats this date as a extended ISO8601 Date & Time, `2023-12-31T05:10:25Z`
+    fn format_iso8601_extended(&self) -> String;
+
+    #[must_use]
+    /// Formats this date as a basic ISO8601 Date & Time, `20231231T051025Z`, suitable for filenames
+    fn format_iso8601_basic(&self) -> String;
+
+    /// Attempts to parse the provided string as either a [`crate::format::iso8601::BasicDateTimeOfDay`] or a [`crate::format::iso8601::ExtendedDateTimeFormat`]
+    fn try_from_iso8601(val: &str) -> Result<Self, FormatError>
+    where
+        Self: Sized;
+}
+
 ///
 /// IS0 8601-1:2019 Basic Date and Time of Day Format, section 5.4.2 Equivalent to `YYYYMMddTHHmmssZ`/`20231231T051025Z`
 pub struct BasicDateTimeOfDay;
@@ -249,6 +264,33 @@ impl Format<Duration> for ISO8601Duration {
             return format!("PT{minutes}M{seconds:02}S");
         }
         format!("PT{seconds}S")
+    }
+}
+impl FormatParser<Duration> for ISO8601Duration {
+    fn try_from(&self, data: &str) -> Result<Duration, FormatError> {
+        if !data.starts_with('P') {
+            return FormatError::err_str("Duration must start with 'P'");
+        }
+        let (_, _data) = data.split_at(1);
+
+        todo!()
+    }
+}
+
+impl ISO8601Format for Duration {
+    fn format_iso8601_extended(&self) -> String {
+        DURATION.format(self)
+    }
+
+    fn format_iso8601_basic(&self) -> String {
+        DURATION.format(self)
+    }
+
+    fn try_from_iso8601(val: &str) -> Result<Self, FormatError>
+    where
+        Self: Sized,
+    {
+        DURATION.try_from(val)
     }
 }
 

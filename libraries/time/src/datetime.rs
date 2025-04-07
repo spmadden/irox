@@ -7,7 +7,7 @@
 
 extern crate alloc;
 use crate::epoch::{UnixTimestamp, UNIX_EPOCH};
-use crate::format::iso8601::{BASIC_DATE_TIME_OF_DAY, ISO8601_DATE_TIME};
+use crate::format::iso8601::{ISO8601Format, BASIC_DATE_TIME_OF_DAY, ISO8601_DATE_TIME};
 use crate::format::{Format, FormatError, FormatParser};
 use crate::gregorian::Date;
 use crate::julian::JulianDate;
@@ -111,6 +111,23 @@ impl UTCDateTime {
     /// Attempts to parse the provided string as either a [`crate::format::iso8601::BasicDateTimeOfDay`] or a [`crate::format::iso8601::ExtendedDateTimeFormat`]
     pub fn try_from_iso8601(val: &str) -> Result<Self, FormatError> {
         ISO8601_DATE_TIME.try_from(val)
+    }
+}
+
+impl ISO8601Format for UTCDateTime {
+    fn format_iso8601_extended(&self) -> String {
+        UTCDateTime::format_iso8601_extended(self)
+    }
+
+    fn format_iso8601_basic(&self) -> String {
+        UTCDateTime::format_iso8601_basic(self)
+    }
+
+    fn try_from_iso8601(val: &str) -> Result<Self, FormatError>
+    where
+        Self: Sized,
+    {
+        UTCDateTime::try_from_iso8601(val)
     }
 }
 
