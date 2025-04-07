@@ -12,14 +12,14 @@ jobs:
     container:
       image: ghcr.io/spmadden/irox-dev:latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
     - name: CI Build
       run: just run ci
   build-windows:
     runs-on:
       - windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
       - name: CI Build
         run: |
           cargo install just

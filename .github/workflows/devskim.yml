@@ -22,10 +22,10 @@ jobs:
       security-events: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
 
       - name: Run DevSkim scanner
-        uses: microsoft/DevSkim-Action@v1
+        uses: spmadden/actions-DevSkim@a6b6966a33b497cd3ae2ebc406edf8f4cc2feec6
         with:
           # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
           # DS440001 and DS126858 are continuously false-positives
