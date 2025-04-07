@@ -2,6 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
+mod data;
+mod ops;
 mod pubkey;
 mod signature;
 
@@ -9,6 +11,8 @@ use core::ops::DerefMut;
 pub use pubkey::*;
 pub use signature::*;
 
+use crate::packets::data::LiteralData;
+use crate::packets::ops::OnePassSignature;
 use irox_bits::{Bits, BitsWrapper, Error, ErrorKind};
 use irox_enums::{EnumIterItem, EnumName};
 
@@ -109,6 +113,8 @@ pub enum OpenPGPPacketData {
     PublicSubkey(PubKeyPacket),
     UserID(String),
     Signature(SignaturePacket),
+    LiteralData(LiteralData),
+    OnePassSignature(OnePassSignature),
     Unknown(Vec<u8>),
 }
 impl TryFrom<(OpenPGPPacketType, Vec<u8>)> for OpenPGPPacketData {
@@ -128,6 +134,12 @@ impl TryFrom<(OpenPGPPacketType, Vec<u8>)> for OpenPGPPacketData {
             )),
             OpenPGPPacketType::Signature => Ok(OpenPGPPacketData::Signature(
                 SignaturePacket::try_from(value.as_slice())?,
+            )),
+            OpenPGPPacketType::LiteralData => Ok(OpenPGPPacketData::LiteralData(
+                LiteralData::try_from(value.as_slice())?,
+            )),
+            OpenPGPPacketType::OnePassSignature => Ok(OpenPGPPacketData::OnePassSignature(
+                OnePassSignature::try_from(value.as_slice())?,
             )),
             _ => Ok(OpenPGPPacketData::Unknown(value)),
         }

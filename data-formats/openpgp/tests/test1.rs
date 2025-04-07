@@ -3,10 +3,11 @@
 //
 
 use irox_bits::{BitsWrapper, Error, MutBits};
+use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_openpgp::packets::{OpenPGPMessage, OpenPGPPackeStream, OpenPGPPacketData};
-use irox_tools::hash::SHA1;
+use irox_tools::hash::{SHA1, SHA512};
 use irox_tools::hex;
-use irox_tools::hex::HexDump;
+use irox_tools::hex::{to_hex_str_upper, HexDump};
 use std::io::Write;
 
 static _PUBKEY_A: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -100,5 +101,65 @@ pub fn test_packets() -> Result<(), Error> {
             _ => {}
         }
     }
+    Ok(())
+}
+
+#[test]
+pub fn test_verify_sig() -> Result<(), Error> {
+    let _sig = hex!(
+        "900d03000a16c37e4043df6810f101cb78620067f17fb84c61646965732061"
+        "6e642047656e746c656d656e206f662074686520636c617373206f66202739"
+        "393a204966204920636f756c64206f6666657220796f75206f6e6c79206f6e"
+        "652074697020666f7220746865206675747572652c2073756e73637265656e"
+        "20776f756c642062652069742e88750400160a001d162104ad96e0200673e2"
+        "b6d24a7d25c37e4043df6810f1050267f17fb8000a0910c37e4043df6810f1"
+        "1d3300ff42e9327a8c1385f320122d4128633483fa5fbd39d1b46ba2766436"
+        "cd51a55fe801009b395cff02254d474a8c83640f4c6ec123348d6419c81afd"
+        "5ae6f84ba934fd0e");
+    let sig = hex!("900d03000a16c37e4043df6810f101cb0d620067f1a3ee4f70656e50475088750400160a001d162104ad96e0200673e2b6d24a7d25c37e4043df6810f1050267f1a3ee000a0910c37e4043df6810f14b180100f57ac130ab886e911fc206a6f6b7e3a3ea925401e3c96c6d2cf1ccc2b9cca04d00fd1debe06011ac119734d536c68aff80741c9e70edc0c10318492cf77f7383a602");
+    let mut sig = sig.as_slice();
+    let msg = OpenPGPMessage::build_from(&mut sig)?;
+    let mut hash = SHA512::new();
+    let mut count = 0u32;
+    let mut buf = Vec::new();
+    let mut sigdata = None;
+    for pkt in msg.packets {
+        println!("{pkt:?}");
+        match pkt.data {
+            OpenPGPPacketData::Signature(sig) => {
+                println!("  SIG: {sig:#?}");
+                let data = sig.get_hashed_data();
+                buf.write_all_bytes(data)?;
+                count += data.len() as u32;
+                buf.write_u8(sig.get_version())?;
+                buf.write_u8(0xFF)?;
+                buf.write_be_u32(count)?;
+                sigdata = Some(sig.try_into_ed25519_sig()?);
+            }
+            OpenPGPPacketData::LiteralData(data) => {
+                println!("  DATA: {data:#?}");
+                let data = data.data.as_slice();
+                buf.write_all_bytes(data)?;
+            }
+            OpenPGPPacketData::OnePassSignature(sig) => {
+                println!("  OPS: {sig:#?}");
+            }
+            _ => {}
+        }
+    }
+    buf.hexdump();
+    let _ = hash.write_all_bytes(&buf);
+    let hash = hash.finish();
+    println!("HASH {}", to_hex_str_upper(&hash));
+
+    let pk: Ed25519PublicKey =
+        hex!("EA914CD608365EF274D81FDBC02D8A85BC4490F521837ECCA9ED66C25FD0CCF3")
+            .try_into()
+            .unwrap();
+    let sigdata = sigdata.unwrap();
+    println!("PK: {}", to_hex_str_upper(pk.as_ref()));
+    println!("SIG: {}", to_hex_str_upper(sigdata.as_slice()));
+    pk.verify_signed_message(&hash, &sigdata).unwrap();
+    println!("SIGNATURE VERIFIED!");
     Ok(())
 }
