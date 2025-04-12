@@ -23,8 +23,8 @@ testing and review. :construction::warning:
 ### Modules:
 
 | Module                          | `[no_std]`? | `[no_alloc]`? |                   |
-|---------------------------------|-------------|---------------|-------------------| 
-| [`aes`](./src/aes.rs)           | ![no_std]   | ![no_alloc]   | ![untested]       |
+|---------------------------------|-------------|---------------|-------------------|
+| [`aead`](./src/aead.rs)         | ![no_std]   | ![no_alloc]   | ![tested_rfc8439] | 
 | [`chacha20`](./src/chacha20.rs) | ![no_std]   | ![no_alloc]   | ![tested_rfc8439] | 
 | [`poly1305`](./src/poly1305.rs) | ![no_std]   | ![no_alloc]   | ![tested_rfc8439] | 
 | [`pbkdf2`](./src/pbkdf2.rs)     | ![no_std]   | ![no_alloc]   | ![tested_rfc6070] |
