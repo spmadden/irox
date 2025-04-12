@@ -4,9 +4,11 @@
 
 #![allow(clippy::indexing_slicing)]
 
+use crate::Chacha20KeyGenerator;
 use core::ops::{Add, AddAssign};
 use core::ops::{BitAnd, BitAndAssign, Index, IndexMut, Not};
-use irox_bits::{array_split_16, Bits};
+use irox_bits::{array_split_16, Bits, Error, MutBits};
+use irox_tools::buf::{Buffer, FixedU8Buf};
 use irox_tools::hex;
 use irox_tools::iterators::Zipping;
 
@@ -152,68 +154,115 @@ impl IndexMut<usize> for U136 {
     }
 }
 
-pub struct Poly1305;
+pub struct Poly1305 {
+    r: U136,
+    s: [u8; 16],
+    h: U136,
+    c: U136,
+    u: u32,
+    buf: FixedU8Buf<16>,
+}
 #[allow(clippy::needless_range_loop)]
 impl Poly1305 {
-    pub fn hash<T: Bits>(msg: &mut T, key: &[u8; 32]) -> [u8; 16] {
+    pub fn new(key: &[u8; 32]) -> Self {
         let (r, s) = array_split_16(*key);
         let mut r = U136::from(r);
         r.bitand_assign(MASK);
 
-        let mut h = EMPTY;
-        let mut c: U136;
-        let mut u: u32;
-
-        loop {
-            let Some(c) = U136::read_from_bits(msg) else {
-                break;
-            };
-
-            h.add_assign(c);
-            let mut x = EMPTY;
-            for i in 0..17 {
-                x[i] = 0;
-                for j in 0..17 {
-                    let mult = if j <= i {
-                        r[i - j]
-                    } else {
-                        r[i + 17 - j] * 320
-                    };
-                    x[i] += mult * h[j];
-                }
-            }
-            h = x;
-            u = 0;
-            for j in 0..16 {
-                u += h[j];
-                h[j] = u & 0xFF;
-                u >>= 8;
-            }
-            u += h[16];
-            h[16] = u & 0x3;
-            u = 5 * (u >> 2);
-            for j in 0..16 {
-                u += h[j];
-                h[j] = u & 0xFF;
-                u >>= 8;
-            }
-            u += h[16];
-            h[16] = u;
+        let h = EMPTY;
+        let c: U136 = EMPTY;
+        let u: u32 = 0;
+        Self {
+            r,
+            s,
+            h,
+            c,
+            u,
+            buf: Default::default(),
         }
-        let g = h;
-        h.add_assign(MINUSP);
-        let q = (h[16] >> 7).not().wrapping_add(1);
+    }
+    fn try_process_block(&mut self) {
+        if !self.buf.is_full() {
+            return;
+        }
+        if let Some(c) = U136::read_from_bits(&mut self.buf.as_ref_used()) {
+            self.c = c;
+            self.process_block();
+        }
+        self.buf.clear();
+    }
+    fn process_block(&mut self) {
+        self.h.add_assign(self.c);
+        let mut x = EMPTY;
+        for i in 0..17 {
+            x[i] = 0;
+            for j in 0..17 {
+                let mult = if j <= i {
+                    self.r[i - j]
+                } else {
+                    self.r[i + 17 - j] * 320
+                };
+                x[i] += mult * self.h[j];
+            }
+        }
+        self.h = x;
+        self.u = 0;
+        for j in 0..16 {
+            self.u += self.h[j];
+            self.h[j] = self.u & 0xFF;
+            self.u >>= 8;
+        }
+        self.u += self.h[16];
+        self.h[16] = self.u & 0x3;
+        self.u = 5 * (self.u >> 2);
+        for j in 0..16 {
+            self.u += self.h[j];
+            self.h[j] = self.u & 0xFF;
+            self.u >>= 8;
+        }
+        self.u += self.h[16];
+        self.h[16] = self.u;
+    }
+    pub fn finish(mut self) -> [u8; 16] {
+        self.try_process_block();
+        if let Some(c) = U136::read_from_bits(&mut self.buf.as_ref_used()) {
+            self.c = c;
+            self.process_block();
+        }
+        let g = self.h;
+        self.h.add_assign(MINUSP);
+        let q = (self.h[16] >> 7).not().wrapping_add(1);
         for j in 0..17 {
-            h[j] ^= q & (g[j] ^ h[j]);
+            self.h[j] ^= q & (g[j] ^ self.h[j]);
         }
-        c = s.into();
-        c[16] = 0;
-        h.add_assign(c);
+        self.c = self.s.into();
+        self.c[16] = 0;
+        self.h.add_assign(self.c);
         let mut out = [0u8; 16];
         for j in 0..16 {
-            out[j] = h[j] as u8;
+            out[j] = self.h[j] as u8;
         }
         out
+    }
+    pub fn hash<T: Bits>(msg: &mut T, key: &[u8; 32]) -> [u8; 16] {
+        let mut poly = Poly1305::new(key);
+        while let Ok(Some(v)) = msg.next_u8() {
+            let _ = poly.write_u8(v);
+        }
+        poly.finish()
+    }
+
+    pub fn key_gen(key: &[u8; 32], nonce: &[u8; 12]) -> [u8; 32] {
+        let mut block = Chacha20KeyGenerator::generate(*key, 0, *nonce);
+        let out = block.pop_n_front::<32>();
+        out.unwrap_or_default()
+    }
+}
+impl MutBits for Poly1305 {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        let _ = self.buf.push(val);
+        self.try_process_block();
+        Ok(())
     }
 }
 
@@ -328,5 +377,37 @@ electronic communications made at any time or place, which are addressed to";
         let tag = hex!("13000000000000000000000000000000").as_slice();
         let calc = Poly1305::hash(&mut msg, &key);
         assert_eq_hex_slice!(tag, calc);
+    }
+    #[test]
+    pub fn test_key() {
+        let key = hex!("808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f");
+        let nonce = hex!("000000000001020304050607");
+        let exp = hex!("8ad5a08b905f81cc815040274ab29471a833b637e3fd0da508dbb8e2fdd1a646");
+        let calc = Poly1305::key_gen(&key, &nonce);
+        assert_eq_hex_slice!(exp, calc);
+    }
+    #[test]
+    pub fn test_kv1() {
+        let key = [0u8; 32];
+        let nonce = [0u8; 12];
+        let exp = hex!("76b8e0ada0f13d90405d6ae55386bd28bdd219b8a08ded1aa836efcc8b770dc7");
+        let calc = Poly1305::key_gen(&key, &nonce);
+        assert_eq_hex_slice!(exp, calc);
+    }
+    #[test]
+    pub fn test_kv2() {
+        let key = hex!("0000000000000000000000000000000000000000000000000000000000000001");
+        let nonce = hex!("000000000000000000000002");
+        let exp = hex!("ecfa254f845f647473d3cb140da9e87606cb33066c447b87bc2666dde3fbb739");
+        let calc = Poly1305::key_gen(&key, &nonce);
+        assert_eq_hex_slice!(exp, calc);
+    }
+    #[test]
+    pub fn test_kv3() {
+        let key = hex!("1c9240a5eb55d38af333888604f6b5f0473917c1402b80099dca5cbc207075c0");
+        let nonce = hex!("000000000000000000000002");
+        let exp = hex!("965e3bc6f9ec7ed9560808f4d229f94b137ff275ca9b3fcbdd59deaad23310ae");
+        let calc = Poly1305::key_gen(&key, &nonce);
+        assert_eq_hex_slice!(exp, calc);
     }
 }
