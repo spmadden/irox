@@ -36,7 +36,7 @@ impl Worker {
                         Ok(e) => match e {
                             WorkerCommand::Run(t) => t,
                             WorkerCommand::Close => {
-                                debug!("Close command received, closing worker {:?}", name);
+                                debug!("Close command received, closing worker {name:?}");
                                 break;
                             }
                         },

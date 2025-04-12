@@ -109,7 +109,7 @@ impl PacketBuilder<Frame> for NMEAParser {
     fn build_from<T: Bits>(&self, input: &mut T) -> Result<Frame, Self::Error> {
         let packet = NMEAPacketizer::new().read_next_packet(input)?;
         let raw = String::from_utf8_lossy(&packet).to_string();
-        trace!("PKT: {}", raw);
+        trace!("PKT: {raw}");
 
         let key = packet.as_slice().read_until(b",")?;
         let mut pkt = packet.as_slice();

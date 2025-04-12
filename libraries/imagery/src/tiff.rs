@@ -418,7 +418,7 @@ impl TiffImageReader {
                                 );
                             }
                             TiffTagFormat::Double => {
-                                debug!("{:#?} {:#?}", key, ent);
+                                debug!("{key:#?} {ent:#?}");
                                 let TiffTagValue::ParsedDoubles(val) = &deref.value else {
                                     warn!(
                                         "Expected a parsed double values, but was: {:#?}",

@@ -83,12 +83,12 @@ fn main() -> ExitCode {
     } {
         Ok(db) => db,
         Err(e) => {
-            error!("{:?}", e);
+            error!("{e:?}");
             return ExitCode::FAILURE;
         }
     };
 
-    debug!("{:?}", config);
+    debug!("{config:?}");
     match config.command {
         Operation::Ping => ping(&conn),
         Operation::ListDB => list_db(&conn),
@@ -102,7 +102,7 @@ fn main() -> ExitCode {
 
 fn ping(db: &InfluxDB) -> ExitCode {
     if let Err(e) = db.ping() {
-        error!("{:?}", e);
+        error!("{e:?}");
         return ExitCode::FAILURE;
     }
     println!("PING SUCCESSFUL.");
@@ -116,7 +116,7 @@ fn list_db(db: &InfluxDB) -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(e) => {
-            error!("{:?}", e);
+            error!("{e:?}");
             ExitCode::FAILURE
         }
     }
@@ -129,7 +129,7 @@ fn list_retention_policies(db: &InfluxDB, param: OptionalDB) -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(e) => {
-            error!("{:?}", e);
+            error!("{e:?}");
             ExitCode::FAILURE
         }
     }
@@ -142,7 +142,7 @@ fn show_tag_keys(db: &InfluxDB, param: OptionalDB) -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(e) => {
-            error!("{:?}", e);
+            error!("{e:?}");
             ExitCode::FAILURE
         }
     }
