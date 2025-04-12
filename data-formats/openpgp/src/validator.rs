@@ -88,4 +88,80 @@ impl Hasher {
             Hasher::SHA512(v) => Box::from(v.finish()),
         }
     }
+
+    pub fn s2k(
+        alg: HashAlgorithm,
+        iter: usize,
+        salt: &[u8],
+        data: &[u8],
+    ) -> Result<Box<[u8]>, Error> {
+        let mut h: Self = alg.try_into()?;
+        let mut rem = iter;
+        while rem > 0 {
+            let l = rem.min(salt.len());
+            let Some(s) = salt.get(0..l) else {
+                break;
+            };
+            h.write(s);
+            rem -= l;
+            let l = rem.min(data.len());
+            let Some(d) = data.get(0..l) else {
+                break;
+            };
+            h.write(d);
+            rem -= l;
+        }
+        Ok(h.finish())
+    }
+}
+#[cfg(test)]
+mod tests {
+    use crate::types::HashAlgorithm;
+    use crate::validator::Hasher;
+    use irox_bits::Error;
+    use irox_tools::hash::SHA256;
+    use irox_tools::{assert_eq_hex_slice, hex};
+
+    #[test]
+    pub fn test_s2k_1() {
+        let s = hex!("3031323334353637313233343536");
+        let c = 0x000186A0;
+        let mut rem = c;
+        let mut h = SHA256::new();
+        while rem > 0 {
+            let l = rem.min(s.len());
+            h.write(&s[0..l]);
+            rem -= l;
+        }
+        let h = h.finish();
+        assert_eq_hex_slice!(
+            h,
+            hex!("773784A602B6C81E3F092F4D7D00E17CC822D88F7360FCF2D2EF2D9D901F44B6")
+        );
+    }
+
+    #[test]
+    pub fn test_s2k_2() -> Result<(), Error> {
+        let s = b"01234567";
+        let d = b"123456";
+        let c = 0x000186A0;
+        let h = Hasher::s2k(HashAlgorithm::SHA256, c, s, d)?;
+        assert_eq_hex_slice!(
+            h,
+            hex!("773784A602B6C81E3F092F4D7D00E17CC822D88F7360FCF2D2EF2D9D901F44B6")
+        );
+        Ok(())
+    }
+    #[test]
+    pub fn test_s2k_3() -> Result<(), Error> {
+        let s = hex!("4142434445464748");
+        let d = b"12345678";
+        let c = 0x000186A0;
+        let h = Hasher::s2k(HashAlgorithm::SHA256, c, &s, d)?;
+        assert_eq_hex_slice!(
+            h,
+            hex!("2675D6164A0D4827D1D00C7EEA620D015C00030A1CAB38B4D0DD600B27DC9630")
+        );
+        Ok(())
+    }
 }
