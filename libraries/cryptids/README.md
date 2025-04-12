@@ -26,6 +26,11 @@ testing and review. :construction::warning:
 |---------------------------------|-------------|---------------|-------------------| 
 | [`aes`](./src/aes.rs)           | ![no_std]   | ![no_alloc]   | ![untested]       |
 | [`chacha20`](./src/chacha20.rs) | ![no_std]   | ![no_alloc]   | ![tested_rfc8439] | 
+| [`poly1305`](./src/poly1305.rs) | ![no_std]   | ![no_alloc]   | ![tested_rfc8439] | 
+| [`pbkdf2`](./src/pbkdf2.rs)     | ![no_std]   | ![no_alloc]   | ![tested_rfc6070] |
+| [`sha2`](./lib.rs)              | ![no_std]   | ![no_alloc]   | ![tested_nist]    |
+| [`ed25519`](./src/ed25519.rs)   | ![no_std]   | ![no_alloc]   | ![tested_rfc8032] |
+| [`x25519`](./src/x25519.rs)     | ![no_std]   | ![no_alloc]   | ![tested_rfc7748] |
 
 [no_std]: https://img.shields.io/badge/no__std-yes-green
 
@@ -35,4 +40,9 @@ testing and review. :construction::warning:
 
 [untested]: https://img.shields.io/badge/passes%20tests-no-red
 
+[tested_rfc6070]: https://img.shields.io/badge/passes%20tests-rfc6070-green
+[tested_rfc7748]: https://img.shields.io/badge/passes%20tests-rfc7748-green
+[tested_rfc8032]: https://img.shields.io/badge/passes%20tests-rfc8032-green
 [tested_rfc8439]: https://img.shields.io/badge/passes%20tests-rfc8439-green
+[tested_nist]: https://img.shields.io/badge/passes%20test-nist%20cavp-green
+

@@ -21,5 +21,6 @@ pub mod x25519;
 
 pub use aes::*;
 pub use chacha20::*;
+pub use irox_tools::hash::sha2;
 pub use pbkdf2::*;
 pub use poly1305::*;
