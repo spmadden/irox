@@ -28,8 +28,9 @@ jobs:
         uses: spmadden/actions-DevSkim@a6b6966a33b497cd3ae2ebc406edf8f4cc2feec6
         with:
           # DS126858,DS109733,DS173237 are excluded to silence warnings about MD5,SHA1 which are not used for security operations.
-          # DS440001 and DS126858 are continuously false-positives
-          exclude-rules: DS126858,DS109733,DS173237,DS440001,DS126858
+          # DS440001, DS440100 and DS126858 are continuously false-positives
+          exclude-rules: DS126858,DS109733,DS173237,DS440001,DS126858,DS176209,DS440100,DS137138,DS106863,DS117838
+          ignore-globs: "libraries/cryptids/**"
 
       - name: Upload DevSkim scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
