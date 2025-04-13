@@ -188,6 +188,11 @@ impl Chacha20 {
         used
     }
 }
+impl Bits for Chacha20 {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        Ok(Some(self.keystream.next_key()))
+    }
+}
 
 ///
 /// Passthrough-filter that encrypts or decrypts the provided data using ChaCha20.
