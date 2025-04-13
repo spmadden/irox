@@ -4,7 +4,7 @@
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use irox_tools::hash::murmur3::{Murmur3_128, Murmur3_32};
-use irox_tools::hash::{BLAKE2b512, BLAKE2s256, SHA256, SHA512};
+use irox_tools::hash::{BLAKE2b512, BLAKE2s256, MD5, SHA256, SHA512};
 
 struct Hasher {
     iter: [u8; 4096],
@@ -39,6 +39,10 @@ impl Hasher {
     }
     pub fn hash_blake2b(&mut self) {
         let _hash = BLAKE2b512::default().hash(&self.iter);
+        self.iter[0] += 1;
+    }
+    pub fn hash_md5(&mut self) {
+        let _hash = MD5::default().hash(&self.iter);
         self.iter[0] += 1;
     }
 }
@@ -95,6 +99,14 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     grp.bench_function("hash_blake2b512", |b| {
         b.iter(|| {
             hasher.hash_blake2b();
+        })
+    });
+    grp.finish();
+    let mut grp = c.benchmark_group("md5");
+    grp.throughput(Throughput::Bytes(4096));
+    grp.bench_function("hash_md5", |b| {
+        b.iter(|| {
+            hasher.hash_md5();
         })
     });
     grp.finish();

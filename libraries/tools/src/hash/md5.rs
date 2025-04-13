@@ -7,11 +7,11 @@
 //!
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
-use crate::buf::{Buffer, RoundBuffer};
+use crate::buf::U32ArrayBuf;
 use crate::hash::HashDigest;
-use crate::u32::{FromU32Array, ToU32Array};
+use crate::u32::ToU32Array;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
-use irox_bits::{Bits, Error, MutBits};
+use irox_bits::{Error, MutBits, WriteToLEBits};
 
 pub const BLOCK_SIZE: usize = 64;
 pub const OUTPUT_SIZE: usize = 16;
@@ -44,14 +44,14 @@ pub struct MD5 {
     b0: u32,
     c0: u32,
     d0: u32,
-    buf: RoundBuffer<BLOCK_SIZE, u8>,
+    buf: U32ArrayBuf<16>,
 }
 
 impl Default for MD5 {
     fn default() -> Self {
         Self {
             written_length: 0,
-            buf: RoundBuffer::default(),
+            buf: Default::default(),
             a0: 0x67452301,
             b0: 0xefcdab89,
             c0: 0x98badcfe,
@@ -62,28 +62,10 @@ impl Default for MD5 {
 
 impl MD5 {
     fn try_chomp(&mut self) {
-        if self.buf.len() < BLOCK_SIZE {
+        if !self.buf.is_full() {
             return;
         }
-
-        let words: [u32; 16] = [
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-            self.buf.read_be_u32().unwrap_or_default().swap_bytes(),
-        ];
+        let words: [u32; 16] = self.buf.take_le_buf();
 
         let mut a = self.a0;
         let mut b = self.b0;
@@ -140,30 +122,58 @@ impl MD5 {
             modlen64 = 0;
         }
         pad += 56 - modlen64;
-        let _ = self.buf.push_back(0x80);
+        let _ = self.buf.write_le_u8(0x80);
         pad -= 1;
         for _ in 0..pad {
             self.try_chomp();
-            let _ = self.buf.push_back(0);
+            let _ = self.buf.write_le_u8(0);
         }
         let [a, b] = (self.written_length << 3).to_u32_array();
-        let _ = self.buf.write_be_u32(b.swap_bytes());
-        let _ = self.buf.write_be_u32(a.swap_bytes());
+        let _ = self.buf.write_le_u32(b.swap_bytes());
+        let _ = self.buf.write_le_u32(a.swap_bytes());
         self.try_chomp();
         // assert_eq!(0, self.buf.len(), "Buffer length wasn't zeroed!");
-        u128::from_u32_array(&[
-            self.a0.swap_bytes(),
-            self.b0.swap_bytes(),
-            self.c0.swap_bytes(),
-            self.d0.swap_bytes(),
-        ])
+        let mut out = [0u8; 16];
+        let o = &mut out.as_mut_slice();
+        let _ = self.a0.write_le_to(o);
+        let _ = self.b0.write_le_to(o);
+        let _ = self.c0.write_le_to(o);
+        let _ = self.d0.write_le_to(o);
+        u128::from_be_bytes(out)
     }
 
     ///
     /// Appends the bytes to the internal buffer.  NOTE: You must call 'finish' to get the final result.
-    pub fn write(&mut self, bytes: &[u8]) {
-        for b in bytes {
-            let _ = self.buf.push_back(*b);
+    pub fn write(&mut self, mut bytes: &[u8]) {
+        // for b in bytes {
+        //     let _ = self.buf.push_back(*b);
+        //     self.written_length += 1;
+        //     self.try_chomp();
+        // }
+
+        let align = self.buf.rem_align();
+        if align < 4 && align < bytes.len() {
+            let (a, b) = bytes.split_at(self.buf.rem_align());
+            bytes = b;
+            for val in a {
+                let _ = self.buf.write_le_u8(*val);
+                self.written_length += 1;
+                if self.buf.is_full() {
+                    self.try_chomp();
+                }
+            }
+        }
+        let mut chunks = bytes.chunks_exact(4);
+        for c in chunks.by_ref() {
+            let _ = self
+                .buf
+                .push_prim(u32::from_le_bytes(c.try_into().unwrap_or_default()));
+            self.written_length += 4;
+
+            self.try_chomp();
+        }
+        for b in chunks.remainder() {
+            let _ = self.buf.write_le_u8(*b);
             self.written_length += 1;
             self.try_chomp();
         }
