@@ -4,7 +4,7 @@
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use irox_tools::hash::murmur3::{Murmur3_128, Murmur3_32};
-use irox_tools::hash::{SHA256, SHA512};
+use irox_tools::hash::{BLAKE2b512, BLAKE2s256, SHA256, SHA512};
 use std::time::Duration;
 
 struct Hasher {
@@ -32,6 +32,14 @@ impl Hasher {
     }
     pub fn hash_sha512(&mut self) {
         let _hash = SHA512::new().hash(&self.iter);
+        self.iter[0] += 1;
+    }
+    pub fn hash_blake2s(&mut self) {
+        let _hash = BLAKE2s256::default().hash(&self.iter);
+        self.iter[0] += 1;
+    }
+    pub fn hash_blake2b(&mut self) {
+        let _hash = BLAKE2b512::default().hash(&self.iter);
         self.iter[0] += 1;
     }
 }
@@ -70,6 +78,24 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     grp.bench_function("hash_murmur_32", |b| {
         b.iter(|| {
             hasher.hash_murmur_32();
+        })
+    });
+    grp.finish();
+    std::thread::sleep(Duration::from_secs(20));
+    let mut grp = c.benchmark_group("blake2s256");
+    grp.throughput(Throughput::Bytes(128));
+    grp.bench_function("hash_blake2s256", |b| {
+        b.iter(|| {
+            hasher.hash_blake2s();
+        })
+    });
+    grp.finish();
+    std::thread::sleep(Duration::from_secs(20));
+    let mut grp = c.benchmark_group("blake2b512");
+    grp.throughput(Throughput::Bytes(128));
+    grp.bench_function("hash_blake2b512", |b| {
+        b.iter(|| {
+            hasher.hash_blake2b();
         })
     });
     grp.finish();

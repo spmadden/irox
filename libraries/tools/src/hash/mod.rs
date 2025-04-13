@@ -9,6 +9,7 @@
 #![allow(clippy::indexing_slicing)]
 #![deny(clippy::integer_division_remainder_used)]
 
+pub use blake2::*;
 use core::ops::BitXorAssign;
 use irox_bits::MutBits;
 pub use md5::MD5;
@@ -16,6 +17,7 @@ pub use murmur3::{murmur3_128, murmur3_128_seed};
 pub use sha1::SHA1;
 pub use sha2::{SHA224, SHA256, SHA384, SHA512};
 
+pub mod blake2;
 pub mod md5;
 pub mod murmur3;
 pub mod sha1;
