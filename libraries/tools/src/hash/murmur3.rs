@@ -8,7 +8,7 @@
 
 use crate::buf::{Buffer, FixedU8Buf};
 use core::ops::BitXorAssign;
-use irox_bits::{array_split_8, Bits};
+use irox_bits::{array_split_8, Bits, MutBits};
 
 const C1: u64 = 0x87c3_7b91_1142_53d5;
 const C2: u64 = 0x4cf5_ad43_2745_937f;
@@ -44,9 +44,29 @@ impl Murmur3_32 {
             buf: Default::default(),
         }
     }
-    pub fn write<T: AsRef<[u8]>>(&mut self, key: T) {
-        for v in key.as_ref() {
-            let _ = self.buf.push(*v);
+    pub fn write(&mut self, mut key: &[u8]) {
+        let align = 4 - self.buf.len();
+        if align < 4 && align < key.len() {
+            let (a, b) = key.split_at(align);
+            key = b;
+            for val in a {
+                let _ = self.buf.write_u8(*val);
+                self.total_len += 1;
+                if self.buf.is_full() {
+                    self.try_chomp();
+                }
+            }
+        }
+        let mut chunks = key.chunks_exact(4);
+        for c in chunks.by_ref() {
+            let k = u32::from_le_bytes(c.try_into().unwrap_or_default());
+            self.h ^= k.wrapping_mul(C5).rotate_left(15).wrapping_mul(C6);
+            self.h = self.h.rotate_left(13);
+            self.h = self.h.wrapping_mul(5).wrapping_add(0xe6546b64);
+            self.total_len += 4;
+        }
+        for b in chunks.remainder() {
+            let _ = self.buf.push_back(*b);
             self.total_len += 1;
             self.try_chomp();
         }
@@ -61,7 +81,7 @@ impl Murmur3_32 {
         self.h = self.h.rotate_left(13);
         self.h = self.h.wrapping_mul(5).wrapping_add(0xe6546b64);
     }
-    pub fn hash<T: AsRef<[u8]>>(mut self, key: T) -> u32 {
+    pub fn hash(mut self, key: &[u8]) -> u32 {
         self.write(key);
         self.finish()
     }
@@ -102,13 +122,48 @@ impl Murmur3_128 {
             buf: Default::default(),
         }
     }
-    pub fn hash<T: AsRef<[u8]>>(mut self, key: T) -> u128 {
+    pub fn hash(mut self, key: &[u8]) -> u128 {
         self.write(key);
         self.finish()
     }
-    pub fn write<T: AsRef<[u8]>>(&mut self, key: T) {
-        for v in key.as_ref() {
-            let _ = self.buf.push(*v);
+    pub fn write(&mut self, mut key: &[u8]) {
+        let align = 16 - self.buf.len();
+        if align < 16 && align < key.len() {
+            let (a, b) = key.split_at(align);
+            key = b;
+            for val in a {
+                let _ = self.buf.write_u8(*val);
+                self.total_len += 1;
+                if self.buf.is_full() {
+                    self.try_chomp();
+                }
+            }
+        }
+        let mut chunks = key.chunks_exact(16);
+        for c in chunks.by_ref() {
+            let (k1, k2) = c.split_at(8);
+            let k1 = u64::from_le_bytes(k1.try_into().unwrap_or_default());
+            let k2 = u64::from_le_bytes(k2.try_into().unwrap_or_default());
+            self.h1
+                .bitxor_assign(k1.wrapping_mul(C1).rotate_left(31).wrapping_mul(C2));
+            self.h1 = self
+                .h1
+                .rotate_left(27)
+                .wrapping_add(self.h2)
+                .wrapping_mul(5)
+                .wrapping_add(0x52dce729);
+            self.h2
+                .bitxor_assign(k2.wrapping_mul(C2).rotate_left(33).wrapping_mul(C1));
+            self.h2 = self
+                .h2
+                .rotate_left(31)
+                .wrapping_add(self.h1)
+                .wrapping_mul(5)
+                .wrapping_add(0x38495ab5);
+            self.total_len += 16;
+        }
+        for b in chunks.remainder() {
+            let _ = self.buf.push_back(*b);
             self.total_len += 1;
             self.try_chomp();
         }
