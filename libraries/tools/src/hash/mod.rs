@@ -17,7 +17,7 @@ pub use murmur3::{murmur3_128, murmur3_128_seed};
 pub use sha1::SHA1;
 pub use sha2::{SHA224, SHA256, SHA384, SHA512};
 
-pub mod blake2;
+mod blake2;
 pub mod md5;
 pub mod murmur3;
 pub mod sha1;

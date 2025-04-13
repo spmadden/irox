@@ -8,8 +8,6 @@
 
 #![allow(clippy::indexing_slicing)]
 
-use core::ops::{Index, IndexMut, Not};
-use irox_bits::{Error, ErrorKind, MutBits};
 pub use sha224_256::{SHA224, SHA256};
 pub use sha384_512::{SHA384, SHA512};
 
@@ -93,109 +91,6 @@ macro_rules! sha2_impl {
     };
 }
 
-struct ShaBuf<const N: usize, T: Default + Copy> {
-    pub buf: [T; N],
-    pub size_bytes: usize,
-}
-impl<const N: usize, T: Default + Copy> ShaBuf<N, T> {
-    pub fn new() -> Self {
-        Self {
-            buf: [T::default(); N],
-            size_bytes: 0,
-        }
-    }
-    pub fn len(&self) -> usize {
-        self.size_bytes
-    }
-}
-impl<const N: usize> ShaBuf<N, u32> {
-    pub fn push_back(&mut self, val: u8) -> Result<(), Error> {
-        self.write_u8(val)
-    }
-}
-
-impl<const N: usize> MutBits for ShaBuf<N, u32> {
-    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        let size = self.size_bytes;
-        if size == (N << 2) {
-            return Err(ErrorKind::OutOfMemory.into());
-        }
-        let idx = size >> 2;
-        let shift = 24 - ((size & 0x3) << 3);
-        self.buf[idx] &= (0xFFu32.wrapping_shl(shift as u32)).not();
-        self.buf[idx] |= (val as u32).wrapping_shl(shift as u32);
-        self.size_bytes += 1;
-        Ok(())
-    }
-
-    fn write_be_u32(&mut self, val: u32) -> Result<(), Error> {
-        let size = self.size_bytes;
-        if size == (N << 2) {
-            return Err(ErrorKind::OutOfMemory.into());
-        }
-        let idx = size >> 2;
-        self.buf[idx] = val;
-        self.size_bytes += 4;
-        Ok(())
-    }
-}
-impl<const N: usize> Index<usize> for ShaBuf<N, u32> {
-    type Output = u32;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.buf[index]
-    }
-}
-impl<const N: usize> IndexMut<usize> for ShaBuf<N, u32> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.buf[index]
-    }
-}
-
-impl<const N: usize> ShaBuf<N, u64> {
-    pub fn push_back(&mut self, val: u8) -> Result<(), Error> {
-        self.write_u8(val)
-    }
-}
-
-impl<const N: usize> MutBits for ShaBuf<N, u64> {
-    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
-        let size = self.size_bytes;
-        if size == (N << 3) {
-            return Err(ErrorKind::OutOfMemory.into());
-        }
-        let idx = size >> 3;
-        let shift = 56 - ((size & 0x7) << 3);
-        self.buf[idx] &= (0xFFu64.wrapping_shl(shift as u32)).not();
-        self.buf[idx] |= (val as u64).wrapping_shl(shift as u32);
-        self.size_bytes += 1;
-        Ok(())
-    }
-
-    fn write_be_u64(&mut self, val: u64) -> Result<(), Error> {
-        let size = self.size_bytes;
-        if size == (N << 2) {
-            return Err(ErrorKind::OutOfMemory.into());
-        }
-        let idx = size >> 3;
-        self.buf[idx] = val;
-        self.size_bytes += 8;
-        Ok(())
-    }
-}
-impl<const N: usize> Index<usize> for ShaBuf<N, u64> {
-    type Output = u64;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.buf[index]
-    }
-}
-impl<const N: usize> IndexMut<usize> for ShaBuf<N, u64> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.buf[index]
-    }
-}
-
 /// Block size (bytes) for SHA224
 pub const SHA224_BLOCK_SIZE: usize = 64;
 pub const SHA224_WORD_SIZE: usize = 16;
@@ -203,7 +98,7 @@ pub const SHA224_WORD_SIZE: usize = 16;
 pub const SHA256_BLOCK_SIZE: usize = 64;
 pub const SHA256_WORD_SIZE: usize = 16;
 mod sha224_256 {
-    use crate::hash::sha2::ShaBuf;
+    use crate::buf::{ArrayBuf, U32ArrayBuf};
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
 
@@ -262,7 +157,7 @@ mod sha224_256 {
     ];
 
     pub struct LittleSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
-        buf: ShaBuf<64, u32>,
+        buf: U32ArrayBuf<16>,
         written_length: u64,
         h0: u32,
         h1: u32,
@@ -280,7 +175,7 @@ mod sha224_256 {
         pub fn new(init: [u32; 8]) -> Self {
             let [h0, h1, h2, h3, h4, h5, h6, h7] = init;
             Self {
-                buf: ShaBuf::new(),
+                buf: ArrayBuf::new(),
                 written_length: 0,
                 h0,
                 h1,
@@ -294,12 +189,12 @@ mod sha224_256 {
         }
 
         fn try_chomp(&mut self) {
-            if self.buf.len() < BLOCK_SIZE {
+            if !self.buf.is_full() {
                 return;
             }
 
-            let words = &mut self.buf.buf;
-            self.buf.size_bytes = 0;
+            let mut words = [0; 64];
+            words[0..16].copy_from_slice(&self.buf.take_be_buf());
             for idx in 16..64 {
                 words[idx] = SSIG1!(words[idx - 2])
                     .wrapping_add(words[idx - 7])
@@ -375,8 +270,29 @@ mod sha224_256 {
         }
         ///
         /// Appends the bytes to the internal buffer.  NOTE: You must call 'finish' to get the final result.
-        pub fn write(&mut self, bytes: &[u8]) {
-            for b in bytes {
+        pub fn write(&mut self, mut v: &[u8]) {
+            let align = self.buf.rem_align();
+            if align < 4 && align < v.len() {
+                let (a, b) = v.split_at(self.buf.rem_align());
+                v = b;
+                for val in a {
+                    let _ = self.buf.write_u8(*val);
+                    self.written_length += 1;
+                    if self.buf.is_full() {
+                        self.try_chomp();
+                    }
+                }
+            }
+            let mut chunks = v.chunks_exact(4);
+            for c in chunks.by_ref() {
+                let _ = self
+                    .buf
+                    .push_prim(u32::from_be_bytes(c.try_into().unwrap_or_default()));
+                self.written_length += 4;
+
+                self.try_chomp();
+            }
+            for b in chunks.remainder() {
                 let _ = self.buf.push_back(*b);
                 self.written_length += 1;
                 self.try_chomp();
@@ -424,7 +340,7 @@ pub const SHA384_WORD_SIZE: usize = 32;
 pub const SHA512_BLOCK_SIZE: usize = 128;
 pub const SHA512_WORD_SIZE: usize = 32;
 mod sha384_512 {
-    use crate::hash::sha2::ShaBuf;
+    use crate::buf::{ArrayBuf, U64ArrayBuf};
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
 
@@ -566,7 +482,7 @@ mod sha384_512 {
     ];
 
     pub struct BiggerSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
-        buf: ShaBuf<128, u64>,
+        buf: U64ArrayBuf<16>,
         written_length: u128,
         h0: u64,
         h1: u64,
@@ -584,7 +500,7 @@ mod sha384_512 {
         pub fn new(init: [u64; 8]) -> Self {
             let [h0, h1, h2, h3, h4, h5, h6, h7] = init;
             Self {
-                buf: ShaBuf::new(),
+                buf: ArrayBuf::new(),
                 written_length: 0,
                 h0,
                 h1,
@@ -598,12 +514,12 @@ mod sha384_512 {
         }
 
         fn try_chomp(&mut self) {
-            if self.buf.len() < BLOCK_SIZE {
+            if !self.buf.is_full() {
                 return;
             }
 
-            let words = &mut self.buf.buf;
-            self.buf.size_bytes = 0;
+            let mut words = [0; 80];
+            words[0..16].copy_from_slice(&self.buf.take_be_buf());
             for idx in 16..80 {
                 words[idx] = SSIG1!(words[idx - 2])
                     .wrapping_add(words[idx - 7])
@@ -679,8 +595,28 @@ mod sha384_512 {
         }
         ///
         /// Appends the bytes to the internal buffer.  NOTE: You must call 'finish' to get the final result.
-        pub fn write(&mut self, bytes: &[u8]) {
-            for b in bytes {
+        pub fn write(&mut self, mut v: &[u8]) {
+            let align = self.buf.rem_align();
+            if align < 8 && align < v.len() {
+                let (a, b) = v.split_at(self.buf.rem_align());
+                v = b;
+                for val in a {
+                    let _ = self.buf.write_u8(*val);
+                    self.written_length += 1;
+                    if self.buf.is_full() {
+                        self.try_chomp();
+                    }
+                }
+            }
+            let mut chunks = v.chunks_exact(8);
+            for c in chunks.by_ref() {
+                let _ = self
+                    .buf
+                    .push_prim(u64::from_be_bytes(c.try_into().unwrap_or_default()));
+                self.written_length += 8;
+                self.try_chomp();
+            }
+            for b in chunks.remainder() {
                 let _ = self.buf.push_back(*b);
                 self.written_length += 1;
                 self.try_chomp();

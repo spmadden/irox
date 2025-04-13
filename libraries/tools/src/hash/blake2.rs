@@ -4,12 +4,11 @@
 
 #![allow(clippy::integer_division_remainder_used)]
 
-use crate::array;
-use crate::buf::Buffer;
-use crate::buf::{FixedU8Buf, RoundU8Buffer};
+use crate::buf::ArrayBuf;
+use crate::buf::FixedU8Buf;
 use crate::hash::HashDigest;
 use core::ops::{BitXorAssign, Not};
-use irox_bits::{Bits, MutBits};
+use irox_bits::{MutBits, WriteToLEBits};
 
 macro_rules! g {
     (
@@ -64,21 +63,13 @@ static SIGMA: &[&[usize; 16]; 12] = &[
     &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     &[14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3],
 ];
-fn read_le_u32<T: Bits>(i: &mut T) -> u32 {
-    let out = array!(i.read_u8().unwrap_or_default();4);
-    u32::from_le_bytes(out)
-}
-fn read_le_u64<T: Bits>(i: &mut T) -> u64 {
-    let out = array!(i.read_u8().unwrap_or_default();8);
-    u64::from_le_bytes(out)
-}
 
 macro_rules! impl_blake2 {
-    ($name:ident,$prim:ty,$nprim:ty,$readprim:ident,$writeprim:ident,$bb:literal,$w:literal, $r:literal, $iv:ident, $RND:ident) => {
+    ($name:ident,$prim:ty,$nprim:ty,$nb:literal,$bb:literal,$w:literal, $r:literal, $iv:ident, $RND:ident) => {
         pub struct $name<const NN: usize> {
             h: [$prim; 8],
             written: $nprim,
-            buf: RoundU8Buffer<$bb>,
+            buf: ArrayBuf<16, $nb, $prim>,
         }
         impl<const NN: usize> Default for $name<NN> {
             fn default() -> Self {
@@ -89,8 +80,8 @@ macro_rules! impl_blake2 {
             pub fn new(key: &[u8]) -> Self {
                 let mut out = Self {
                     h: *$iv,
-                    written:0,
-                    buf: Default::default()
+                    written: 0,
+                    buf: Default::default(),
                 };
                 let nn = (NN as $prim) & 0xFF;
                 let kk = ((key.len() as $prim) & 0xFF) << 8;
@@ -102,15 +93,16 @@ macro_rules! impl_blake2 {
 
                 out
             }
+
             fn chomp(&mut self, last: bool) {
-                let m : [$prim;16] = array!($readprim(&mut self.buf);16);
-                self.compress(&m, self.written, last);
-            }
-            fn compress(&mut self, m: &[$prim;16], counter: $nprim, last: bool) {
-                let mut v: [$prim; 16] = [
-                    self.h[0], self.h[1], self.h[2], self.h[3], self.h[4], self.h[5], self.h[6],
-                    self.h[7], $iv[0], $iv[1], $iv[2], $iv[3], $iv[4], $iv[5], $iv[6], $iv[7],
-                ];
+                let m = self.buf.take_le_buf();
+                let counter = self.written;
+                let mut v: [$prim; 16] = [0; 16];
+                (v[0..8]).copy_from_slice(&self.h);
+                (v[8..]).copy_from_slice($iv);
+                //     self.h[0], self.h[1], self.h[2], self.h[3], self.h[4], self.h[5], self.h[6],
+                //     self.h[7], $iv[0], $iv[1], $iv[2], $iv[3], $iv[4], $iv[5], $iv[6], $iv[7],
+                // ];
                 v[12].bitxor_assign(counter as $prim);
                 v[13].bitxor_assign((counter >> $w) as $prim);
                 if last {
@@ -129,64 +121,74 @@ macro_rules! impl_blake2 {
                     g!(&mut v[3], &mut v[4], &mut v[9], &mut v[14], m[s[14]], m[s[15]], $RND);
                 }
                 for i in 0..8 {
-                    self.h[i].bitxor_assign(v[i] ^ v[i + 8]);
+                    self.h[i].bitxor_assign(v[i]);
+                    self.h[i].bitxor_assign(v[i + 8]);
                 }
             }
-            pub fn write(&mut self, v: &[u8]) {
-                for val in v {
-                    let _ = self.buf.push(*val);
+            pub fn write(&mut self, mut v: &[u8]) {
+                let align = self.buf.rem_align();
+                if align < 4 && align < v.len() {
+                    let (a, b) = v.split_at(self.buf.rem_align());
+                    v = b;
+                    for val in a {
+                        let _ = self.buf.write_le_u8(*val);
+                        self.written += 1;
+                        if self.buf.is_full() {
+                            self.chomp(false);
+                        }
+                    }
+                }
+
+                let mut chunks = v.chunks_exact($nb);
+                for c in chunks.by_ref() {
+                    let _ = self
+                        .buf
+                        .push_prim(<$prim>::from_le_bytes(c.try_into().unwrap_or_default()));
+                    self.written += $nb;
+                    if self.buf.is_full() {
+                        self.chomp(false);
+                    }
+                }
+                for val in chunks.remainder() {
+                    let _ = self.buf.write_le_u8(*val);
                     self.written += 1;
                     if self.buf.is_full() {
                         self.chomp(false);
                     }
                 }
             }
-            pub fn hash(mut self, v: &[u8]) -> [u8;NN] {
+            pub fn hash(mut self, v: &[u8]) -> [u8; NN] {
                 self.write(v);
                 self.finish()
             }
-            pub fn finish(mut self) -> [u8;NN] {
+            pub fn finish(mut self) -> [u8; NN] {
                 self.chomp(true);
-                let mut out = FixedU8Buf::<NN>::default();
-                for i in 0..8 {
-                    let _ = MutBits::$writeprim(&mut out, self.h[i]);
+
+                // let out: [u8; NN] = unsafe { self.h.align_to::<u8>().1 }.copy_subset();
+                let mut out: FixedU8Buf<NN> = FixedU8Buf::default();
+                for v in self.h {
+                    let _ = v.write_le_to(&mut out);
                 }
+                // out
                 out.take()
             }
         }
-        impl<const NN: usize> HashDigest<$bb,NN> for $name<NN> {
-
-                fn finish(self) -> [u8; NN] { todo!() }
-                fn hash(self, _: &[u8]) -> [u8; NN] { todo!() }
-                fn write(&mut self, _: &[u8]) { todo!() }
+        impl<const NN: usize> HashDigest<$bb, NN> for $name<NN> {
+            fn finish(self) -> [u8; NN] {
+                todo!()
+            }
+            fn hash(self, _: &[u8]) -> [u8; NN] {
+                todo!()
+            }
+            fn write(&mut self, _: &[u8]) {
+                todo!()
+            }
         }
     };
 }
 
-impl_blake2!(
-    BLAKE2s,
-    u32,
-    u64,
-    read_le_u32,
-    write_le_u32,
-    64,
-    32,
-    10,
-    BLAKE2S_IV,
-    BLAKE2S_R
-);
-impl_blake2!(
-    BLAKE2b,
-    u64,
-    u128,
-    read_le_u64,
-    write_le_u64,
-    128,
-    64,
-    12,
-    BLAKE2B_IV,
-    BLAKE2B_R
-);
+impl_blake2!(BLAKE2s, u32, u64, 4, 64, 32, 10, BLAKE2S_IV, BLAKE2S_R);
+impl_blake2!(BLAKE2b, u64, u128, 8, 128, 64, 12, BLAKE2B_IV, BLAKE2B_R);
 pub type BLAKE2s128 = BLAKE2s<16>;
 pub type BLAKE2s160 = BLAKE2s<20>;
 pub type BLAKE2s224 = BLAKE2s<28>;
@@ -235,5 +237,16 @@ mod tests {
         let h = BLAKE2b512::default().hash(b"abc");
         let exp = hex!("BA80A53F981C4D0D6A2797B69F12F6E94C212F14685AC4B74B12BB6FDBFFA2D17D87C5392AAB792DC252D5DE4533CC9518D38AA8DBF1925AB92386EDD4009923");
         assert_eq_hex_slice!(exp, h);
+    }
+
+    #[test]
+    pub fn test_long() {
+        let exp = hex!("508C5E8C327C14E2E1A72BA34EEB452F37458B209ED63A294D999B4C86675982");
+        let mut inp = [0u8; 128];
+        let mut v = BLAKE2s256::default();
+        for i in 0..100000 {
+            v.write(&inp);
+            inp[0] = inp[0].wrapping_add(i as u8);
+        }
     }
 }
