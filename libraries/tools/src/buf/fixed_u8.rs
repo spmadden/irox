@@ -136,6 +136,14 @@ impl<const N: usize> FixedU8Buf<N> {
             j -= 1;
         }
     }
+
+    pub fn from_slice(buf: &[u8]) -> Self {
+        let mut out = Self::new();
+        buf.iter().take(N).for_each(|b| {
+            let _ = out.push_back(*b);
+        });
+        out
+    }
 }
 impl<const N: usize> WriteToBEBits for FixedU8Buf<N> {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
@@ -291,7 +299,6 @@ impl<const N: usize> IndexMut<usize> for FixedU8Buf<N> {
         &mut self.buf[index]
     }
 }
-
 pub struct FixedU8BufIter<'a, const N: usize> {
     buf: &'a FixedU8Buf<N>,
     idx: usize,
