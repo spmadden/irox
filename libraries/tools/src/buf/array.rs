@@ -109,6 +109,7 @@ impl<const N: usize> MutBits for ArrayBuf<N, 4, u32> {
             self.b2_used = 0;
             self.buf[self.size] = u32::from_be_bytes(self.b2);
             self.size += 1;
+            self.b2.fill(0);
         }
         Ok(())
     }

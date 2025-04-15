@@ -8,7 +8,7 @@ use crate::buf::ArrayBuf;
 use crate::buf::FixedU8Buf;
 use crate::hash::HashDigest;
 use core::ops::{BitXorAssign, Not};
-use irox_bits::{MutBits, WriteToLEBits};
+use irox_bits::WriteToLEBits;
 
 macro_rules! g {
     (
@@ -85,18 +85,23 @@ macro_rules! impl_blake2 {
                 };
                 let nn = (NN as $prim) & 0xFF;
                 let kk = ((key.len() as $prim) & 0xFF) << 8;
-                let p = (0x01010000 as $prim) ^ nn ^ kk;
+                let p = (0x01010000 as $prim) | nn | kk;
                 out.h[0].bitxor_assign(p);
                 if kk > 0 {
-                    out.buf.write_some_bytes(key);
+                    let mut key = FixedU8Buf::<$bb>::from_slice(key);
+                    out.write(key.as_mut_full());
                 }
 
                 out
             }
 
             fn chomp(&mut self, last: bool) {
+                if self.buf.is_empty() && self.written > 0 && !last {
+                    return;
+                }
                 let m = self.buf.take_le_buf();
-                let counter = self.written;
+
+                let counter = self.written; // + ($nb - (self.written & Self::MASK));
                 let mut v: [$prim; 16] = [0; 16];
                 (v[0..8]).copy_from_slice(&self.h);
                 (v[8..]).copy_from_slice($iv);
@@ -131,30 +136,30 @@ macro_rules! impl_blake2 {
                     let (a, b) = v.split_at(self.buf.rem_align());
                     v = b;
                     for val in a {
-                        let _ = self.buf.write_le_u8(*val);
-                        self.written += 1;
                         if self.buf.is_full() {
                             self.chomp(false);
                         }
+                        let _ = self.buf.write_le_u8(*val);
+                        self.written += 1;
                     }
                 }
 
                 let mut chunks = v.chunks_exact($nb);
                 for c in chunks.by_ref() {
+                    if self.buf.is_full() {
+                        self.chomp(false);
+                    }
                     let _ = self
                         .buf
                         .push_prim(<$prim>::from_le_bytes(c.try_into().unwrap_or_default()));
                     self.written += $nb;
-                    if self.buf.is_full() {
-                        self.chomp(false);
-                    }
                 }
                 for val in chunks.remainder() {
-                    let _ = self.buf.write_le_u8(*val);
-                    self.written += 1;
                     if self.buf.is_full() {
                         self.chomp(false);
                     }
+                    let _ = self.buf.write_le_u8(*val);
+                    self.written += 1;
                 }
             }
             pub fn hash(mut self, v: &[u8]) -> [u8; NN] {

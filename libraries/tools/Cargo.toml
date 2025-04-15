@@ -50,6 +50,10 @@ required-features = ["std"]
 name = "hmactests"
 required-features = ["std"]
 
+[[test]]
+name = "blake2tests"
+required-features = ["std"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
