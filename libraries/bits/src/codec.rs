@@ -769,3 +769,14 @@ cfg_feature_alloc! {
         }
     }
 }
+
+/// Serialize a structure (struct, enum, tuple, etc) to a [`MutBits`] impl.
+pub trait SerializeToBits {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error>;
+}
+
+/// Deserialize a structure (struct, enum, tuple, etc) from a [`Bits`] impl.
+pub trait DeserializeFromBits {
+    type Output: Sized;
+    fn deserialize_from_bits<T: Bits>(inp: &mut T) -> Result<Self::Output, Error>;
+}
