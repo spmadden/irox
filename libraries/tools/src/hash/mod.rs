@@ -9,6 +9,7 @@
 #![allow(clippy::indexing_slicing)]
 #![deny(clippy::integer_division_remainder_used)]
 
+use crate::cfg_feature_alloc;
 pub use blake2::*;
 use core::ops::BitXorAssign;
 use irox_bits::MutBits;
@@ -44,6 +45,10 @@ pub type HMACSHA256 = HMAC<{ sha2::SHA256_BLOCK_SIZE }, { sha2::SHA256_OUTPUT_SI
 pub type HMACSHA384 = HMAC<{ sha2::SHA384_BLOCK_SIZE }, { sha2::SHA384_OUTPUT_SIZE }, sha2::SHA384>;
 /// HMAC using the SHA512 algorithm
 pub type HMACSHA512 = HMAC<{ sha2::SHA512_BLOCK_SIZE }, { sha2::SHA512_OUTPUT_SIZE }, sha2::SHA512>;
+/// HMAC using the BLAKE2s algorithm
+pub type HMACBLAKE2s = HMAC<64, 32, BLAKE2s256>;
+/// HMAC using the BLAKE2b algorithm
+pub type HMACBLAKE2b = HMAC<128, 64, BLAKE2b512>;
 
 ///
 /// Implementation of [RFC 2104](https://datatracker.ietf.org/doc/html/rfc2104) based on the [Wikipedia](https://en.wikipedia.org/wiki/HMAC#Implementation) algorithm
@@ -108,6 +113,132 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
     }
 }
 
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum HashAlgorithm {
+    MD5,
+    SHA1,
+    SHA224,
+    SHA256,
+    SHA384,
+    SHA512,
+    Murmur3_128,
+    Murmur3_32,
+    BLAKE2s128,
+    BLAKE2s160,
+    BLAKE2s224,
+    BLAKE2s256,
+    BLAKE2b160,
+    BLAKE2b224,
+    BLAKE2b256,
+    BLAKE2b384,
+    BLAKE2b512,
+}
+impl TryFrom<&str> for HashAlgorithm {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        Ok(match value {
+            "md5" => Self::MD5,
+            "sha1" => Self::SHA1,
+            "sha256" => Self::SHA256,
+            "sha512" => Self::SHA512,
+            "murmur3_128" | "murmur3" | "m3" => Self::Murmur3_128,
+            "b2" | "b2b" | "blake2b" | "blake2b512" => Self::BLAKE2b512,
+            "b2s" | "blake2s" | "blake2s256" => Self::BLAKE2s256,
+            _ => return Err(()),
+        })
+    }
+}
+
+cfg_feature_alloc! {
+    extern crate alloc;
+    use irox_bits::{Error, ToBEBytes};
+    use crate::hash::murmur3::{Murmur3_128, Murmur3_32};
+
+
+    pub enum Hasher {
+        MD5(MD5),
+        SHA1(SHA1),
+        SHA224(SHA224),
+        SHA256(SHA256),
+        SHA384(SHA384),
+        SHA512(SHA512),
+        Murmur3_128(Murmur3_128),
+        Murmur3_32(Murmur3_32),
+        BLAKE2b512(BLAKE2b512),
+        BLAKE2s256(BLAKE2s256),
+        BLAKE2s128(BLAKE2s128),
+        BLAKE2s160(BLAKE2s160),
+        BLAKE2s224(BLAKE2s224),
+        BLAKE2b160(BLAKE2b160),
+        BLAKE2b224(BLAKE2b224),
+        BLAKE2b256(BLAKE2b256),
+        BLAKE2b384(BLAKE2b384),
+    }
+    macro_rules! impl_hash_from {
+        ($value:ident, [$($hash:ident),+]) => {
+            match $value {
+                $(
+                    HashAlgorithm::$hash => Ok(Hasher::$hash(<$hash>::default())),
+                )*
+                _ => todo!()
+            }
+        };
+    }
+    impl TryFrom<HashAlgorithm> for Hasher {
+        type Error = Error;
+
+        fn try_from(value: HashAlgorithm) -> Result<Self, Self::Error> {
+            impl_hash_from!(value,
+                [
+                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
+                    BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
+                ])
+        }
+    }
+     macro_rules! impl_hash_write {
+        ($value:ident, $val:ident, [$($hash:ident),+]) => {
+            match $value {
+                $(
+                    Hasher::$hash(h) => h.write($val),
+                )*
+                _ => todo!()
+            }
+        };
+    }
+
+    macro_rules! impl_hash_finish {
+        ($value:ident, [$($hash:ident),+]) => {
+            match $value {
+                $(
+                    Hasher::$hash(v) => alloc::boxed::Box::from(v.finish().to_be_bytes()),
+                )*
+                _ => todo!()
+            }
+        };
+    }
+    impl Hasher {
+        pub fn write(&mut self, val: &[u8]) {
+            impl_hash_write!(self, val,
+                [
+                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
+                    BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
+                ])
+        }
+        pub fn finish(self) -> alloc::boxed::Box<[u8]> {
+            impl_hash_finish!(self,
+                [
+                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
+                    BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
+                ])
+        }
+    }
+
+}
 #[cfg(test)]
 mod hmac_tests {
     use crate::hash::*;
