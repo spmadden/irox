@@ -133,7 +133,7 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
     out
 }
 
-#[proc_macro_derive(EnumIterItem)]
+#[proc_macro_derive(EnumIterItem, attributes(skip))]
 pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let Data::Enum(s) = input.data else {
@@ -144,6 +144,13 @@ pub fn enumitemiter_derive(input: TokenStream) -> TokenStream {
     let mut items = alloc::vec::Vec::<TokenStream>::new();
 
     for field in s.variants {
+        if field
+            .attrs
+            .iter()
+            .any(|attr| attr.meta.path().is_ident("skip"))
+        {
+            continue;
+        }
         if !field.fields.is_empty() {
             return compile_error(&field.span(), "Field cannot have fields");
         }
