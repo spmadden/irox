@@ -614,6 +614,19 @@ impl_large_array!(
     next_le_u128
 ); // 1536 bit
 
+macro_rules! impl_tobe_self {
+    ($($n:literal) +) => {
+        $(
+            impl ToBEBytes<$n> for [u8;$n] {
+                fn to_be_bytes(&self) -> [u8; $n] {
+                    *self
+                }
+            }
+        )*
+    };
+}
+impl_tobe_self!(16 20 28 32 48 60 64);
+
 /// Writes 'self' to the provided [`MutBits`] impl in big endian order.
 pub trait WriteToBEBits {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error>;
