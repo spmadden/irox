@@ -131,3 +131,12 @@ impl<T: Default + Sized + Copy> ZeroedBuffer for VecDeque<T> {
         VecDeque::from(vec![T::default(); capacity])
     }
 }
+impl<T: Default + Sized + Copy> ZeroedBuffer for Box<[T]> {
+    type Output = Self;
+
+    fn new_zeroed(capacity: usize) -> Self::Output {
+        let mut vec = Vec::new();
+        vec.resize_with(capacity, Default::default);
+        vec.into_boxed_slice()
+    }
+}
