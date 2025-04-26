@@ -13,17 +13,17 @@ pub use signature::*;
 
 use crate::packets::data::LiteralData;
 use crate::packets::ops::OnePassSignature;
-use irox_bits::{Bits, BitsWrapper, Error, ErrorKind};
+use irox_bits::{Bits, BitsWrapper, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::{EnumIterItem, EnumName};
 
-pub static MESSAGE_HEADER: &str = "-----BEGIN PGP MESSAGE-----";
-pub static MESSAGE_FOOTER: &str = "-----END PGP MESSAGE-----";
-pub static PUBKEY_HEADER: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
-pub static PUBKEY_FOOTER: &str = "-----END PGP PUBLIC KEY BLOCK-----";
-pub static PRIVKEY_HEADER: &str = "-----BEGIN PGP PRIVATE KEY BLOCK-----";
-pub static PRIVKEY_FOOTER: &str = "-----END PGP PRIVATE KEY BLOCK-----";
-pub static SIG_HEADER: &str = "-----BEGIN PGP SIGNATURE BLOCK-----";
-pub static SIG_FOOTER: &str = "-----END PGP SIGNATURE BLOCK-----";
+pub const MESSAGE_HEADER: &str = "-----BEGIN PGP MESSAGE-----";
+pub const MESSAGE_FOOTER: &str = "-----END PGP MESSAGE-----";
+pub const PUBKEY_HEADER: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
+pub const PUBKEY_FOOTER: &str = "-----END PGP PUBLIC KEY BLOCK-----";
+pub const PRIVKEY_HEADER: &str = "-----BEGIN PGP PRIVATE KEY BLOCK-----";
+pub const PRIVKEY_FOOTER: &str = "-----END PGP PRIVATE KEY BLOCK-----";
+pub const SIG_HEADER: &str = "-----BEGIN PGP SIGNATURE BLOCK-----";
+pub const SIG_FOOTER: &str = "-----END PGP SIGNATURE BLOCK-----";
 
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
@@ -102,12 +102,12 @@ impl TryFrom<u8> for OpenPGPPacketType {
         Err(ErrorKind::InvalidData.into())
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OpenPGPPacketHeader {
     pub packet_type: OpenPGPPacketType,
     pub packet_length: u32,
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum OpenPGPPacketData {
     PublicKey(PubKeyPacket),
     PublicSubkey(PubKeyPacket),
@@ -116,6 +116,20 @@ pub enum OpenPGPPacketData {
     LiteralData(LiteralData),
     OnePassSignature(OnePassSignature),
     Unknown(Vec<u8>),
+}
+impl SerializeToBits for OpenPGPPacketData {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            OpenPGPPacketData::PublicKey(pk) => pk.serialize_to_bits(bits),
+            // OpenPGPPacketData::PublicSubkey(_) => {}
+            // OpenPGPPacketData::UserID(_) => {}
+            // OpenPGPPacketData::Signature(_) => {}
+            // OpenPGPPacketData::LiteralData(_) => {}
+            // OpenPGPPacketData::OnePassSignature(_) => {}
+            // OpenPGPPacketData::Unknown(_) => {}
+            _ => todo!(),
+        }
+    }
 }
 impl TryFrom<(OpenPGPPacketType, Vec<u8>)> for OpenPGPPacketData {
     type Error = Error;
@@ -145,7 +159,7 @@ impl TryFrom<(OpenPGPPacketType, Vec<u8>)> for OpenPGPPacketData {
         }
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OpenPGPPacket {
     pub header: OpenPGPPacketHeader,
     pub data: OpenPGPPacketData,
@@ -231,5 +245,16 @@ impl OpenPGPMessage {
             packets.push(OpenPGPPacket { header, data });
         }
         Ok(Self { packets })
+    }
+    pub fn validate_signatures(&self) -> Result<(), Error> {
+        let mut data_to_verify = Vec::<u8>::new();
+        for pkt in &self.packets {
+            if let OpenPGPPacketData::Signature(_sig) = &pkt.data {
+                todo!()
+            } else {
+                pkt.data.serialize_to_bits(&mut data_to_verify)?;
+            }
+        }
+        todo!()
     }
 }

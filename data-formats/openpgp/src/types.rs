@@ -319,3 +319,57 @@ impl TryFrom<&[u8]> for ECC_Curve {
         Err(ErrorKind::InvalidInput.into())
     }
 }
+
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
+pub enum Features {
+    Version1SymEncIPD,
+    Version2SymEncIPD,
+}
+impl Features {
+    pub fn get_id(&self) -> u8 {
+        match self {
+            Features::Version1SymEncIPD => 0x01,
+            Features::Version2SymEncIPD => 0x08,
+        }
+    }
+    pub fn try_from(mut value: &[u8]) -> Result<Vec<Self>, Error> {
+        let mut out = Vec::new();
+        let flags = match value.len() {
+            1 => value.next_u8()?.unwrap_or_default() as u32,
+            _ => return Err(ErrorKind::InvalidData.into()),
+        };
+        for f in Self::iter_items() {
+            if flags & f.get_id() as u32 != 0 {
+                out.push(f);
+            }
+        }
+        Ok(out)
+    }
+}
+
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
+pub enum KeyServerPreference {
+    NoModify,
+}
+impl KeyServerPreference {
+    pub fn get_id(&self) -> u8 {
+        match self {
+            KeyServerPreference::NoModify => 0x80,
+        }
+    }
+    pub fn try_from(mut value: &[u8]) -> Result<Vec<Self>, Error> {
+        let mut out = Vec::new();
+        let flags = match value.len() {
+            1 => value.next_u8()?.unwrap_or_default() as u32,
+            _ => return Err(ErrorKind::InvalidData.into()),
+        };
+        for f in Self::iter_items() {
+            if flags & f.get_id() as u32 != 0 {
+                out.push(f);
+            }
+        }
+        Ok(out)
+    }
+}

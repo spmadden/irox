@@ -36,7 +36,7 @@ impl TryFrom<u8> for DataFormat {
         Err(ErrorKind::InvalidInput.into())
     }
 }
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct LiteralData {
     pub format: DataFormat,
     pub filename: String,

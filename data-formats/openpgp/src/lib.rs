@@ -11,7 +11,9 @@
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+extern crate core;
 
+pub mod armor;
 pub mod keybox;
 pub mod keygrip;
 pub mod packets;

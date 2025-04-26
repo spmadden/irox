@@ -4,13 +4,27 @@
 
 use irox_bits::{BitsWrapper, Error, MutBits};
 use irox_cryptids::ed25519::Ed25519PublicKey;
-use irox_openpgp::packets::{OpenPGPMessage, OpenPGPPackeStream, OpenPGPPacketData};
+use irox_openpgp::armor::{ArmorType, Dearmor};
+use irox_openpgp::packets::{
+    CreationTime, EdDSALegacy, EdDSALegacySignature, FeaturesSubpkt, Issuer, KeyExpiration,
+    KeyFlags, KeyServerPreferences, OpenPGPMessage, OpenPGPPackeStream, OpenPGPPacket,
+    OpenPGPPacketData, OpenPGPPacketHeader, OpenPGPPacketType, PreferredAEADSymCiphers,
+    PreferredCompressionAlgorithms, PreferredHashAlgorithms, PreferredV1SEIPDSymCiphers,
+    PubKeyData, PubKeyPacket, PubKeyV4, PubkeyAlgorithm, SigV4PacketBuilder, SignatureData,
+    SignaturePacket, SignatureSubpacket, SignatureSubtype,
+};
+use irox_openpgp::types::{
+    CompressionAlgorithm, ECC_Curve, Features, HashAlgorithm, KeyFlag, KeyServerPreference,
+    SymmetricKeyAlgorithm,
+};
+use irox_time::datetime::UTCDateTime;
+use irox_time::Duration;
 use irox_tools::hash::{SHA1, SHA512};
 use irox_tools::hex;
 use irox_tools::hex::{to_hex_str_upper, HexDump};
 use std::io::Write;
 
-static _PUBKEY_A: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----
+static PUBKEY_A: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mDMEZ33ekRYJKwYBBAHaRw8BAQdAZOxGlC92+TxBy2cZHzcR65FWFvJj+bU05CZv
 RkTfd120LFNlYW4gUC4gTWFkZGVuIChZSzVOTykgPHNlYW5Ac2Vhbm1hZGRlbi5u
@@ -63,7 +77,7 @@ static PUBKEY_B: &[u8] = &hex!(
     "dce74ba84ff008160a03");
 
 #[test]
-pub fn test_read() -> Result<(), Error> {
+pub fn test_read_binary() -> Result<(), Error> {
     let mut key = PUBKEY_B;
     let mut out = std::io::stdout();
     let out = &mut BitsWrapper::Borrowed(&mut out);
@@ -79,6 +93,135 @@ pub fn test_read() -> Result<(), Error> {
             fp.as_slice().hexdump_to(out)?;
         }
     }
+    Ok(())
+}
+#[test]
+pub fn test_read_armor() -> Result<(), Error> {
+    let mut key = PUBKEY_A.as_bytes();
+    let mut out = std::io::stdout();
+    let out = &mut BitsWrapper::Borrowed(&mut out);
+    let mut stream = key.dearmor();
+    {
+        let message = OpenPGPMessage::build_from(&mut stream)?;
+        let mut iter = message.packets.iter();
+        assert_eq!(
+            iter.next(),
+            Some(&OpenPGPPacket {
+                header: OpenPGPPacketHeader {
+                    packet_type: OpenPGPPacketType::PublicKey,
+                    packet_length: 51,
+                },
+                data: OpenPGPPacketData::PublicKey(PubKeyPacket::Version4(PubKeyV4 {
+                    timestamp: UTCDateTime::try_from_iso8601("20250108T021025Z").unwrap(),
+                    algorithm: PubkeyAlgorithm::EdDSALegacy,
+                    data: PubKeyData::EdDSALegacy(EdDSALegacy {
+                        curve: ECC_Curve::Ed25519Legacy,
+                        pubkey: hex!(
+                            "64EC46942F76F93C41CB67191F3711EB915616F263F9B534E4266F4644DF775D"
+                        )
+                        .into(),
+                    }),
+                    fingerprint_data: vec![],
+                    fingerprint: hex!("BE76B1D4011C36AF2E82A4F37AD0BDA36123F973"),
+                    keygrip: Some(hex!("2611D427C9D2F6DEA60923C6BB78156615350BF0")),
+                })),
+            })
+        );
+        assert_eq!(
+            iter.next(),
+            Some(&OpenPGPPacket {
+                header: OpenPGPPacketHeader {
+                    packet_type: OpenPGPPacketType::UserID,
+                    packet_length: 44,
+                },
+                data: OpenPGPPacketData::UserID(String::from(
+                    "Sean P. Madden (YK5NO) <sean@seanmadden.net>"
+                )),
+            })
+        );
+        assert_eq!(
+            iter.next(),
+            Some(&OpenPGPPacket {
+                header: OpenPGPPacketHeader {
+                    packet_type: OpenPGPPacketType::Signature,
+                    packet_length: 251,
+                },
+                data: OpenPGPPacketData::Signature(SignaturePacket::Version4(
+                    SigV4PacketBuilder::default()
+                        .with_hash_algorithm(HashAlgorithm::SHA512)
+                        .with_subtype(SignatureSubtype::PositiveCertification)
+                        .with_pubkey_algorithm(PubkeyAlgorithm::EdDSALegacy)
+                        .with_upper_signed_hash(0x5A55)
+                        .with_signature_data(SignatureData::EdDSALegacy(EdDSALegacySignature {
+                            r: hex!(
+                                "D99C779C78F6D65D4B398467ED6FB24E212A9DE082C73F6C76D31F7BF4CAAAF9"
+                            )
+                            .into(),
+                            s: hex!(
+                                "C9D1AD42CE559A0774A4DC642E95DF8572ADDEDCA580A94D960DFD6BD5B21E02"
+                            )
+                            .into(),
+                        }))
+                        .with_hashed_packet(SignatureSubpacket::KeyFlags(KeyFlags(vec![
+                            KeyFlag::Certify,
+                            KeyFlag::Sign
+                        ])))
+                        .with_hashed_packet(SignatureSubpacket::KeyExpirationTime(KeyExpiration(
+                            Duration::from_days(1825)
+                        )))
+                        .with_hashed_packet(SignatureSubpacket::PreferredV1SEIPDSymCiphers(
+                            PreferredV1SEIPDSymCiphers(vec![
+                                SymmetricKeyAlgorithm::AES256,
+                                SymmetricKeyAlgorithm::AES192,
+                                SymmetricKeyAlgorithm::AES128,
+                                SymmetricKeyAlgorithm::TripleDES
+                            ])
+                        ))
+                        .with_hashed_packet(SignatureSubpacket::PreferredAEADCiphersuites(
+                            PreferredAEADSymCiphers(vec![SymmetricKeyAlgorithm::TripleDES])
+                        ))
+                        .with_hashed_packet(SignatureSubpacket::PreferredHashAlgorithms(
+                            PreferredHashAlgorithms(vec![
+                                HashAlgorithm::SHA512,
+                                HashAlgorithm::SHA384,
+                                HashAlgorithm::SHA256,
+                                HashAlgorithm::SHA224,
+                                HashAlgorithm::SHA1
+                            ])
+                        ))
+                        .with_hashed_packet(SignatureSubpacket::PreferredCompressionAlgorithms(
+                            PreferredCompressionAlgorithms(vec![
+                                CompressionAlgorithm::ZLIB,
+                                CompressionAlgorithm::BZip2,
+                                CompressionAlgorithm::ZIP
+                            ])
+                        ))
+                        .with_hashed_packet(SignatureSubpacket::Features(FeaturesSubpkt(vec![
+                            Features::Version1SymEncIPD
+                        ])))
+                        .with_hashed_packet(SignatureSubpacket::KeyServerPreferences(
+                            KeyServerPreferences(vec![KeyServerPreference::NoModify])
+                        ))
+                        .with_hashed_packet(SignatureSubpacket::IssuerFingerprint(Issuer {
+                            vsn: 4,
+                            issuer: hex!("BE76B1D4011C36AF2E82A4F37AD0BDA36123F973").into(),
+                        }))
+                        .with_hashed_packet(SignatureSubpacket::SigCreationTime(CreationTime(
+                            UTCDateTime::try_from_iso8601("20250402T014506Z").unwrap()
+                        )))
+                        .with_hashed_packet(SignatureSubpacket::PreferredKeyServer("https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbe76b1d4011c36af2e82a4f37ad0bda36123f973".to_string()))
+                        .build()?
+                ))
+            })
+        );
+        while let Some(pkt) = iter.next() {
+            writeln!(out, "PKT: {pkt:?}")?;
+        }
+    }
+    let res = stream.finish()?;
+    writeln!(out, "RES: {res:#?}")?;
+    assert_eq!(ArmorType::PubKey, res.armor_type);
+
     Ok(())
 }
 
@@ -116,7 +259,12 @@ pub fn test_verify_sig() -> Result<(), Error> {
         "1d3300ff42e9327a8c1385f320122d4128633483fa5fbd39d1b46ba2766436"
         "cd51a55fe801009b395cff02254d474a8c83640f4c6ec123348d6419c81afd"
         "5ae6f84ba934fd0e");
-    let sig = hex!("900d03000a16c37e4043df6810f101cb0d620067f1a3ee4f70656e50475088750400160a001d162104ad96e0200673e2b6d24a7d25c37e4043df6810f1050267f1a3ee000a0910c37e4043df6810f14b180100f57ac130ab886e911fc206a6f6b7e3a3ea925401e3c96c6d2cf1ccc2b9cca04d00fd1debe06011ac119734d536c68aff80741c9e70edc0c10318492cf77f7383a602");
+    let sig = hex!(
+        "900d03000a16c37e4043df6810f101cb0d620067f1a3ee4f70656e50475088"
+        "750400160a001d162104ad96e0200673e2b6d24a7d25c37e4043df6810f105"
+        "0267f1a3ee000a0910c37e4043df6810f14b180100f57ac130ab886e911fc2"
+        "06a6f6b7e3a3ea925401e3c96c6d2cf1ccc2b9cca04d00fd1debe06011ac11"
+        "9734d536c68aff80741c9e70edc0c10318492cf77f7383a602");
     let mut sig = sig.as_slice();
     let msg = OpenPGPMessage::build_from(&mut sig)?;
     let mut hash = SHA512::new();

@@ -5,7 +5,7 @@
 use crate::keygrip::KeyGrip;
 use crate::types::{ECC_Curve, HashAlgorithm, SymmetricKeyAlgorithm};
 use core::fmt::{Debug, Formatter};
-use irox_bits::{Bits, Error, ErrorKind, MutBits};
+use irox_bits::{Bits, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::EnumIterItem;
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
@@ -58,7 +58,7 @@ impl TryFrom<u8> for PubkeyAlgorithm {
         Err(ErrorKind::InvalidData.into())
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PubKeyData {
     RSA(),     //TODO
     DSA(),     //TODO,
@@ -80,7 +80,16 @@ impl KeyGrip for PubKeyData {
         }
     }
 }
-#[derive(Debug, Clone)]
+impl SerializeToBits for PubKeyData {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            PubKeyData::EdDSALegacy(e) => e.serialize_to_bits(bits),
+            PubKeyData::ECDH(ec) => ec.serialize_to_bits(bits),
+            _ => todo!(),
+        }
+    }
+}
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PubKeyPacket {
     Version4(PubKeyV4),
 }
@@ -95,6 +104,17 @@ impl TryFrom<&[u8]> for PubKeyPacket {
         }
     }
 }
+impl SerializeToBits for PubKeyPacket {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            PubKeyPacket::Version4(v4) => {
+                bits.write_u8(4)?;
+                let len = v4.serialize_to_bits(bits)?;
+                Ok(len + 1)
+            }
+        }
+    }
+}
 #[derive(Clone)]
 pub struct PubKeyV4 {
     pub timestamp: UTCDateTime,
@@ -103,6 +123,16 @@ pub struct PubKeyV4 {
     pub fingerprint_data: Vec<u8>,
     pub fingerprint: [u8; 20],
     pub keygrip: Option<[u8; 20]>,
+}
+impl Eq for PubKeyV4 {}
+impl PartialEq for PubKeyV4 {
+    fn eq(&self, other: &Self) -> bool {
+        self.timestamp == other.timestamp
+            && self.algorithm == other.algorithm
+            && self.data == other.data
+            && self.fingerprint == other.fingerprint
+            && self.keygrip == other.keygrip
+    }
 }
 impl Debug for PubKeyV4 {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
@@ -116,6 +146,21 @@ impl Debug for PubKeyV4 {
                 &self.keygrip.as_ref().map(|v| to_hex_str_upper(v)),
             )
             .finish()
+    }
+}
+impl SerializeToBits for PubKeyV4 {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let ts: UnixTimestamp = self.timestamp.into();
+        let mut len = 0;
+        bits.write_be_u32(ts.get_offset().as_seconds() as u32)?;
+        len += 4;
+
+        bits.write_u8(self.algorithm.get_id())?;
+        len += 1;
+
+        len += self.data.serialize_to_bits(bits)?;
+
+        Ok(len)
     }
 }
 impl TryFrom<&[u8]> for PubKeyV4 {
@@ -154,7 +199,7 @@ impl TryFrom<&[u8]> for PubKeyV4 {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct EdDSALegacy {
     pub curve: ECC_Curve,
     pub pubkey: Vec<u8>,
@@ -178,7 +223,16 @@ impl TryFrom<&[u8]> for EdDSALegacy {
         Ok(EdDSALegacy { curve, pubkey })
     }
 }
-#[derive(Clone)]
+impl SerializeToBits for EdDSALegacy {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let oid = self.curve.get_oid();
+        bits.write_u8(oid.len() as u8)?;
+        bits.write_all_bytes(oid)?;
+        let len = write_mpi(bits, true, self.pubkey.as_slice())?;
+        Ok(len + oid.len() + 1)
+    }
+}
+#[derive(Clone, Eq, PartialEq)]
 pub struct ECDH {
     pub curve: ECC_Curve,
     pub pubkey: Vec<u8>,
@@ -214,6 +268,16 @@ impl TryFrom<&[u8]> for ECDH {
         })
     }
 }
+impl SerializeToBits for ECDH {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let oid = self.curve.get_oid();
+        let len = write_mpi(bits, true, oid)?;
+        bits.write_be_u16(0)?;
+        bits.write_u8(self.hash_function.get_id())?;
+        bits.write_u8(self.sym_algorithm.get_id())?;
+        Ok(len + 4)
+    }
+}
 pub fn read_mpi<T: Bits>(i: &mut T, is_curve: bool) -> Result<Vec<u8>, Error> {
     let bits = i.read_be_u16()?;
     let mut len = (bits + 7) / 8;
@@ -222,4 +286,22 @@ pub fn read_mpi<T: Bits>(i: &mut T, is_curve: bool) -> Result<Vec<u8>, Error> {
         len -= 1;
     }
     i.read_exact_vec(len as usize)
+}
+
+pub fn write_mpi<T: MutBits + ?Sized>(
+    o: &mut T,
+    is_curve: bool,
+    value: &[u8],
+) -> Result<usize, Error> {
+    let mut len = (value.len() * 8) as u16;
+    if is_curve {
+        len += 8;
+    }
+    o.write_be_u16(len)?;
+    if is_curve {
+        // write curve prefix
+        o.write_u8(value.len() as u8)?;
+    }
+    o.write_all_bytes(value)?;
+    Ok(value.len() + 2)
 }

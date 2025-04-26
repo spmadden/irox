@@ -9,7 +9,7 @@ use core::fmt::Formatter;
 use irox_bits::{Bits, Error};
 use irox_tools::hex::to_hex_str_upper;
 
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct OnePassSignature {
     pub vsn: u8,
     pub sigtype: SignatureSubtype,
