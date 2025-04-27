@@ -8,7 +8,7 @@
 
 use crate::buf::{Buffer, FixedU8Buf};
 use core::ops::BitXorAssign;
-use irox_bits::{array_split_8, Bits, MutBits};
+use irox_bits::{Bits, MutBits};
 
 const C1: u64 = 0x87c3_7b91_1142_53d5;
 const C2: u64 = 0x4cf5_ad43_2745_937f;
@@ -25,6 +25,13 @@ macro_rules! fmix64 {
         $k.bitxor_assign($k >> 33);
         $k = $k.wrapping_mul(C4);
         $k.bitxor_assign($k >> 33);
+    };
+}
+macro_rules! round32 {
+    ($h:expr, $k:expr) => {
+        *$h ^= $k.wrapping_mul(C5).rotate_left(15).wrapping_mul(C6);
+        *$h = $h.rotate_left(13);
+        *$h = $h.wrapping_mul(5).wrapping_add(0xe6546b64);
     };
 }
 #[derive(Default)]
@@ -60,9 +67,7 @@ impl Murmur3_32 {
         let mut chunks = key.chunks_exact(4);
         for c in chunks.by_ref() {
             let k = u32::from_le_bytes(c.try_into().unwrap_or_default());
-            self.h ^= k.wrapping_mul(C5).rotate_left(15).wrapping_mul(C6);
-            self.h = self.h.rotate_left(13);
-            self.h = self.h.wrapping_mul(5).wrapping_add(0xe6546b64);
+            round32!(&mut self.h, k);
             self.total_len += 4;
         }
         for b in chunks.remainder() {
@@ -75,11 +80,10 @@ impl Murmur3_32 {
         if !self.buf.is_full() {
             return;
         }
-        let k = self.buf.as_buf_default();
-        let k = u32::from_le_bytes(k);
-        self.h ^= k.wrapping_mul(C5).rotate_left(15).wrapping_mul(C6);
-        self.h = self.h.rotate_left(13);
-        self.h = self.h.wrapping_mul(5).wrapping_add(0xe6546b64);
+        let k = self.buf.as_ref_used();
+        let k = u32::from_le_bytes(k.try_into().unwrap_or_default());
+        self.buf.clear();
+        round32!(&mut self.h, k);
     }
     pub fn hash(mut self, key: &[u8]) -> u32 {
         self.write(key);
@@ -172,10 +176,11 @@ impl Murmur3_128 {
         if !self.buf.is_full() {
             return;
         }
-        let chunk_16 = self.buf.as_buf_default();
-        let (k1, k2) = array_split_8(chunk_16);
-        let k1 = u64::from_le_bytes(k1);
-        let k2 = u64::from_le_bytes(k2);
+        let chunk_16 = self.buf.as_ref_used();
+        let (k1, k2) = chunk_16.split_at(8);
+        let k1 = u64::from_le_bytes(k1.try_into().unwrap_or_default());
+        let k2 = u64::from_le_bytes(k2.try_into().unwrap_or_default());
+        self.buf.clear();
         self.h1
             .bitxor_assign(k1.wrapping_mul(C1).rotate_left(31).wrapping_mul(C2));
         self.h1 = self
