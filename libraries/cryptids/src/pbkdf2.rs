@@ -66,7 +66,9 @@ impl<
                     *a ^= *b;
                 }
             }
-            let _ = out.write_all_bytes(&block);
+            let rem = OUTPUT_LEN - out.len();
+            let end = rem.min(DIGEST_LEN);
+            let _ = out.write_all_bytes(&block[0..end]);
         }
 
         out.as_buf_default()
