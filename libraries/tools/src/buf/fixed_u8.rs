@@ -108,9 +108,10 @@ impl<const N: usize> FixedU8Buf<N> {
         if self.len + buf.len() > N {
             return Err(BitsErrorKind::OutOfMemory.into());
         }
-        for b in buf {
-            let _ = self.push_back(*b);
-        }
+        let start = self.len;
+        let end = start + buf.len();
+        self.buf[start..end].copy_from_slice(buf);
+        self.len = end;
         Ok(())
     }
 
@@ -361,6 +362,10 @@ impl<const N: usize> MutBits for &mut FixedU8Buf<N> {
         }
         Ok(())
     }
+
+    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+        self.append(val)
+    }
 }
 impl<const N: usize> MutBits for FixedU8Buf<N> {
     fn write_u8(&mut self, val: u8) -> Result<(), Error> {
@@ -368,5 +373,9 @@ impl<const N: usize> MutBits for FixedU8Buf<N> {
             return Err(BitsErrorKind::UnexpectedEof.into());
         }
         Ok(())
+    }
+
+    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+        self.append(val)
     }
 }
