@@ -156,6 +156,42 @@ cfg_feature_alloc! {
     use irox_bits::{Error, ToBEBytes};
     use crate::hash::murmur3::{Murmur3_128, Murmur3_32};
 
+    pub struct HasherCounting {
+        pub count: u64,
+        pub hasher: Hasher,
+    }
+    impl HasherCounting {
+        pub fn write(&mut self, val: &[u8]) {
+            self.count += val.len() as u64;
+            self.hasher.write(val);
+        }
+        pub fn count(&self) -> u64 {
+            self.count
+        }
+        pub fn finish(self) -> (u64, alloc::boxed::Box<[u8]>) {
+            (self.count, self.hasher.finish())
+        }
+    }
+    impl MutBits for HasherCounting {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.write(&[val]);
+            Ok(())
+        }
+        fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+            self.write(val);
+            Ok(())
+        }
+    }
+
+    impl TryFrom<HashAlgorithm> for HasherCounting {
+        type Error = Error;
+        fn try_from(value: HashAlgorithm) -> Result<Self, Self::Error> {
+            Ok(HasherCounting {
+                count: 0,
+                hasher: value.try_into()?
+            })
+        }
+    }
 
     pub enum Hasher {
         MD5(MD5),
