@@ -2,6 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::keybox::{Fingerprint, Keybox, Keygrip, PublicKey, PublicKeyData, PublicKeySource};
 use crate::keygrip::KeyGrip;
 use crate::types::{ECC_Curve, HashAlgorithm, SymmetricKeyAlgorithm};
 use core::fmt::{Debug, Formatter};
@@ -89,6 +90,45 @@ impl SerializeToBits for PubKeyData {
         }
     }
 }
+impl TryFrom<&PubKeyData> for PublicKeyData {
+    type Error = Error;
+
+    fn try_from(value: &PubKeyData) -> Result<Self, Self::Error> {
+        match value {
+            PubKeyData::EdDSALegacy(e) => match e.curve {
+                ECC_Curve::Ed25519Legacy => Ok(PublicKeyData::Ed25519(
+                    e.pubkey
+                        .as_slice()
+                        .try_into()
+                        .map_err(|_| ErrorKind::InvalidData)?,
+                )),
+                ECC_Curve::Curve25519Legacy => Ok(PublicKeyData::X25519(
+                    e.pubkey
+                        .as_slice()
+                        .try_into()
+                        .map_err(|_| ErrorKind::InvalidData)?,
+                )),
+                _ => Err(ErrorKind::Unsupported.into()),
+            },
+            PubKeyData::ECDH(e) => match e.curve {
+                ECC_Curve::Ed25519Legacy => Ok(PublicKeyData::Ed25519(
+                    e.pubkey
+                        .as_slice()
+                        .try_into()
+                        .map_err(|_| ErrorKind::InvalidData)?,
+                )),
+                ECC_Curve::Curve25519Legacy => Ok(PublicKeyData::X25519(
+                    e.pubkey
+                        .as_slice()
+                        .try_into()
+                        .map_err(|_| ErrorKind::InvalidData)?,
+                )),
+                _ => Err(ErrorKind::Unsupported.into()),
+            },
+            _ => Err(ErrorKind::Unsupported.into()),
+        }
+    }
+}
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PubKeyPacket {
     Version4(PubKeyV4),
@@ -115,6 +155,23 @@ impl SerializeToBits for PubKeyPacket {
         }
     }
 }
+impl TryFrom<&PubKeyPacket> for PublicKey {
+    type Error = Error;
+
+    fn try_from(value: &PubKeyPacket) -> Result<Self, Self::Error> {
+        match value {
+            PubKeyPacket::Version4(v4) => v4.try_into(),
+        }
+    }
+}
+
+impl PubKeyPacket {
+    pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<Fingerprint, Error> {
+        match self {
+            PubKeyPacket::Version4(v4) => v4.add_to_keybox(bx),
+        }
+    }
+}
 #[derive(Clone)]
 pub struct PubKeyV4 {
     pub timestamp: UTCDateTime,
@@ -123,6 +180,34 @@ pub struct PubKeyV4 {
     pub fingerprint_data: Vec<u8>,
     pub fingerprint: [u8; 20],
     pub keygrip: Option<[u8; 20]>,
+}
+impl PubKeyV4 {
+    pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<Fingerprint, Error> {
+        let fp = Fingerprint(self.fingerprint.to_vec().into_boxed_slice());
+        bx.pubkeys.insert(fp.clone(), self.try_into()?);
+        Ok(fp)
+    }
+}
+impl TryFrom<&PubKeyV4> for PublicKey {
+    type Error = Error;
+
+    fn try_from(value: &PubKeyV4) -> Result<Self, Self::Error> {
+        let fp = Fingerprint(value.fingerprint.to_vec().into_boxed_slice());
+
+        Ok(PublicKey {
+            data: (&value.data).try_into()?,
+            user_id: None,
+            created_on: Some(value.timestamp),
+            valid_until: None,
+            fingerprint: fp,
+            keygrip: value
+                .keygrip
+                .map(|v| Keygrip(v.as_slice().to_vec().into_boxed_slice())),
+            source: PublicKeySource::OpenPGP(),
+            issuer: None,
+            subkeys: vec![],
+        })
+    }
 }
 impl Eq for PubKeyV4 {}
 impl PartialEq for PubKeyV4 {

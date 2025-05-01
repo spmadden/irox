@@ -5,6 +5,7 @@
 use irox_bits::{BitsWrapper, Error, MutBits};
 use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_openpgp::armor::{ArmorType, Dearmor};
+use irox_openpgp::keybox::Keybox;
 use irox_openpgp::packets::{
     CreationTime, EdDSALegacy, EdDSALegacySignature, FeaturesSubpkt, Issuer, KeyExpiration,
     KeyFlags, KeyServerPreferences, OpenPGPMessage, OpenPGPPackeStream, OpenPGPPacket,
@@ -309,5 +310,16 @@ pub fn test_verify_sig() -> Result<(), Error> {
     println!("SIG: {}", to_hex_str_upper(sigdata.as_slice()));
     pk.verify_signed_message(&hash, &sigdata).unwrap();
     println!("SIGNATURE VERIFIED!");
+    Ok(())
+}
+#[test]
+pub fn test_keybox() -> Result<(), Error> {
+    let mut key = PUBKEY_B;
+    let mut keybox = Keybox::default();
+    // let mut stream = key.dearmor();
+    let message = OpenPGPMessage::build_from(&mut key)?;
+    message.add_to_keybox(&mut keybox)?;
+    message.validate_signatures(&keybox)?;
+    println!("{keybox:#?}");
     Ok(())
 }

@@ -2,18 +2,21 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::keybox::{Fingerprint, Keybox, PublicKey};
 use crate::packets::{read_mpi, PubkeyAlgorithm};
 use crate::types::{
     CompressionAlgorithm, Features, HashAlgorithm, KeyFlag, KeyServerPreference,
     SymmetricKeyAlgorithm,
 };
 use core::fmt::{Debug, Formatter};
-use irox_bits::{Bits, Error, ErrorKind, MutBits, SerializeToBits};
+use irox_bits::{Bits, BitsErrorKind, Error, ErrorKind, MutBits, SerializeToBits};
+use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_enums::{EnumIterItem, EnumName};
 use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::format::iso8601::ISO8601Format;
 use irox_time::Duration;
+use irox_tools::hash::HasherCounting;
 use irox_tools::hex::to_hex_str_upper;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -49,6 +52,77 @@ impl SignaturePacket {
     pub fn try_into_ed25519_sig(&self) -> Result<[u8; 64], Error> {
         match self {
             SignaturePacket::Version4(v) => v.try_into_ed25519_sig(),
+        }
+    }
+    pub fn validate_signature(&self, bx: &Keybox, mut hash: HasherCounting) -> Result<(), Error> {
+        let Some(fp) = self.get_signature_issuer() else {
+            return Err(Error::new(
+                BitsErrorKind::NotFound,
+                "Signature issuer not present",
+            ));
+        };
+        let Some(pk) = bx.find_fingerprint(&fp) else {
+            return Err(Error::new(
+                BitsErrorKind::NotFound,
+                "Signature issuer pubkey not found in keybox",
+            ));
+        };
+        if self.get_pubkey_alg() != PubkeyAlgorithm::EdDSALegacy {
+            return Err(Error::new(
+                BitsErrorKind::Unsupported,
+                "Signature algorithm not supported",
+            ));
+        };
+
+        let data = self.get_hashed_data();
+        hash.write(data);
+        hash.write_u8(self.get_version())?;
+        hash.write_u8(0xFF)?;
+        hash.write_be_u32(hash.count as u32)?;
+        let (_, data) = hash.finish();
+        let sig = self.try_into_ed25519_sig()?;
+        let pk: &Ed25519PublicKey = (&pk.data).try_into()?;
+        if let Err(e) = pk.verify_signed_message(&data, &sig) {
+            return Err(Error::new(BitsErrorKind::InvalidInput, e.msg()));
+        }
+        Ok(())
+    }
+    pub fn get_signature_issuer(&self) -> Option<Fingerprint> {
+        self.get_hashed_packets().iter().find_map(|p| {
+            if let SignatureSubpacket::IssuerFingerprint(f) = p {
+                Some(Fingerprint::from(f.issuer.as_slice()))
+            } else {
+                None
+            }
+        })
+    }
+    pub fn get_hashed_packets(&self) -> &[SignatureSubpacket] {
+        match self {
+            SignaturePacket::Version4(v) => v.hashed_packets.as_slice(),
+        }
+    }
+    pub fn get_unhashed_packets(&self) -> &[SignatureSubpacket] {
+        match self {
+            SignaturePacket::Version4(v) => v.unhashed_packets.as_slice(),
+        }
+    }
+    pub fn update_pubkey(&self, pk: &mut PublicKey) {
+        if let Some(fp) = self.get_signature_issuer() {
+            if pk.fingerprint != fp {
+                return;
+            }
+        }
+        for pkt in self.get_hashed_packets() {
+            match pkt {
+                SignatureSubpacket::KeyExpirationTime(ket) => {
+                    if let Some(ct) = pk.created_on {
+                        pk.valid_until = Some(ct + ket.0)
+                    }
+                }
+                _ => {
+                    // skip
+                }
+            }
         }
     }
 }

@@ -11,10 +11,12 @@ use core::ops::DerefMut;
 pub use pubkey::*;
 pub use signature::*;
 
+use crate::keybox::Keybox;
 use crate::packets::data::LiteralData;
 use crate::packets::ops::OnePassSignature;
 use irox_bits::{Bits, BitsWrapper, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::{EnumIterItem, EnumName};
+use irox_tools::hash::HasherCounting;
 
 pub const MESSAGE_HEADER: &str = "-----BEGIN PGP MESSAGE-----";
 pub const MESSAGE_FOOTER: &str = "-----END PGP MESSAGE-----";
@@ -121,13 +123,18 @@ impl SerializeToBits for OpenPGPPacketData {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
         match self {
             OpenPGPPacketData::PublicKey(pk) => pk.serialize_to_bits(bits),
-            // OpenPGPPacketData::PublicSubkey(_) => {}
-            // OpenPGPPacketData::UserID(_) => {}
+            OpenPGPPacketData::PublicSubkey(sk) => sk.serialize_to_bits(bits),
+            OpenPGPPacketData::UserID(uid) => {
+                bits.write_u8(OpenPGPPacketType::UserID.get_packet_id())?;
+                bits.write_u8(uid.len() as u8)?;
+                bits.write_all_bytes(uid.as_bytes())?;
+                Ok(2 + uid.len())
+            }
             // OpenPGPPacketData::Signature(_) => {}
             // OpenPGPPacketData::LiteralData(_) => {}
             // OpenPGPPacketData::OnePassSignature(_) => {}
             // OpenPGPPacketData::Unknown(_) => {}
-            _ => todo!(),
+            _ => Ok(0),
         }
     }
 }
@@ -246,15 +253,39 @@ impl OpenPGPMessage {
         }
         Ok(Self { packets })
     }
-    pub fn validate_signatures(&self) -> Result<(), Error> {
+    pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<(), Error> {
+        let mut last_pubkey = None;
+        for pkt in &self.packets {
+            if let OpenPGPPacketData::PublicKey(pk) = &pkt.data {
+                last_pubkey = Some(pk.add_to_keybox(bx)?);
+            } else if let OpenPGPPacketData::UserID(uid) = &pkt.data {
+                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
+                    pk.user_id = Some(uid.clone());
+                }
+            } else if let OpenPGPPacketData::PublicSubkey(sk) = &pkt.data {
+                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
+                    pk.subkeys.push(sk.try_into()?)
+                }
+            } else if let OpenPGPPacketData::Signature(sig) = &pkt.data {
+                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
+                    sig.update_pubkey(pk);
+                }
+            }
+        }
+        Ok(())
+    }
+    pub fn validate_signatures(&self, bx: &Keybox) -> Result<(), Error> {
         let mut data_to_verify = Vec::<u8>::new();
         for pkt in &self.packets {
-            if let OpenPGPPacketData::Signature(_sig) = &pkt.data {
-                todo!()
+            if let OpenPGPPacketData::Signature(sig) = &pkt.data {
+                let mut hasher: HasherCounting = sig.get_hash_alg().try_into()?;
+                hasher.write(data_to_verify.as_slice());
+                sig.validate_signature(bx, hasher)?;
+                data_to_verify.clear();
             } else {
                 pkt.data.serialize_to_bits(&mut data_to_verify)?;
             }
         }
-        todo!()
+        Ok(())
     }
 }
