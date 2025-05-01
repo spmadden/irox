@@ -293,7 +293,7 @@ impl<'a, T: Bits> Inflater<'a, T> {
         let mut out = Self {
             stream: BitStreamDecoder::new(stream),
             bits_read: 0,
-            block: VecDeque::new_zeroed(32768),
+            block: <VecDeque<u8> as ZeroedBuffer>::new_zeroed(32768),
             block_offset: 0,
             complete: false,
         };
@@ -327,7 +327,8 @@ impl<'a, T: Bits> Inflater<'a, T> {
             let len = del.read_le_u16()?;
             let _nlen = del.read_le_u16()?;
             self.block.clear();
-            del.read_exact_into(len as usize, &mut self.block)?;
+            let mut bl = &mut self.block;
+            del.read_exact_into(len as usize, &mut bl)?;
             return Ok(self.block.as_slices().0.get(0..len as usize));
         }
         let dec = if btype == DeflateBlockType::CompressedDynamic {
