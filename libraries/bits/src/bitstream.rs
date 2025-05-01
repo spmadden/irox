@@ -121,6 +121,60 @@ impl<'a, T: Bits> BitStreamDecoder<'a, T> {
             }
         }
     }
+    pub fn read_le_u32_bits(&mut self, num_bits: u8) -> Result<u32, BitsError> {
+        if num_bits > 32 {
+            return Err(BitsErrorKind::InvalidInput.into());
+        }
+        loop {
+            match self.used.cmp(&num_bits) {
+                Ordering::Less => {
+                    // used < numbits - add more.
+                    let v = self.delegate.read_u8()?;
+                    self.buf |= (v as u32) << self.used;
+                    self.used += 8;
+                }
+                Ordering::Equal => {
+                    let mask = (1u32 << num_bits) - 1;
+                    self.used = 0;
+                    let b = self.buf & mask;
+                    self.buf = 0;
+                    return Ok(b);
+                }
+                Ordering::Greater => {
+                    let mask = (1u32 << num_bits) - 1;
+                    let b = self.buf & mask;
+                    self.buf >>= num_bits;
+                    self.used -= num_bits;
+                    return Ok(b);
+                }
+            }
+        }
+    }
+    pub fn peek_le_u32_bits(&mut self, num_bits: u8) -> Result<u32, BitsError> {
+        if num_bits > 32 {
+            return Err(BitsErrorKind::InvalidInput.into());
+        }
+        loop {
+            match self.used.cmp(&num_bits) {
+                Ordering::Less => {
+                    // used < numbits - add more.
+                    let v = self.delegate.read_u8()?;
+                    self.buf |= (v as u32) << self.used;
+                    self.used += 8;
+                }
+                _ => {
+                    let mask = (1u32 << num_bits) - 1;
+                    let b = self.buf & mask;
+                    return Ok(b);
+                }
+            }
+        }
+    }
+    pub fn delegate(&mut self) -> &mut BitsWrapper<'a, T> {
+        self.buf = 0;
+        self.used = 0;
+        &mut self.delegate
+    }
 }
 #[cfg(all(test, feature = "std"))]
 mod test {
