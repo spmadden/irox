@@ -7,6 +7,7 @@
 
 extern crate alloc;
 use crate::buf::ZeroedBuffer;
+use alloc::boxed::Box;
 use alloc::collections::VecDeque;
 use alloc::string::String;
 use alloc::{vec, vec::Vec};
