@@ -54,6 +54,19 @@ pub enum Ed25519Error {
     InvalidMessage,
     InvalidInput,
 }
+impl Ed25519Error {
+    pub fn msg(&self) -> &'static str {
+        match self {
+            Ed25519Error::InvalidSignature => "Invalid signature",
+            Ed25519Error::InvalidPublicKeyNotCannonical => "Invalid public key (not cannonical)",
+            Ed25519Error::InvalidPublicKeyLowOrder => "Invalid public key (low order)",
+            Ed25519Error::InvalidPublicKey => "Invalid public key",
+            Ed25519Error::InvalidSecretKey => "Invalid secret key",
+            Ed25519Error::InvalidMessage => "Invalid message",
+            Ed25519Error::InvalidInput => "Invalid input",
+        }
+    }
+}
 impl From<BitsError> for Ed25519Error {
     fn from(_: BitsError) -> Self {
         Ed25519Error::InvalidInput
@@ -122,6 +135,18 @@ impl TryFrom<&[u8; 32]> for Ed25519PublicKey {
     fn try_from(value: &[u8; 32]) -> Result<Self, Self::Error> {
         check_valid_publickey(value)?;
         Ok(Ed25519PublicKey(*value))
+    }
+}
+impl TryFrom<&[u8]> for Ed25519PublicKey {
+    type Error = Ed25519Error;
+
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        if value.len() != 32 {
+            return Err(Ed25519Error::InvalidPublicKey);
+        }
+        TryInto::<[u8; 32]>::try_into(value)
+            .unwrap_or_default()
+            .try_into()
     }
 }
 impl AsRef<[u8; 32]> for Ed25519PublicKey {
