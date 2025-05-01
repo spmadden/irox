@@ -21,3 +21,4 @@ irox-tools = {workspace = true, features = ["std"]}
 
 [dependencies]
 irox-bits.workspace = true
+irox-tools.workspace = true

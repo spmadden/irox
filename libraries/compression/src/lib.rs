@@ -6,8 +6,9 @@
 //!
 
 #![forbid(unsafe_code)]
-#![cfg_attr(not(test), no_std)]
+// #![cfg_attr(not(test), no_std)]
 extern crate alloc;
+extern crate core;
 
 pub mod deflate;
 pub mod lzw;
