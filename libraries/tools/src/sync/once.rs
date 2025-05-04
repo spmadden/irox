@@ -26,6 +26,15 @@
 /// ```
 #[macro_export]
 macro_rules! static_init {
+    ($name:ident,$out:ty,$docs:expr,$($init:tt)+) => {
+        #[doc = $docs]       
+        pub fn $name() -> &'static $out {
+            static VARBL: std::sync::OnceLock<$out> = std::sync::OnceLock::new();
+            VARBL.get_or_init(|| {
+                $($init)+
+            })
+        }
+    };
     ($name:ident,$out:ty,$($init:tt)+) => {
         pub fn $name() -> &'static $out {
             static VARBL: std::sync::OnceLock<$out> = std::sync::OnceLock::new();
