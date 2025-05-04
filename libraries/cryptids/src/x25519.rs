@@ -512,7 +512,7 @@ pub static BLOCKLIST: [&[u8; 32]; 24] = [
     &hex!("DBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"),
 ];
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::ed25519::Ed25519Error;
     use crate::x25519::{scalarmult, BASE};

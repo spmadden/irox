@@ -538,7 +538,7 @@ pub static ED25519_G: &[u8; 65] = &hex!(
     "1AD5258F602D56C9B2A7259560C72C695CDCD6FD31E2A4C0FE536ECDD3366921"
     "04");
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::ed25519::{Ed25519Error, Ed25519KeyPair, Ed25519PublicKey, Ed25519SecretKey};
     use irox_bits::{BitsError, BitsErrorKind};

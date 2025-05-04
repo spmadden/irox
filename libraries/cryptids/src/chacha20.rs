@@ -251,7 +251,7 @@ impl<B: Bits> Bits for ChaCha20Filter<'_, B> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod test {
     use crate::{Chacha20, Chacha20KeyGenerator};
     use irox_bits::{Bits, Error, FromBEBytes};

@@ -173,7 +173,7 @@ impl<T: MutBits> MutBits for Aes256EncStream<'_, T> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod test {
     use crate::aes::{mix_columns, subshift};
     use crate::Aes256EncStream;

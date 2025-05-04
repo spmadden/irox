@@ -146,7 +146,7 @@ impl<IN: Bits> Bits for ChaCha20Poly1305Decrypt<'_, IN> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::{ChaCha20Poly1305Decrypt, ChaCha20Poly1305Encrypt};
     use irox_bits::{Bits, BitsWrapper, Error};

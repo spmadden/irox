@@ -17,7 +17,7 @@ workspace = true
 
 [features]
 _toobig-tests = [] # slow tests that take way too long to run normally.
-_std = []
+std = []
 
 [dependencies]
 irox-bits = {workspace = true}

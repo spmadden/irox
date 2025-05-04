@@ -131,7 +131,7 @@ irox-types = { version = "^0", path = "libraries/types" }
 irox-units = { version = "^0", path = "libraries/units" }
 
 [profile.test]
-opt-level = 1
+#opt-level = 1
 
 # Lints last updated for Rust 1.84.0
 [workspace.lints.rust]
