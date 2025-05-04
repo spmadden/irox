@@ -127,12 +127,10 @@ impl SerializeToBits for OpenPGPPacketData {
             OpenPGPPacketData::PublicKey(pk) => pk.serialize_to_bits(bits),
             OpenPGPPacketData::PublicSubkey(sk) => sk.serialize_to_bits(bits),
             OpenPGPPacketData::UserID(uid) => {
-                bits.write_u8(OpenPGPPacketType::UserID.get_packet_id())?;
-                bits.write_u8(uid.len() as u8)?;
                 bits.write_all_bytes(uid.as_bytes())?;
-                Ok(2 + uid.len())
+                Ok(uid.len())
             }
-            // OpenPGPPacketData::Signature(_) => {}
+            OpenPGPPacketData::Signature(sig) => sig.serialize_to_bits(bits),
             // OpenPGPPacketData::LiteralData(_) => {}
             // OpenPGPPacketData::OnePassSignature(_) => {}
             // OpenPGPPacketData::Unknown(_) => {}

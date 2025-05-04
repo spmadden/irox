@@ -4,7 +4,7 @@
 
 use crate::keybox::{Fingerprint, Keybox, Keygrip, PublicKey, PublicKeyData, PublicKeySource};
 use crate::keygrip::KeyGrip;
-use crate::types::{ECC_Curve, HashAlgorithm, SymmetricKeyAlgorithm};
+use crate::types::{ECC_Curve, HashAlgorithm, SymmetricKeyAlgorithm, MPI};
 use core::fmt::{Debug, Formatter};
 use irox_bits::{Bits, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::EnumIterItem;
@@ -307,13 +307,13 @@ impl TryFrom<&[u8]> for PubKeyV4 {
 #[derive(Clone, Eq, PartialEq)]
 pub struct EdDSALegacy {
     pub curve: ECC_Curve,
-    pub pubkey: Vec<u8>,
+    pub pubkey: MPI,
 }
 impl Debug for EdDSALegacy {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("EdDSALegacy")
             .field("curve", &self.curve)
-            .field("PK", &to_hex_str_upper(self.pubkey.as_slice()))
+            .field("PK", &self.pubkey)
             .finish()
     }
 }
@@ -324,7 +324,7 @@ impl TryFrom<&[u8]> for EdDSALegacy {
         let olen = value.read_u8()?;
         let oid = value.read_exact_vec(olen as usize)?;
         let curve: ECC_Curve = oid.as_slice().try_into()?;
-        let pubkey = read_mpi(&mut value, true)?;
+        let pubkey = MPI::try_from(&mut value, true)?;
         Ok(EdDSALegacy { curve, pubkey })
     }
 }
@@ -333,15 +333,14 @@ impl SerializeToBits for EdDSALegacy {
         let oid = self.curve.get_oid();
         bits.write_u8(oid.len() as u8)?;
         bits.write_all_bytes(oid)?;
-        let keylen = self.curve.get_params().keysize_bits;
-        let len = write_mpi(bits, true, keylen, self.pubkey.as_slice())?;
+        let len = self.pubkey.serialize_to_bits(bits)?;
         Ok(len + oid.len() + 1)
     }
 }
 #[derive(Clone, Eq, PartialEq)]
 pub struct ECDH {
     pub curve: ECC_Curve,
-    pub pubkey: Vec<u8>,
+    pub pubkey: MPI,
     pub spare: u16,
     pub hash_function: HashAlgorithm,
     pub sym_algorithm: SymmetricKeyAlgorithm,
@@ -350,7 +349,7 @@ impl Debug for ECDH {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("ECDH")
             .field("curve", &self.curve)
-            .field("PK", &to_hex_str_upper(self.pubkey.as_slice()))
+            .field("PK", &self.pubkey)
             .field("hash", &self.hash_function)
             .field("sym", &self.sym_algorithm)
             .field("spare", &self.spare)
@@ -364,7 +363,7 @@ impl TryFrom<&[u8]> for ECDH {
         let olen = value.read_u8()?;
         let oid = value.read_exact_vec(olen as usize)?;
         let curve: ECC_Curve = oid.as_slice().try_into()?;
-        let pubkey = read_mpi(&mut value, true)?;
+        let pubkey = MPI::try_from(&mut value, true)?;
         let spare = value.read_be_u16()?;
         let hash_function = value.read_u8()?.try_into()?;
         let sym_algorithm = value.read_u8()?.try_into()?;
@@ -382,40 +381,10 @@ impl SerializeToBits for ECDH {
         let oid = self.curve.get_oid();
         bits.write_u8(oid.len() as u8)?;
         bits.write_all_bytes(oid)?;
-        let keylen = self.curve.get_params().keysize_bits;
-        let len = write_mpi(bits, true, keylen, &self.pubkey)?;
+        let len = self.pubkey.serialize_to_bits(bits)?;
         bits.write_be_u16(self.spare)?;
         bits.write_u8(self.hash_function.get_id())?;
         bits.write_u8(self.sym_algorithm.get_id())?;
         Ok(len + 5 + oid.len())
     }
-}
-pub fn read_mpi<T: Bits>(i: &mut T, is_curve: bool) -> Result<Vec<u8>, Error> {
-    let bits = i.read_be_u16()?;
-    let mut len = (bits + 7) / 8;
-    if is_curve {
-        i.read_u8()?; // throw away curve prefix
-        len -= 1;
-    }
-    i.read_exact_vec(len as usize)
-}
-
-pub fn write_mpi<T: MutBits + ?Sized>(
-    o: &mut T,
-    is_curve: bool,
-    mut len: u16,
-    value: &[u8],
-) -> Result<usize, Error> {
-    if is_curve {
-        len += 8;
-    }
-    o.write_be_u16(len)?;
-    let mut len = 2usize;
-    if is_curve {
-        // write curve prefix
-        o.write_u8(0x40)?;
-        len += 1;
-    }
-    o.write_all_bytes(value)?;
-    Ok(value.len() + len)
 }

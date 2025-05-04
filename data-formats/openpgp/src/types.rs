@@ -4,7 +4,7 @@
 
 use crate::keygrip::gen_keygrip;
 use core::fmt::{Debug, Formatter};
-use irox_bits::{Bits, Error, ErrorKind};
+use irox_bits::{Bits, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_cryptids::ed25519::{ED25519_BASE, ED25519_G};
 use irox_cryptids::x25519::{ED25519_ORDER, X25519_G, X255M19};
 use irox_enums::{EnumIterItem, EnumName};
@@ -361,15 +361,20 @@ impl TryFrom<&[u8]> for ECC_Curve {
 }
 
 #[non_exhaustive]
+#[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
 pub enum Features {
     Version1SymEncIPD,
+    GPG_AEADSupported,
+    GPG_V5SigSupported,
     Version2SymEncIPD,
 }
 impl Features {
     pub fn get_id(&self) -> u8 {
         match self {
             Features::Version1SymEncIPD => 0x01,
+            Features::GPG_AEADSupported => 0x02,
+            Features::GPG_V5SigSupported => 0x04,
             Features::Version2SymEncIPD => 0x08,
         }
     }
@@ -411,5 +416,75 @@ impl KeyServerPreference {
             }
         }
         Ok(out)
+    }
+}
+#[derive(Clone, Eq, PartialEq)]
+pub struct MPI {
+    pub nbits: u16,
+    pub curve_prefix: Option<u8>,
+    pub data: Box<[u8]>,
+}
+impl Debug for MPI {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        if let Some(prefix) = self.curve_prefix {
+            write!(
+                f,
+                "MPI({} bits, ({:02X}) {:?})",
+                self.nbits,
+                prefix,
+                to_hex_str_upper(&self.data)
+            )
+        } else {
+            write!(
+                f,
+                "MPI({} bits, {:?})",
+                self.nbits,
+                to_hex_str_upper(&self.data)
+            )
+        }
+    }
+}
+impl SerializeToBits for MPI {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, o: &mut T) -> Result<usize, Error> {
+        o.write_be_u16(self.nbits)?;
+        let mut len = 2usize;
+        if let Some(prefix) = self.curve_prefix {
+            // write curve prefix
+            o.write_u8(prefix)?;
+            len += 1;
+        }
+        len += self.data.len();
+        o.write_all_bytes(self.data.as_ref())?;
+        Ok(len)
+    }
+}
+impl MPI {
+    #[allow(clippy::if_then_some_else_none)]
+    pub fn try_from<T: Bits>(i: &mut T, is_curve: bool) -> Result<Self, Error> {
+        let nbits = i.read_be_u16()?;
+        let mut len = (nbits + 7) / 8;
+        let curve_prefix = if is_curve {
+            len -= 1;
+            Some(i.read_u8()?)
+        } else {
+            None
+        };
+        let data = i.read_exact_vec(len as usize)?.into_boxed_slice();
+        Ok(Self {
+            nbits,
+            curve_prefix,
+            data,
+        })
+    }
+    pub fn num_bytes(&self) -> usize {
+        let mut len = ((self.nbits + 7) / 8) as usize;
+        if self.curve_prefix.is_some() {
+            len += 1;
+        }
+        len += self.data.len();
+        len
+    }
+    pub fn as_slice(&self) -> &[u8] {
+        self.data.as_ref()
     }
 }

@@ -3,12 +3,13 @@
 //
 
 use crate::keybox::{Fingerprint, Keybox, PublicKey};
-use crate::packets::{read_mpi, PubkeyAlgorithm};
+use crate::packets::PubkeyAlgorithm;
 use crate::types::{
     CompressionAlgorithm, Features, HashAlgorithm, KeyFlag, KeyServerPreference,
-    SymmetricKeyAlgorithm,
+    SymmetricKeyAlgorithm, MPI,
 };
 use core::fmt::{Debug, Formatter};
+use core::ops::Deref;
 use irox_bits::{Bits, BitsErrorKind, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_enums::{EnumIterItem, EnumName};
@@ -93,7 +94,7 @@ impl SignaturePacket {
     pub fn get_signature_issuer(&self) -> Option<Fingerprint> {
         self.get_hashed_packets().iter().find_map(|p| {
             if let SignatureSubpacket::IssuerFingerprint(f) = p {
-                Some(Fingerprint::from(f.issuer.as_slice()))
+                Some(Fingerprint::from(f.issuer.as_ref()))
             } else {
                 None
             }
@@ -137,6 +138,17 @@ impl TryFrom<&[u8]> for SignaturePacket {
         match vsn {
             4 => Ok(SignaturePacket::Version4(SigV4Packet::try_from(value)?)),
             _ => Err(ErrorKind::Unsupported.into()),
+        }
+    }
+}
+impl SerializeToBits for SignaturePacket {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            SignaturePacket::Version4(v4) => {
+                bits.write_u8(4)?;
+                let cnt = v4.serialize_to_bits(bits)?;
+                Ok(cnt + 1)
+            }
         }
     }
 }
@@ -239,6 +251,43 @@ impl TryFrom<&[u8]> for SigV4Packet {
         })
     }
 }
+impl SerializeToBits for SigV4Packet {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let mut len = 9;
+        bits.write_u8(self.subtype.get_id())?;
+        bits.write_u8(self.pubkey_algorithm.get_id())?;
+        bits.write_u8(self.hash_algorithm.get_id())?;
+        if !self.hashed_data.is_empty() {
+            bits.write_be_u16(self.hashed_data.len() as u16)?;
+            bits.write_all_bytes(self.hashed_data.as_slice())?;
+            len += self.hashed_data.len();
+        } else {
+            let mut buf = Vec::new();
+            for pkt in &self.hashed_packets {
+                pkt.serialize_to_bits(&mut buf)?;
+            }
+            bits.write_be_u16(buf.len() as u16)?;
+            bits.write_all_bytes(buf.as_slice())?;
+            len += buf.len();
+        }
+        if !self.unhashed_data.is_empty() {
+            bits.write_be_u16(self.unhashed_data.len() as u16)?;
+            bits.write_all_bytes(self.unhashed_data.as_slice())?;
+            len += self.unhashed_data.len();
+        } else {
+            let mut buf = Vec::new();
+            for pkt in &self.unhashed_packets {
+                pkt.serialize_to_bits(&mut buf)?;
+            }
+            bits.write_be_u16(buf.len() as u16)?;
+            bits.write_all_bytes(buf.as_slice())?;
+            len += buf.len();
+        }
+        bits.write_be_u16(self.upper_signed_hash)?;
+        len += self.signature_data.serialize_to_bits(bits)?;
+        Ok(len)
+    }
+}
 impl Debug for SigV4Packet {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let mut st = f.debug_struct("SigV4Packet");
@@ -323,16 +372,16 @@ impl SigV4PacketBuilder {
             "Missing signature data",
         ))?;
 
-        let unhashed_data = write_to_vec(&self.unhashed_packets)?;
-        let hashed_data = write_to_vec(&self.hashed_packets)?;
+        // let unhashed_data = write_to_vec(&self.unhashed_packets)?;
+        // let hashed_data = write_to_vec(&self.hashed_packets)?;
 
         Ok(SigV4Packet {
             subtype,
             pubkey_algorithm,
             hash_algorithm,
-            hashed_data,
+            hashed_data: vec![],
             hashed_packets: self.hashed_packets,
-            unhashed_data,
+            unhashed_data: vec![],
             unhashed_packets: self.unhashed_packets,
             upper_signed_hash,
             signature_data,
@@ -507,6 +556,7 @@ impl SignatureSubpacketType {
             }
             SignatureSubpacketType::IssuerFingerprint => {
                 return Ok(SignatureSubpacket::IssuerFingerprint(Issuer::try_from(
+                    SignatureSubpacketType::IssuerFingerprint,
                     pkt_data.as_slice(),
                 )?));
             }
@@ -544,7 +594,7 @@ pub enum SignatureSubpacket {
     Revocable(),         //TODO
     KeyExpirationTime(KeyExpiration),
     PreferredV1SEIPDSymCiphers(PreferredV1SEIPDSymCiphers), //TODO
-    IssuerKeyId([u8; 20]),                                  //TODO
+    IssuerKeyId(Box<[u8]>),                                 //TODO
     NotationData(),                                         //TODO
     PreferredHashAlgorithms(PreferredHashAlgorithms),
     PreferredCompressionAlgorithms(PreferredCompressionAlgorithms),
@@ -596,6 +646,15 @@ impl SerializeToBits for SignatureSubpacket {
             SignatureSubpacket::Features(f) => f.serialize_to_bits(bits),
             SignatureSubpacket::KeyServerPreferences(k) => k.serialize_to_bits(bits),
             SignatureSubpacket::Unknown(u) => u.serialize_to_bits(bits),
+            SignatureSubpacket::IssuerKeyId(kid) => {
+                let len = write_subpkthdr(
+                    bits,
+                    kid.len() as u32 + 1,
+                    SignatureSubpacketType::IssuerKeyId,
+                )?;
+                bits.write_all_bytes(kid.deref())?;
+                Ok(len)
+            }
             _ => todo!(),
         }
     }
@@ -627,7 +686,8 @@ impl SerializeToBits for UnknownSubpacket {
 #[derive(Clone, Eq, PartialEq)]
 pub struct Issuer {
     pub vsn: u8,
-    pub issuer: Vec<u8>,
+    pub subtype: SignatureSubpacketType,
+    pub issuer: Box<[u8]>,
 }
 impl Debug for Issuer {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
@@ -638,26 +698,24 @@ impl Debug for Issuer {
         ))
     }
 }
-impl TryFrom<&[u8]> for Issuer {
-    type Error = Error;
-
-    fn try_from(mut value: &[u8]) -> Result<Self, Self::Error> {
+impl Issuer {
+    pub fn try_from(subtype: SignatureSubpacketType, mut value: &[u8]) -> Result<Self, Error> {
         let vsn = value.read_u8()?;
         let issuer = match vsn {
-            4 => value.read_exact_vec(20)?,
-            6 => value.read_exact_vec(32)?,
+            4 => value.read_exact_vec(20)?.into(),
+            6 => value.read_exact_vec(32)?.into(),
             _ => return Err(ErrorKind::InvalidData.into()),
         };
-        Ok(Issuer { vsn, issuer })
+        Ok(Issuer {
+            vsn,
+            subtype,
+            issuer,
+        })
     }
 }
 impl SerializeToBits for Issuer {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        let len = write_subpkthdr(
-            bits,
-            self.issuer.len() as u32 + 1,
-            SignatureSubpacketType::IssuerKeyId,
-        )?;
+        let len = write_subpkthdr(bits, self.issuer.len() as u32 + 2, self.subtype)?;
         bits.write_u8(self.vsn)?;
         bits.write_all_bytes(&self.issuer)?;
         Ok(len)
@@ -681,9 +739,9 @@ impl TryFrom<&[u8]> for CreationTime {
 }
 impl SerializeToBits for CreationTime {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        let len = write_subpkthdr(bits, 4, SignatureSubpacketType::SigCreationTime)?;
+        let len = write_subpkthdr(bits, 5, SignatureSubpacketType::SigCreationTime)?;
         let time: UnixTimestamp = self.0.into();
-        bits.write_be_u32(time.elapsed().as_seconds() as u32)?;
+        bits.write_be_u32(time.get_offset().as_seconds() as u32)?;
         Ok(len)
     }
 }
@@ -737,7 +795,7 @@ impl SerializeToBits for PreferredV1SEIPDSymCiphers {
         let len = self.0.len();
         let len = write_subpkthdr(
             bits,
-            len as u32,
+            len as u32 + 1,
             SignatureSubpacketType::PreferredV1SEIPDSymCiphers,
         )?;
         for v in &self.0 {
@@ -773,7 +831,7 @@ impl SerializeToBits for PreferredAEADSymCiphers {
         let len = self.0.len();
         let len = write_subpkthdr(
             bits,
-            len as u32,
+            len as u32 + 1,
             SignatureSubpacketType::PreferredAEADCipherSuites,
         )?;
         for v in &self.0 {
@@ -834,7 +892,7 @@ impl SerializeToBits for PreferredHashAlgorithms {
         let len = self.0.len();
         let len = write_subpkthdr(
             bits,
-            len as u32,
+            len as u32 + 1,
             SignatureSubpacketType::PreferredHashAlgorithms,
         )?;
         for v in &self.0 {
@@ -870,7 +928,7 @@ impl SerializeToBits for PreferredCompressionAlgorithms {
         let len = self.0.len();
         let len = write_subpkthdr(
             bits,
-            len as u32,
+            len as u32 + 1,
             SignatureSubpacketType::PreferredCompressionAlgorithms,
         )?;
         for v in &self.0 {
@@ -899,12 +957,14 @@ impl TryFrom<&[u8]> for KeyFlags {
 }
 impl SerializeToBits for KeyFlags {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        let len = self.0.len();
-        let len = write_subpkthdr(bits, len as u32, SignatureSubpacketType::KeyFlags)?;
+        bits.write_u8(0x02)?;
+        bits.write_u8(SignatureSubpacketType::KeyFlags.get_id())?;
+        let mut flags = 0u8;
         for v in &self.0 {
-            bits.write_u8(v.get_id())?;
+            flags |= v.get_id();
         }
-        Ok(len)
+        bits.write_u8(flags)?;
+        Ok(3)
     }
 }
 #[derive(Clone, Eq, PartialEq)]
@@ -927,16 +987,14 @@ impl TryFrom<&[u8]> for KeyServerPreferences {
 }
 impl SerializeToBits for KeyServerPreferences {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        let len = self.0.len();
-        let len = write_subpkthdr(
-            bits,
-            len as u32,
-            SignatureSubpacketType::KeyServerPreferences,
-        )?;
+        bits.write_u8(0x02)?;
+        bits.write_u8(SignatureSubpacketType::KeyServerPreferences.get_id())?;
+        let mut flags = 0u8;
         for v in &self.0 {
-            bits.write_u8(v.get_id())?;
+            flags |= v.get_id();
         }
-        Ok(len)
+        bits.write_u8(flags)?;
+        Ok(2)
     }
 }
 
@@ -960,12 +1018,14 @@ impl TryFrom<&[u8]> for FeaturesSubpkt {
 }
 impl SerializeToBits for FeaturesSubpkt {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
-        let len = self.0.len();
-        let len = write_subpkthdr(bits, len as u32, SignatureSubpacketType::Features)?;
+        bits.write_u8(0x02)?;
+        bits.write_u8(SignatureSubpacketType::Features.get_id())?;
+        let mut flags = 0u8;
         for v in &self.0 {
-            bits.write_u8(v.get_id())?;
+            flags |= v.get_id();
         }
-        Ok(len)
+        bits.write_u8(flags)?;
+        Ok(2)
     }
 }
 impl SignatureSubpacket {
@@ -996,11 +1056,23 @@ impl SignatureData {
         }
     }
 }
-
+impl SerializeToBits for SignatureData {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        match self {
+            // SignatureData::RSA() => {}
+            // SignatureData::ECSDA() => {}
+            SignatureData::EdDSALegacy(ed) => ed.serialize_to_bits(bits),
+            // SignatureData::Ed25519Legacy() => {}
+            // SignatureData::Ed25519() => {}
+            // SignatureData::Ed448() => {
+            _ => Err(ErrorKind::Unsupported.into()),
+        }
+    }
+}
 #[derive(Clone, Eq, PartialEq)]
 pub struct EdDSALegacySignature {
-    pub r: Vec<u8>,
-    pub s: Vec<u8>,
+    pub r: MPI,
+    pub s: MPI,
 }
 impl Debug for EdDSALegacySignature {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
@@ -1014,9 +1086,16 @@ impl TryFrom<&[u8]> for EdDSALegacySignature {
     type Error = Error;
 
     fn try_from(mut value: &[u8]) -> Result<Self, Self::Error> {
-        let r = read_mpi(&mut value, false)?;
-        let s = read_mpi(&mut value, false)?;
+        let r = MPI::try_from(&mut value, false)?;
+        let s = MPI::try_from(&mut value, false)?;
         Ok(EdDSALegacySignature { r, s })
+    }
+}
+impl SerializeToBits for EdDSALegacySignature {
+    fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        let mut len = self.r.serialize_to_bits(bits)?;
+        len += self.s.serialize_to_bits(bits)?;
+        Ok(len)
     }
 }
 
@@ -1055,14 +1134,4 @@ pub(crate) fn write_subpkthdr<T: MutBits + ?Sized>(
     let len = write_subpktlen(bits, len)?;
     bits.write_u8(pkt_type.get_id())?;
     Ok(len + 1)
-}
-
-pub(crate) fn write_to_vec(pkts: &[SignatureSubpacket]) -> Result<Vec<u8>, Error> {
-    let mut out = Vec::with_capacity(4096);
-    let mut used = 0;
-    for pkt in pkts {
-        used += pkt.serialize_to_bits(&mut out)?;
-    }
-    out.truncate(used);
-    Ok(out)
 }
