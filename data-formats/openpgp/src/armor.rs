@@ -56,8 +56,14 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
             let Some(parts) = line.split_once(": ") else {
                 return Err(ErrorKind::InvalidInput.into());
             };
-            let key = parts.0.trim().to_string();
-            let value = parts.1.trim().to_string();
+            let mut key = parts.0.trim().to_string();
+            let mut value = parts.1.trim().to_string();
+            if key.to_lowercase() == "comment" {
+                if let Some(v) = value.split_once(':') {
+                    key = v.0.trim().to_string();
+                    value = v.1.trim().to_string();
+                }
+            }
             self.headers.push((key, value));
         }
         Ok(())
@@ -69,6 +75,9 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
         }
         while let Some(line) = self.inner.read_line_str()? {
             let line = line.trim();
+            if line.is_empty() {
+                continue;
+            }
             match line {
                 MESSAGE_HEADER => {
                     self.set_armor_type(ArmorType::Message)?;

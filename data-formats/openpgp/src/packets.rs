@@ -7,13 +7,15 @@ mod ops;
 mod pubkey;
 mod signature;
 
+use core::fmt::{Debug, Formatter};
 use core::ops::DerefMut;
 pub use pubkey::*;
 pub use signature::*;
 
-use crate::keybox::Keybox;
+use crate::keybox::{Fingerprint, Keybox};
 use crate::packets::data::LiteralData;
 use crate::packets::ops::OnePassSignature;
+use crate::types::Hash;
 use irox_bits::{Bits, BitsWrapper, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::{EnumIterItem, EnumName};
 use irox_tools::hash::HasherCounting;
@@ -274,18 +276,126 @@ impl OpenPGPMessage {
         }
         Ok(())
     }
-    pub fn validate_signatures(&self, bx: &Keybox) -> Result<(), Error> {
-        let mut data_to_verify = Vec::<u8>::new();
+    pub fn validate_signatures(
+        &self,
+        bx: &Keybox,
+    ) -> Result<Vec<SignatureValidationResult>, Error> {
+        let mut out = Vec::new();
+        let mut keydata: Option<(Vec<u8>, Fingerprint)> = None;
+        let mut last_subkey: Option<(Vec<u8>, Fingerprint)> = None;
+        let mut last_uid: Option<Vec<u8>> = None;
         for pkt in &self.packets {
-            if let OpenPGPPacketData::Signature(sig) = &pkt.data {
-                let mut hasher: HasherCounting = sig.get_hash_alg().try_into()?;
-                hasher.write(data_to_verify.as_slice());
-                sig.validate_signature(bx, hasher)?;
-                data_to_verify.clear();
-            } else {
-                pkt.data.serialize_to_bits(&mut data_to_verify)?;
+            match &pkt.data {
+                OpenPGPPacketData::Signature(sig) => {
+                    let mut hasher: HasherCounting = sig.get_hash_alg().try_into()?;
+                    let sigtype = sig.get_subtype();
+                    let target = match sigtype {
+                        SignatureSubtype::GenericCertification
+                        | SignatureSubtype::PersonaCertification
+                        | SignatureSubtype::CasualCertification
+                        | SignatureSubtype::PositiveCertification => {
+                            if let Some(pk) = keydata.as_ref() {
+                                hasher.write(pk.0.as_ref());
+                                if let Some(uid) = last_uid.as_ref() {
+                                    hasher.write(uid.as_ref());
+                                }
+                                SignatureTarget::PublicKey(pk.1.clone())
+                            } else {
+                                SignatureTarget::UnknownTarget
+                            }
+                        }
+                        SignatureSubtype::SubkeyBinding => {
+                            if let Some(pk) = keydata.as_ref() {
+                                hasher.write(pk.0.as_ref());
+                            }
+                            if let Some(sk) = last_subkey.as_ref() {
+                                hasher.write(sk.0.as_ref());
+                                SignatureTarget::Subkey(sk.1.clone())
+                            } else {
+                                SignatureTarget::UnknownTarget
+                            }
+                        }
+                        _ => SignatureTarget::UnknownTarget,
+                    };
+                    out.push(SignatureValidationResult {
+                        sigtype,
+                        target,
+                        signer: sig.get_signature_issuer(),
+                        result: sig.validate_signature(bx, hasher),
+                    });
+                }
+                OpenPGPPacketData::UserID(uid) => {
+                    let mut buf = Vec::new();
+                    buf.push(0xB4);
+                    buf.extend_from_slice((uid.len() as u32).to_be_bytes().as_slice());
+                    buf.extend_from_slice(uid.as_bytes());
+                    last_uid = Some(buf);
+                }
+                OpenPGPPacketData::PublicKey(pk) => {
+                    last_uid = None;
+                    let mut buf = Vec::new();
+                    let cnt = pkt.data.serialize_to_bits(&mut buf)? as u16;
+                    let mut buf1 = Vec::new();
+                    buf1.push(0x99);
+                    buf1.write_be_u16(cnt)?;
+                    buf1.append(&mut buf);
+                    keydata = Some((buf1, pk.get_fingerprint().into()));
+                }
+                OpenPGPPacketData::PublicSubkey(sk) => {
+                    let mut buf = Vec::new();
+                    let cnt = pkt.data.serialize_to_bits(&mut buf)?;
+                    let mut buf1 = Vec::new();
+                    buf1.push(0x99);
+                    buf1.write_be_u16(cnt as u16)?;
+                    buf1.append(&mut buf);
+                    last_subkey = Some((buf1, sk.get_fingerprint().into()));
+                }
+                _ => {}
             }
         }
-        Ok(())
+        Ok(out)
+    }
+}
+#[derive(Clone, Eq, PartialEq)]
+pub enum SignatureTarget {
+    PublicKey(Fingerprint),
+    Subkey(Fingerprint),
+    Data(Hash),
+    UnknownTarget,
+}
+impl Debug for SignatureTarget {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self {
+            SignatureTarget::PublicKey(fp) => write!(f, "PublicKey({fp:?})"),
+            SignatureTarget::Subkey(fp) => write!(f, "Subkey({fp:?})"),
+            SignatureTarget::Data(h) => write!(f, "Data({h:?})"),
+            SignatureTarget::UnknownTarget => write!(f, "Unknown"),
+        }
+    }
+}
+#[derive(Clone, Eq, PartialEq)]
+pub struct SignatureValidationResult {
+    pub sigtype: SignatureSubtype,
+    pub target: SignatureTarget,
+    pub signer: Option<Fingerprint>,
+    pub result: Result<(), Error>,
+}
+impl Debug for SignatureValidationResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        let name = if self.result.is_ok() {
+            format!("valid signature ({:?})", self.sigtype)
+        } else {
+            format!("invalid signature ({:?})", self.sigtype)
+        };
+        let mut s = f.debug_struct(name.as_str());
+        s.field("target", &self.target);
+        match &self.signer {
+            None => s.field("signer", &"None"),
+            Some(fp) => s.field("signer", &fp),
+        };
+        if let Err(e) = &self.result {
+            s.field("errors", &e);
+        }
+        s.finish()
     }
 }

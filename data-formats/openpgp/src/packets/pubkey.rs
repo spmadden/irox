@@ -171,6 +171,16 @@ impl PubKeyPacket {
             PubKeyPacket::Version4(v4) => v4.add_to_keybox(bx),
         }
     }
+    pub fn get_keylength(&self) -> u16 {
+        match self {
+            PubKeyPacket::Version4(v4) => v4.get_keylength(),
+        }
+    }
+    pub fn get_fingerprint(&self) -> [u8; 20] {
+        match self {
+            PubKeyPacket::Version4(v4) => v4.fingerprint,
+        }
+    }
 }
 #[derive(Clone)]
 pub struct PubKeyV4 {
@@ -186,6 +196,16 @@ impl PubKeyV4 {
         let fp = Fingerprint(self.fingerprint.to_vec().into_boxed_slice());
         bx.pubkeys.insert(fp.clone(), self.try_into()?);
         Ok(fp)
+    }
+    pub fn get_keylength(&self) -> u16 {
+        match &self.data {
+            PubKeyData::EdDSALegacy(ed) => ed.curve.get_params().keysize_bits,
+            PubKeyData::ECDH(ed) => ed.curve.get_params().keysize_bits,
+            _ => 0,
+        }
+    }
+    pub fn get_keygrip(&self) -> Option<[u8; 20]> {
+        self.keygrip
     }
 }
 impl TryFrom<&PubKeyV4> for PublicKey {
@@ -313,7 +333,8 @@ impl SerializeToBits for EdDSALegacy {
         let oid = self.curve.get_oid();
         bits.write_u8(oid.len() as u8)?;
         bits.write_all_bytes(oid)?;
-        let len = write_mpi(bits, true, self.pubkey.as_slice())?;
+        let keylen = self.curve.get_params().keysize_bits;
+        let len = write_mpi(bits, true, keylen, self.pubkey.as_slice())?;
         Ok(len + oid.len() + 1)
     }
 }
@@ -321,6 +342,7 @@ impl SerializeToBits for EdDSALegacy {
 pub struct ECDH {
     pub curve: ECC_Curve,
     pub pubkey: Vec<u8>,
+    pub spare: u16,
     pub hash_function: HashAlgorithm,
     pub sym_algorithm: SymmetricKeyAlgorithm,
 }
@@ -331,6 +353,7 @@ impl Debug for ECDH {
             .field("PK", &to_hex_str_upper(self.pubkey.as_slice()))
             .field("hash", &self.hash_function)
             .field("sym", &self.sym_algorithm)
+            .field("spare", &self.spare)
             .finish()
     }
 }
@@ -342,12 +365,13 @@ impl TryFrom<&[u8]> for ECDH {
         let oid = value.read_exact_vec(olen as usize)?;
         let curve: ECC_Curve = oid.as_slice().try_into()?;
         let pubkey = read_mpi(&mut value, true)?;
-        let _skip = value.read_be_u16()?;
+        let spare = value.read_be_u16()?;
         let hash_function = value.read_u8()?.try_into()?;
         let sym_algorithm = value.read_u8()?.try_into()?;
         Ok(ECDH {
             curve,
             pubkey,
+            spare,
             hash_function,
             sym_algorithm,
         })
@@ -356,11 +380,14 @@ impl TryFrom<&[u8]> for ECDH {
 impl SerializeToBits for ECDH {
     fn serialize_to_bits<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
         let oid = self.curve.get_oid();
-        let len = write_mpi(bits, true, oid)?;
-        bits.write_be_u16(0)?;
+        bits.write_u8(oid.len() as u8)?;
+        bits.write_all_bytes(oid)?;
+        let keylen = self.curve.get_params().keysize_bits;
+        let len = write_mpi(bits, true, keylen, &self.pubkey)?;
+        bits.write_be_u16(self.spare)?;
         bits.write_u8(self.hash_function.get_id())?;
         bits.write_u8(self.sym_algorithm.get_id())?;
-        Ok(len + 4)
+        Ok(len + 5 + oid.len())
     }
 }
 pub fn read_mpi<T: Bits>(i: &mut T, is_curve: bool) -> Result<Vec<u8>, Error> {
@@ -376,17 +403,19 @@ pub fn read_mpi<T: Bits>(i: &mut T, is_curve: bool) -> Result<Vec<u8>, Error> {
 pub fn write_mpi<T: MutBits + ?Sized>(
     o: &mut T,
     is_curve: bool,
+    mut len: u16,
     value: &[u8],
 ) -> Result<usize, Error> {
-    let mut len = (value.len() * 8) as u16;
     if is_curve {
         len += 8;
     }
     o.write_be_u16(len)?;
+    let mut len = 2usize;
     if is_curve {
         // write curve prefix
-        o.write_u8(value.len() as u8)?;
+        o.write_u8(0x40)?;
+        len += 1;
     }
     o.write_all_bytes(value)?;
-    Ok(value.len() + 2)
+    Ok(value.len() + len)
 }

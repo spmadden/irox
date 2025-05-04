@@ -69,6 +69,21 @@ impl TryFrom<HashAlgorithm> for HasherCounting {
         }
     }
 }
+#[derive(Clone, Eq, PartialEq)]
+pub struct Hash {
+    pub hash: Box<[u8]>,
+    pub algorithm: HashAlgorithm,
+}
+impl Debug for Hash {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(
+            f,
+            "Hash({:?}:{})",
+            self.algorithm,
+            to_hex_str_upper(&self.hash)
+        )
+    }
+}
 
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
@@ -199,6 +214,7 @@ pub enum ECC_Curve {
 pub struct CurveParameters {
     pub oid: &'static [u8],
     pub asn_oid: &'static str,
+    pub keysize_bits: u16,
     pub p: &'static [u8],
     pub a: &'static [u8],
     pub b: &'static [u8],
@@ -223,6 +239,7 @@ impl CurveParameters {
 pub static NIST_P256_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2A8648CE3D030107"),
     asn_oid: "1.2.840.10045.3.1.7",
+    keysize_bits: 256,
     p: &[],
     a: &[],
     b: &[],
@@ -232,6 +249,7 @@ pub static NIST_P256_PARAMS: &CurveParameters = &CurveParameters {
 pub static NIST_P384_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B81040022"),
     asn_oid: "1.3.132.0.34",
+    keysize_bits: 384,
     p: &[],
     a: &[],
     b: &[],
@@ -241,6 +259,7 @@ pub static NIST_P384_PARAMS: &CurveParameters = &CurveParameters {
 pub static NIST_P521_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B81040023"),
     asn_oid: "1.3.132.0.35",
+    keysize_bits: 521,
     p: &[],
     a: &[],
     b: &[],
@@ -250,6 +269,7 @@ pub static NIST_P521_PARAMS: &CurveParameters = &CurveParameters {
 pub static BRAINPOOL_P256_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B2403030208010107"),
     asn_oid: "1.3.36.3.3.2.8.1.1.7",
+    keysize_bits: 256,
     p: &[],
     a: &[],
     b: &[],
@@ -259,6 +279,7 @@ pub static BRAINPOOL_P256_PARAMS: &CurveParameters = &CurveParameters {
 pub static BRAINPOOL_P384_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B240303020801010B"),
     asn_oid: "1.3.36.3.3.2.8.1.1.11",
+    keysize_bits: 384,
     p: &[],
     a: &[],
     b: &[],
@@ -268,6 +289,7 @@ pub static BRAINPOOL_P384_PARAMS: &CurveParameters = &CurveParameters {
 pub static BRAINPOOL_P512_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B240303020801010D"),
     asn_oid: "1.3.36.3.3.2.8.1.1.13",
+    keysize_bits: 512,
     p: &[],
     a: &[],
     b: &[],
@@ -277,6 +299,7 @@ pub static BRAINPOOL_P512_PARAMS: &CurveParameters = &CurveParameters {
 pub static ED25519_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B06010401DA470F01"),
     asn_oid: "1.3.6.1.4.1.11591.15.1",
+    keysize_bits: 255,
     p: X255M19,
     a: &hex!("01"),
     b: ED25519_BASE,
@@ -286,6 +309,7 @@ pub static ED25519_PARAMS: &CurveParameters = &CurveParameters {
 pub static X25519_PARAMS: &CurveParameters = &CurveParameters {
     oid: &hex!("2B060104019755010501"),
     asn_oid: "1.3.6.1.4.1.3029.1.5.1",
+    keysize_bits: 255,
     p: X255M19,
     a: &hex!("01DB41"),
     b: &hex!("01"),

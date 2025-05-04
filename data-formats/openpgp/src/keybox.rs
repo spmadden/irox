@@ -35,13 +35,16 @@ impl Keybox {
 pub struct Fingerprint(pub Box<[u8]>);
 impl Debug for Fingerprint {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        f.debug_tuple("Fingerprint")
-            .field(&to_hex_str_upper(self.0.as_ref()))
-            .finish()
+        write!(f, "fpr({})", to_hex_str_upper(self.0.as_ref()))
     }
 }
 impl From<&[u8]> for Fingerprint {
     fn from(value: &[u8]) -> Self {
+        Fingerprint(value.into())
+    }
+}
+impl<const N: usize> From<[u8; N]> for Fingerprint {
+    fn from(value: [u8; N]) -> Self {
         Fingerprint(value.into())
     }
 }

@@ -1,0 +1,57 @@
+# off=0 ctb=98 tag=6 hlen=2 plen=51
+:public key packet:
+	version 4, algo 22, created 1739805704, expires 0
+	pkey[0]: 092B06010401DA470F01 ed25519 (1.3.6.1.4.1.11591.15.1)
+	pkey[1]: 40E46EF9A54A80B69CF4DB1EB244F8CAE489BA26B8A0FD973A30753231971A9210
+	keyid: E5C0CEC91E2CE49D
+# off=53 ctb=b4 tag=13 hlen=2 plen=43
+:user ID packet: "Sean P. Madden (YK5C) <sean@seanmadden.net>"
+# off=98 ctb=88 tag=2 hlen=2 plen=147
+:signature packet: algo 22, keyid E5C0CEC91E2CE49D
+	version 4, created 1739805704, md5len 0, sigclass 0x13
+	digest algo 10, begin of digest ac 96
+	hashed subpkt 33 len 21 (issuer fpr v4 90DC661D06B61505B9235173E5C0CEC91E2CE49D)
+	hashed subpkt 2 len 4 (sig created 2025-02-17)
+	hashed subpkt 27 len 1 (key flags: 03)
+	hashed subpkt 11 len 4 (pref-sym-algos: 9 8 7 2)
+	hashed subpkt 34 len 1 (pref-aead-algos: 2)
+	hashed subpkt 21 len 5 (pref-hash-algos: 10 9 8 11 2)
+	hashed subpkt 22 len 3 (pref-zip-algos: 2 3 1)
+	hashed subpkt 30 len 1 (features: 07)
+	hashed subpkt 23 len 1 (keyserver preferences: 80)
+	subpkt 16 len 8 (issuer key ID E5C0CEC91E2CE49D)
+	data: 946BC4C9566059A1053ABCD104471E47E76D37F04FA72923082810FE42510161
+	data: 8309D4142687646012A809F9035EA16BD39652E9C18DEA8382F4B3E0E3736006
+# off=247 ctb=b8 tag=14 hlen=2 plen=51
+:public sub key packet:
+	version 4, algo 22, created 1739805704, expires 0
+	pkey[0]: 092B06010401DA470F01 ed25519 (1.3.6.1.4.1.11591.15.1)
+	pkey[1]: 4070FA6DE517377D9FDF2F2C4530E4041A053B1173BB89045C90CBA5193920942D
+	keyid: 19266C9A59FA87B6
+# off=300 ctb=88 tag=2 hlen=2 plen=120
+:signature packet: algo 22, keyid E5C0CEC91E2CE49D
+	version 4, created 1739805704, md5len 0, sigclass 0x18
+	digest algo 10, begin of digest 1b df
+	hashed subpkt 33 len 21 (issuer fpr v4 90DC661D06B61505B9235173E5C0CEC91E2CE49D)
+	hashed subpkt 2 len 4 (sig created 2025-02-17)
+	hashed subpkt 27 len 1 (key flags: 20)
+	subpkt 16 len 8 (issuer key ID E5C0CEC91E2CE49D)
+	data: 7F0E860A5880B78759D89A7EAD03C99D96BEC15DC9C950A42894586608CFBBA0
+	data: 7655B8EA5D29CF221146B22B3AB7296F97ACDBF9F2BD386C642B629C3F3BCA07
+# off=422 ctb=b8 tag=14 hlen=2 plen=56
+:public sub key packet:
+	version 4, algo 18, created 1739805704, expires 0
+	pkey[0]: 0A2B060104019755010501 cv25519 (1.3.6.1.4.1.3029.1.5.1)
+	pkey[1]: 402A20C8631C29D6875788EC1BAAC0EE7F882095CC154B0AF428FBE11340280613
+	pkey[2]: 03010807
+	keyid: C7032A8013BA2416
+# off=480 ctb=88 tag=2 hlen=2 plen=120
+:signature packet: algo 22, keyid E5C0CEC91E2CE49D
+	version 4, created 1739805704, md5len 0, sigclass 0x18
+	digest algo 10, begin of digest 84 f7
+	hashed subpkt 33 len 21 (issuer fpr v4 90DC661D06B61505B9235173E5C0CEC91E2CE49D)
+	hashed subpkt 2 len 4 (sig created 2025-02-17)
+	hashed subpkt 27 len 1 (key flags: 0C)
+	subpkt 16 len 8 (issuer key ID E5C0CEC91E2CE49D)
+	data: E66AA299C4C22E9E969DD7DB0406594EDF15BD0E2505F85FB26D85CF29584861
+	data: C677A2D78D7BFC5192FC8B5E29B0A842C4C8844209E87F2DB074C7ABC0669203

@@ -75,11 +75,14 @@ impl SignaturePacket {
         };
 
         let data = self.get_hashed_data();
+        let cnt = data.len();
+        // irox_tools::hex::HexDump::hexdump(&data);
         hash.write(data);
         hash.write_u8(self.get_version())?;
         hash.write_u8(0xFF)?;
-        hash.write_be_u32(hash.count as u32)?;
+        hash.write_be_u32(cnt as u32)?;
         let (_, data) = hash.finish();
+        // data.as_ref().hexdump();
         let sig = self.try_into_ed25519_sig()?;
         let pk: &Ed25519PublicKey = (&pk.data).try_into()?;
         if let Err(e) = pk.verify_signed_message(&data, &sig) {
