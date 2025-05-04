@@ -519,6 +519,30 @@ where
         self.mean.get_num_samples()
     }
 }
+
+pub trait SummarizingIterator<'a, T: 'a>: Iterator<Item = &'a T> + Sized {
+    fn summarize(self) -> Summary<T>
+    where
+        Self: Sized + Iterator<Item = &'a T>,
+        T: Sub<T, Output = T>
+            + PartialOrd
+            + Copy
+            + Default
+            + Div<f64, Output = T>
+            + Add<T, Output = T>
+            + Mul<f64, Output = T>
+            + Mul<T, Output = T>
+            + FloatExt<Type = T>,
+    {
+        let mut summary = Summary::default();
+        for v in self {
+            summary.add_sample(*v);
+        }
+        summary
+    }
+}
+impl<'a, T: Sized, B: 'a> SummarizingIterator<'a, B> for T where T: Iterator<Item = &'a B> {}
+
 #[cfg(feature = "std")]
 pub struct OneSecondWindows {
     epoch: irox_time::epoch::Epoch,
