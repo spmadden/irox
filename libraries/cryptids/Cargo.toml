@@ -17,11 +17,12 @@ workspace = true
 
 [features]
 _toobig-tests = [] # slow tests that take way too long to run normally.
-std = []
+std = ["irox-arch-x86-64"]
 
 [dependencies]
 irox-bits = {workspace = true}
 irox-tools = {workspace = true}
+irox-arch-x86-64 = {workspace = true, optional = true}
 
 [dev-dependencies]
 irox-tools = {workspace = true, features = ["std"]}

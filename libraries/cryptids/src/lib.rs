@@ -26,3 +26,9 @@ pub use chacha20::*;
 pub use irox_tools::hash::sha2;
 pub use pbkdf2::*;
 pub use poly1305::*;
+
+use irox_tools::cfg_feature_std;
+cfg_feature_std! {
+    mod crng;
+    pub use crng::*;
+}
