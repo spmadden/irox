@@ -38,6 +38,7 @@ static KONSTANTS: [u32; 64] = [
 ///
 ///
 /// **THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED**
+#[derive(Clone)]
 pub struct MD5 {
     written_length: u64,
     a0: u32,

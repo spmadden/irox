@@ -66,6 +66,7 @@ static SIGMA: &[&[usize; 16]; 12] = &[
 
 macro_rules! impl_blake2 {
     ($name:ident,$prim:ty,$nprim:ty,$nb:literal,$bb:literal,$w:literal, $r:literal, $iv:ident, $RND:ident) => {
+        #[derive(Clone)]
         pub struct $name<const NN: usize> {
             h: [$prim; 8],
             written: $nprim,

@@ -34,7 +34,7 @@ macro_rules! round32 {
         *$h = $h.wrapping_mul(5).wrapping_add(0xe6546b64);
     };
 }
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Murmur3_32 {
     h: u32,
     buf: FixedU8Buf<4>,
@@ -107,7 +107,7 @@ impl Murmur3_32 {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Murmur3_128 {
     h1: u64,
     h2: u64,

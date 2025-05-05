@@ -41,6 +41,7 @@ macro_rules! sha2_impl {
         /// Standard implementation of
         #[doc=stringify!($name)]
         /// following RFC 6234
+        #[derive(Clone)]
         pub struct $name {
             alg: $typ<{ $block_size }, { $word_size }, { $output_size }>,
         }
@@ -156,6 +157,7 @@ mod sha224_256 {
         0x5be0cd19,
     ];
 
+    #[derive(Clone)]
     pub struct LittleSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
         buf: U32ArrayBuf<16>,
         written_length: u64,
@@ -481,6 +483,7 @@ mod sha384_512 {
         0x5be0cd19137e2179,
     ];
 
+    #[derive(Clone)]
     pub struct BiggerSha2<const BLOCK_SIZE: usize, const WORD_SIZE: usize, const OUTPUT_SIZE: usize> {
         buf: U64ArrayBuf<16>,
         written_length: u128,

@@ -9,6 +9,7 @@ use irox_bits::{Error, ErrorKind, MutBits};
 
 pub type U32ArrayBuf<const N: usize> = ArrayBuf<N, 4, u32>;
 pub type U64ArrayBuf<const N: usize> = ArrayBuf<N, 8, u64>;
+#[derive(Clone)]
 pub struct ArrayBuf<const N: usize, const O: usize, T: Default + Copy + Sized> {
     buf: [T; N],
     b2: [u8; O],

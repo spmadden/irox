@@ -193,6 +193,7 @@ cfg_feature_alloc! {
         }
     }
 
+    #[derive(Clone)]
     pub enum Hasher {
         MD5(MD5),
         SHA1(SHA1),

@@ -22,6 +22,7 @@ pub const OUTPUT_SIZE: usize = 20;
 ///
 ///
 /// **THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED**
+#[derive(Clone)]
 pub struct SHA1 {
     written_length: u64,
     buf: RoundBuffer<BLOCK_SIZE, u8>,
