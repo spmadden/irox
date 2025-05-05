@@ -12,13 +12,13 @@ use core::ops::DerefMut;
 pub use pubkey::*;
 pub use signature::*;
 
-use crate::keybox::{Fingerprint, Keybox};
+use crate::keybox::{Fingerprint, MultiKeybox};
 use crate::packets::data::LiteralData;
 use crate::packets::ops::OnePassSignature;
 use crate::types::Hash;
 use irox_bits::{Bits, BitsWrapper, Error, ErrorKind, MutBits, SerializeToBits};
 use irox_enums::{EnumIterItem, EnumName};
-use irox_tools::hash::HasherCounting;
+use irox_tools::hash::Hasher;
 
 pub const MESSAGE_HEADER: &str = "-----BEGIN PGP MESSAGE-----";
 pub const MESSAGE_FOOTER: &str = "-----END PGP MESSAGE-----";
@@ -28,6 +28,9 @@ pub const PRIVKEY_HEADER: &str = "-----BEGIN PGP PRIVATE KEY BLOCK-----";
 pub const PRIVKEY_FOOTER: &str = "-----END PGP PRIVATE KEY BLOCK-----";
 pub const SIG_HEADER: &str = "-----BEGIN PGP SIGNATURE BLOCK-----";
 pub const SIG_FOOTER: &str = "-----END PGP SIGNATURE BLOCK-----";
+pub const SIGNED_MESSAGE_HEADER: &str = "-----BEGIN PGP SIGNED MESSAGE-----";
+pub const SIGNED_MESSAGE_SIGNATURE: &str = "-----BEGIN PGP SIGNATURE-----";
+pub const SIGNED_MESSAGE_FOOTER: &str = "-----END PGP SIGNATURE-----";
 
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIterItem, EnumName)]
@@ -193,13 +196,15 @@ impl<'a, T: Bits> OpenPGPPackeStream<'a, T> {
                 let pkt_type = (first & 0b111100) >> 2;
                 let len_ty = first & 0b11;
                 let len = match len_ty {
-                    0 => self.inner.read_u8()?,
+                    0 => self.inner.read_u8()? as u32,
+                    1 => self.inner.read_be_u16()? as u32,
+                    2 => self.inner.read_be_u32()?,
                     _ => {
                         todo!()
                     }
                 };
                 // out.push(len);
-                (pkt_type, len as u32)
+                (pkt_type, len)
             }
             0b11 => {
                 // new format
@@ -233,7 +238,7 @@ pub fn read_newlength<T: Bits>(source: &mut T) -> Result<u32, Error> {
         Ok(len)
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OpenPGPMessage {
     pub packets: Vec<OpenPGPPacket>,
 }
@@ -253,30 +258,10 @@ impl OpenPGPMessage {
         }
         Ok(Self { packets })
     }
-    pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<(), Error> {
-        let mut last_pubkey = None;
-        for pkt in &self.packets {
-            if let OpenPGPPacketData::PublicKey(pk) = &pkt.data {
-                last_pubkey = Some(pk.add_to_keybox(bx)?);
-            } else if let OpenPGPPacketData::UserID(uid) = &pkt.data {
-                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
-                    pk.user_id = Some(uid.clone());
-                }
-            } else if let OpenPGPPacketData::PublicSubkey(sk) = &pkt.data {
-                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
-                    pk.subkeys.push(sk.try_into()?)
-                }
-            } else if let OpenPGPPacketData::Signature(sig) = &pkt.data {
-                if let Some(pk) = last_pubkey.as_ref().and_then(|fp| bx.pubkeys.get_mut(fp)) {
-                    sig.update_pubkey(pk);
-                }
-            }
-        }
-        Ok(())
-    }
+
     pub fn validate_signatures(
         &self,
-        bx: &Keybox,
+        bx: &MultiKeybox,
     ) -> Result<Vec<SignatureValidationResult>, Error> {
         let mut out = Vec::new();
         let mut keydata: Option<(Vec<u8>, Fingerprint)> = None;
@@ -285,7 +270,7 @@ impl OpenPGPMessage {
         for pkt in &self.packets {
             match &pkt.data {
                 OpenPGPPacketData::Signature(sig) => {
-                    let mut hasher: HasherCounting = sig.get_hash_alg().try_into()?;
+                    let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
                     let sigtype = sig.get_subtype();
                     let target = match sigtype {
                         SignatureSubtype::GenericCertification

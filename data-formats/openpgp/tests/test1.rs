@@ -5,7 +5,7 @@
 use irox_bits::{BitsError, BitsErrorKind, BitsWrapper, Error, MutBits, SerializeToBits};
 use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_openpgp::armor::{ArmorType, Dearmor};
-use irox_openpgp::keybox::Keybox;
+use irox_openpgp::keybox::MultiKeybox;
 use irox_openpgp::packets::{
     CreationTime, EdDSALegacy, EdDSALegacySignature, FeaturesSubpkt, Issuer, KeyExpiration,
     KeyFlags, KeyServerPreferences, OpenPGPMessage, OpenPGPPackeStream, OpenPGPPacket,
@@ -742,7 +742,10 @@ pub fn test_verify_sig() -> Result<(), Error> {
 macro_rules! check_msg {
     ($key:ident,$keybox:ident, $asserts:expr) => {
         let message = OpenPGPMessage::build_from(&mut $key)?;
-        message.add_to_keybox(&mut $keybox)?;
+        if let Some(r) = $keybox.map_mut(|v| v.add_to_keybox(&message)) {
+            r?;
+        }
+        // message.add_to_keybox(&mut $keybox)?;
         let asserts: &[SignatureValidationResult] = &$asserts;
         let valids = message.validate_signatures(&$keybox)?;
         assert_eq!(valids.len(), asserts.len());
@@ -753,7 +756,7 @@ macro_rules! check_msg {
 }
 #[test]
 pub fn test_keybox() -> Result<(), Error> {
-    let mut keybox = Keybox::default();
+    let mut keybox = MultiKeybox::new_empty();
     let mut k1 = PUBKEY_30774409_A.as_bytes();
     let mut k1 = k1.dearmor();
     let mut k2 = PUBKEY_30774409_B;

@@ -2,8 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::keybox::{Fingerprint, Keybox, PublicKey};
-use crate::packets::PubkeyAlgorithm;
+use crate::keybox::{Fingerprint, MultiKeybox, SharedPubkey};
+use crate::packets::{OpenPGPMessage, PubkeyAlgorithm};
 use crate::types::{
     CompressionAlgorithm, Features, HashAlgorithm, KeyFlag, KeyServerPreference,
     SymmetricKeyAlgorithm, MPI,
@@ -17,7 +17,7 @@ use irox_time::datetime::UTCDateTime;
 use irox_time::epoch::UnixTimestamp;
 use irox_time::format::iso8601::ISO8601Format;
 use irox_time::Duration;
-use irox_tools::hash::HasherCounting;
+use irox_tools::hash::Hasher;
 use irox_tools::hex::to_hex_str_upper;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -55,7 +55,7 @@ impl SignaturePacket {
             SignaturePacket::Version4(v) => v.try_into_ed25519_sig(),
         }
     }
-    pub fn validate_signature(&self, bx: &Keybox, mut hash: HasherCounting) -> Result<(), Error> {
+    pub fn validate_signature(&self, bx: &MultiKeybox, mut hash: Hasher) -> Result<(), Error> {
         let Some(fp) = self.get_signature_issuer() else {
             return Err(Error::new(
                 BitsErrorKind::NotFound,
@@ -82,10 +82,12 @@ impl SignaturePacket {
         hash.write_u8(self.get_version())?;
         hash.write_u8(0xFF)?;
         hash.write_be_u32(cnt as u32)?;
-        let (_, data) = hash.finish();
+        let data = hash.finish();
         // data.as_ref().hexdump();
         let sig = self.try_into_ed25519_sig()?;
-        let pk: &Ed25519PublicKey = (&pk.data).try_into()?;
+
+        let rd = pk.read_lock()?;
+        let pk: &Ed25519PublicKey = (&rd.data).try_into()?;
         if let Err(e) = pk.verify_signed_message(&data, &sig) {
             return Err(Error::new(BitsErrorKind::InvalidInput, e.msg()));
         }
@@ -110,17 +112,17 @@ impl SignaturePacket {
             SignaturePacket::Version4(v) => v.unhashed_packets.as_slice(),
         }
     }
-    pub fn update_pubkey(&self, pk: &mut PublicKey) {
+    pub fn update_pubkey(&self, pk: &SharedPubkey) -> Option<()> {
         if let Some(fp) = self.get_signature_issuer() {
-            if pk.fingerprint != fp {
-                return;
+            if pk.get_fingerprint()? != fp {
+                return None;
             }
         }
         for pkt in self.get_hashed_packets() {
             match pkt {
                 SignatureSubpacket::KeyExpirationTime(ket) => {
-                    if let Some(ct) = pk.created_on {
-                        pk.valid_until = Some(ct + ket.0)
+                    if let Some(ct) = pk.get_created_on() {
+                        pk.set_valid_until(ct + ket.0);
                     }
                 }
                 _ => {
@@ -128,6 +130,7 @@ impl SignaturePacket {
                 }
             }
         }
+        None
     }
 }
 impl TryFrom<&[u8]> for SignaturePacket {
@@ -467,6 +470,9 @@ pub enum SignatureSubpacketType {
     IssuerFingerprint,
     IntendedRecipientFingerprint,
     PreferredAEADCipherSuites,
+    AttestedCertifications,
+    KeyBlock,
+    AEADCiphersuites,
     #[skip]
     Unknown(u8),
 }
@@ -499,6 +505,9 @@ impl SignatureSubpacketType {
             SignatureSubpacketType::IssuerFingerprint => 33,
             SignatureSubpacketType::PreferredAEADCipherSuites => 34,
             SignatureSubpacketType::IntendedRecipientFingerprint => 35,
+            SignatureSubpacketType::AttestedCertifications => 37,
+            SignatureSubpacketType::KeyBlock => 38,
+            SignatureSubpacketType::AEADCiphersuites => 39,
             SignatureSubpacketType::Unknown(v) => *v,
         }
     }
@@ -565,6 +574,11 @@ impl SignatureSubpacketType {
                     PreferredAEADSymCiphers::try_from(pkt_data.as_slice())?,
                 ))
             }
+            SignatureSubpacketType::KeyBlock => {
+                return Ok(SignatureSubpacket::KeyBlock(KeyBlock::try_from(
+                    pkt_data.as_slice(),
+                )?));
+            }
             _ => {}
         }
         let pkt_type = self.get_id();
@@ -610,6 +624,8 @@ pub enum SignatureSubpacket {
     EmbeddedSignature(), //TODO
     IssuerFingerprint(Issuer),
     IntendedRecipientFingerprint(), //TODO
+    AttestedCertifications(),       //TODO
+    KeyBlock(KeyBlock),
     PreferredAEADCiphersuites(PreferredAEADSymCiphers),
     Unknown(UnknownSubpacket),
 }
@@ -657,6 +673,24 @@ impl SerializeToBits for SignatureSubpacket {
             }
             _ => todo!(),
         }
+    }
+}
+#[derive(Clone, Eq, PartialEq)]
+pub struct KeyBlock {
+    pub msg: OpenPGPMessage,
+}
+impl Debug for KeyBlock {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("KeyBlock").field(&self.msg).finish()
+    }
+}
+impl TryFrom<&[u8]> for KeyBlock {
+    type Error = Error;
+
+    fn try_from(mut value: &[u8]) -> Result<Self, Self::Error> {
+        let _skip = value.read_u8()?;
+        let msg = OpenPGPMessage::build_from(&mut value)?;
+        Ok(Self { msg })
     }
 }
 #[derive(Clone, Eq, PartialEq)]

@@ -119,6 +119,26 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
                         return Err(ErrorKind::InvalidInput.into());
                     };
                 }
+                SIGNED_MESSAGE_HEADER => {
+                    self.set_armor_type(ArmorType::Message)?;
+                    self.try_consume_headers()?;
+                }
+                SIGNED_MESSAGE_SIGNATURE => {
+                    self.set_armor_type(ArmorType::Signature)?;
+                    self.try_consume_headers()?;
+                }
+                SIGNED_MESSAGE_FOOTER => {
+                    self.done = true;
+                    match self.armor_type {
+                        Some(ArmorType::Message) | Some(ArmorType::Signature) => {
+                            // okay
+                        }
+                        _ => {
+                            return Err(ErrorKind::InvalidInput.into());
+                        }
+                    }
+                }
+
                 _ => {
                     // base64 decode the line
                     if line.starts_with('=') {

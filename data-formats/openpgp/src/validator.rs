@@ -2,122 +2,114 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::packets::SignaturePacket;
+use crate::armor::Dearmor;
+use crate::keybox::{Keybox, MultiKeybox};
+use crate::packets::{OpenPGPMessage, OpenPGPPacketData};
 use crate::types::HashAlgorithm;
-use irox_bits::{BitsErrorKind, Error, ErrorKind};
-use irox_cryptids::ed25519::{Ed25519PublicKey, Ed25519Signature};
-use irox_tools::hash::{MD5, SHA1, SHA224, SHA256, SHA384, SHA512};
+use irox_bits::{BitsErrorKind, Error};
+use irox_tools::hash::Hasher;
+use std::fs::OpenOptions;
+use std::io::BufReader;
+use std::path::Path;
 
-pub struct SignatureValidator {
-    hasher: Hasher,
-    signature_packet: SignaturePacket,
-    pubkey: Ed25519PublicKey,
+pub struct SignatureValidator<'a> {
+    pub keybox: MultiKeybox<'a>,
 }
-impl SignatureValidator {
-    pub fn new(pubkey: Ed25519PublicKey, signature_packet: SignaturePacket) -> Result<Self, Error> {
-        let hasher: Hasher = signature_packet.get_hash_alg().try_into()?;
-
-        Ok(SignatureValidator {
-            hasher,
-            signature_packet,
-            pubkey,
-        })
+impl<'a> SignatureValidator<'a> {
+    pub fn new_empty() -> Self {
+        SignatureValidator {
+            keybox: MultiKeybox::Owned(Keybox::default()),
+        }
     }
-    pub fn write(&mut self, data: &[u8]) {
-        self.hasher.write(data);
+    pub fn new_keybox(keybox: MultiKeybox<'a>) -> Self {
+        Self { keybox }
     }
-    pub fn finish_check(mut self) -> Result<(), Error> {
-        let data = self.signature_packet.get_hashed_data();
-        self.hasher.write(data);
-        self.hasher
-            .write(&[self.signature_packet.get_version(), 0xFF]);
-        self.hasher.write(&data.len().to_be_bytes());
-        let hash = self.hasher.finish();
+    pub fn verify_detached_armored_signature<S: AsRef<Path>, D: AsRef<Path>>(
+        &'a mut self,
+        sigfile: S,
+        datafile: D,
+    ) -> Result<(), Error> {
+        let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
+        let mut file = BufReader::new(file);
+        let mut file = file.dearmor();
+        let sig = OpenPGPMessage::build_from(&mut file)?;
+        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
+            r?;
+        }
 
-        let sig = Ed25519Signature {
-            signature: self.signature_packet.try_into_ed25519_sig()?,
-            pubkey: self.pubkey,
+        let Some(sig) = sig.packets.iter().find_map(|p| {
+            if let OpenPGPPacketData::Signature(sig) = &p.data {
+                Some(sig)
+            } else {
+                None
+            }
+        }) else {
+            return Err(Error::new(
+                BitsErrorKind::NotFound,
+                "No signature packet found",
+            ));
         };
-        sig.validate_hash(&hash)
-            .map_err(|_| Error::new(BitsErrorKind::InvalidInput, "Signature validation failure"))
+        let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
+        hasher.hash_file(datafile)?;
+
+        sig.validate_signature(&self.keybox, hasher)
+    }
+
+    pub fn verify_detached_signature<S: AsRef<Path>, D: AsRef<Path>>(
+        &mut self,
+        sigfile: S,
+        datafile: D,
+    ) -> Result<(), Error> {
+        let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
+        let mut file = BufReader::new(file);
+        let sig = OpenPGPMessage::build_from(&mut file)?;
+        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
+            r?;
+        }
+
+        let Some(sig) = sig.packets.iter().find_map(|p| {
+            if let OpenPGPPacketData::Signature(sig) = &p.data {
+                Some(sig)
+            } else {
+                None
+            }
+        }) else {
+            return Err(Error::new(
+                BitsErrorKind::NotFound,
+                "No signature packet found",
+            ));
+        };
+        let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
+        hasher.hash_file(datafile)?;
+
+        sig.validate_signature(&self.keybox, hasher)
     }
 }
 
-pub enum Hasher {
-    MD5(MD5),
-    SHA1(SHA1),
-    SHA224(SHA224),
-    SHA256(SHA256),
-    SHA384(SHA384),
-    SHA512(SHA512),
-}
-impl TryFrom<HashAlgorithm> for Hasher {
-    type Error = Error;
-
-    fn try_from(value: HashAlgorithm) -> Result<Self, Self::Error> {
-        match value {
-            HashAlgorithm::MD5 => Ok(Hasher::MD5(MD5::default())),
-            HashAlgorithm::SHA1 => Ok(Hasher::SHA1(SHA1::default())),
-            HashAlgorithm::SHA256 => Ok(Hasher::SHA256(SHA256::default())),
-            HashAlgorithm::SHA384 => Ok(Hasher::SHA384(SHA384::default())),
-            HashAlgorithm::SHA512 => Ok(Hasher::SHA512(SHA512::default())),
-            HashAlgorithm::SHA224 => Ok(Hasher::SHA224(SHA224::default())),
-            _ => Err(ErrorKind::Unsupported.into()),
-        }
+pub fn s2k(alg: HashAlgorithm, iter: usize, salt: &[u8], data: &[u8]) -> Result<Box<[u8]>, Error> {
+    let mut h: Hasher = alg.try_into()?;
+    let mut rem = iter;
+    while rem > 0 {
+        let l = rem.min(salt.len());
+        let Some(s) = salt.get(0..l) else {
+            break;
+        };
+        h.write(s);
+        rem -= l;
+        let l = rem.min(data.len());
+        let Some(d) = data.get(0..l) else {
+            break;
+        };
+        h.write(d);
+        rem -= l;
     }
+    Ok(h.finish())
 }
 
-impl Hasher {
-    pub fn write(&mut self, val: &[u8]) {
-        match self {
-            Hasher::MD5(h) => h.write(val),
-            Hasher::SHA1(h) => h.write(val),
-            Hasher::SHA224(h) => h.write(val),
-            Hasher::SHA256(h) => h.write(val),
-            Hasher::SHA384(h) => h.write(val),
-            Hasher::SHA512(h) => h.write(val),
-        }
-    }
-    pub fn finish(self) -> Box<[u8]> {
-        match self {
-            Hasher::MD5(v) => Box::from(v.finish().to_be_bytes()),
-            Hasher::SHA1(v) => Box::from(v.finish()),
-            Hasher::SHA224(v) => Box::from(v.finish()),
-            Hasher::SHA256(v) => Box::from(v.finish()),
-            Hasher::SHA384(v) => Box::from(v.finish()),
-            Hasher::SHA512(v) => Box::from(v.finish()),
-        }
-    }
-
-    pub fn s2k(
-        alg: HashAlgorithm,
-        iter: usize,
-        salt: &[u8],
-        data: &[u8],
-    ) -> Result<Box<[u8]>, Error> {
-        let mut h: Self = alg.try_into()?;
-        let mut rem = iter;
-        while rem > 0 {
-            let l = rem.min(salt.len());
-            let Some(s) = salt.get(0..l) else {
-                break;
-            };
-            h.write(s);
-            rem -= l;
-            let l = rem.min(data.len());
-            let Some(d) = data.get(0..l) else {
-                break;
-            };
-            h.write(d);
-            rem -= l;
-        }
-        Ok(h.finish())
-    }
-}
 #[cfg(test)]
 mod tests {
     use crate::types::HashAlgorithm;
-    use crate::validator::Hasher;
+    use crate::validator::s2k;
     use irox_bits::Error;
     use irox_tools::hash::SHA256;
     use irox_tools::{assert_eq_hex_slice, hex};
@@ -145,7 +137,7 @@ mod tests {
         let s = b"01234567";
         let d = b"123456";
         let c = 0x000186A0;
-        let h = Hasher::s2k(HashAlgorithm::SHA256, c, s, d)?;
+        let h = s2k(HashAlgorithm::SHA256, c, s, d)?;
         assert_eq_hex_slice!(
             h,
             hex!("773784A602B6C81E3F092F4D7D00E17CC822D88F7360FCF2D2EF2D9D901F44B6")
@@ -157,7 +149,7 @@ mod tests {
         let s = hex!("4142434445464748");
         let d = b"12345678";
         let c = 0x000186A0;
-        let h = Hasher::s2k(HashAlgorithm::SHA256, c, &s, d)?;
+        let h = s2k(HashAlgorithm::SHA256, c, &s, d)?;
         assert_eq_hex_slice!(
             h,
             hex!("2675D6164A0D4827D1D00C7EEA620D015C00030A1CAB38B4D0DD600B27DC9630")

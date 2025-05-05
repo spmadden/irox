@@ -2,7 +2,9 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::keybox::{Fingerprint, Keybox, Keygrip, PublicKey, PublicKeyData, PublicKeySource};
+use crate::keybox::{
+    Fingerprint, Keybox, Keygrip, PublicKey, PublicKeyData, PublicKeySource, SharedPubkey,
+};
 use crate::keygrip::KeyGrip;
 use crate::types::{ECC_Curve, HashAlgorithm, SymmetricKeyAlgorithm, MPI};
 use core::fmt::{Debug, Formatter};
@@ -164,6 +166,15 @@ impl TryFrom<&PubKeyPacket> for PublicKey {
         }
     }
 }
+impl TryFrom<&PubKeyPacket> for SharedPubkey {
+    type Error = Error;
+
+    fn try_from(value: &PubKeyPacket) -> Result<Self, Self::Error> {
+        match value {
+            PubKeyPacket::Version4(v4) => v4.try_into(),
+        }
+    }
+}
 
 impl PubKeyPacket {
     pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<Fingerprint, Error> {
@@ -193,9 +204,7 @@ pub struct PubKeyV4 {
 }
 impl PubKeyV4 {
     pub fn add_to_keybox(&self, bx: &mut Keybox) -> Result<Fingerprint, Error> {
-        let fp = Fingerprint(self.fingerprint.to_vec().into_boxed_slice());
-        bx.pubkeys.insert(fp.clone(), self.try_into()?);
-        Ok(fp)
+        bx.add_pubkey(self.try_into()?)
     }
     pub fn get_keylength(&self) -> u16 {
         match &self.data {
@@ -227,6 +236,12 @@ impl TryFrom<&PubKeyV4> for PublicKey {
             issuer: None,
             subkeys: vec![],
         })
+    }
+}
+impl TryFrom<&PubKeyV4> for SharedPubkey {
+    type Error = Error;
+    fn try_from(value: &PubKeyV4) -> Result<Self, Self::Error> {
+        Ok(SharedPubkey::new(value.try_into()?))
     }
 }
 impl Eq for PubKeyV4 {}

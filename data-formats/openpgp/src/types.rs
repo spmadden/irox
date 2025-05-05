@@ -9,7 +9,6 @@ use irox_cryptids::ed25519::{ED25519_BASE, ED25519_G};
 use irox_cryptids::x25519::{ED25519_ORDER, X25519_G, X255M19};
 use irox_enums::{EnumIterItem, EnumName};
 use irox_tools::arrays::SliceTools;
-use irox_tools::hash::HasherCounting;
 use irox_tools::hex;
 use irox_tools::hex::to_hex_str_upper;
 
@@ -54,7 +53,7 @@ impl TryFrom<u8> for HashAlgorithm {
         Err(ErrorKind::InvalidData.into())
     }
 }
-impl TryFrom<HashAlgorithm> for HasherCounting {
+impl TryFrom<HashAlgorithm> for irox_tools::hash::Hasher {
     type Error = Error;
 
     fn try_from(value: HashAlgorithm) -> Result<Self, Self::Error> {
