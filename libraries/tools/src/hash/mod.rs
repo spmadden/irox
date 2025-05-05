@@ -272,6 +272,36 @@ cfg_feature_alloc! {
                     BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
                 ])
         }
+        crate::cfg_feature_std! {
+            pub fn hash_file<T: AsRef<std::path::Path>>(&mut self, path: T) -> Result<(), std::io::Error> {
+                use std::io::Read;
+                let mut file = std::fs::OpenOptions::new()
+                    .read(true)
+                    .create(false)
+                    .open(path)?;
+                let mut buffer =  <alloc::boxed::Box<[u8]> as crate::buf::ZeroedBuffer>::new_zeroed(32768);
+                loop {
+                    let read = file.read(&mut buffer)?;
+                    if read == 0 {
+                        break;
+                    }
+                    if let Some(buf) = buffer.get(..read) {
+                        self.write(buf);
+                    }
+                }
+                Ok(())
+            }
+        }
+    }
+    impl MutBits for Hasher {
+        fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+            self.write(&[val]);
+            Ok(())
+        }
+        fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+            self.write(val);
+            Ok(())
+        }
     }
 
 }
