@@ -4,8 +4,10 @@
 
 use crate::armor::Dearmor;
 use crate::keybox::{Keybox, MultiKeybox};
-use crate::packets::{OpenPGPMessage, OpenPGPPacketData};
-use crate::types::HashAlgorithm;
+use crate::packets::{
+    OpenPGPMessage, OpenPGPPacketData, SignatureTarget, SignatureValidationResult,
+};
+use crate::types::{Hash, HashAlgorithm};
 use irox_bits::{BitsErrorKind, Error};
 use irox_tools::hash::Hasher;
 use std::fs::OpenOptions;
@@ -28,7 +30,7 @@ impl<'a> SignatureValidator<'a> {
         &'a mut self,
         sigfile: S,
         datafile: D,
-    ) -> Result<(), Error> {
+    ) -> Result<SignatureValidationResult, Error> {
         let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
         let mut file = BufReader::new(file);
         let mut file = file.dearmor();
@@ -51,15 +53,25 @@ impl<'a> SignatureValidator<'a> {
         };
         let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
         hasher.hash_file(datafile)?;
+        let hash = hasher.clone().finish();
+        let result = sig.validate_signature(&self.keybox, hasher);
 
-        sig.validate_signature(&self.keybox, hasher)
+        Ok(SignatureValidationResult {
+            sigtype: sig.get_subtype(),
+            target: SignatureTarget::Data(Hash {
+                hash,
+                algorithm: sig.get_hash_alg(),
+            }),
+            signer: sig.get_signature_issuer(),
+            result,
+        })
     }
 
     pub fn verify_detached_signature<S: AsRef<Path>, D: AsRef<Path>>(
         &mut self,
         sigfile: S,
         datafile: D,
-    ) -> Result<(), Error> {
+    ) -> Result<SignatureValidationResult, Error> {
         let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
         let mut file = BufReader::new(file);
         let sig = OpenPGPMessage::build_from(&mut file)?;
@@ -81,8 +93,18 @@ impl<'a> SignatureValidator<'a> {
         };
         let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
         hasher.hash_file(datafile)?;
+        let hash = hasher.clone().finish();
+        let result = sig.validate_signature(&self.keybox, hasher);
 
-        sig.validate_signature(&self.keybox, hasher)
+        Ok(SignatureValidationResult {
+            sigtype: sig.get_subtype(),
+            target: SignatureTarget::Data(Hash {
+                hash,
+                algorithm: sig.get_hash_alg(),
+            }),
+            signer: sig.get_signature_issuer(),
+            result,
+        })
     }
 }
 
