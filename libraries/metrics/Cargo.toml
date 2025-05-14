@@ -24,14 +24,7 @@ irox-bits.workspace = true
 irox-time = { workspace = true, features = ["std"] }
 irox-types = { workspace = true, features = ["bits"] }
 irox-tools = {workspace = true, features = ["std"]}
-
-x25519-dalek = { version ="2", features = ["getrandom", "static_secrets"] }
-ed25519-dalek = { version = "2", features = [] }
-crypto_box = {version = "0", features = ["chacha20", "seal"]}
-crypto_secretbox = {version = "0", features = ["chacha20"]}
-blake2 = {version = "0"}
-p384 = {version = "0", features = []}
-spki = {version = "0"}
+irox-cryptids = {workspace = true, features = ["std"]}
 
 [dev-dependencies]
 criterion.workspace = true
