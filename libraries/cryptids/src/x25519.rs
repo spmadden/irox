@@ -30,10 +30,11 @@
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::manual_memcpy)]
 
-use crate::ed25519::Ed25519Error;
+use crate::ed25519::{Ed25519Error, Ed25519PublicKey};
+use crate::fill_random;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::ops::{Index, IndexMut};
-use irox_tools::hex;
+use irox_tools::{cfg_feature_std, hex};
 
 macro_rules! zeroize {
     ($name:ident,$ty:ty) => {
@@ -80,6 +81,22 @@ impl SecretKey {
         check_valid_publickey(&pubkey.0)?;
         Ok(SharedCurve25519Secret(scalarmult(&self.0, &pubkey.0)?))
     }
+    cfg_feature_std! {
+        #[cfg(target_arch = "x86_64")]
+        pub fn generate_random() -> Result<Self, Ed25519Error> {
+            let mut out = SecretKey([0u8; 32]);
+            fill_random(&mut out.0)?;
+            Ok(out)
+        }
+    }
+}
+impl TryFrom<[u8; 32]> for SecretKey {
+    type Error = Ed25519Error;
+
+    fn try_from(value: [u8; 32]) -> Result<Self, Self::Error> {
+        check_blocklist(&value)?;
+        Ok(SecretKey(value))
+    }
 }
 impl Drop for SecretKey {
     fn drop(&mut self) {
@@ -97,6 +114,10 @@ impl Curve25519PublicKey {
         check_valid_publickey(&self.0)?;
         Ok(SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0)?))
     }
+
+    pub fn as_signing_key(&self) -> Ed25519PublicKey {
+        Ed25519PublicKey(self.0)
+    }
 }
 impl AsRef<[u8]> for Curve25519PublicKey {
     fn as_ref(&self) -> &[u8] {
@@ -106,6 +127,14 @@ impl AsRef<[u8]> for Curve25519PublicKey {
 impl AsRef<[u8; 32]> for Curve25519PublicKey {
     fn as_ref(&self) -> &[u8; 32] {
         &self.0
+    }
+}
+impl TryFrom<[u8; 32]> for Curve25519PublicKey {
+    type Error = Ed25519Error;
+
+    fn try_from(value: [u8; 32]) -> Result<Self, Self::Error> {
+        check_valid_publickey(&value)?;
+        Ok(Curve25519PublicKey(value))
     }
 }
 impl TryFrom<&[u8; 32]> for Curve25519PublicKey {
@@ -465,6 +494,19 @@ pub static X25519_G: &[u8; 65] = &hex!(
     "0900000000000000000000000000000000000000000000000000000000000000"
     "04"
 );
+pub fn check_blocklist(key: &[u8; 32]) -> Result<(), Ed25519Error> {
+    let mut err = None;
+    for blk in &BLOCKLIST {
+        if key == *blk {
+            err.get_or_insert(Ed25519Error::InvalidPublicKeyLowOrder);
+        }
+    }
+
+    match err {
+        Some(e) => Err(e),
+        None => Ok(()),
+    }
+}
 ///
 /// The following are malicious public keys crafted to exploit weaknesses in the montgomery
 /// curve multiplication logic.

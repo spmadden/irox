@@ -37,6 +37,7 @@ use crate::x25519;
 use crate::x25519::{
     check_valid_publickey, invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER,
 };
+use core::fmt::{Display, Formatter};
 use core::ops::MulAssign;
 use core::ops::{AddAssign, SubAssign};
 use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
@@ -72,7 +73,11 @@ impl From<BitsError> for Ed25519Error {
         Ed25519Error::InvalidInput
     }
 }
-
+impl Display for Ed25519Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.msg())
+    }
+}
 type GF4 = [FieldElement; 4];
 const fn empty_gf4() -> GF4 {
     [
@@ -120,7 +125,7 @@ macro_rules! add {
 ///
 /// A public key generated using the algorithm in RFC 8032
 #[derive(Clone, Eq, PartialEq)]
-pub struct Ed25519PublicKey([u8; 32]);
+pub struct Ed25519PublicKey(pub(crate) [u8; 32]);
 impl TryFrom<[u8; 32]> for Ed25519PublicKey {
     type Error = Ed25519Error;
 
