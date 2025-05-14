@@ -31,7 +31,6 @@
 #![allow(clippy::manual_memcpy)]
 
 use crate::ed25519::{Ed25519Error, Ed25519PublicKey};
-use crate::fill_random;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::ops::{Index, IndexMut};
 use irox_tools::{cfg_feature_std, hex};
@@ -85,7 +84,7 @@ impl SecretKey {
         #[cfg(target_arch = "x86_64")]
         pub fn generate_random() -> Result<Self, Ed25519Error> {
             let mut out = SecretKey([0u8; 32]);
-            fill_random(&mut out.0)?;
+            crate::fill_random(&mut out.0)?;
             Ok(out)
         }
     }
