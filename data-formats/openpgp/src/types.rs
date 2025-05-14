@@ -24,6 +24,10 @@ pub enum HashAlgorithm {
     SHA224,
     SHA3_256,
     SHA3_512,
+
+    // non-standard
+    Blake2s256,
+    Blake2b512,
 }
 
 impl HashAlgorithm {
@@ -38,6 +42,9 @@ impl HashAlgorithm {
             HashAlgorithm::SHA224 => 11,
             HashAlgorithm::SHA3_256 => 12,
             HashAlgorithm::SHA3_512 => 14,
+
+            HashAlgorithm::Blake2s256 => 100,
+            HashAlgorithm::Blake2b512 => 101,
         }
     }
 }
@@ -64,6 +71,8 @@ impl TryFrom<HashAlgorithm> for irox_tools::hash::Hasher {
             HashAlgorithm::SHA384 => irox_tools::hash::HashAlgorithm::SHA384.try_into(),
             HashAlgorithm::SHA512 => irox_tools::hash::HashAlgorithm::SHA512.try_into(),
             HashAlgorithm::SHA224 => irox_tools::hash::HashAlgorithm::SHA224.try_into(),
+            HashAlgorithm::Blake2s256 => irox_tools::hash::HashAlgorithm::BLAKE2s256.try_into(),
+            HashAlgorithm::Blake2b512 => irox_tools::hash::HashAlgorithm::BLAKE2b512.try_into(),
             _ => Err(ErrorKind::InvalidInput.into()),
         }
     }
