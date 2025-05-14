@@ -574,6 +574,16 @@ pub trait Bits {
         Ok(())
     }
 
+    /// Fills the provided buffer
+    fn read_filling<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        while let Some(val) = self.next_u8()? {
+            if let Err(_e) = into.write_u8(val) {
+                break;
+            }
+        }
+        Ok(())
+    }
+
     /// Reads some subset of the data into the specified target.
     fn read_some_into<T: MutBits>(&mut self, buf: &mut T) -> Result<usize, Error> {
         let mut read = 0;
