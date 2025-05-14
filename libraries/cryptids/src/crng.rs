@@ -2,6 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
+use irox_bits::{BitsErrorKind, Error};
 use irox_tools::cfg_feature_std;
 
 cfg_feature_std! {
@@ -9,7 +10,7 @@ cfg_feature_std! {
     use crate::{Chacha20};
     use alloc::sync::Arc;
     use std::sync::Mutex;
-    use irox_bits::MutBits;
+    use irox_bits::{Bits, MutBits};
     use irox_tools::buf::FixedU8Buf;
     use irox_tools::static_init;
 
@@ -44,6 +45,44 @@ cfg_feature_std! {
         let key : [u8;32] = buf[0..32].try_into().unwrap();
         let nonce : [u8;12] = buf[32..44].try_into().unwrap();
         Some(Chacha20::new(key, nonce))
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    pub fn get_random_bytes<const N: usize>() -> Option<[u8; N]> {
+        let Some(rnd) = get_crng() else {
+            return None;
+        };
+        let Ok(mut lock) = rnd.lock() else {
+            return None;
+        };
+        let mut out = [0u8; N];
+
+        lock.read_exact_into(N, &mut out.as_mut_slice()).ok()?;
+        Some(out)
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    pub fn fill_random<const N: usize>(out: &mut [u8; N]) -> Result<(), Error> {
+        let Some(rnd) = get_crng() else {
+            return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));
+        };
+        let Ok(mut lock) = rnd.lock() else {
+            return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));
+        };
+        lock.read_exact_into(N, &mut out.as_mut_slice())?;
+        Ok(())
+    }
+    
+    #[cfg(target_arch = "x86_64")]
+    pub fn fill_random_bits<T: MutBits>(out: &mut T) -> Result<(), Error> {
+        let Some(rnd) = get_crng() else {
+            return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));
+        };
+        let Ok(mut lock) = rnd.lock() else {
+            return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));
+        };
+        lock.read_filling(out)?;
+        Ok(())
     }
 }
 
