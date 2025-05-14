@@ -22,6 +22,8 @@ plots = ["dep:irox-tools", "dep:irox-units"]
 profiling = ["dep:profiling", "dep:puffin"]
 dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland"]
+wgpu = ["eframe/wgpu"]
+glow = ["eframe/glow"]
 
 [dependencies]
 egui.workspace = true
@@ -65,6 +67,10 @@ required-features = ["serde", "plots"]
 [[example]]
 name = "plotsperf"
 required-features = ["plots"]
+
+[[example]]
+name = "dialog"
+required-features = ["wgpu"]
 
 [package.metadata.docs.rs]
 all-features = true

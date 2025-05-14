@@ -243,6 +243,7 @@ impl Default for DialogOptions {
 
 ///
 /// Pop and run a dialog frame with the provided options.
+#[cfg(any(feature = "glow", feature = "wgpu"))]
 pub fn dialog_options<F: FnOnce(&mut DialogOptions)>(opts: F) -> Option<UserResponse> {
     let mut options = DialogOptions::default();
     opts(&mut options);

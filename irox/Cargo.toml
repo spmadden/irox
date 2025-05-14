@@ -60,6 +60,8 @@ plots = ["irox-egui-extras?/plots"]
 profiling = ["irox-egui-extras?/profiling"]
 serde = ["irox-egui-extras?/serde", "irox-networking?/serde"]
 syn = ["irox-types?/syn"]
+wgpu = ["irox-egui-extras?/wgpu"]
+glow = ["irox-egui-extras?/glow"]
 
 
 [dependencies]
