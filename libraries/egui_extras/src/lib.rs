@@ -37,6 +37,7 @@ pub mod progresswindow;
 pub mod fonts;
 #[cfg(feature = "plots")]
 pub mod logplot;
+pub mod pwdlg;
 pub mod repainting;
 #[cfg(feature = "serde")]
 pub mod serde;
