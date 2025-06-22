@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! This module contains the basic types and conversions for the SI coherent derived "Planar Angle"
@@ -94,6 +95,14 @@ impl Angle {
         let seconds: f64 = seconds * mult;
         let value = f64::from(degrees) + minutes / 60. + seconds / 3600.;
         Self::new_degrees(value)
+    }
+
+    #[must_use]
+    #[allow(unused_imports)]
+    pub fn new_dm(degrees: i16, minutes: f64) -> Angle {
+        use irox_tools::f64::FloatExt;
+        let seconds = minutes.fract() * 60.;
+        Self::new_dms(degrees, minutes.trunc() as u8, seconds)
     }
 
     #[must_use]
