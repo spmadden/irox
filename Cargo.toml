@@ -17,6 +17,7 @@ members = [
     "data-formats/dot",
     "data-formats/gpx",
     "data-formats/nmea0183",
+    "data-formats/protobuf",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
     "eieio/api",

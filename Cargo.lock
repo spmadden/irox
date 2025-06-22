@@ -1719,6 +1719,7 @@ dependencies = [
  "irox-networking",
  "irox-nmea0183",
  "irox-progress",
+ "irox-protobuf",
  "irox-raymarine-sonar",
  "irox-sirf",
  "irox-stats",
@@ -2054,6 +2055,10 @@ dependencies = [
  "irox-tools",
  "log",
 ]
+
+[[package]]
+name = "irox-protobuf"
+version = "0.1.0"
 
 [[package]]
 name = "irox-raymarine-sonar"
