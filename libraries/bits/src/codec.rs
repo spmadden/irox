@@ -744,6 +744,12 @@ impl WriteToLEBits for &str {
         Ok((len + 4) as usize)
     }
 }
+impl WriteToBEBits for &[u8] {
+    fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+        bits.write_all_bytes(self)?;
+        Ok(self.len())
+    }
+}
 
 cfg_feature_alloc! {
     extern crate alloc;
@@ -766,6 +772,12 @@ cfg_feature_alloc! {
     impl WriteToBEBits for alloc::sync::Arc<alloc::string::String> {
         fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
             bits.write_str_u32_blob(self.as_str())
+        }
+    }
+    impl WriteToBEBits for alloc::boxed::Box<[u8]> {
+        fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {
+            bits.write_all_bytes(self)?;
+            Ok(self.len())
         }
     }
 }
