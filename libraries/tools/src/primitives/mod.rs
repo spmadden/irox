@@ -63,6 +63,21 @@ impl IntegerValue {
     pub const fn to_be_u32(&self) -> u32 {
         self.to_be_u64() as u32
     }
+
+    #[must_use]
+    pub const fn to_le(&self) -> Self {
+        match self {
+            IntegerValue::U8(_) | IntegerValue::I8(_) => *self,
+            IntegerValue::U16(b) => IntegerValue::U16(b.to_le()),
+            IntegerValue::U32(b) => IntegerValue::U32(b.to_le()),
+            IntegerValue::U64(b) => IntegerValue::U64(b.to_le()),
+            IntegerValue::U128(b) => IntegerValue::U128(b.to_le()),
+            IntegerValue::I16(b) => IntegerValue::I16(b.to_le()),
+            IntegerValue::I32(b) => IntegerValue::I32(b.to_le()),
+            IntegerValue::I64(b) => IntegerValue::I64(b.to_le()),
+            IntegerValue::I128(b) => IntegerValue::I128(b.to_le()),
+        }
+    }
 }
 impl WriteToBEBits for IntegerValue {
     fn write_be_to<T: MutBits + ?Sized>(&self, bits: &mut T) -> Result<usize, Error> {

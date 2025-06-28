@@ -8,10 +8,10 @@ use crate::{cfg_feature_alloc, IntegerValue};
 use irox_bits::{Bits, BitsError, Error, MutBits};
 
 macro_rules! round {
-    ($val:ident) => {{
-        let val = $val >> 7;
-        let a = ((val & 0x7F) | 0x80) as u8;
-        (a, val)
+    ($val:expr) => {{
+        *$val >>= 7;
+        let a = ((*$val & 0x7F) | 0x80) as u8;
+        a
     }};
 }
 macro_rules! one_byte_mask {
@@ -96,9 +96,9 @@ pub fn encode_8bits(val: u8) -> [u8; 2] {
 ///  00111111 10000000
 ///
 /// ```
-pub fn encode_14bits(val: u16) -> [u8; 2] {
+pub fn encode_14bits(mut val: u16) -> [u8; 2] {
     let b = (val & 0x7F) as u8;
-    let (a, _) = round!(val);
+    let a = round!(&mut val);
     [a, b]
 }
 
@@ -110,10 +110,10 @@ pub fn encode_14bits(val: u16) -> [u8; 2] {
 ///  22111111 10000000
 ///
 /// ```
-pub fn encode_16bits(val: u16) -> [u8; 3] {
+pub fn encode_16bits(mut val: u16) -> [u8; 3] {
     let c = (val & 0x7F) as u8;
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c]
 }
 ///
@@ -125,10 +125,10 @@ pub fn encode_16bits(val: u16) -> [u8; 3] {
 /// |--------|--------|--------|
 ///  12222222 11111111 00000000
 /// ```
-pub fn encode_21bits(val: u32) -> [u8; 3] {
+pub fn encode_21bits(mut val: u32) -> [u8; 3] {
     let c = (val & 0x7F) as u8;
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c]
 }
 ///
@@ -141,11 +141,11 @@ pub fn encode_21bits(val: u32) -> [u8; 3] {
 ///  13333333 12222222 11111111 00000000
 ///
 /// ```
-pub fn encode_28bits(val: u32) -> [u8; 4] {
+pub fn encode_28bits(mut val: u32) -> [u8; 4] {
     let d = (val & 0x7F) as u8;
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d]
 }
 
@@ -164,12 +164,12 @@ pub fn encode_28bits(val: u32) -> [u8; 4] {
 /// |--------|--------|--------|--------|
 ///                             14444444
 /// ```
-pub fn encode_32bits(val: u32) -> [u8; 5] {
+pub fn encode_32bits(mut val: u32) -> [u8; 5] {
     let e = (val & 0x7F) as u8;
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e]
 }
 
@@ -188,12 +188,12 @@ pub fn encode_32bits(val: u32) -> [u8; 5] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_35bits(val: u64) -> [u8; 5] {
+pub fn encode_35bits(mut val: u64) -> [u8; 5] {
     let e = (val & 0x7F) as u8;
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e]
 }
 
@@ -212,13 +212,13 @@ pub fn encode_35bits(val: u64) -> [u8; 5] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_42bits(val: u64) -> [u8; 6] {
+pub fn encode_42bits(mut val: u64) -> [u8; 6] {
     let f = (val & 0x7F) as u8;
-    let (e, val) = round!(val);
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let e = round!(&mut val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e, f]
 }
 
@@ -237,14 +237,14 @@ pub fn encode_42bits(val: u64) -> [u8; 6] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_49bits(val: u64) -> [u8; 7] {
+pub fn encode_49bits(mut val: u64) -> [u8; 7] {
     let g = (val & 0x7F) as u8;
-    let (f, val) = round!(val);
-    let (e, val) = round!(val);
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let f = round!(&mut val);
+    let e = round!(&mut val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e, f, g]
 }
 ///
@@ -262,15 +262,15 @@ pub fn encode_49bits(val: u64) -> [u8; 7] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_56bits(val: u64) -> [u8; 8] {
+pub fn encode_56bits(mut val: u64) -> [u8; 8] {
     let h = (val & 0x7F) as u8;
-    let (g, val) = round!(val);
-    let (f, val) = round!(val);
-    let (e, val) = round!(val);
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let g = round!(&mut val);
+    let f = round!(&mut val);
+    let e = round!(&mut val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e, f, g, h]
 }
 ///
@@ -288,16 +288,16 @@ pub fn encode_56bits(val: u64) -> [u8; 8] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_63bits(val: u64) -> [u8; 9] {
+pub fn encode_63bits(mut val: u64) -> [u8; 9] {
     let i = (val & 0x7F) as u8;
-    let (h, val) = round!(val);
-    let (g, val) = round!(val);
-    let (f, val) = round!(val);
-    let (e, val) = round!(val);
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let h = round!(&mut val);
+    let g = round!(&mut val);
+    let f = round!(&mut val);
+    let e = round!(&mut val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e, f, g, h, i]
 }
 
@@ -316,17 +316,17 @@ pub fn encode_63bits(val: u64) -> [u8; 9] {
 /// |--------|--------|--------|--------|
 ///  17777777 16666666 15555555 14444444
 /// ```
-pub fn encode_64bits(val: u64) -> [u8; 10] {
+pub fn encode_64bits(mut val: u64) -> [u8; 10] {
     let j = (val & 0x7F) as u8;
-    let (i, val) = round!(val);
-    let (h, val) = round!(val);
-    let (g, val) = round!(val);
-    let (f, val) = round!(val);
-    let (e, val) = round!(val);
-    let (d, val) = round!(val);
-    let (c, val) = round!(val);
-    let (b, val) = round!(val);
-    let (a, _) = round!(val);
+    let i = round!(&mut val);
+    let h = round!(&mut val);
+    let g = round!(&mut val);
+    let f = round!(&mut val);
+    let e = round!(&mut val);
+    let d = round!(&mut val);
+    let c = round!(&mut val);
+    let b = round!(&mut val);
+    let a = round!(&mut val);
     [a, b, c, d, e, f, g, h, i, j]
 }
 
@@ -354,18 +354,24 @@ pub fn encode_64bits(val: u64) -> [u8; 10] {
 /// |--------|--------|--------|
 ///
 /// ```
-pub fn encode_u128bits(val: u128) -> FixedBuf<19, u8> {
+pub fn encode_u128bits(mut val: u128) -> FixedBuf<19, u8> {
     let mut out = FixedBuf::<19, u8>::new();
-    let j = (val & 0x7F) as u8;
-    let _ = out.push(j);
     loop {
-        let (i, val) = round!(val);
-        let _ = out.push(i);
-        if val == 0 {
+        if val == 0 && !out.is_empty() {
             break;
         }
+        let mut i = (val & 0x7F) as u8;
+        val >>= 7;
+        if val != 0 {
+            i |= 0x80;
+        }
+        let _ = out.push(i);
     }
     out
+}
+
+pub fn encode_vbyte_to<T: MutBits + ?Sized>(val: u128, out: &mut T) -> Result<usize, BitsError> {
+    encode_u128bits(val).write_to(out)
 }
 
 macro_rules! zigzag_impl {
@@ -406,7 +412,12 @@ pub trait ZagZig {
     type Output;
     fn zagzig(self) -> Self::Output;
 }
-
+pub fn encode_le_integer_to<T: MutBits + ?Sized>(
+    val: IntegerValue,
+    out: &mut T,
+) -> Result<usize, BitsError> {
+    encode_integer_to(val.to_le(), out)
+}
 pub fn encode_integer_to<T: MutBits + ?Sized>(
     val: IntegerValue,
     out: &mut T,
