@@ -2059,6 +2059,10 @@ dependencies = [
 [[package]]
 name = "irox-protobuf"
 version = "0.1.0"
+dependencies = [
+ "irox-bits",
+ "irox-tools",
+]
 
 [[package]]
 name = "irox-raymarine-sonar"

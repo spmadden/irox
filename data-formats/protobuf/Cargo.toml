@@ -16,6 +16,12 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+irox-bits = {workspace = true, features = ["alloc"]}
+irox-tools = {workspace = true, features = ["alloc"]}
+
+[dev-dependencies]
+irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true, features = ["std"]}
 
 [package.metadata.docs.rs]
 all-features = true
