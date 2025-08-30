@@ -1735,6 +1735,7 @@ dependencies = [
  "irox-time",
  "irox-tools",
  "irox-types",
+ "irox-ubx",
  "irox-units",
  "irox-winlocation-api",
 ]
@@ -2218,6 +2219,18 @@ dependencies = [
  "irox-enums_derive",
  "irox-tools",
  "syn",
+]
+
+[[package]]
+name = "irox-ubx"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
+ "irox-enums",
+ "irox-structs",
+ "irox-time",
+ "irox-tools",
+ "irox-units",
 ]
 
 [[package]]

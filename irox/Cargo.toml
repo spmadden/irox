@@ -25,6 +25,7 @@ nmea0183 = ["dep:irox-nmea0183"]
 protobuf = ["dep:irox-protobuf"]
 raymarine-sonar = ["dep:irox-raymarine-sonar"]
 sirf = ["dep:irox-sirf"]
+ubx = ["dep:irox-ubx"]
 
 influxdb_v1 = ["dep:irox-influxdb_v1"]
 win-loc-api = ["dep:irox-winlocation-api"]
@@ -73,6 +74,7 @@ irox-nmea0183 = { version = "^0.5.5", optional = true, path = "../data-formats/n
 irox-protobuf = { version = "^0.1.0", optional = true, path = "../data-formats/protobuf/lib" }
 irox-raymarine-sonar = { version = "^0.6.0", optional = true, path = "../data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0.4.1", optional = true, path = "../data-formats/sirf" }
+irox-ubx = { version = "^0.1.0", optional = true, path = "../data-formats/ubx" }
 
 irox-influxdb_v1 = { version = "^0.6.0", optional = true, path = "../interfaces/influxdb_v1" }
 irox-winlocation-api = { version = "^0.5.3", optional = true, path = "../interfaces/win-location-api" }

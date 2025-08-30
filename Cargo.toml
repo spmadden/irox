@@ -17,10 +17,13 @@ members = [
     "data-formats/dot",
     "data-formats/gpx",
     "data-formats/nmea0183",
+    "data-formats/openpgp",
+    "data-formats/protobuf",
     "data-formats/protobuf/derive",
     "data-formats/protobuf/lib",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
+    "data-formats/ubx",
     "eieio/api",
     "eieio/nmea0183",
     "interfaces/chronyc",
@@ -56,7 +59,7 @@ members = [
     "tools/halflifes",
     "tools/influx-cli",
     "tools/sonar-sdf-convert",
-    "tools/tiledownloader", "data-formats/openpgp",
+    "tools/tiledownloader",
 ]
 
 [workspace.dependencies]
@@ -100,6 +103,7 @@ irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
 irox-protobuf = { version = "^0", path = "data-formats/protobuf/lib" }
 irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0", path = "data-formats/sirf" }
+irox-ubx = { version = "^0", path = "data-formats/ubx" }
 
 irox-eieio-api = { version = "^0", path = "eieio/api" }
 irox-eieio-nmea0183 = { version = "^0", path = "eieio/nmea0183" }

@@ -142,5 +142,8 @@ pub use irox_types as types;
 #[cfg(feature = "units")]
 pub use irox_units as units;
 
+#[cfg(feature = "ubx")]
+pub use irox_ubx as ubx;
+
 #[cfg(feature = "win-loc-api")]
 pub use irox_winlocation_api as winlocation_api;

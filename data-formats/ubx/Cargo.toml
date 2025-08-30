@@ -1,0 +1,28 @@
+[package]
+name = "irox-ubx"
+description = "u-blox / ubx packet formats"
+keywords = ["irox", "gps", "ubx", "u-blox"]
+categories = ["aerospace", "encoding", "hardware-support", "science::geo"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-bits = {workspace = true, features = ["alloc"]}
+irox-enums = {workspace = true}
+irox-structs = {workspace = true, features = ["alloc"]}
+irox-time = {workspace = true, features = []}
+irox-tools = {workspace = true, features = ["alloc"]}
+irox-units = {workspace = true, features = ["alloc"]}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
