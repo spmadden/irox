@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::{Bits, Error};
@@ -13,4 +13,9 @@ pub trait BufBits: Bits {
     fn has_data_left(&mut self) -> Result<bool, Error> {
         self.fill_buf().map(|b| !b.is_empty())
     }
+}
+
+cfg_feature_alloc! {
+    mod alloc;
+    pub use alloc::*;
 }
