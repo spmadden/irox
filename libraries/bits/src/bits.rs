@@ -387,6 +387,17 @@ pub trait Bits {
         self.read_exact_into(size, into)
     }
 
+    /// reads from the stream until a null (0x0) is encountered into the provided output, does NOT include null.
+    fn read_str_nul_terminated_into<T: MutBits>(&mut self, into: &mut T) -> Result<(), Error> {
+        while let Some(ch) = self.next_u8()? {
+            if ch == 0 {
+                break;
+            }
+            into.write_u8(ch)?;
+        }
+        Ok(())
+    }
+
     cfg_feature_alloc! {
         /// Reads a sized blob, a series of bytes preceded by a [`u8`] declaring the size.
         fn read_u8_blob(&mut self) -> Result<Vec<u8>, Error> {
@@ -442,6 +453,18 @@ pub trait Bits {
         /// Reads the specified amount of bytes into a UTF-8 String, dropping all other bytes.
         fn read_str_sized_lossy(&mut self, len: usize) -> Result<String, Error> {
             Ok(String::from_utf8_lossy(&self.read_exact_vec(len)?).to_string())
+        }
+
+        /// Reads a string from the stream, terminated by a null byte.  Does NOT include the null byte.
+        fn read_str_null_terminated(&mut self) -> Result<String, Error> {
+            let mut out = String::new();
+            while let Some(ch) = self.next_u8()? {
+                if ch == 0 {
+                    break;
+                }
+                out.push(ch as char);
+            }
+            Ok(out)
         }
 
         /// Reads to the end of the stream and returns the data as a [`Vec<u8>`]
