@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -89,10 +89,10 @@
 //! }
 //! ```
 
-pub use irox_bits::{Bits, Error, MutBits};
-pub use irox_structs_derive::*;
 #[cfg(feature = "alloc")]
 extern crate alloc;
+pub use irox_bits::{Bits, Error, MutBits};
+pub use irox_structs_derive::*;
 
 ///
 /// A struct is a series of bytes in memory, serialized in the order that the

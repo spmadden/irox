@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Helper traits & functions for the [`proc_macro`] crate to aid in writing less complex derive macros.
@@ -33,6 +34,10 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     /// Creates a [`Literal`] using the provided string
     fn create_literal(val: &str) -> TokenStream {
         TokenStream::from_iter([TokenTree::Literal(Literal::string(val))])
+    }
+    /// Creates a [`Literal`]
+    fn from_literal(val: Literal) -> TokenStream {
+        TokenStream::from_iter([TokenTree::Literal(val)])
     }
     /// Creates a [`Ident`] using the provided name
     fn create_ident(name: &str) -> TokenStream {

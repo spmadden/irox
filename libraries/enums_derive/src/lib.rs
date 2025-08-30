@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 #![no_std]
 
 extern crate alloc;
+extern crate core;
 
 use alloc::format;
 use alloc::string::ToString;
-use proc_macro::TokenStream;
+use core::str::FromStr;
+use proc_macro::{Literal, TokenStream};
 
 use irox_derive_helpers::DeriveMethods;
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Data, DeriveInput, Error};
+use syn::{parse_macro_input, Data, DeriveInput, Error, Expr, Lit};
 
 fn compile_error<T: Spanned>(span: &T, msg: &'static str) -> TokenStream {
     Error::new(span.span(), msg).into_compile_error().into()
@@ -263,6 +266,116 @@ pub fn tryfromstr_derive(input: TokenStream) -> TokenStream {
                         let field_name = field_ident.to_string();
                         ts.append_match_item(
                             TokenStream::create_literal(&field_name),
+                            TokenStream::create_path(&["Self", &field_name]),
+                        );
+                    }
+                    ts.add_ident("_");
+                    ts.add_punc2('=', '>');
+                    ts.wrap_braces({
+                        let mut ts = TokenStream::new();
+                        ts.add_ident("return");
+                        ts.add_ident("Err");
+                        ts.add_parens(TokenStream::create_empty_type());
+                        ts
+                    });
+                    ts
+                });
+                ts
+            });
+            ts
+        });
+        ts
+    });
+    out
+}
+
+#[proc_macro_derive(EnumTryFromRepr)]
+pub fn tryfromrepr_derive(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let Data::Enum(s) = &input.data else {
+        return compile_error(&input, "Required enum type");
+    };
+    let mut repr = None;
+    for att in &input.attrs {
+        if att.path().is_ident("repr") {
+            let Ok(lst) = att.meta.require_list() else {
+                return compile_error(&att.span(), "Invalid repr attribute");
+            };
+            repr = Some(lst.tokens.to_string());
+            break;
+        }
+    }
+    let Some(repr) = repr else {
+        return compile_error(&input, "Required repr attribute");
+    };
+    let enum_name = input.ident;
+    let mut out = TokenStream::new();
+    out.add_ident("impl");
+    out.add_ident("TryFrom");
+    out.wrap_generics(TokenStream::create_ident(&repr));
+    out.add_ident("for");
+    out.add_ident(&format!("{enum_name}"));
+    out.wrap_braces({
+        let mut ts = TokenStream::new();
+        ts.add_ident("type");
+        ts.add_ident("Error");
+        ts.add_punc('=');
+        ts.extend([TokenStream::create_empty_type()]);
+        ts.add_punc(';');
+
+        ts.add_fn("try_from");
+        ts.add_parens({
+            let mut ts1 = TokenStream::new();
+            ts1.add_ident("value");
+            ts1.add_punc(':');
+            ts1.extend([TokenStream::create_ident(&repr)]);
+            ts1
+        });
+        ts.return_result(
+            TokenStream::create_ident("Self"),
+            TokenStream::create_path(&["Self", "Error"]),
+        );
+
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("Ok");
+            ts.add_parens({
+                let mut ts = TokenStream::new();
+                ts.add_ident("match");
+                ts.add_ident("value");
+                ts.wrap_braces({
+                    let mut ts = TokenStream::new();
+                    for field in &s.variants {
+                        if !field.fields.is_empty() {
+                            return compile_error(&field.span(), "Field cannot have fields");
+                        }
+                        let Some((_, desc)) = field.discriminant.as_ref() else {
+                            return compile_error(&field.span(), "Field must have a discriminant");
+                        };
+                        let Expr::Lit(lit) = desc else {
+                            return compile_error(
+                                &field.span(),
+                                "Field discriminant must be a literal",
+                            );
+                        };
+                        let Lit::Int(lit) = &lit.lit else {
+                            return compile_error(
+                                &field.span(),
+                                "Field discriminant must be an integer",
+                            );
+                        };
+
+                        let field_ident = &field.ident;
+                        let field_name = field_ident.to_string();
+                        let token = lit.token();
+                        let Ok(token) = Literal::from_str(&token.to_string()) else {
+                            return compile_error(
+                                &field.span(),
+                                "Field discriminant must be an integer",
+                            );
+                        };
+                        ts.append_match_item(
+                            TokenStream::from_literal(token),
                             TokenStream::create_path(&["Self", &field_name]),
                         );
                     }
