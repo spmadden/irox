@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_bits::{Bits, Error, MutBits};
 use irox_structs::Struct;
@@ -13,7 +14,7 @@ pub const PAYLOAD_SIZE: usize = 41;
 pub const VELOCITY_SCALE: f32 = 8.0;
 pub const HDOP_SCALE: f32 = 5.0;
 
-#[derive(Default, Clone, Debug, Struct)]
+#[derive(Default, Clone, Debug, PartialEq, Struct)]
 pub struct MeasuredNavigationData {
     pub x_position: i32,
     pub y_position: i32,

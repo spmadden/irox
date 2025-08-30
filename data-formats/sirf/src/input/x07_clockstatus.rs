@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_bits::{Bits, Error};
 use irox_structs::Struct;
@@ -7,7 +8,7 @@ use irox_tools::packetio::{Packet, PacketBuilder};
 
 use crate::packet::PacketType;
 
-#[derive(Default, Debug, Clone, Struct)]
+#[derive(Default, Debug, Clone, PartialEq, Struct)]
 pub struct ClockStatus {
     pub extended_gps_week: u16,
 

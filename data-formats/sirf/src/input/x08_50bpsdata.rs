@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_bits::{Bits, Error};
 use irox_structs::Struct;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
-#[derive(Copy, Clone, Debug, Default, Struct)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Struct)]
 pub struct FiftyBPSData {
     channel: u8,
     sv_id: u8,

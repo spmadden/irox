@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_bits::{Bits, Error};
 use irox_structs::Struct;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
-#[derive(Default, Debug, Copy, Clone, Struct)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Struct)]
 pub struct NavLibSVState {
     pub sv_id: u8,
     pub gps_time: f64,

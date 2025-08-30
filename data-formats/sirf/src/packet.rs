@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
+use std::fmt::{Display, Formatter};
 use std::io::Write;
 
 use irox_bits::{Bits, BitsError, BitsErrorKind, MutBits};
@@ -38,7 +40,7 @@ pub const END_VAL: u16 = 0xB0B3;
 pub const MAX_PACKET_SIZE: usize =
     START_LEN + PAYLOAD_LEN_LEN + MAX_PAYLOAD_LEN + CKSUM_LEN + END_LEN;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum PacketType {
     // Messages to the SiRF device
     // AdvancedPowerManagement = 0x35,
@@ -84,6 +86,11 @@ pub enum PacketType {
     AsciiString(AsciiData),
 
     Unknown(u8, u8),
+}
+impl Display for PacketType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "SIRF Packet: {self:?}")
+    }
 }
 
 impl Packet for PacketType {

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_bits::{Bits, Error, MutBits};
 use irox_structs::Struct;
 use irox_tools::packetio::{Packet, PacketBuilder};
 
-#[derive(Copy, Clone, Debug, Default, Struct)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Struct)]
 pub struct MeasuredTrackChannel {
     pub sv_id: u8,
     pub azimuth: u8,
@@ -23,7 +24,7 @@ pub struct MeasuredTrackChannel {
     pub cno_10: u8,
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct MeasuredTrackData {
     gps_week: u16,
     gps_tow: u32,
