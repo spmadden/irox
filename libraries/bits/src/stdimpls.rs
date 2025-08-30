@@ -53,10 +53,30 @@ impl Bits for std::net::TcpStream {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         BitsWrapper::Borrowed(self).next_u8()
     }
+
+    fn read_some_into<T: MutBits>(&mut self, buf: &mut T) -> Result<usize, Error> {
+        let mut b = [0u8; 4096];
+        let read_stream = self.peek(&mut b)?;
+        let (stream, _) = b.split_at_mut(read_stream);
+        let consumed = buf.write_some_bytes(stream);
+        let (stream, _) = stream.split_at_mut(consumed);
+        std::io::Read::read_exact(self, stream)?;
+        Ok(consumed)
+    }
 }
 impl Bits for &mut std::net::TcpStream {
     fn next_u8(&mut self) -> Result<Option<u8>, Error> {
         BitsWrapper::Borrowed(self).next_u8()
+    }
+
+    fn read_some_into<T: MutBits>(&mut self, buf: &mut T) -> Result<usize, Error> {
+        let mut b = [0u8; 4096];
+        let read_stream = self.peek(&mut b)?;
+        let (stream, _) = b.split_at_mut(read_stream);
+        let consumed = buf.write_some_bytes(stream);
+        let (stream, _) = stream.split_at_mut(consumed);
+        std::io::Read::read_exact(self, stream)?;
+        Ok(consumed)
     }
 }
 impl MutBits for std::net::TcpStream {
