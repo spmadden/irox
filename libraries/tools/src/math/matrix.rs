@@ -67,6 +67,12 @@ impl<const M: usize, const N: usize> Matrix<M, N, f64> {
         Matrix { values: out }
     }
 }
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct LUPDecomposition<const M: usize, const N: usize, T: Sized + Copy + Default> {
+    pub lower: Matrix<M, N, T>,
+    pub upper: Matrix<M, N, T>,
+    pub permuted: Matrix<M, N, T>,
+}
 
 macro_rules! impl_square {
     ($N:literal) => {
@@ -97,6 +103,94 @@ macro_rules! impl_square {
                     }
                 }
                 out
+            }
+
+            pub fn lup_decompose(&self) -> LUPDecomposition<$N, $N, f64> {
+                let mut l = Self::identity();
+                let mut u = self.clone();
+                let mut p = Self::identity();
+
+                for k in 0..$N {
+                    let mut max = 0.0;
+                    let mut pivot = k;
+                    for i in k..$N {
+                        if u[i][k].abs() > max {
+                            max = u[i][k].abs();
+                            pivot = i;
+                        }
+                    }
+
+                    if pivot != k {
+                        // rotate
+                        for j in 0..$N {
+                            let temp = u[k][j];
+                            u[k][j] = u[pivot][j];
+                            u[pivot][j] = temp;
+
+                            let temp = p[k][j];
+                            p[k][j] = p[pivot][j];
+                            p[pivot][j] = temp;
+
+                            if j < k {
+                                let temp = l[k][j];
+                                l[k][j] = l[pivot][j];
+                                l[pivot][j] = temp;
+                            }
+                        }
+                    }
+
+                    for j in (k + 1)..$N {
+                        l[j][k] = u[j][k] / u[k][k];
+                        for i in k..$N {
+                            u[j][i] -= l[j][k] * u[k][i];
+                        }
+                    }
+                }
+
+                LUPDecomposition {
+                    lower: l,
+                    upper: u,
+                    permuted: p,
+                }
+            }
+        }
+
+        impl LUPDecomposition<$N, $N, f64> {
+            pub fn solve_ax_eq_b(&self, b: &[f64; $N]) -> [f64; $N] {
+                let mut b2 = [0usize; $N];
+                for i in 0..$N {
+                    for j in 0..$N {
+                        if (self.permuted[i][j] - 1.).abs() < f64::EPSILON {
+                            b2[i] = j;
+                            break;
+                        }
+                    }
+                }
+                // println!("{b2:?}");
+                let mut y: [f64; $N] = Default::default();
+                for i in 1..$N {
+                    let mut sum = 0.0;
+                    for j in i..i {
+                        sum += self.lower[i][j] * y[j];
+                    }
+                    y[i] = (b[b2[i]] - sum) / self.lower[i][i];
+                }
+                let mut x: [f64; $N] = Default::default();
+                for i in (1..$N).rev() {
+                    let mut sum = 0.0;
+                    for j in i..$N {
+                        sum += self.upper[i][j] * x[j];
+                    }
+                    x[i] = (y[i] - sum) / self.upper[i][i];
+                }
+                // let mut out = Matrix::<$N, $N, f64>::empty();
+                // for i in 0..$N {
+                //     for j in i..$N {
+                //         out[i][j] = x[i];
+                //     }
+                // }
+                // out
+                x
             }
         }
     };
@@ -393,7 +487,7 @@ impl<
 
 #[cfg(test)]
 mod test {
-    use crate::math::{AsMatrix, Matrix};
+    use crate::math::{AsMatrix, LUPDecomposition, Matrix};
     use core::ops::Deref;
 
     #[test]
@@ -439,5 +533,106 @@ mod test {
         assert_eq_eps!(7., x, 2. * f64::EPSILON);
         assert_eq_eps!(-3., y, 2. * f64::EPSILON);
         assert_eq_eps!(4., z, 2. * f64::EPSILON);
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    pub fn test_lup1() {
+        let a = [
+            [2., 0.0, 2., 0.6],
+            [3., 3., 4., -2.],
+            [5., 5., 4., 2.],
+            [-1., -2., 3.4, -1.],
+        ]
+        .as_matrix();
+        let LUPDecomposition {
+            lower,
+            upper,
+            permuted,
+        } = a.lup_decompose();
+        assert_eq!(
+            lower,
+            [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.4, 1.0, 0.0, 0.0],
+                [-0.2, 0.5, 1.0, 0.0],
+                [0.6, -0.0, 0.4, 1.0]
+            ]
+            .as_matrix()
+        );
+        assert_eq!(
+            upper,
+            [
+                [5.0, 5.0, 4.0, 2.0],
+                [0.0, -2.0, 0.3999999999999999, -0.20000000000000007],
+                [0.0, 0.0, 4.0, -0.49999999999999994],
+                [0.0, 0.0, 0.0, -3.0]
+            ]
+            .as_matrix()
+        );
+        assert_eq!(
+            permuted,
+            [
+                [0.0, 0.0, 1.0, 0.0],
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+                [0.0, 1.0, 0.0, 0.0]
+            ]
+            .as_matrix()
+        );
+
+        let c1 = permuted * a;
+        let c2 = lower * upper;
+        assert_eq!(c1, c2);
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    pub fn test_solve1() {
+        let a = [[25., 5., 1.], [64., 8., 1.], [144., 12., 1.]].as_matrix();
+        let lup = a.lup_decompose();
+        println!("{:?}", lup);
+        let c1 = lup.permuted * a;
+        let c2 = lup.lower * lup.upper;
+        assert_eq!(c1, c2);
+
+        let b = [106.8, 177.2, 279.2];
+        let c = [b].as_matrix() * lup.permuted;
+        println!("{c:?}");
+        let res = lup.solve_ax_eq_b(&b);
+        println!("{:?}", res);
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    pub fn test_lup2() {
+        let a = [[3., 17., 10.], [2., 4., -2.], [6., 18., -12.]].as_matrix();
+        let lup = a.lup_decompose();
+        assert_eq!(
+            lup.lower,
+            [[1., 0., 0.], [0.5, 1., 0.], [1. / 3., -0.25, 1.]].as_matrix()
+        );
+        assert_eq!(
+            lup.upper,
+            [[6., 18., -12.], [0., 8., 16.], [0., 0., 6.]].as_matrix()
+        );
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    pub fn test_lup3() {
+        let a = [[2., 1., -5.], [4., 4., -4.], [1., 3., 1.]].as_matrix();
+        let lup = a.lup_decompose();
+        println!("{:?}", lup);
+        let c1 = lup.permuted * a;
+        let c2 = lup.lower * lup.upper;
+        assert_eq!(c1, c2);
+
+        let b = [5., 0., 6.];
+        let res = lup.solve_ax_eq_b(&b);
+        println!("{:?}", res);
+
+        let b2 = [res].as_matrix() * a;
+        println!("{:?}", b2);
     }
 }
