@@ -244,15 +244,4 @@ mod tests {
         let exp = hex!("BA80A53F981C4D0D6A2797B69F12F6E94C212F14685AC4B74B12BB6FDBFFA2D17D87C5392AAB792DC252D5DE4533CC9518D38AA8DBF1925AB92386EDD4009923");
         assert_eq_hex_slice!(exp, h);
     }
-
-    #[test]
-    pub fn test_long() {
-        let exp = hex!("508C5E8C327C14E2E1A72BA34EEB452F37458B209ED63A294D999B4C86675982");
-        let mut inp = [0u8; 128];
-        let mut v = BLAKE2s256::default();
-        for i in 0..100000 {
-            v.write(&inp);
-            inp[0] = inp[0].wrapping_add(i as u8);
-        }
-    }
 }

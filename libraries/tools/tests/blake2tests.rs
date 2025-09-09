@@ -32,7 +32,7 @@ fn parse_kat_file(path: &str) -> Result<Vec<Test>, Error> {
         let val = val.trim();
         if key.starts_with("in") {
             let mut buf = Vec::<u8>::new();
-            let res = irox_tools::hex::from_hex_into(val, &mut buf)?;
+            let _res = irox_tools::hex::from_hex_into(val, &mut buf)?;
             msg = Some(buf);
         } else if key.starts_with("key") {
             let mut buf = Vec::<u8>::new();
