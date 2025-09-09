@@ -218,6 +218,32 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
         self.add_single_arrow();
         self.extend([output_type])
     }
+    fn add_todo(&mut self) {
+        self.add_ident("todo");
+        self.add_punc('!');
+        self.extend(Self::create_empty_type());
+    }
+    fn add_where_self_sized(&mut self) {
+        self.add_ident("where");
+        self.add_ident("Self");
+        self.add_punc(':');
+        self.add_ident("Sized");
+    }
 }
 
 impl DeriveMethods for TokenStream {}
+
+#[cfg(feature = "syn")]
+mod synhelp {
+    use core::fmt::Display;
+    use proc_macro::TokenStream;
+    use syn::spanned::Spanned;
+    use syn::Error;
+    pub fn compile_error<T: Spanned, D: Display>(span: &T, msg: D) -> TokenStream {
+        Error::new(span.span(), msg).into_compile_error().into()
+    }
+}
+#[cfg(feature = "syn")]
+pub use synhelp::*;
+#[cfg(feature = "syn")]
+pub extern crate syn;

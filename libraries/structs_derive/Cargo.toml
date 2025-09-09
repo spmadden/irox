@@ -23,4 +23,4 @@ syn.workspace = true
 quote.workspace = true
 irox-types = {version = "^0", features = ["syn"], path = "../types"}
 irox-tools = {version = "^0", default-features = false, path = "../tools"}
-irox-derive-helpers.workspace = true
+irox-derive-helpers = {workspace = true, features = ["syn"]}

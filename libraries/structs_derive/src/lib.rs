@@ -3,11 +3,9 @@
 //
 
 use proc_macro::{Literal, TokenStream};
-use std::fmt::Display;
 
 use quote::{quote, ToTokens};
-use syn::spanned::Spanned;
-use syn::{parse_macro_input, Data, DeriveInput, Error, Fields, FieldsNamed};
+use syn::{parse_macro_input, Data, DeriveInput, Fields, FieldsNamed};
 
 use irox_types::{PrimitiveType, Primitives, VariableType};
 
@@ -18,10 +16,6 @@ const TYPES_STRICT_SIZING_INCOMPATIBLE: [Primitives; 1] = [Primitives::null];
 struct Config {
     strict_sizing: bool,
     big_endian: bool,
-}
-
-fn compile_error<T: Spanned, D: Display>(span: &T, msg: D) -> TokenStream {
-    Error::new(span.span(), msg).into_compile_error().into()
 }
 
 fn get_endian_method_for_prim(ty: Primitives, read: bool, big_endian: bool) -> String {
@@ -63,7 +57,7 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
 
     for x in &n.named {
         let Some(ident) = &x.ident else {
-            return compile_error(&x, "No ident");
+            return irox_derive_helpers::compile_error(&x, "No ident");
         };
         match PrimitiveType::try_from(x) {
             Ok(field) => {
@@ -74,7 +68,10 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
                     PrimitiveType::Primitive(input) => {
                         if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input)
                         {
-                            return compile_error(&x, "Type is not compatible with strict sizing");
+                            return irox_derive_helpers::compile_error(
+                                &x,
+                                "Type is not compatible with strict sizing",
+                            );
                         };
                         method.add_ident("out");
                         method.add_punc('.');
@@ -96,7 +93,10 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
                     PrimitiveType::Array(input, len) => {
                         if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input)
                         {
-                            return compile_error(&x, "Type is not compatible with strict sizing");
+                            return irox_derive_helpers::compile_error(
+                                &x,
+                                "Type is not compatible with strict sizing",
+                            );
                         };
                         method.add_ident("for");
                         method.add_ident("elem");
@@ -123,7 +123,10 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
                     }
                     PrimitiveType::DynamicallySized(dy) => {
                         if config.strict_sizing {
-                            return compile_error(&x, "Type is not compatible with strict sizing");
+                            return irox_derive_helpers::compile_error(
+                                &x,
+                                "Type is not compatible with strict sizing",
+                            );
                         };
                         method.add_ident("out");
                         method.add_punc('.');
@@ -191,14 +194,17 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
 
     for x in &n.named {
         let Some(ident) = &x.ident else {
-            return compile_error(&x, "No ident");
+            return irox_derive_helpers::compile_error(&x, "No ident");
         };
 
         match PrimitiveType::try_from(x) {
             Ok(field) => match field {
                 PrimitiveType::Primitive(input) => {
                     if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input) {
-                        return compile_error(&x, "Type is not compatible with strict sizing");
+                        return irox_derive_helpers::compile_error(
+                            &x,
+                            "Type is not compatible with strict sizing",
+                        );
                     };
                     inits.add_ident(&ident.to_string());
                     inits.add_punc(':');
@@ -211,7 +217,10 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
                 }
                 PrimitiveType::Array(input, len) => {
                     if config.strict_sizing && TYPES_STRICT_SIZING_INCOMPATIBLE.contains(&input) {
-                        return compile_error(&x, "Type is not compatible with strict sizing");
+                        return irox_derive_helpers::compile_error(
+                            &x,
+                            "Type is not compatible with strict sizing",
+                        );
                     };
                     inits.add_ident(&ident.to_string());
                     inits.add_punc(':');
@@ -238,7 +247,10 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
                 }
                 PrimitiveType::DynamicallySized(ds) => {
                     if config.strict_sizing {
-                        return compile_error(&x, "Type is not compatible with strict sizing");
+                        return irox_derive_helpers::compile_error(
+                            &x,
+                            "Type is not compatible with strict sizing",
+                        );
                     };
 
                     inits.add_ident(&ident.to_string());
@@ -293,7 +305,10 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
 
     for attr in &input.attrs {
         let Ok(ident) = attr.meta.path().require_ident() else {
-            return compile_error(&attr, "This attribute is unnamed.".to_string());
+            return irox_derive_helpers::compile_error(
+                &attr,
+                "This attribute is unnamed.".to_string(),
+            );
         };
         if ident.eq("little_endian") {
             config.big_endian = false;
@@ -307,10 +322,10 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
     let struct_name = &input.ident;
 
     let Data::Struct(s) = input.data else {
-        return compile_error(&input, "Can only derive on struct type");
+        return irox_derive_helpers::compile_error(&input, "Can only derive on struct type");
     };
     let Fields::Named(n) = s.fields else {
-        return compile_error(&s.fields, "Can only derive on named fields.");
+        return irox_derive_helpers::compile_error(&s.fields, "Can only derive on named fields.");
     };
 
     let mut ts = TokenStream::new();
