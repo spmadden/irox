@@ -133,3 +133,47 @@ impl ReadFromLEBits for StrWrapper<'_> {
         ReadFromLEBits::read_from_le_bits(inp).map(StrWrapper::Owned)
     }
 }
+
+///
+/// Compare the two provided strings via convolution, returning the total
+/// number of match positions by sliding the two strings past each other.
+///
+/// Any cleaning, normalization, upper/lower/specials/etc must be done before
+/// calling this method.
+pub fn convolve_compare(a: &str, b: &str) -> u32 {
+    let mut score = 0;
+    let alen = a.len();
+    let blen = b.len();
+    for i in (1..alen).rev() {
+        let suba = a.split_at(i).1;
+        suba.as_bytes().iter().zip(b.as_bytes()).for_each(|(a, b)| {
+            if a == b {
+                score += 1;
+            }
+        });
+    }
+    for i in 0..blen {
+        let subb = b.split_at(i).1;
+        subb.as_bytes().iter().zip(a.as_bytes()).for_each(|(a, b)| {
+            if a == b {
+                score += 1;
+            }
+        });
+    }
+    score
+}
+#[cfg(test)]
+mod tests {
+    use crate::convolve_compare;
+
+    #[test]
+    pub fn test_convolve_compare() {
+        let a = "estingtestingtes";
+        let b = "test";
+        let score = convolve_compare(a, b);
+        assert_eq!(score, 14);
+
+        let score = convolve_compare(b, a);
+        assert_eq!(score, 14);
+    }
+}
