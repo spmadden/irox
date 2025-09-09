@@ -54,6 +54,10 @@ required-features = ["std"]
 name = "blake2tests"
 required-features = ["std"]
 
+[[example]]
+name = "ansi"
+required-features = ["std"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

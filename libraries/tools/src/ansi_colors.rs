@@ -6,15 +6,26 @@
 //! List of some basic ANSI Console colors
 //!
 
+use crate::cfg_feature_std;
+
 macro_rules! csi {
     () => {
         "\u{1B}["
     };
 }
-
-pub const DCS: &str = "\u{1B}P";
+macro_rules! dcs {
+    () => {
+        "\u{1B}P"
+    };
+}
+macro_rules! st {
+    () => {
+        "\u{1B}\\"
+    };
+}
+pub const DCS: &str = dcs!();
 pub const CSI: &str = csi!();
-pub const ST: &str = "\u{1B}\\";
+pub const ST: &str = st!();
 pub const OSC: &str = "\u{1B}]";
 
 macro_rules! sgr {
@@ -80,4 +91,31 @@ macro_rules! format_bg_color {
     ($red:literal,$green:literal,$blue:literal) => {
         concat!("\u{1B}[48;2;", $red, ";", $green, ";", $blue, "m")
     };
+}
+
+def_item!(GET_TEXTAREA_SIZE_PIXELS, concat!(csi!(), "14t"));
+def_item!(GET_TEXTAREA_SIZE_CHARS, concat!(csi!(), "18t"));
+def_item!(GET_TERMINFO, concat!(dcs!(), "+q"));
+
+cfg_feature_std! {
+    pub fn get_textarea_size_pixels() -> Result<alloc::vec::Vec<u8>, std::io::Error> {
+        use std::io::{BufRead, Write};
+        let mut stdout = std::io::stdout().lock();
+        let mut stdin = std::io::stdin().lock();
+        stdout.write_all(GET_TEXTAREA_SIZE_CHARS.as_bytes())?;
+        let mut out = alloc::vec::Vec::<u8>::new();
+        stdin.read_until(b't', &mut out)?;
+        Ok(out)
+    }
+    pub fn get_termcap(s: &str) -> Result<alloc::vec::Vec<u8>, std::io::Error> {
+        use std::io::{Write};
+        let mut stdout = std::io::stdout().lock();
+        let _stdin = std::io::stdin().lock();
+        stdout.write_all(GET_TERMINFO.as_bytes())?;
+        stdout.write_all(s.as_bytes())?;
+        stdout.write_all(ST.as_bytes())?;
+        let _out = alloc::vec::Vec::<u8>::new();
+        // stdin.read(&mut out)?;
+        Ok(_out)
+    }
 }
