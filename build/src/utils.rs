@@ -255,7 +255,10 @@ where
 }
 
 pub fn install_update(tool: &str) {
-    if let Err(e) = exec("cargo", &["install", "--locked", tool, "--color=always"]) {
+    if let Err(e) = exec(
+        "cargo",
+        &["+stable", "install", "--locked", tool, "--color=always"],
+    ) {
         warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
     };
 }
