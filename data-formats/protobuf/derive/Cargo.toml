@@ -1,0 +1,31 @@
+[package]
+name = "irox-protobuf-derive"
+description = "Derive helpers for the protobuf module"
+keywords = ["irox"]
+categories = ["encoding"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lib]
+proc-macro = true
+
+[lints]
+workspace = true
+
+[dependencies]
+syn.workspace = true
+irox-derive-helpers = {workspace = true, features = ["syn"]}
+
+[dev-dependencies]
+irox-protobuf = {workspace = true}
+irox-tools = {workspace = true, features = ["std"]}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

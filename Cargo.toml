@@ -17,7 +17,8 @@ members = [
     "data-formats/dot",
     "data-formats/gpx",
     "data-formats/nmea0183",
-    "data-formats/protobuf",
+    "data-formats/protobuf/derive",
+    "data-formats/protobuf/lib",
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
     "eieio/api",
@@ -95,6 +96,7 @@ irox-csv = { version = "^0", path = "data-formats/csv" }
 irox-dot = { version = "^0", path = "data-formats/dot" }
 irox-gpx = { version = "^0", path = "data-formats/gpx" }
 irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
+irox-protobuf = { version = "^0", path = "data-formats/protobuf/lib" }
 irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0", path = "data-formats/sirf" }
 

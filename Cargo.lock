@@ -1814,6 +1814,7 @@ name = "irox-derive-helpers"
 version = "0.1.0"
 dependencies = [
  "irox-tools",
+ "syn",
 ]
 
 [[package]]
@@ -2062,6 +2063,16 @@ version = "0.1.0"
 dependencies = [
  "irox-bits",
  "irox-tools",
+]
+
+[[package]]
+name = "irox-protobuf-derive"
+version = "0.1.0"
+dependencies = [
+ "irox-derive-helpers",
+ "irox-protobuf",
+ "irox-tools",
+ "syn",
 ]
 
 [[package]]
