@@ -3,7 +3,7 @@
 //
 
 use core::fmt::Debug;
-use irox_bits::{BitStreamDecoder, Bits, BitsError, BitsErrorKind, BitsWrapper, Error};
+use irox_bits::{BitStreamDecoder, Bits, BitsError, BitsErrorKind, BitsWrapper, Error, MutBits};
 use irox_tools::buf::ZeroedBuffer;
 use std::cmp::Ordering;
 use std::collections::VecDeque;
@@ -409,6 +409,65 @@ pub(crate) fn reverse_bits(v: u32, n: i32) -> u32 {
     z
 }
 
+#[repr(u8)]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+pub enum CompressLevel {
+    None = 0,
+    BestSpeed = 1,
+    #[default]
+    Default = 6,
+    BestCompression = 9,
+    UberCompression = 10,
+}
+#[derive(Default)]
+pub struct DeflaterBuilder {
+    deflater: Deflater,
+}
+impl DeflaterBuilder {
+    pub fn set_compression_level(&mut self, level: CompressLevel) -> &mut Self {
+        self.deflater.compression_level = level;
+        self
+    }
+
+    pub fn set_write_zlib_header(&mut self, write_zlib_header: bool) -> &mut Self {
+        self.deflater.write_zlib_header = Some(write_zlib_header);
+        self
+    }
+}
+
+#[derive(Default)]
+pub struct Deflater {
+    writebuf: VecDeque<u8>,
+    readbuf: VecDeque<u8>,
+    compression_level: CompressLevel,
+    write_zlib_header: Option<bool>,
+}
+impl Drop for Deflater {
+    fn drop(&mut self) {
+        let _ = self.flush();
+    }
+}
+impl Deflater {
+    pub fn flush(&mut self) -> Result<(), BitsError> {
+        Ok(())
+    }
+    pub fn finish(mut self) -> Result<(), BitsError> {
+        self.flush()?;
+
+        Ok(())
+    }
+}
+impl MutBits for Deflater {
+    fn write_u8(&mut self, val: u8) -> Result<(), Error> {
+        self.writebuf.push_back(val);
+        todo!()
+    }
+}
+impl Bits for Deflater {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        Ok(self.readbuf.pop_front())
+    }
+}
 #[cfg(test)]
 mod tests {
     use crate::deflate::Inflater;
