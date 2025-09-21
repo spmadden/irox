@@ -234,6 +234,33 @@ pub trait PRNG {
         let off = (self.next_unit_f64() - 0.5) * range;
         center + off
     }
+
+    /// Returns a non-negative random number in the range [0,max).  Care
+    /// is taken to avoid modulo bias.
+    fn unbiased_next_u32(&mut self, max: u32) -> u32 {
+        if max.is_power_of_two() {
+            return self.next_u32() & (max - 1);
+        }
+        let lim = (1 << 31) - 1 - (1 << 31) % max;
+        let mut v = self.next_u32();
+        while v > lim {
+            v = self.next_u32();
+        }
+        v % max
+    }
+    /// Returns a non-negative random number in the range [0,max).  Care
+    /// is taken to avoid modulo bias.
+    fn unbiased_next_u64(&mut self, max: u64) -> u64 {
+        if max.is_power_of_two() {
+            return self.next_u64() & (max - 1);
+        }
+        let lim = (1 << 63) - 1 - (1 << 63) % max;
+        let mut v = self.next_u64();
+        while v > lim {
+            v = self.next_u64();
+        }
+        v % max
+    }
 }
 
 #[cfg(feature = "std")]
