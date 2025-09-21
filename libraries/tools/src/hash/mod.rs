@@ -304,7 +304,16 @@ cfg_feature_alloc! {
             Ok(())
         }
     }
+    crate::cfg_feature_std! {
+        impl HashAlgorithm {
+            pub fn hash_file<T: AsRef<std::path::Path>>(&self, path: T) -> Result<alloc::boxed::Box<[u8]>, Error> {
+                let mut hasher : Hasher = (*self).try_into()?;
+                hasher.hash_file(path)?;
+                Ok(hasher.finish())
+            }
+        }
 
+    }
 }
 #[cfg(test)]
 mod hmac_tests {
