@@ -26,7 +26,19 @@ pub struct BitsError {
 
 impl BitsError {
     /// Creates a new error
-    pub const fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
+    #[allow(clippy::print_stdout)]
+    pub fn new(kind: BitsErrorKind, msg: &'static str) -> Self {
+        #[cfg(all(feature = "bits_backtrace", debug_assertions))]
+        {
+            println!(
+                "BitsError ({kind:?}:{msg})\n{}",
+                std::backtrace::Backtrace::capture()
+            );
+        }
+        BitsError { kind, msg }
+    }
+    /// Creates a new error
+    pub const fn cnew(kind: BitsErrorKind, msg: &'static str) -> Self {
         BitsError { kind, msg }
     }
 
@@ -41,7 +53,7 @@ impl BitsError {
     }
 
     /// Creates an error variant of this type
-    pub const fn err<T>(kind: BitsErrorKind, msg: &'static str) -> Result<T, Self> {
+    pub fn err<T>(kind: BitsErrorKind, msg: &'static str) -> Result<T, Self> {
         Err(Self::new(kind, msg))
     }
 }
@@ -93,10 +105,7 @@ impl From<core::fmt::Error> for BitsError {
 #[cfg(feature = "std")]
 impl From<std::io::Error> for BitsError {
     fn from(value: std::io::Error) -> Self {
-        BitsError {
-            kind: value.kind().into(),
-            msg: "IO Error",
-        }
+        BitsError::new(value.kind().into(), "IO Error")
     }
 }
 
@@ -194,7 +203,7 @@ pub enum BitsErrorKind {
 
 impl BitsErrorKind {
     pub const fn err<T>(self, msg: &'static str) -> Result<T, BitsError> {
-        Err(BitsError::new(self, msg))
+        Err(BitsError::cnew(self, msg))
     }
 }
 

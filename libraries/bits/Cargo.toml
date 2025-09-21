@@ -18,6 +18,7 @@ workspace = true
 [dependencies]
 
 [features]
+bits_backtrace = ["std"]
 std = ["alloc"]
 alloc = []
 default = []
