@@ -27,6 +27,9 @@ macro_rules! impl_bits_pop {
             fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
                 Ok(into.write_some_bytes(self.as_ref()))
             }
+            fn remaining(&self) -> Option<usize> {
+                Some(self.len())
+            }
         }
     };
 }
@@ -51,6 +54,9 @@ macro_rules! impl_bits_vecdeque {
                     wrote += 1;
                 }
                 Ok(wrote)
+            }
+            fn remaining(&self) -> Option<usize> {
+                Some(self.len())
             }
         }
     };

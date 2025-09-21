@@ -676,6 +676,12 @@ pub trait Bits {
             ByteOrder::BigEndian => self.read_be_i128(),
         }
     }
+
+    /// Some implementations may be able to return the size of the remaining data
+    /// in the buffer.
+    fn remaining(&self) -> Option<usize> {
+        None
+    }
 }
 
 #[allow(unused_macros)]
@@ -702,6 +708,10 @@ impl Bits for &[u8] {
     fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
         Ok(into.write_some_bytes(self))
     }
+
+    fn remaining(&self) -> Option<usize> {
+        Some(self.len())
+    }
 }
 
 impl Bits for &mut [u8] {
@@ -715,6 +725,10 @@ impl Bits for &mut [u8] {
 
     fn read_some_into<T: MutBits>(&mut self, into: &mut T) -> Result<usize, Error> {
         Ok(into.write_some_bytes(self))
+    }
+
+    fn remaining(&self) -> Option<usize> {
+        Some(self.len())
     }
 }
 
@@ -833,5 +847,9 @@ impl<const N: usize> Bits for BitsArray<'_, N> {
         let v = self.arr.get(self.pos).copied();
         self.pos += 1;
         Ok(v)
+    }
+
+    fn remaining(&self) -> Option<usize> {
+        Some(self.max_len.saturating_sub(self.pos))
     }
 }
