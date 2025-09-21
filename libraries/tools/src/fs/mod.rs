@@ -5,8 +5,13 @@
 //!
 //! Filesystem utilities
 
-use crate::cfg_feature_alloc;
+use crate::{cfg_feature_alloc, cfg_feature_std};
 use core::fmt::{Display, Formatter};
+
+cfg_feature_std! {
+    mod temp;
+    pub use temp::*;
+}
 
 ///
 /// A list of characters that are usually prohibited by common filesystems like VFAT and NTFS.
