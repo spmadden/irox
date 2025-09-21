@@ -94,6 +94,18 @@ extern crate alloc;
 pub use irox_bits::{Bits, Error, MutBits};
 pub use irox_structs_derive::*;
 
+/// Enables feature-specific code.
+/// Use this macro instead of `cfg(feature = "alloc")` to generate docs properly.
+#[macro_export]
+macro_rules! cfg_feature_alloc {
+    ($($item:item)*) => {
+        $(
+            #[cfg(any(all(doc, docsrs), feature = "alloc"))]
+            #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+            $item
+        )*
+    }
+}
 ///
 /// A struct is a series of bytes in memory, serialized in the order that the
 /// fields are present in the struct.
@@ -138,5 +150,27 @@ impl<S: Struct> Struct for Option<S> {
             return Ok(Some(v));
         }
         Ok(None)
+    }
+}
+
+cfg_feature_alloc! {
+    impl<S: Struct> Struct for alloc::vec::Vec<S> {
+        type ImplType = alloc::vec::Vec<S::ImplType>;
+
+        fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Error> {
+                for v in self {
+                    Struct::write_to(v, out)?;
+                }
+                Ok(())
+            }
+
+        fn parse_from<T: Bits>(input: &mut T) -> Result<Self::ImplType, Error> {
+            let mut v: Self::ImplType = Vec::new();
+            while let Ok(x) = S::parse_from(input) {
+                v.push(x);
+            }
+            Ok(v)
+        }
+
     }
 }
