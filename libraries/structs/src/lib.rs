@@ -122,3 +122,21 @@ pub trait Struct {
     /// the way.
     fn parse_from<T: Bits>(input: &mut T) -> Result<Self::ImplType, Error>;
 }
+
+impl<S: Struct> Struct for Option<S> {
+    type ImplType = Option<S::ImplType>;
+
+    fn write_to<T: MutBits>(&self, out: &mut T) -> Result<(), Error> {
+        if let Some(v) = &self {
+            return Struct::write_to(v, out);
+        }
+        Ok(())
+    }
+
+    fn parse_from<T: Bits>(input: &mut T) -> Result<Self::ImplType, Error> {
+        if let Ok(v) = <S as Struct>::parse_from(input) {
+            return Ok(Some(v));
+        }
+        Ok(None)
+    }
+}
