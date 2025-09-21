@@ -1,0 +1,26 @@
+[package]
+name = "irox-chronyc"
+description = "Native interface to chrony"
+keywords = ["irox"]
+categories = ["encoding", "date-and-time"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = {workspace = true, features = ["std"]}
+irox-bits = {workspace = true, features = ["std"]}
+irox-structs = {workspace = true, features = ["alloc"]}
+irox-enums = {workspace = true, features = []}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
