@@ -1913,6 +1913,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-gnss"
+version = "0.1.0"
+dependencies = [
+ "irox-bits",
+ "irox-log",
+ "irox-nmea0183",
+ "irox-sirf",
+ "irox-tools",
+ "irox-ubx",
+]
+
+[[package]]
 name = "irox-gpsd"
 version = "0.1.0"
 dependencies = [

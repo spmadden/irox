@@ -26,6 +26,7 @@ members = [
     "data-formats/ubx",
     "eieio/api",
     "eieio/nmea0183",
+    "interfaces/gnss",
     "interfaces/chronyc",
     "interfaces/influxdb_v1",
     "interfaces/win-location-api",
@@ -108,6 +109,7 @@ irox-ubx = { version = "^0", path = "data-formats/ubx" }
 irox-eieio-api = { version = "^0", path = "eieio/api" }
 irox-eieio-nmea0183 = { version = "^0", path = "eieio/nmea0183" }
 
+irox-gnss = {version = "^0", path = "interfaces/gnss"}
 irox-influxdb_v1 = { version = "^0", path = "interfaces/influxdb_v1" }
 irox-winlocation-api = { version = "^0", path = "interfaces/win-location-api" }
 
