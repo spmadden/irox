@@ -17,15 +17,18 @@ workspace = true
 
 [dependencies]
 irox-bits.workspace = true
+serde = {workspace = true, optional = true}
 
 [dev-dependencies]
 criterion.workspace = true
 core_affinity.workspace = true
+serde_json.workspace = true
 
 [features]
 default = []
 std = ["irox-bits/std", "alloc"]
 alloc = ["irox-bits/alloc"]
+serde = ["dep:serde"]
 
 _toobig-tests = [] # slow tests that take way too long to run normally.
 

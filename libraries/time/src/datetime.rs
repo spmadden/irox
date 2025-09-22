@@ -15,6 +15,7 @@ use crate::Time;
 pub use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::ops::{Add, AddAssign, Sub};
+use irox_tools::cfg_feature_serde;
 use irox_units::bounds::GreaterThanEqualToValueError;
 use irox_units::units::duration::Duration;
 
@@ -239,5 +240,60 @@ impl AddAssign<&Duration> for UTCDateTime {
         let (time, excess) = self.time.wrapping_add(*rhs);
         self.time = time;
         self.date += excess;
+    }
+}
+
+cfg_feature_serde! {
+    struct UTCDateTimeVisitor;
+    impl serde::de::Visitor<'_> for UTCDateTimeVisitor {
+        type Value = UTCDateTime;
+
+        fn expecting(&self, fmt: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
+            write!(fmt, "The visitor expects to receive a string formatted as a ISO 8601 DateTime")
+        }
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> where E: serde::de::Error {
+            UTCDateTime::try_from_iso8601(v).map_err(serde::de::Error::custom)
+        }
+    }
+    impl<'de> serde::Deserialize<'de> for UTCDateTime {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+            deserializer.deserialize_str(UTCDateTimeVisitor)
+        }
+    }
+    impl serde::Serialize for UTCDateTime {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+            serializer.serialize_str(&self.format_iso8601_extended())
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::datetime::UTCDateTime;
+    use crate::epoch::UnixTimestamp;
+    use irox_units::units::duration::Duration;
+
+    #[test]
+    #[cfg(all(feature = "serde", feature = "std"))]
+    pub fn serde_test() -> Result<(), crate::FormatError> {
+        #[derive(serde::Serialize, serde::Deserialize, Eq, PartialEq, Debug)]
+        struct Test {
+            a: UTCDateTime,
+        }
+        impl Default for Test {
+            fn default() -> Self {
+                Self {
+                    a: UTCDateTime::default(),
+                }
+            }
+        }
+        let a = Test {
+            a: UnixTimestamp::from_offset(Duration::from_days(1)).into(),
+        };
+        let s = serde_json::to_string(&a).unwrap_or_default();
+        assert_eq!(s, "{\"a\":\"1970-01-02T00:00:00Z\"}");
+        let b: Test = serde_json::from_str(&s).unwrap();
+        assert_eq!(a, b);
+        Ok(())
     }
 }

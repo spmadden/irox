@@ -6,8 +6,8 @@
 //! A basic implementation of a UUID
 //!
 
+use crate::cfg_feature_serde;
 use core::fmt::{Display, Formatter};
-
 use irox_bits::{Bits, Error, MutBits};
 
 ///
@@ -62,6 +62,14 @@ impl From<[u8; 16]> for UUID {
 pub enum UUIDParseError {
     WrongSize,
     InvalidCharacter,
+}
+impl Display for UUIDParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self {
+            UUIDParseError::WrongSize => write!(f, "Wrong Size"),
+            UUIDParseError::InvalidCharacter => write!(f, "Invalid Character"),
+        }
+    }
 }
 
 impl TryFrom<&[u8]> for UUID {
@@ -118,7 +126,29 @@ impl TryFrom<&str> for UUID {
         Ok(UUID { inner })
     }
 }
+cfg_feature_serde! {
+    struct UUIDVisitor;
+    impl serde::de::Visitor<'_> for UUIDVisitor {
+        type Value = UUID;
 
+        fn expecting(&self, fmt: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
+            write!(fmt, "The visitor expects to receive a string formatted as a UUID")
+        }
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> where E: serde::de::Error {
+            UUID::try_from(v).map_err(serde::de::Error::custom)
+        }
+    }
+    impl<'de> serde::Deserialize<'de> for UUID {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+            deserializer.deserialize_str(UUIDVisitor)
+        }
+    }
+    impl serde::Serialize for UUID {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+            serializer.serialize_str(&self.to_string())
+        }
+    }
+}
 ///
 /// A trait that can be applied to a Reader, or other bit stream.
 pub trait UUIDReader {
@@ -201,9 +231,29 @@ mod tests {
         assert_eq!(parsed, uuid);
 
         let parsed: u128 = parsed.into();
-        let parsed: UUID = (parsed.to_be_bytes().as_slice()).try_into()?;
+        let parsed: UUID = parsed.to_be_bytes().as_slice().try_into()?;
         assert_eq!(parsed, uuid);
 
+        Ok(())
+    }
+
+    #[test]
+    #[cfg(all(feature = "serde", feature = "std"))]
+    pub fn serde_test() -> Result<(), UUIDParseError> {
+        #[derive(serde::Serialize, serde::Deserialize, Eq, PartialEq, Debug)]
+        struct Test {
+            a: UUID,
+        }
+        impl Default for Test {
+            fn default() -> Self {
+                Self { a: 0u128.into() }
+            }
+        }
+        let a = Test { a: 128u128.into() };
+        let s = serde_json::to_string(&a).unwrap_or_default();
+        assert_eq!(s, "{\"a\":\"00000000-0000-0000-0000-000000000080\"}");
+        let b: Test = serde_json::from_str(&s).unwrap();
+        assert_eq!(a, b);
         Ok(())
     }
 }

@@ -29,7 +29,7 @@
 use core::cmp::Ordering;
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Sub, SubAssign};
-use irox_tools::cfg_docs;
+use irox_tools::{cfg_docs, cfg_feature_serde};
 use irox_units::units::duration::Duration;
 
 use crate::gregorian::Date;
@@ -401,3 +401,62 @@ pub const VICINTIPOCH: Epoch = Epoch(Date {
 pub struct Vicintipoch;
 pub type VicintiTimestamp = Timestamp<Vicintipoch>;
 derive_timestamp_impl!(VICINTIPOCH, VicintiTimestamp);
+
+cfg_feature_serde! {
+    struct UnixTimestampVisitor;
+    impl serde::de::Visitor<'_> for UnixTimestampVisitor {
+        type Value = UnixTimestamp;
+
+        fn expecting(&self, fmt: &mut core::fmt::Formatter<'_>) -> Result<(), core::fmt::Error> {
+            write!(fmt, "The visitor expects to receive a uint64 representing number of seconds since")
+        }
+
+        fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E> where E: serde::de::Error {
+            Ok(UnixTimestamp::from_offset(Duration::from_nanos(v)))
+        }
+
+    }
+    impl<'de> serde::Deserialize<'de> for UnixTimestamp {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+            deserializer.deserialize_u64(UnixTimestampVisitor)
+        }
+    }
+    impl serde::Serialize for UnixTimestamp {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+            let nanos = self.offset.as_nanos();
+            serializer.serialize_u64(nanos)
+        }
+    }
+}
+#[cfg(test)]
+mod tests {
+    use crate::epoch::UnixTimestamp;
+    use irox_units::units::duration::Duration;
+
+    #[test]
+    #[cfg(all(feature = "serde", feature = "std"))]
+    pub fn serde_test() -> Result<(), crate::FormatError> {
+        #[derive(serde::Serialize, serde::Deserialize, Eq, PartialEq, Debug)]
+        struct Test {
+            a: UnixTimestamp,
+        }
+        impl Default for Test {
+            fn default() -> Self {
+                Self {
+                    a: UnixTimestamp::default(),
+                }
+            }
+        }
+        let a = Test {
+            a: UnixTimestamp::from_offset(Duration::from_days(1)),
+        };
+        let s = serde_json::to_string(&a).unwrap_or_default();
+        assert_eq!(
+            s,
+            format!("{{\"a\":{}}}", Duration::from_days(1).as_nanos())
+        );
+        let b: Test = serde_json::from_str(&s).unwrap();
+        assert_eq!(a, b);
+        Ok(())
+    }
+}

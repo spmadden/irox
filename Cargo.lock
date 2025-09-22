@@ -2211,6 +2211,8 @@ dependencies = [
  "irox-fixedmath",
  "irox-tools",
  "irox-units",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2220,6 +2222,8 @@ dependencies = [
  "core_affinity",
  "criterion",
  "irox-bits",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
