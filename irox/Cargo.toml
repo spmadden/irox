@@ -32,6 +32,7 @@ win-loc-api = ["dep:irox-winlocation-api"]
 
 build = ["dep:irox-build-rs"]
 carto = ["dep:irox-carto"]
+cryptids = ["dep:irox-cryptids"]
 derive-helpers = ["dep:irox-derive-helpers"]
 egui-extras = ["dep:irox-egui-extras"]
 enums = ["dep:irox-enums"]
@@ -40,6 +41,7 @@ fixedmath = ["dep:irox-fixedmath"]
 git-tools = ["dep:irox-git-tools"]
 imagery = ["dep:irox-imagery"]
 log = ["dep:irox-log"]
+metrics = ["dep:irox-metrics"]
 networking = ["dep:irox-networking"]
 progress = ["dep:irox-progress"]
 stats = ["dep:irox-stats"]
@@ -51,7 +53,10 @@ tools = ["dep:irox-tools"]
 types = ["dep:irox-types"]
 units = ["dep:irox-units"]
 
-std = ["irox-bits?/std", "irox-carto?/std", "irox-imagery?/std", "irox-networking?/std", "irox-stats?/std", "irox-time?/std", "irox-tools?/std", "irox-units?/std", "irox-log?/std"]
+std = [
+    "irox-bits?/std", "irox-carto?/std", "irox-cryptids?/std", "irox-imagery?/std", "irox-log?/std",
+    "irox-networking?/std", "irox-metrics?/std", "irox-stats?/std", "irox-time?/std", "irox-tools?/std",
+    "irox-units?/std"]
 alloc = ["irox-bits?/alloc", "irox-structs?/alloc", "irox-tools?/alloc", "irox-units?/alloc"]
 egui = ["irox-egui-extras?/plots"]
 emath = ["irox-stats?/emath"]
@@ -61,9 +66,13 @@ num_cpus = ["irox-threading?/num_cpus"]
 plots = ["irox-egui-extras?/plots"]
 profiling = ["irox-egui-extras?/profiling"]
 serde = ["irox-egui-extras?/serde", "irox-networking?/serde", "irox-tools?/serde", "irox-time?/serde"]
-syn = ["irox-types?/syn"]
+syn = ["irox-derive-helpers?/syn", "irox-types?/syn"]
 wgpu = ["irox-egui-extras?/wgpu"]
 glow = ["irox-egui-extras?/glow"]
+websockets = ["irox-networking?/websockets"]
+windows = ["irox-carto?/windows"]
+
+bits_backtrace = ["irox-bits?/bits_backtrace"]
 
 
 [dependencies]
@@ -82,6 +91,7 @@ irox-winlocation-api = { version = "^0.5.3", optional = true, path = "../interfa
 irox-bits = { version = "^0.4.2", optional = true, path = "../libraries/bits" }
 irox-build-rs = { version = "^0.2.4", optional = true, path = "../libraries/build-rs" }
 irox-carto = { version = "^0.6.5", optional = true, path = "../libraries/carto" }
+irox-cryptids = { version = "^0.1.0", optional = true, path = "../libraries/cryptids" }
 irox-derive-helpers = { version = "^0.1.0", optional = true, path = "../libraries/derive-helpers" }
 irox-egui-extras = { version = "^0.7.0", optional = true, path = "../libraries/egui_extras" }
 irox-enums = { version = "^0.2.2", optional = true, path = "../libraries/enums" }
@@ -90,6 +100,7 @@ irox-fixedmath = { version = "^0.1.2", optional = true, path = "../libraries/fix
 irox-git-tools = { version = "^0.2.1", optional = true, path = "../libraries/git-tools" }
 irox-imagery = { version = "^0.1.3", optional = true, path = "../libraries/imagery" }
 irox-log = { version = "^0.2.3", optional = true, path = "../libraries/log" }
+irox-metrics = { version = "^0.1.0", optional = true, path = "../libraries/metrics" }
 irox-networking = { version = "^0.4.7", optional = true, path = "../libraries/network" }
 irox-progress = { version = "^0.6.0", optional = true, path = "../libraries/progress" }
 irox-stats = { version = "^0.3.5", optional = true, path = "../libraries/stats" }

@@ -10,6 +10,8 @@ pub extern crate irox_bits;
 pub extern crate irox_build_rs;
 #[cfg(feature = "carto")]
 pub extern crate irox_carto;
+#[cfg(feature = "cryptids")]
+pub extern crate irox_cryptids;
 #[cfg(feature = "csv")]
 pub extern crate irox_csv;
 #[cfg(feature = "derive-helpers")]
@@ -30,6 +32,8 @@ pub extern crate irox_gpx;
 pub extern crate irox_influxdb_v1;
 #[cfg(feature = "log")]
 pub extern crate irox_log;
+#[cfg(feature = "metrics")]
+pub extern crate irox_metrics;
 #[cfg(feature = "networking")]
 pub extern crate irox_networking;
 #[cfg(feature = "nmea0183")]
@@ -67,6 +71,9 @@ pub use irox_build_rs as build;
 #[cfg(feature = "carto")]
 pub use irox_carto as carto;
 
+#[cfg(feature = "cryptids")]
+pub use irox_cryptids as cryptids;
+
 #[cfg(feature = "csv")]
 pub use irox_csv as csv;
 
@@ -99,6 +106,9 @@ pub use irox_influxdb_v1 as influxdb_v1;
 
 #[cfg(feature = "log")]
 pub use irox_log as log;
+
+#[cfg(feature = "metrics")]
+pub use irox_metrics as metrics;
 
 #[cfg(feature = "networking")]
 pub use irox_networking as networking;
