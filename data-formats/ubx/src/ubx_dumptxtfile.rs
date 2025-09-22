@@ -33,8 +33,11 @@ impl PacketBuilder<Option<UBXMessage>> for DumpTxtFileParser {
             .chars()
             .filter_map(|v| if v == ' ' { None } else { Some(v as u8) })
             .collect::<Vec<_>>();
-        let s = String::from_utf8_lossy(chars.as_slice().split_at(2).1);
+        let chars = chars.as_slice();
+        let s = String::from_utf8_lossy(chars);
         let bytes = irox_tools::hex::from_hex_str(&s)?;
+        let bytes = bytes.as_ref();
+        let (_skip, bytes) = bytes.split_at(4);
         let msg = class.try_parse_payload(id, bytes.as_ref())?;
 
         Ok(Some(UBXMessage {

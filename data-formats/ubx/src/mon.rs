@@ -73,7 +73,7 @@ impl TryFrom<UBXRawMessage> for UBXMonPayload {
     type Error = UBXRawMessage;
 
     fn try_from(value: UBXRawMessage) -> Result<Self, Self::Error> {
-        if value.class != UBXClass::NAV as u8 {
+        if value.class != UBXClass::MON as u8 {
             return Err(value);
         }
         let Ok(id) = UBXMon::try_from(value.id) else {
@@ -99,8 +99,7 @@ pub struct UBXMonVer {
 impl TryFrom<&[u8]> for UBXMonVer {
     type Error = Error;
 
-    fn try_from(mut value: &[u8]) -> Result<Self, Self::Error> {
-        let _ = value.read_exact::<3>();
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let (mut swver, rest) = value.split_at(30);
         let sw_version = swver.read_str_null_terminated()?;
         let (mut hwver, rest) = rest.split_at(10);

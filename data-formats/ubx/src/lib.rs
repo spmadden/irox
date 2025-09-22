@@ -11,15 +11,18 @@
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+extern crate core;
 
 pub mod cfg;
 pub mod mon;
 pub mod nav;
+mod tim;
 pub mod ubx_dumptxtfile;
 
-use crate::cfg::UBXCfg;
+use crate::cfg::{UBXCfg, UBXCfgPayload};
 use crate::mon::{UBXMon, UBXMonPayload};
 use crate::nav::{UBXNav, UBXNavPayload};
+use crate::tim::{UBXTim, UBXTimPayload};
 use core::fmt::{Debug, Display, Formatter};
 use irox_bits::{Bits, BitsErrorKind};
 use irox_enums::{EnumName, EnumTryFromRepr, EnumTryFromStr};
@@ -64,6 +67,8 @@ impl UBXClass {
         match self {
             UBXClass::NAV => Ok(UBXPayload::Nav(UBXNav::try_parse(id, pld)?)),
             UBXClass::MON => Ok(UBXPayload::Mon(UBXMon::try_parse(id, pld)?)),
+            UBXClass::CFG => Ok(UBXPayload::Cfg(UBXCfg::try_parse(id, pld)?)),
+            UBXClass::TIM => Ok(UBXPayload::Tim(UBXTim::try_parse(id, pld)?)),
             //TODO add the rest of the classes
             _ => Ok(UBXPayload::Unknown(pld.into())),
         }
@@ -83,6 +88,8 @@ impl UBXClass {
 pub enum UBXPayload {
     Nav(UBXNavPayload),
     Mon(UBXMonPayload),
+    Cfg(UBXCfgPayload),
+    Tim(UBXTimPayload),
     // TODO add the rest of the classes
     Unknown(Box<[u8]>),
 }
@@ -104,6 +111,12 @@ impl Display for UBXMessage {
             }
             UBXPayload::Mon(m) => {
                 write!(f, "UBXPayload::MON {m:?}")
+            }
+            UBXPayload::Cfg(m) => {
+                write!(f, "UBXPayload::CFG {m:?}")
+            }
+            UBXPayload::Tim(m) => {
+                write!(f, "UBXPayload::TIM {m:?}")
             }
             UBXPayload::Unknown(p) => {
                 write!(
