@@ -428,7 +428,7 @@ cfg_feature_serde! {
         }
     }
 }
-#[cfg(test)]
+#[cfg(all(test, feature = "serde", feature = "std"))]
 mod tests {
     use crate::epoch::UnixTimestamp;
     use irox_units::units::duration::Duration;

@@ -51,7 +51,10 @@ pub struct GNSSPacketStream<'a, T: Bits> {
     run: Arc<AtomicBool>,
     buf: BitsBuffer<'a, T>,
 }
-impl<'a, T: Bits> GNSSPacketStream<'a, T> {
+impl<'a, T: Bits> GNSSPacketStream<'a, T>
+where
+    BitsWrapper<'a, T>: Bits,
+{
     pub fn new(run: Arc<AtomicBool>, buf: BitsWrapper<'a, T>) -> Self {
         Self {
             run,

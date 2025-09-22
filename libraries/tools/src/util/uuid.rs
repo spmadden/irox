@@ -143,9 +143,12 @@ cfg_feature_serde! {
             deserializer.deserialize_str(UUIDVisitor)
         }
     }
-    impl serde::Serialize for UUID {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
-            serializer.serialize_str(&self.to_string())
+    crate::cfg_feature_alloc!{
+        use alloc::string::ToString;
+        impl serde::Serialize for UUID {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+                serializer.serialize_str(&self.to_string())
+            }
         }
     }
 }

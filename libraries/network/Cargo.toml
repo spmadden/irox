@@ -22,7 +22,7 @@ websockets = []
 std = []
 
 [dependencies]
-serde = {workspace = true, optional = true}
+serde = {workspace = true, optional = true, features = ["serde_derive"]}
 log.workspace = true
 irox-bits = {workspace = true, features = ["std"]}
 irox-tools = {workspace = true, features = ["std"]}

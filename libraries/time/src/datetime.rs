@@ -267,7 +267,7 @@ cfg_feature_serde! {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "serde", feature = "std"))]
 mod tests {
     use crate::datetime::UTCDateTime;
     use crate::epoch::UnixTimestamp;

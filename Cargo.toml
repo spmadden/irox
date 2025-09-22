@@ -18,7 +18,6 @@ members = [
     "data-formats/gpx",
     "data-formats/nmea0183",
     "data-formats/openpgp",
-    "data-formats/protobuf",
     "data-formats/protobuf/derive",
     "data-formats/protobuf/lib",
     "data-formats/raymarine-sonar",
