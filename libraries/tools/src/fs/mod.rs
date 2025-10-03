@@ -116,3 +116,66 @@ pub fn is_filename_probably_valid<T: AsRef<str>>(val: &T) -> Result<(), Filename
     }
     Ok(())
 }
+
+cfg_feature_std! {
+    use std::path::{Path, PathBuf};
+    use std::fs::{DirEntry};
+    use irox_bits::{Error, ErrorKind};
+
+    ///
+    /// Recursively finds all files with the associated extension in the starting directory
+    pub fn find_all_files_with_extension<T: AsRef<Path>>(start: T, ext: &str) -> Result<Vec<PathBuf>, Error> {
+        let mut out = Vec::new();
+        let path = start.as_ref();
+        let ent = std::fs::read_dir(path)?;
+        for dirent in ent {
+            let dirent = dirent?;
+            collect_fileswithext_in_dirent(&dirent, &mut out, ext)?;
+        }
+        Ok(out)
+    }
+
+    fn collect_fileswithext_in_dirent(
+        dirent: &DirEntry,
+        out: &mut Vec<PathBuf>,
+        _ext: &str,
+    ) -> Result<(), Error> {
+        let path = dirent.path();
+        if path.is_dir() {
+            let ent = std::fs::read_dir(path)?;
+            for dirent in ent {
+                let dirent = dirent?;
+                collect_fileswithext_in_dirent(&dirent, out, _ext)?;
+            }
+        } else if let Some(ext) = path.extension() {
+            if ext.to_string_lossy().to_lowercase().as_str() == ext {
+                out.push(path);
+            }
+        }
+
+        Ok(())
+    }
+
+    ///
+    /// Finds
+    pub fn find_associated_file<T: AsRef<Path>>(file: T, newext: &str) -> Result<PathBuf, Error> {
+        let path = file.as_ref();
+        let dir = path.parent().unwrap_or_else(|| Path::new("."));
+        // check concat first.
+        let Some(filename) = path.file_name() else {
+            return Error::err(ErrorKind::NotFound, "Provided file doesn't have a name");
+        };
+        let filename = format!("{}.{newext}", filename.to_string_lossy());
+        let mut appended = path.to_path_buf();
+        appended.set_file_name(filename);
+
+        if appended.exists() && appended.is_file() {
+            return Ok(appended);
+        }
+        // check replacement next.
+        let Some(stem) = path.file_stem() else {
+            return Error::err(ErrorKind::NotFound, "Provided file doesn't have a stem");
+        };
+        Ok(dir.join(format!("{}.{}", stem.to_string_lossy(), newext)))
+    }
+}

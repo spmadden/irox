@@ -2,8 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
-use core::fmt::{Debug, Formatter};
 use crate::cfg_feature_std;
+use core::fmt::{Debug, Formatter};
 use std::path::{Path, PathBuf};
 
 pub struct TempFilePath {
@@ -41,8 +41,7 @@ impl TempFilePath {
         /// deleted when this object is dropped.
         pub fn new_tempfile_prefixed(prefix: &str) -> Result<Self, std::io::Error> {
             let prefix = crate::fs::clean_filename(&prefix);
-            let mut tmpdir = std::env::temp_dir();
-            tmpdir.push(format!("{prefix}{}", crate::uuid::UUID::new_random()));
+            let tmpdir = std::env::temp_dir().join(format!("{prefix}{}", crate::uuid::UUID::new_random()));
             let p = std::fs::OpenOptions::new()
                 .read(true)
                 .write(true)
@@ -54,13 +53,13 @@ impl TempFilePath {
                 path: tmpdir
             })
         }
-        pub fn open(&self, opts: std::fs::OpenOptions) -> Result<std::fs::File, std::io::Error> {
+        pub fn open(&self, opts: &std::fs::OpenOptions) -> Result<std::fs::File, std::io::Error> {
             opts.open(&self.path)
         }
-        pub fn open_write_buffered(&self, opts: std::fs::OpenOptions) -> Result<std::io::BufWriter<std::fs::File>, std::io::Error> {
+        pub fn open_write_buffered(&self, opts: &std::fs::OpenOptions) -> Result<std::io::BufWriter<std::fs::File>, std::io::Error> {
             Ok(std::io::BufWriter::new(self.open(opts)?))
         }
-        pub fn open_read_buffered(&self, opts: std::fs::OpenOptions) -> Result<std::io::BufReader<std::fs::File>, std::io::Error> {
+        pub fn open_read_buffered(&self, opts: &std::fs::OpenOptions) -> Result<std::io::BufReader<std::fs::File>, std::io::Error> {
             Ok(std::io::BufReader::new(self.open(opts)?))
         }
     }
@@ -116,8 +115,7 @@ impl TempDirPath {
         /// of this object with the provided prefix and then a random UUID.
         pub fn new_temp_dir_prefixed(prefix: &str) -> Result<Self, std::io::Error> {
             let prefix = crate::fs::clean_filename(&prefix);
-            let mut tmpdir = std::env::temp_dir();
-            tmpdir.push(format!("{prefix}{}", crate::uuid::UUID::new_random()));
+            let tmpdir = std::env::temp_dir().join(format!("{prefix}{}", crate::uuid::UUID::new_random()));
             std::fs::create_dir_all(&tmpdir)?;
             Ok(Self {
                 path: tmpdir
@@ -126,8 +124,7 @@ impl TempDirPath {
         /// Creates a new temporary file within this directory and returns the
         /// path to that file.
         pub fn new_temp_file(&self) -> Result<TempFilePath, std::io::Error> {
-            let mut f = self.path.clone();
-            f.push(crate::uuid::UUID::new_random().to_string());
+            let f = self.path.join(crate::uuid::UUID::new_random().to_string());
             let p = std::fs::OpenOptions::new()
                 .read(true)
                 .write(true)
