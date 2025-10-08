@@ -10,19 +10,21 @@ use std::io::{Error, Read, Write};
 
 pub use conv::*;
 pub use counting::*;
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", any(unix, windows)))]
 pub use pagefile::*;
 pub use readerator::*;
 
 pub use buffer::*;
 mod buffer;
 
+#[cfg(all(feature = "std", any(unix, windows)))]
 mod multi_stream;
+#[cfg(all(feature = "std", any(unix, windows)))]
 pub use multi_stream::*;
 
 mod conv;
 mod counting;
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", any(unix, windows)))]
 mod pagefile;
 mod readerator;
 
