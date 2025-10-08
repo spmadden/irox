@@ -23,6 +23,3 @@ workspace = true
 irox-log = { workspace = true }
 irox-bits = { workspace = true }
 irox-tools = { workspace = true }
-irox-units.workspace = true
-irox-carto.workspace = true
-irox-types.workspace = true
