@@ -3,7 +3,7 @@
 //
 
 use crate::mutbits::MutBits;
-use crate::{Bits, BitsWrapper, Error, Seek, SeekFrom, SeekRead, SeekWrite};
+use crate::{Bits, BitsWrapper, Error, Seek, SeekFrom};
 use std::io::{Read, Write};
 
 impl Bits for std::fs::File {
@@ -99,13 +99,13 @@ impl MutBits for &mut std::net::TcpStream {
 }
 
 #[cfg(windows)]
-impl SeekRead for std::fs::File {
+impl crate::SeekRead for std::fs::File {
     fn seek_read(&mut self, out: &mut [u8], offset: u64) -> Result<usize, Error> {
         Ok(std::os::windows::fs::FileExt::seek_read(self, out, offset)?)
     }
 }
 #[cfg(windows)]
-impl SeekWrite for std::fs::File {
+impl crate::SeekWrite for std::fs::File {
     fn seek_write(&mut self, input: &[u8], offset: u64) -> Result<usize, Error> {
         Ok(std::os::windows::fs::FileExt::seek_write(
             self, input, offset,
@@ -114,13 +114,13 @@ impl SeekWrite for std::fs::File {
 }
 
 #[cfg(unix)]
-impl SeekRead for std::fs::File {
+impl crate::SeekRead for std::fs::File {
     fn seek_read(&mut self, out: &mut [u8], offset: u64) -> Result<usize, Error> {
         Ok(std::os::unix::fs::FileExt::read_at(self, out, offset)?)
     }
 }
 #[cfg(unix)]
-impl SeekWrite for std::fs::File {
+impl crate::SeekWrite for std::fs::File {
     fn seek_write(&mut self, input: &[u8], offset: u64) -> Result<usize, Error> {
         Ok(std::os::unix::fs::FileExt::write_at(self, input, offset)?)
     }
