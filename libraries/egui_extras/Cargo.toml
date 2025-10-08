@@ -18,7 +18,7 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde", "egui/serde", "dep:irox-tools", "dep:irox-bits"]
-plots = ["dep:irox-tools", "dep:irox-units"]
+plots = ["dep:irox-tools", "dep:irox-units", "dep:irox-stats"]
 profiling = ["dep:profiling", "dep:puffin"]
 dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland"]
@@ -35,7 +35,7 @@ irox-tools = { workspace = true, optional = true, features = ["std"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, optional = true, features = ["std"] }
 irox-imagery = { workspace = true }
-irox-stats = { workspace = true, features = ["emath", "std"] }
+irox-stats = { workspace = true, optional = true, features = ["emath", "std"] }
 irox-progress = {workspace = true}
 log.workspace = true
 profiling = { workspace = true, optional = true }
