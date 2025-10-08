@@ -3,7 +3,7 @@
 //
 
 use eframe::emath::Align;
-use eframe::{Frame, NativeOptions};
+use eframe::Frame;
 use egui::{
     Context, Id, Key, Layout, Modifiers, TextEdit, Vec2, ViewportBuilder, ViewportCommand, Widget,
 };
@@ -212,7 +212,8 @@ pub struct Details {
 /// Options to create a dialog frame/window
 pub struct DialogOptions {
     /// Native Options for the frame
-    pub native_options: NativeOptions,
+    #[cfg(not(target_arch = "wasm32"))]
+    pub native_options: eframe::NativeOptions,
     /// Title for the frame
     pub title: String,
     /// Customization details to pass to the underlying [`DialogWidget`]
@@ -221,7 +222,8 @@ pub struct DialogOptions {
 impl Default for DialogOptions {
     fn default() -> Self {
         DialogOptions {
-            native_options: NativeOptions {
+            #[cfg(not(target_arch = "wasm32"))]
+            native_options: eframe::NativeOptions {
                 multisampling: 0,
                 persist_window: false,
                 centered: true,
