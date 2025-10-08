@@ -17,6 +17,7 @@ macro_rules! profile_scope {
         profiling::scope!($name, $data);
     };
 }
+pub use eframe;
 pub use egui;
 
 /// Historical frame rendering statistics
