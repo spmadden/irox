@@ -55,6 +55,26 @@ pub struct FontSet {
     pub ubuntu_mono_italic: bool,
     pub ubuntu_mono_bold_italic: bool,
 }
+impl FontSet {
+    pub fn all() -> Self {
+        Self {
+            ubuntu: true,
+            ubuntu_bold: true,
+            ubuntu_italic: true,
+            ubuntu_bold_italic: true,
+            ubuntu_condensed: true,
+            ubuntu_light: true,
+            ubuntu_light_italic: true,
+            ubuntu_medium: true,
+            ubuntu_medium_italic: true,
+            ubuntu_thin: true,
+            ubuntu_mono: true,
+            ubuntu_mono_bold: true,
+            ubuntu_mono_italic: true,
+            ubuntu_mono_bold_italic: true,
+        }
+    }
+}
 macro_rules! load_instance {
     ($fonts:ident, $str:ident, $font:ident) => {
         $fonts.font_data.insert(
