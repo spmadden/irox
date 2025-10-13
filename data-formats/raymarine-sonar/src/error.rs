@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
@@ -7,6 +8,7 @@ use std::num::ParseIntError;
 use miniz_oxide::inflate::DecompressError;
 
 use irox_carto::error::ConvertError;
+use irox_tools::cfg_not_wasm;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ErrorType {
@@ -46,13 +48,14 @@ impl Error {
         Err(Error::new(ErrorType::DecodingError, msg))
     }
 }
-
-impl From<rusqlite::Error> for Error {
-    fn from(value: rusqlite::Error) -> Self {
-        let str = value.to_string();
-        Error {
-            error_type: ErrorType::SQLError,
-            msg: str,
+cfg_not_wasm! {
+    impl From<rusqlite::Error> for Error {
+        fn from(value: rusqlite::Error) -> Self {
+            let str = value.to_string();
+            Error {
+                error_type: ErrorType::SQLError,
+                msg: str,
+            }
         }
     }
 }

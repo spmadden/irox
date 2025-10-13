@@ -1,27 +1,32 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_units::units::duration::Duration;
 use std::collections::VecDeque;
-use std::ops::Deref;
 
-use log::{debug, error, info, warn};
-use rusqlite::named_params;
-use rusqlite::types::ValueRef;
+use log::{debug, error};
+cfg_not_wasm! {
+    use std::ops::Deref;
+    use log::{info, warn};
+    use rusqlite::named_params;
+    use rusqlite::types::ValueRef;
+    use irox_bits::Bits;
+}
 
-use irox_bits::Bits;
 use irox_carto::altitude::{Altitude, AltitudeReferenceFrame};
 use irox_carto::coordinate::{
     CartesianCoordinateBuilder, CoordinateType, EllipticalCoordinateBuilder, Latitude, Longitude,
 };
 use irox_carto::geo::standards::StandardShapes;
 use irox_time::epoch::UnixTimestamp;
+use irox_tools::cfg_not_wasm;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::Length;
 
 use crate::error::Error;
 use crate::schema::SchemaContext;
-use crate::{Accesses, Entry, SDFConnection};
+use crate::{Accesses, Entry};
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct TrackData {
@@ -61,61 +66,62 @@ impl TrackData {
         }
     }
 }
-
-pub struct Track<'a> {
-    conn: &'a SDFConnection,
-    data: TrackData,
-    context: SchemaContext,
-}
-
-impl<'a> Track<'a> {
-    pub fn new(conn: &'a SDFConnection, data: TrackData) -> Result<Self, Error> {
-        let Some(schema_str) = &data.sdf_point_schema else {
-            return Error::xml_error("Missing sdf point schema");
-        };
-        let context = SchemaContext::new_from_xml(schema_str)?;
-        debug!("created context from xml: {context:?}");
-        Ok(Track {
-            conn,
-            data,
-            context,
-        })
+cfg_not_wasm! {
+    pub struct Track<'a> {
+        conn: &'a crate::SDFConnection,
+        data: TrackData,
+        context: SchemaContext,
     }
 
-    pub fn get_bounds(&self) -> Result<(), std::io::Error> {
-        let Some(data) = &self.data.bounds else {
-            return Ok(());
-        };
-        let mut data = data.deref();
-        let first = data.read_be_f64()?;
-        info!("{first}");
-        Ok(())
-    }
-
-    pub fn try_iter(&self) -> Result<Iter, Error> {
-        debug!("Iter {}", self.data.track_id);
-        let mut stmt = self
-            .conn
-            .conn
-            .prepare("SELECT data from Subtracks where trackId = :track_id")?;
-        let mut rows = stmt.query(named_params! {":track_id": self.data.track_id})?;
-        let mut subtrack_data = VecDeque::new();
-        while let Some(row) = rows.next()? {
-            let elem = row.get_ref(0)?;
-            let ValueRef::Blob(b) = elem else {
-                warn!("Subtrack query didn't return a blob for query");
-                continue;
+    impl<'a> Track<'a> {
+        pub fn new(conn: &'a crate::SDFConnection, data: TrackData) -> Result<Self, Error> {
+            let Some(schema_str) = &data.sdf_point_schema else {
+                return Error::xml_error("Missing sdf point schema");
             };
-            subtrack_data.push_back(Vec::from(b));
+            let context = SchemaContext::new_from_xml(schema_str)?;
+            debug!("created context from xml: {context:?}");
+            Ok(Track {
+                conn,
+                data,
+                context,
+            })
         }
-        debug!("Got {} rows of subtrack data", subtrack_data.len());
 
-        Ok(Iter {
-            subtrack_data,
-            point_cache: VecDeque::new(),
-            context: self.context.clone(),
-            start_time_utc: self.data.start_time_utc,
-        })
+        pub fn get_bounds(&self) -> Result<(), std::io::Error> {
+            let Some(data) = &self.data.bounds else {
+                return Ok(());
+            };
+            let mut data = data.deref();
+            let first = data.read_be_f64()?;
+            info!("{first}");
+            Ok(())
+        }
+
+        pub fn try_iter(&self) -> Result<Iter, Error> {
+            debug!("Iter {}", self.data.track_id);
+            let mut stmt = self
+                .conn
+                .conn
+                .prepare("SELECT data from Subtracks where trackId = :track_id")?;
+            let mut rows = stmt.query(named_params! {":track_id": self.data.track_id})?;
+            let mut subtrack_data = VecDeque::new();
+            while let Some(row) = rows.next()? {
+                let elem = row.get_ref(0)?;
+                let ValueRef::Blob(b) = elem else {
+                    warn!("Subtrack query didn't return a blob for query");
+                    continue;
+                };
+                subtrack_data.push_back(Vec::from(b));
+            }
+            debug!("Got {} rows of subtrack data", subtrack_data.len());
+
+            Ok(Iter {
+                subtrack_data,
+                point_cache: VecDeque::new(),
+                context: self.context.clone(),
+                start_time_utc: self.data.start_time_utc,
+            })
+        }
     }
 }
 

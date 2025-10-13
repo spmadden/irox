@@ -16,7 +16,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-rusqlite.workspace = true
 log.workspace = true
 miniz_oxide.workspace = true
 xml.workspace = true
@@ -26,3 +25,6 @@ irox-carto.workspace = true
 irox-tools.workspace = true
 irox-bits = { features = ["std"], path = "../../libraries/bits", version = "^0" }
 irox-time.workspace = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rusqlite.workspace = true
