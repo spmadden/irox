@@ -16,5 +16,7 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
-git2.workspace = true
 irox-tools.workspace = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+git2.workspace = true
