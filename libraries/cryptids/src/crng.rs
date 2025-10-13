@@ -2,10 +2,10 @@
 // Copyright 2025 IROX Contributors
 //
 
-use irox_bits::{BitsErrorKind, Error};
 use irox_tools::cfg_feature_std;
 
 cfg_feature_std! {
+    use irox_bits::{BitsErrorKind, Error};
     extern crate alloc;
     use crate::{Chacha20};
     use alloc::sync::Arc;
@@ -14,7 +14,24 @@ cfg_feature_std! {
     use irox_tools::buf::FixedU8Buf;
     use irox_tools::static_init;
 
-    static_init!(get_crng, Option<Arc<Mutex<Chacha20>>>, 
+    pub fn rand64() -> Option<u64> {
+        #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+        {
+            irox_arch_x86_64::rand::rdseed64()
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            let mut v = [0u8;8];
+            let w = web_sys::window()?;
+            let c = w.crypto().ok()?;
+            c.get_random_values_with_u8_array(&mut v).ok()?;
+            Some(u64::from_be_bytes(v))
+        }
+        #[cfg(not(any(target_arch = "x86_64", target_arch = "wasm32")))]
+        None
+    }
+
+    static_init!(get_crng, Option<Arc<Mutex<Chacha20>>>,
         "Creates and returns a process-wide CRNG seeded from the CPU's entropy generator", {
         for _ in 0..10 {
             if let Some(rnd) = generate_rand_chacha20_stream() {
@@ -27,14 +44,13 @@ cfg_feature_std! {
     ///
     /// # Panics
     /// If the underlying CPU cannot generate enough entropy using `rdseed64`
-    #[cfg(target_arch = "x86_64")]
     #[allow(clippy::unwrap_used)]
     pub fn generate_rand_chacha20_stream() -> Option<Chacha20> {
         let mut buf = FixedU8Buf::<44>::new();
         for _ in 0..=6 {
             let mut rnd1 = None;
             for _ in 0..10 {
-                if let Some(rnd) = irox_arch_x86_64::rand::rdseed64() {
+                if let Some(rnd) = rand64() {
                    rnd1 = Some(rnd);
                     break;
                 }
@@ -47,7 +63,6 @@ cfg_feature_std! {
         Some(Chacha20::new(key, nonce))
     }
 
-    #[cfg(target_arch = "x86_64")]
     pub fn get_random_bytes<const N: usize>() -> Option<[u8; N]> {
         let Some(rnd) = get_crng() else {
             return None;
@@ -61,7 +76,6 @@ cfg_feature_std! {
         Some(out)
     }
 
-    #[cfg(target_arch = "x86_64")]
     pub fn fill_random<const N: usize>(out: &mut [u8; N]) -> Result<(), Error> {
         let Some(rnd) = get_crng() else {
             return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));
@@ -72,8 +86,7 @@ cfg_feature_std! {
         lock.read_exact_into(N, &mut out.as_mut_slice())?;
         Ok(())
     }
-    
-    #[cfg(target_arch = "x86_64")]
+
     pub fn fill_random_bits<T: MutBits>(out: &mut T) -> Result<(), Error> {
         let Some(rnd) = get_crng() else {
             return Err(Error::new(BitsErrorKind::WriteZero, "Failed to generate random number"));

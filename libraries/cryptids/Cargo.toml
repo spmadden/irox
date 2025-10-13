@@ -17,18 +17,24 @@ workspace = true
 
 [features]
 _toobig-tests = [] # slow tests that take way too long to run normally.
-std = ["irox-arch-x86-64", "irox-tools/std"]
+std = ["irox-tools/std"]
 
 [dependencies]
 irox-bits = {workspace = true}
 irox-tools = {workspace = true}
-irox-arch-x86-64 = {workspace = true, optional = true}
+
+[target.'cfg(target_arch="wasm32")'.dependencies]
+web-sys = {workspace = true, features = ["Crypto", "Window"]}
+
+[target.'cfg(target_arch="x86_64")'.dependencies]
+irox-arch-x86-64 = {workspace = true}
+[target.'cfg(target_arch="x86_64")'.dev-dependencies]
+irox-arch-x86-64 = {workspace = true}
 
 [dev-dependencies]
 irox-tools = {workspace = true, features = ["std"]}
 core_affinity.workspace = true
 criterion.workspace = true
-irox-arch-x86-64 = {workspace = true}
 irox-stats = {workspace = true}
 
 [lib]

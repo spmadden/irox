@@ -81,7 +81,6 @@ impl SecretKey {
         Ok(SharedCurve25519Secret(scalarmult(&self.0, &pubkey.0)?))
     }
     cfg_feature_std! {
-        #[cfg(target_arch = "x86_64")]
         pub fn generate_random() -> Result<Self, Ed25519Error> {
             let mut out = SecretKey([0u8; 32]);
             crate::fill_random(&mut out.0)?;
