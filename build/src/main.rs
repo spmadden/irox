@@ -18,11 +18,7 @@ const FEATURE_ARGS: &[&str] = &[
     "-Fdefault",
     "--all-features",
 ];
-const _TARGETS: &[&str] = &[
-    "x86_64-pc-windows-msvc",
-    // "wasm32-unknown-unknown",
-    //"x86_64-unknown-linux-gnu",
-];
+const EXTRA_TARGETS: &[&str] = &["wasm32-unknown-unknown"];
 
 #[derive(Debug, Clone, Default, Subcommand)]
 enum Commands {
@@ -190,7 +186,10 @@ fn test() -> Result<(), Error> {
         exec_passthru_env(
             "cargo",
             &["test", "--all-targets", feature, "--color=always"],
-            [("RUSTFLAGS", "-Copt-level=1 -Ctarget-cpu=native -Ccodegen-units=1 -Cembed-bitcode=no")],
+            [(
+                "RUSTFLAGS",
+                "-Copt-level=1 -Ctarget-cpu=native -Ccodegen-units=1 -Cembed-bitcode=no",
+            )],
         )?;
         logend();
     }
@@ -288,10 +287,11 @@ fn check_all() -> Result<(), Error> {
     clean()?;
     let mut skip = Some(());
     install_update("cargo-describe");
-    for feat in exec_stdout_lines(
+    let feats = exec_stdout_lines(
         "cargo",
         &["describe", "-fname", "-fmodule-features", "-ocsv"],
-    )? {
+    )?;
+    for feat in &feats {
         if skip.take().is_some() {
             // skip header row.
             continue;
@@ -299,12 +299,30 @@ fn check_all() -> Result<(), Error> {
         let (module, feats) = feat.split_once(",").unwrap_or_default();
         let feats = feats.split(" ");
         for f in feats {
-            logstart(format!("cargo-check-p-{module}-f-{f}").as_str());
+            logstart(format!("cargo-check-t-{tgt}-p-{module}-f-{f}").as_str());
             exec_passthru("cargo", &["check", "-p", &module, "-F", f])?;
             logend();
         }
     }
-    logend();
+    for tgt in EXTRA_TARGETS {
+        for feat in &feats {
+            if skip.take().is_some() {
+                // skip header row.
+                continue;
+            }
+            let (module, feats) = feat.split_once(",").unwrap_or_default();
+            let feats = feats.split(" ");
+            for f in feats {
+                logstart(format!("cargo-check-t-{tgt}-p-{module}-f-{f}").as_str());
+                exec_passthru(
+                    "cargo",
+                    &["check", "--target", &tgt, "-p", &module, "-F", f],
+                )?;
+                logend();
+            }
+        }
+        skip = Some(());
+    }
     Ok(())
 }
 
