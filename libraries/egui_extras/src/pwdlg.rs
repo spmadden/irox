@@ -4,9 +4,7 @@
 
 use eframe::emath::Align;
 use eframe::Frame;
-use egui::{
-    Context, Id, Key, Layout, Modifiers, TextEdit, Vec2, ViewportBuilder, ViewportCommand, Widget,
-};
+use egui::{Context, Id, Key, Layout, Modifiers, TextEdit, Vec2, ViewportCommand, Widget};
 use log::error;
 use std::sync::mpsc::Sender;
 
@@ -227,7 +225,7 @@ impl Default for DialogOptions {
                 multisampling: 0,
                 persist_window: false,
                 centered: true,
-                viewport: ViewportBuilder::default()
+                viewport: egui::ViewportBuilder::default()
                     .with_inner_size(Vec2::new(400.0, 50.0))
                     .with_active(true)
                     .with_always_on_top()
@@ -245,7 +243,7 @@ impl Default for DialogOptions {
 
 ///
 /// Pop and run a dialog frame with the provided options.
-#[cfg(any(feature = "glow", feature = "wgpu"))]
+#[cfg(all(any(feature = "glow", feature = "wgpu"), not(target_arch = "wasm32")))]
 pub fn dialog_options<F: FnOnce(&mut DialogOptions)>(opts: F) -> Option<UserResponse> {
     let mut options = DialogOptions::default();
     opts(&mut options);
