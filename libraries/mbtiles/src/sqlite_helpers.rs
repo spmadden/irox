@@ -4,9 +4,8 @@
 
 use std::fmt::Display;
 
+#[cfg(not(target_arch = "wasm32"))]
 use rusqlite::{params, Connection};
-
-use crate::Result;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum JournalMode {
@@ -139,13 +138,14 @@ impl Pragma {
         }
     }
 
-    pub fn get(&self, conn: &Connection) -> Result<i64> {
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get(&self, conn: &Connection) -> crate::Result<i64> {
         let name = self.name();
         let mut st = conn.prepare_cached(&format!("pragma {name} ;"))?;
         Ok(st.query_row(params![], |v| v.get::<_, i64>(0))?)
     }
-
-    pub fn set(&self, conn: &Connection) -> Result<()> {
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set(&self, conn: &Connection) -> crate::Result<()> {
         let name = self.name();
         let value = self.value();
         let mut st = conn.prepare_cached(&format!("pragma {name} = {value};"))?;

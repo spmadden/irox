@@ -2,7 +2,6 @@
 // Copyright 2024 IROX Contributors
 //
 
-use rusqlite::types::FromSqlError;
 use std::{fmt::Display, num::ParseIntError};
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -11,7 +10,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     Other(String),
     IO(std::io::Error),
+    #[cfg(not(target_arch = "wasm32"))]
     Sqlite(rusqlite::Error),
+    #[cfg(not(target_arch = "wasm32"))]
     SqliteSql(rusqlite::types::FromSqlError),
     NotFound(String),
     NotMBTiles(String),
@@ -57,13 +58,15 @@ impl Display for Error {
 
 impl std::error::Error for Error {}
 
+#[cfg(not(target_arch = "wasm32"))]
 impl From<rusqlite::Error> for Error {
     fn from(value: rusqlite::Error) -> Self {
         Error::Sqlite(value)
     }
 }
+#[cfg(not(target_arch = "wasm32"))]
 impl From<rusqlite::types::FromSqlError> for Error {
-    fn from(value: FromSqlError) -> Self {
+    fn from(value: rusqlite::types::FromSqlError) -> Self {
         Error::SqliteSql(value)
     }
 }
