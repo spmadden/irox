@@ -19,6 +19,7 @@ workspace = true
 irox-carto.workspace = true
 irox-gpx.workspace = true
 irox-raymarine-sonar.workspace = true
+irox-tools.workspace = true
 
 log.workspace = true
 env_logger.workspace = true

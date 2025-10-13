@@ -3,8 +3,16 @@ use std::net::IpAddr;
 use clap::*;
 use clap_verbosity_flag::Verbosity;
 
+#[derive(Debug, Default, Copy, Clone, ValueEnum)]
+pub enum EncodingType {
+    #[default]
+    Nmea0183,
+    SirfBinary,
+}
+
 #[derive(Debug, Clone, Subcommand)]
 pub enum Transport {
+    #[cfg(not(target_arch = "wasm32"))]
     Serial(crate::transport::serial::SerialConfig),
 
     #[cfg(target_os = "windows")]

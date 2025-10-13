@@ -14,8 +14,8 @@ use irox_tools::packetio::{Packet, PacketBuilder};
 pub use sky::*;
 pub use tpv::*;
 
+use crate::config::EncodingType;
 use crate::error::GPSdError;
-use crate::transport::serial::EncodingType;
 
 pub mod att;
 pub mod device;

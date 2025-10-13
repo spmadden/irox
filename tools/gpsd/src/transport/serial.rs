@@ -1,17 +1,10 @@
 use std::io::{Read, Write};
 
 use crate::error::GPSdError;
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use irox_bits::BitsWrapper;
 use log::info;
 use serial2::{CharSize, FlowControl, IntoSettings, Parity, SerialPort, Settings, StopBits};
-
-#[derive(Debug, Default, Copy, Clone, ValueEnum)]
-pub enum EncodingType {
-    #[default]
-    Nmea0183,
-    SirfBinary,
-}
 
 #[derive(Debug, Clone, Parser)]
 #[command(author, version, about)]
@@ -21,7 +14,7 @@ pub struct SerialConfig {
     pub serial_port: String,
 
     #[arg(short = 'e', long)]
-    pub encoding: EncodingType,
+    pub encoding: crate::config::EncodingType,
 
     /// Baud rate, one of (110, 300, 600, 1200, 2400, 4800, 9600, 19200, 38400,
     /// 57600, 115200)

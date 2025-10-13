@@ -6,6 +6,7 @@
 //!
 
 #![forbid(unsafe_code)]
+#![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 
 use std::fs::File;
 use std::io::BufWriter;
@@ -16,8 +17,10 @@ use log::{debug, error, info};
 
 use irox_carto::coordinate::CoordinateType;
 use irox_gpx::{GPXWriter, Track, TrackSegment, GPX};
+irox_tools::cfg_not_wasm! {
 use irox_raymarine_sonar::error::Error;
 use irox_raymarine_sonar::SDFConnection;
+}
 
 #[derive(Debug, Clone, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -34,7 +37,9 @@ struct Config {
     #[arg(value_hint = ValueHint::FilePath)]
     pub path: Vec<String>,
 }
-
+#[cfg(target_arch = "wasm32")]
+pub fn main() {}
+#[cfg(not(target_arch = "wasm32"))]
 pub fn main() -> Result<(), Error> {
     env_logger::Builder::from_env("SONAR_LOG").init();
     let config = Config::parse();

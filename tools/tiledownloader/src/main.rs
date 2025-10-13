@@ -1,11 +1,11 @@
 #![allow(clippy::print_stderr)]
 #![allow(clippy::print_stdout)]
+#![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use irox_carto::coordinate::{EllipticalCoordinate, Latitude, Longitude};
 use irox_carto::epsg3857::SphericalMercatorProjection;
-use irox_mbtiles::{CreateOptions, OpenOptions};
 use irox_tiledownloader::{config::Config, status::DownloadStatus, tile::TileData, url::URLParams};
 use irox_units::units::angle::Angle;
 use reqwest::{
@@ -14,22 +14,34 @@ use reqwest::{
 };
 use tokio::task::{self};
 
+#[cfg(not(target_arch = "wasm32"))]
+pub fn builder() -> ClientBuilder {
+    ClientBuilder::new()
+        .brotli(true)
+        .deflate(true)
+        .gzip(true)
+        .referer(false)
+        .user_agent("TileDownloader v0.1.0")
+}
+#[cfg(target_arch = "wasm32")]
+pub fn builder() -> ClientBuilder {
+    ClientBuilder::new()
+}
+#[cfg(target_arch = "wasm32")]
+fn main() {}
+#[cfg(not(target_arch = "wasm32"))]
 fn main() {
     let config = Config::parse();
 
     let mut default_headers = HeaderMap::new();
-    let mut bldr = ClientBuilder::new()
-        .brotli(true)
-        .deflate(true)
-        .gzip(true)
-        .user_agent("TileDownloader v0.1.0");
+    let mut bldr = builder();
+
     if let Some(referrer) = &config.referrer {
         let Ok(refhdr) = HeaderValue::from_str(referrer) else {
             eprintln!("Unable to convert referrer {referrer} into header type");
             return;
         };
 
-        bldr = bldr.referer(false);
         default_headers.append("Referrer", refhdr);
     }
     bldr = bldr.default_headers(default_headers);
@@ -41,9 +53,9 @@ fn main() {
         return;
     };
 
-    let options = CreateOptions {
+    let options = irox_mbtiles::CreateOptions {
         name: config.name.clone(),
-        pragmas: OpenOptions::safe_performance().pragmas,
+        pragmas: irox_mbtiles::OpenOptions::safe_performance().pragmas,
         ..Default::default()
     };
     let Ok(mut outfile) = irox_mbtiles::MBTiles::open_or_create_options(&config.out_file, &options)
@@ -119,7 +131,7 @@ fn main() {
 
     let coords = vec![upper_left, upper_right, lower_right, lower_left];
 
-    let rt = match tokio::runtime::Builder::new_multi_thread()
+    let rt = match tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .worker_threads(2)
         .build()
@@ -226,7 +238,7 @@ fn main() {
     };
 }
 
-fn create_progress_bar(total_tiles: u64) -> ProgressBar {
+pub fn create_progress_bar(total_tiles: u64) -> ProgressBar {
     let pb = ProgressBar::new(total_tiles);
     if let Ok(st) = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {per_sec} {human_pos}/{human_len} ({eta_precise})") {
         let st = st.progress_chars("#>-");

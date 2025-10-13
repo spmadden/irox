@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
+#![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 
 use std::sync::Arc;
 use std::time::Duration;

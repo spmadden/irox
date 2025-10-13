@@ -16,15 +16,12 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-serial2 = {version = "0.2", features = []}
-human-panic = { workspace = true }
 env_logger.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 log.workspace = true
-signal-hook.workspace = true
 irox-sirf.workspace = true
 irox-nmea0183.workspace = true
 irox-tools.workspace = true
@@ -33,6 +30,10 @@ irox-time.workspace = true
 irox-carto.workspace = true
 irox-units.workspace = true
 irox-networking.workspace = true
+
+[target.'cfg(not(target_arch="wasm32"))'.dependencies]
+serial2 = {version = "0.2", features = []}
+signal-hook.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 irox-winlocation-api.workspace = true

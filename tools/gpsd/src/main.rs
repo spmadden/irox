@@ -1,14 +1,15 @@
+#![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
 use clap::Parser;
-use human_panic::setup_panic;
 use log::{error, info};
 
 use config::{GPSdConfig, Transport};
 use error::GPSdError;
 use output::FrameGenerator;
+#[cfg(not(target_arch = "wasm32"))]
 use transport::serial::SerialConfig;
 use transport::{ListenSettings, TCPServer};
 
@@ -19,9 +20,10 @@ pub mod transport;
 
 mod nmea0183;
 mod sirf;
-
+#[cfg(target_arch = "wasm32")]
+fn main() {}
+#[cfg(not(target_arch = "wasm32"))]
 fn main() -> Result<(), GPSdError> {
-    setup_panic!();
     env_logger::Builder::from_env("GPSD_LOG").init();
 
     let term = Arc::new(AtomicBool::new(false));
@@ -60,7 +62,7 @@ fn main() -> Result<(), GPSdError> {
 
     Ok(())
 }
-
+#[cfg(not(target_arch = "wasm32"))]
 pub fn start_serial(
     mut server: TCPServer,
     shouldquit: &Arc<AtomicBool>,
