@@ -145,3 +145,15 @@ macro_rules! cfg_feature_git {
         )*
     }
 }
+/// Enables feature-specific code.
+/// Use this macro instead of `cfg(not(target_arch = "wasm32"))` to generate docs properly.
+#[macro_export]
+macro_rules! cfg_not_wasm {
+    ($($item:item)*) => {
+        $(
+            #[cfg(any(all(doc, docsrs), not(target_arch = "wasm32")))]
+            #[cfg_attr(docsrs, doc(not(target_arch = "wasm32")))]
+            $item
+        )*
+    };
+}
