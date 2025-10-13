@@ -12,6 +12,8 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-mod client;
 pub mod msgs;
-pub use client::*;
+irox_tools::cfg_unix! {
+    mod client;
+    pub use client::*;
+}
