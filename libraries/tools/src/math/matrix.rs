@@ -25,7 +25,55 @@ impl<const M: usize, const N: usize, T: Sized + Copy + Default> Matrix<M, N, T> 
     pub const fn new(values: [[T; N]; M]) -> Matrix<M, N, T> {
         Matrix { values }
     }
+
+    /// Returns only a subpart of the matrix
+    #[must_use]
+    pub fn submatrix(&self, rmin: usize, rmax: usize, cmin: usize, cmax: usize) -> Matrix<M, N, T> {
+        let mut values = [[T::default(); N]; M];
+        for i in rmin..rmax {
+            for j in cmin..cmax {
+                values[i - rmin][j - cmin] = self.values[i][j];
+            }
+        }
+        Matrix { values }
+    }
+    pub fn augment<const O: usize, const R: usize>(
+        &self,
+        other: &Matrix<M, O, T>,
+    ) -> Matrix<M, R, T> {
+        augment(self, other)
+    }
+
+    ///
+    /// # Panics
+    pub fn swap_rows(&mut self, r1: usize, r2: usize) {
+        assert!(r1 < M && r2 < M, "Values out of range");
+        self.values.swap(r1, r2);
+    }
 }
+fn augment<
+    const M: usize,
+    const N: usize,
+    const O: usize,
+    const R: usize,
+    T: Sized + Copy + Default,
+>(
+    first: &Matrix<M, N, T>,
+    second: &Matrix<M, O, T>,
+) -> Matrix<M, R, T> {
+    assert_eq!(R, N + O, "Values out of range");
+    let mut values = [[T::default(); R]; M];
+    for r in 0..M {
+        for c in 0..N {
+            values[r][c] = first[r][c];
+        }
+        for c in 0..O {
+            values[r][c + N] = second[r][c];
+        }
+    }
+    Matrix { values }
+}
+
 impl<const M: usize, const N: usize, T: Sized + Copy + Default> From<[[T; N]; M]>
     for Matrix<M, N, T>
 {
