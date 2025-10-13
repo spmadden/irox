@@ -14,7 +14,8 @@ readme = "README.md"
 
 [features]
 default = []
-std = ["irox-bits/std", "irox-tools/std"]
+alloc = ["irox-bits/alloc", "irox-tools/alloc"]
+std = ["irox-bits/std", "irox-tools/std", "irox-log/std", "alloc"]
 
 [lints]
 workspace = true

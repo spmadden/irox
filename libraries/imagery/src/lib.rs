@@ -15,7 +15,7 @@ extern crate alloc;
 
 pub use color::*;
 pub use error::*;
-use irox_tools::cfg_feature_std;
+use irox_tools::{cfg_feature_alloc, cfg_feature_std};
 pub use pixel::*;
 
 cfg_feature_std! {
@@ -23,10 +23,17 @@ pub use tiff::*;
 mod tiff;
 }
 
+pub mod bitpacked;
 mod color;
 pub mod colormaps;
 mod error;
 mod pixel;
+mod stacked;
+
+cfg_feature_alloc! {
+    mod allocimpls;
+    pub use allocimpls::*;
+}
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub enum ImageSpace {
@@ -49,13 +56,13 @@ pub trait Image {
 
     fn get_dimensions(&self, space: ImageSpace) -> Self::DimType;
 
-    fn get_width_pixels(&self) -> u32;
+    fn get_width_pixels(&self) -> usize;
 
-    fn get_height_pixels(&self) -> u32;
+    fn get_height_pixels(&self) -> usize;
 
-    fn get_pixel_value(&self, x: u32, y: u32) -> Option<Color>;
+    fn get_pixel_value(&self, x: usize, y: usize) -> Option<Color>;
 }
 
 pub trait ImageMut {
-    fn set_pixel_value(&self, x: u32, y: u32, color: Color) -> Result<(), ImageError>;
+    fn set_pixel_value(&mut self, x: usize, y: usize, color: Color) -> Result<(), ImageError>;
 }

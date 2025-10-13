@@ -2,6 +2,8 @@
 // Copyright 2023 IROX Contributors
 //
 
+use irox_bits::{BitStreamDecoder, Bits, BitsError};
+
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct RGBColor {
     pub red: u8,
@@ -23,6 +25,10 @@ pub struct HSVColor {
     pub saturation: u32,
     pub value: u32,
 }
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+pub struct Greyscale8Bit {
+    pub value: u8,
+}
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Color {
     RGB(RGBColor),
@@ -30,6 +36,8 @@ pub enum Color {
     ARGB(ARGBColor),
 
     HSV(HSVColor),
+
+    Greyscale(Greyscale8Bit),
 
     Raw([u8; 4]),
 }
@@ -77,9 +85,14 @@ impl Color {
     pub const fn to_rgb(&self) -> Self {
         match self {
             Self::RGB(_) | Self::ARGB(_) => *self,
+
             Self::Raw(val) => Self::argb_array(val),
             Self::HSV(_hsv) => {
                 todo!()
+            }
+            Self::Greyscale(g) => {
+                let v = g.value;
+                Self::argb_array(&[0xFF, v, v, v])
             }
         }
     }
@@ -95,6 +108,10 @@ impl Color {
                 let [_, red, green, blue] = *v;
                 [red, green, blue]
             }
+            Color::Greyscale(g) => {
+                let v = g.value;
+                [v, v, v]
+            }
         }
     }
     #[must_use]
@@ -109,6 +126,74 @@ impl Color {
                 let [alpha, red, green, blue] = *v;
                 [alpha, red, green, blue]
             }
+            Color::Greyscale(g) => {
+                let v = g.value;
+                [0xFF, v, v, v]
+            }
         }
+    }
+}
+
+pub enum ColorDepth {
+    OneBitPerColor,
+    TwoBitPerColor,
+    ThreeBitPerColor,
+    FourBitPerColor,
+    OneBytePerColor,
+    TwoBytePerColor,
+}
+impl ColorDepth {
+    pub fn bits_per_color(&self) -> u8 {
+        match self {
+            ColorDepth::OneBitPerColor => 1,
+            ColorDepth::TwoBitPerColor => 2,
+            ColorDepth::ThreeBitPerColor => 3,
+            ColorDepth::FourBitPerColor => 4,
+            ColorDepth::OneBytePerColor => 8,
+            ColorDepth::TwoBytePerColor => 16,
+        }
+    }
+    pub fn next_raw_color_part<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<u16, BitsError> {
+        Ok(inp.read_u32_bits(self.bits_per_color())? as u16)
+    }
+    pub fn next_byte_stretched_color<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<u8, BitsError> {
+        let v = self.next_raw_color_part(inp)?;
+        let shift = self.bits_per_color() - 1;
+        Ok(v as u8 * (0xFFu8 >> shift))
+    }
+    pub fn next_greyscale_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<Greyscale8Bit, BitsError> {
+        Ok(Greyscale8Bit {
+            value: self.next_byte_stretched_color(inp)?,
+        })
+    }
+    pub fn next_rgb_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<RGBColor, BitsError> {
+        Ok(RGBColor {
+            red: self.next_byte_stretched_color(inp)?,
+            green: self.next_byte_stretched_color(inp)?,
+            blue: self.next_byte_stretched_color(inp)?,
+        })
+    }
+    pub fn next_argb_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<ARGBColor, BitsError> {
+        Ok(ARGBColor {
+            alpha: self.next_byte_stretched_color(inp)?,
+            red: self.next_byte_stretched_color(inp)?,
+            green: self.next_byte_stretched_color(inp)?,
+            blue: self.next_byte_stretched_color(inp)?,
+        })
     }
 }

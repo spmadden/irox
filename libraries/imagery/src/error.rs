@@ -14,6 +14,7 @@ pub enum ImageErrorType {
     BadMagic,
     BadByteOrder,
     ParseError,
+    SizingMismatch,
 }
 impl<T> From<ImageErrorType> for Result<T, ImageError> {
     fn from(ty: ImageErrorType) -> Self {
@@ -23,6 +24,7 @@ impl<T> From<ImageErrorType> for Result<T, ImageError> {
                 ImageErrorType::BadByteOrder => "Bad Byte Order Value".to_string(),
                 ImageErrorType::BitsError => "Bits Error".to_string(),
                 ImageErrorType::ParseError => "Parse Error".to_string(),
+                ImageErrorType::SizingMismatch => "Sizing Mismatch".to_string(),
             },
             error_type: ty,
         })
@@ -59,6 +61,18 @@ impl ImageError {
         ImageError {
             error_type: ImageErrorType::ParseError,
             msg: "Not enough values".to_string(),
+        }
+    }
+    pub fn bad_width(width: usize) -> ImageError {
+        ImageError {
+            error_type: ImageErrorType::SizingMismatch,
+            msg: format!("Bad width: {width}"),
+        }
+    }
+    pub fn bad_height(height: usize) -> ImageError {
+        ImageError {
+            error_type: ImageErrorType::SizingMismatch,
+            msg: format!("Bad height: {height}"),
         }
     }
 }
