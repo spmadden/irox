@@ -36,6 +36,7 @@ pub mod progressbar;
 /// A popup progress widget
 pub mod progresswindow;
 
+pub mod drawpanel;
 pub mod fonts;
 #[cfg(feature = "plots")]
 pub mod logplot;
@@ -45,6 +46,8 @@ pub mod repainting;
 pub mod serde;
 pub mod toolframe;
 pub mod visuals;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;
 
 pub trait WithAlpha {
     #[must_use]

@@ -43,7 +43,9 @@ puffin = { workspace = true, optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 eframe = { workspace = true, default-features = false, features = ["wgpu"] }
+wasm-bindgen.workspace = true
 wasm-bindgen-futures.workspace = true
+web-sys.workspace = true
 
 [dev-dependencies]
 eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts"] }
@@ -70,6 +72,10 @@ required-features = ["plots"]
 
 [[example]]
 name = "dialog"
+required-features = ["wgpu"]
+
+[[example]]
+name = "draw_panels"
 required-features = ["wgpu"]
 
 [package.metadata.docs.rs]
