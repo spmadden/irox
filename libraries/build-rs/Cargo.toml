@@ -16,9 +16,12 @@ readme = "README.md"
 git = ["dep:git2", "dep:irox-git-tools"]
 
 [dependencies]
-git2 = { workspace = true, optional = true }
 irox-git-tools = { workspace = true, optional = true }
+irox-tools = {workspace = true}
 irox-time = { workspace = true, features = ["std"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+git2 = { workspace = true, optional = true }
 
 [[example]]
 name = "build-example"

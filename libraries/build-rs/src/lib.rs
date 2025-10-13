@@ -17,8 +17,10 @@ use std::path::Path;
 
 mod cargo;
 mod error;
-#[cfg(feature = "git")]
-mod git;
+irox_tools::cfg_not_wasm! {
+    #[cfg(feature = "git")]
+    mod git;
+}
 
 pub enum ErrorType {
     IOError,
@@ -80,7 +82,7 @@ impl BuildEnvironment {
                 out.build_host.insert(k, v);
                 out.grouped.entry("BUILD_HOST").or_default().insert(k, v);
             } else {
-                #[cfg(feature = "git")]
+                #[cfg(all(feature = "git", not(target_arch = "wasm32")))]
                 if git::GIT_VARIABLES.contains(&k.as_str()) {
                     out.git_items.insert(k, v);
                     out.grouped.entry("GIT_ITEMS").or_default().insert(k, v);
@@ -234,7 +236,7 @@ pub fn generate_build_environment_settings(
         envt.variables.insert(varbl.name.clone(), varbl);
     }
 
-    #[cfg(feature = "git")]
+    #[cfg(all(feature = "git", not(target_arch = "wasm32")))]
     {
         if settings.include_git {
             if let Err(e) = git::load_git_variables(&mut envt) {
@@ -310,7 +312,7 @@ pub fn write_environment<T: Write>(
         &cargo::BUILD_HOST_VARIABLES,
     )?;
 
-    #[cfg(feature = "git")]
+    #[cfg(all(feature = "git", not(target_arch = "wasm32")))]
     {
         if settings.include_git {
             filter_and_write(

@@ -2,6 +2,7 @@
 // Copyright 2023 IROX Contributors
 //
 
+#![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 use crate::{BuildEnvironment, BuildVariable, Error, VariableSource};
 use std::io::{BufRead, BufReader};
 

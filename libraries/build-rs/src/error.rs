@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::fmt::{Display, Formatter};
@@ -31,7 +31,7 @@ macro_rules! impl_error {
 
 impl_error!("IOError", std::io::Error);
 impl_error!("Git", std::path::StripPrefixError);
-#[cfg(feature = "git")]
+#[cfg(all(feature = "git", not(target_arch = "wasm32")))]
 impl_error!("Git", git2::Error);
-#[cfg(feature = "git")]
+#[cfg(all(feature = "git", not(target_arch = "wasm32")))]
 impl_error!("Git", irox_git_tools::Error);
