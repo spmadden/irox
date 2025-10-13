@@ -299,11 +299,12 @@ fn check_all() -> Result<(), Error> {
         let (module, feats) = feat.split_once(",").unwrap_or_default();
         let feats = feats.split(" ");
         for f in feats {
-            logstart(format!("cargo-check-t-{tgt}-p-{module}-f-{f}").as_str());
+            logstart(format!("cargo-check-p-{module}-f-{f}").as_str());
             exec_passthru("cargo", &["check", "-p", &module, "-F", f])?;
             logend();
         }
     }
+    skip = Some(());
     for tgt in EXTRA_TARGETS {
         for feat in &feats {
             if skip.take().is_some() {
