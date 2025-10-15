@@ -151,7 +151,7 @@ impl App for ToolFrame {
         }
     }
     #[cfg(target_arch = "wasm32")]
-    fn as_any_mut(&mut self) -> Option<&mut dyn Any> {
+    fn as_any_mut(&mut self) -> Option<&mut dyn std::any::Any> {
         self.child.as_any_mut()
     }
 
