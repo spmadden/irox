@@ -93,6 +93,7 @@ wasm-bindgen-futures = "0.4"
 criterion = "0.5"
 core_affinity = "0.8"
 toml = "0.8"
+glow = "0.16"
 
 irox-arch-x86-64 = { version = "0.1" }
 web-sys = {version = "0.3"}

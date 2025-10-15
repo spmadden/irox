@@ -23,7 +23,7 @@ profiling = ["dep:profiling", "dep:puffin"]
 dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland"]
 wgpu = ["eframe/wgpu"]
-glow = ["eframe/glow"]
+glow = ["eframe/glow", "dep:glow"]
 
 [dependencies]
 egui.workspace = true
@@ -40,18 +40,20 @@ irox-progress = {workspace = true}
 log.workspace = true
 profiling = { workspace = true, optional = true }
 puffin = { workspace = true, optional = true }
+glow = {workspace = true, optional = true}
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-eframe = { workspace = true, default-features = false, features = ["wgpu"] }
+eframe = { workspace = true, default-features = false, features = [] }
 wasm-bindgen.workspace = true
 wasm-bindgen-futures.workspace = true
 web-sys.workspace = true
 
 [dev-dependencies]
-eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts"] }
-egui = { workspace = true, default-features = false, features = ["rayon"] }
+eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts", "persistence"] }
+egui = { workspace = true, default-features = false, features = ["rayon", "persistence"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }
+irox-log = {workspace = true, features = ["std"]}
 puffin_http = { workspace = true }
 irox-csv = { workspace = true }
 irox-build-rs = { workspace = true, features = ["git"] }

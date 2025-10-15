@@ -5,10 +5,14 @@
 //!
 //! Adds a helper App Wrapper called 'ToolFrame' that provides a boilerplate tool app for quick bootstrapping of new apps.
 
-use eframe::{App, CreationContext, Frame};
-use egui::{menu, Context, Id, TopBottomPanel, Ui, ViewportCommand, Window};
-
 use crate::frame_history::FrameHistory;
+use eframe::emath::Align;
+use eframe::{App, CreationContext, Frame, Storage};
+use egui::{
+    menu, Context, Id, Layout, RawInput, ThemePreference, TopBottomPanel, Ui, ViewportCommand,
+    Visuals, Window,
+};
+use std::time::Duration;
 
 ///
 /// A 'ToolFrame' is a egui App that provides a basic Menu bar, Bottom Status Bar, and pre-fills it with some utilities
@@ -19,14 +23,25 @@ pub struct ToolFrame {
     style_ui: bool,
     full_speed: bool,
     show_rendering_stats: bool,
+    show_file_menu: bool,
     frame_history: FrameHistory,
     child: Box<dyn ToolApp>,
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ToolFrameOptions {
     pub full_speed: bool,
     pub show_rendering_stats: bool,
+    pub show_file_menu: bool,
+}
+impl Default for ToolFrameOptions {
+    fn default() -> Self {
+        Self {
+            full_speed: false,
+            show_rendering_stats: false,
+            show_file_menu: true,
+        }
+    }
 }
 
 impl ToolFrame {
@@ -43,11 +58,13 @@ impl ToolFrame {
         let ToolFrameOptions {
             full_speed,
             show_rendering_stats,
+            show_file_menu,
         } = opts;
         Self {
             style_ui: false,
             full_speed,
             show_rendering_stats,
+            show_file_menu,
             frame_history: FrameHistory::default(),
             child,
         }
@@ -68,13 +85,15 @@ impl App for ToolFrame {
 
         TopBottomPanel::top(Id::new("top_panel")).show(ctx, |ui| {
             menu::bar(ui, |ui| {
-                ui.menu_button("File", |ui| {
-                    self.child.file_menu(ui);
+                if self.show_file_menu {
+                    ui.menu_button("File", |ui| {
+                        self.child.file_menu(ui);
 
-                    if ui.button("Exit").clicked() {
-                        ctx.send_viewport_cmd(ViewportCommand::Close);
-                    }
-                });
+                        if ui.button("Exit").clicked() {
+                            ctx.send_viewport_cmd(ViewportCommand::Close);
+                        }
+                    });
+                }
 
                 ui.menu_button("Settings", |ui| {
                     self.child.settings_menu(ui);
@@ -111,6 +130,17 @@ impl App for ToolFrame {
                 }
 
                 self.child.bottom_bar(ui);
+                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                    if ctx.style().visuals.dark_mode {
+                        if ui.button("\u{2600}").clicked() {
+                            ctx.set_theme(ThemePreference::Light);
+                        }
+                    } else {
+                        if ui.button("\u{1F318}").clicked() {
+                            ctx.set_theme(ThemePreference::Dark);
+                        }
+                    }
+                });
             });
         });
 
@@ -119,6 +149,39 @@ impl App for ToolFrame {
         if self.full_speed {
             ctx.request_repaint();
         }
+    }
+    #[cfg(target_arch = "wasm32")]
+    fn as_any_mut(&mut self) -> Option<&mut dyn Any> {
+        self.child.as_any_mut()
+    }
+
+    fn save(&mut self, storage: &mut dyn Storage) {
+        self.child.save(storage)
+    }
+    #[cfg(feature = "glow")]
+    fn on_exit(&mut self, gl: Option<&glow::Context>) {
+        self.child.on_exit(gl)
+    }
+
+    #[cfg(not(feature = "glow"))]
+    fn on_exit(&mut self) {
+        self.child.on_exit()
+    }
+
+    fn auto_save_interval(&self) -> Duration {
+        self.child.auto_save_interval()
+    }
+
+    fn clear_color(&self, visuals: &Visuals) -> [f32; 4] {
+        self.child.clear_color(visuals)
+    }
+
+    fn persist_egui_memory(&self) -> bool {
+        self.child.persist_egui_memory()
+    }
+
+    fn raw_input_hook(&mut self, ctx: &Context, raw_input: &mut RawInput) {
+        self.child.raw_input_hook(ctx, raw_input)
     }
 }
 

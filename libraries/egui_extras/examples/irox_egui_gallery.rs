@@ -2,30 +2,33 @@
 // Copyright 2025 IROX Contributors
 //
 
-use std::collections::BTreeMap;
-use std::f64::consts::TAU;
-use std::sync::Arc;
-
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
 use egui::{CentralPanel, Context, Layout, Pos2, Shape, Vec2, ViewportBuilder, Window};
 use irox_build_rs::BuildEnvironment;
 use irox_egui_extras::about::AboutWindow;
+use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::logplot::{BasicPlot, IntoColor32, PlotPoint};
 use irox_egui_extras::progressbar::ProgressBar;
 use irox_egui_extras::serde::EguiSerializer;
+use irox_egui_extras::styles::StylePersistingApp;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_egui_extras::visuals::VisualsWindow;
 use irox_imagery::Color;
 use irox_tools::static_init;
-use log::error;
+use log::{error, Level};
 use serde::Serialize;
+use std::collections::BTreeMap;
+use std::f64::consts::TAU;
+use std::sync::Arc;
+use std::time::Duration;
 
 static_init!(get_env, BuildEnvironment, {
     irox_build_rs::generate_build_environment().unwrap_or_default()
 });
 
 pub fn main() {
+    irox_log::init_console_level(Level::Info);
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
 
     let native_options = eframe::NativeOptions {
@@ -35,7 +38,12 @@ pub fn main() {
     if let Err(e) = eframe::run_native(
         "irox-egui-gallery",
         native_options,
-        Box::new(|cc| Ok(Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc)))))),
+        Box::new(|cc| {
+            let mut comp = CompositeApp::default();
+            comp.add(Box::new(StylePersistingApp::new(cc)));
+            comp.add(Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc)))));
+            Ok(Box::new(comp))
+        }),
     ) {
         error!("{e:?}");
     };
@@ -235,6 +243,13 @@ impl App for TestApp {
                 ui.toggle_value(&mut self.show_about, "About the Build");
             });
         });
+    }
+
+    fn auto_save_interval(&self) -> Duration {
+        Duration::from_secs(1)
+    }
+    fn persist_egui_memory(&self) -> bool {
+        true
     }
 }
 
