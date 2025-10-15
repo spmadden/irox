@@ -127,6 +127,14 @@ impl<const N: usize> FixedU8Buf<N> {
     }
 
     ///
+    /// Parses a string representation of a f64 stored within this buffer with
+    /// [`f64::from_str`]
+    pub fn as_f64(&self) -> Result<f64, core::num::ParseFloatError> {
+        let s = self.as_str().unwrap_or_default();
+        core::str::FromStr::from_str(s)
+    }
+
+    ///
     /// Basic in-place swap.
     pub fn reverse(&mut self) {
         let mut i = 0;

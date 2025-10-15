@@ -20,6 +20,7 @@ irox-bits.workspace = true
 serde = {workspace = true, optional = true}
 
 [dev-dependencies]
+irox-bits = {workspace = true, features = ["alloc"]}
 criterion.workspace = true
 core_affinity.workspace = true
 serde_json.workspace = true
