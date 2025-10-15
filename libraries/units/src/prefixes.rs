@@ -185,7 +185,7 @@ impl PrefixSet {
     }
 }
 
-#[cfg(all(test, feature = "alloc"))]
+#[cfg(all(test, feature = "std"))]
 mod test {
     use crate::prefixes::{
         PrefixFormat, PrefixSet, ATTO, CENTI, DECA, DECI, EXA, FEMTO, GIGA, HECTO, KILO, MEGA,

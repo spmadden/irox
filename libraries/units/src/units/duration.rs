@@ -7,7 +7,12 @@
 //!
 
 use crate::units::{FromUnits, Unit};
-use core::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter, Write};
+use core::num::ParseFloatError;
+use core::str::Utf8Error;
+use irox_tools::buf::{Buffer, FixedU8Buf};
+use irox_tools::cfg_feature_serde;
+use irox_tools::irox_bits::{BitsError, Error, ErrorKind, FormatBits, MutBits};
 
 ///
 /// Represents a specific duration unit - SI or otherwise.
@@ -548,6 +553,12 @@ impl Duration {
     pub const fn from_seconds_f64(seconds: f64) -> Duration {
         Duration::new(seconds, DurationUnit::Second)
     }
+
+    pub fn from_hms(hours: u64, minutes: u64, seconds: u64) -> Duration {
+        Duration::from_hours(hours)
+            + Duration::from_minutes(minutes)
+            + Duration::from_seconds(seconds)
+    }
 }
 
 impl Display for Duration {
@@ -659,3 +670,246 @@ pub const YEAR_TO_PICOS: f64 = YEAR_TO_NANOS * NANOS_TO_PICOS;
 
 // going up octs
 pub const PICOS_TO_YEAR: f64 = PICOS_TO_DAY * DAY_TO_YEAR;
+
+impl Duration {
+    pub fn write_iso8601_exact_to<T: MutBits>(&self, fmt: &mut T) -> Result<(), core::fmt::Error> {
+        let mut fmt = FormatBits(fmt);
+        fmt.write_str("P")?;
+        let y = self.as_years();
+        if y > 0 {
+            write!(fmt, "{y}Y")?;
+        }
+        let mut r = self - Duration::from_years(y);
+        let (d, h, m, _s) = r.as_dhms();
+        if d > 0 {
+            write!(fmt, "{d}D")?;
+            r -= Duration::from_days(d);
+        }
+        if r.as_seconds_f64() > 0.0 {
+            fmt.write_str("T")?;
+        }
+        if h > 0 {
+            write!(fmt, "{h}H")?;
+            r -= Duration::from_hours(h as u64);
+        }
+        if m > 0 {
+            write!(fmt, "{m}M")?;
+            r -= Duration::from_minutes(m as u64);
+        }
+        let s = r.as_seconds_f64();
+        if s.abs() > 0.0 {
+            write!(fmt, "{s:02.}S")?;
+        }
+
+        Ok(())
+    }
+    pub fn write_iso8601_sec_to<T: MutBits>(&self, fmt: &mut T) -> Result<(), core::fmt::Error> {
+        let mut fmt = FormatBits(fmt);
+        fmt.write_str("P")?;
+        let y = self.as_years();
+        if y > 0 {
+            write!(fmt, "{y}Y")?;
+        }
+        let mut r = self - Duration::from_years(y);
+        let (d, h, m, s) = r.as_dhms();
+        if d > 0 {
+            write!(fmt, "{d}D")?;
+            r -= Duration::from_days(d);
+        }
+        if r.as_seconds_f64() > 0.0 {
+            fmt.write_str("T")?;
+        }
+        if h > 0 {
+            write!(fmt, "{h}H")?;
+            r -= Duration::from_hours(h as u64);
+        }
+        if m > 0 {
+            write!(fmt, "{m}M")?;
+            r -= Duration::from_minutes(m as u64);
+        }
+        if s > 0 {
+            write!(fmt, "{s}S")?;
+        }
+
+        Ok(())
+    }
+
+    ///
+    /// Parse a ISO-8601 Duration String like `P1Y2M3DT4H5M2.5S`
+    ///
+    /// This function assumes 1 month = 30 days.
+    pub fn parse_iso8601_from(val: &str) -> Result<Self, ParseError> {
+        let b = val.as_bytes();
+        let mut seconds = 0.0f64;
+        let mut minutes = 0.0f64;
+        let mut hours = 0.0f64;
+        let mut days = 0.0f64;
+        let mut months = 0.0f64;
+        let mut years = 0.0f64;
+
+        let mut encountered_t = false;
+        let mut buf: FixedU8Buf<25> = Default::default();
+        for v in b {
+            match v {
+                b'S' | b's' => {
+                    seconds += buf.as_f64()?;
+                    buf.clear();
+                }
+                b'M' | b'm' => {
+                    if encountered_t {
+                        minutes += buf.as_f64()?;
+                    } else {
+                        months += buf.as_f64()?;
+                    }
+                    buf.clear();
+                }
+                b'H' | b'h' => {
+                    hours += buf.as_f64()?;
+                    buf.clear();
+                }
+                b'D' | b'd' => {
+                    days += buf.as_f64()?;
+                    buf.clear();
+                }
+                b'Y' | b'y' => {
+                    years += buf.as_f64()?;
+                    buf.clear();
+                }
+                b'0'..=b'9' | b'.' => {
+                    if buf.push_back(*v).is_err() {
+                        return Err(Error::new(
+                            ErrorKind::OutOfMemory,
+                            "Buffer overflowed parsing number in Duration::parse_iso8601_from",
+                        )
+                        .into());
+                    }
+                }
+                b'T' | b't' => {
+                    encountered_t = true;
+                }
+                _ => {}
+            }
+        }
+        Ok(Duration::new(seconds, DurationUnit::Second)
+            + Duration::new(minutes, DurationUnit::Minute)
+            + Duration::new(hours, DurationUnit::Hour)
+            + Duration::new(days, DurationUnit::Day)
+            + Duration::new(months * 30., DurationUnit::Day)
+            + Duration::new(years, DurationUnit::Year))
+    }
+}
+#[derive(Eq, PartialEq, Clone, Debug)]
+pub enum ParseError {
+    UTF8(Utf8Error),
+    Bits(BitsError),
+    Float(ParseFloatError),
+}
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self {
+            ParseError::UTF8(u) => {
+                write!(f, "UTF8Error: {u}")
+            }
+            ParseError::Bits(b) => {
+                write!(f, "BitsError: {b}")
+            }
+            ParseError::Float(e) => {
+                write!(f, "FloatError: {e}")
+            }
+        }
+    }
+}
+macro_rules! implerrorfrom {
+    ($id:ident, $en:ident) => {
+        impl From<$id> for ParseError {
+            fn from(value: $id) -> Self {
+                Self::$en(value)
+            }
+        }
+    };
+}
+implerrorfrom!(Utf8Error, UTF8);
+implerrorfrom!(BitsError, Bits);
+implerrorfrom!(ParseFloatError, Float);
+
+cfg_feature_serde! {
+    struct DurationVisitor;
+    impl serde::de::Visitor<'_> for DurationVisitor {
+        type Value = Duration;
+
+        fn expecting(&self, fmt: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
+            write!(fmt, "The visitor expects to receive a string formatted as a ISO 8601 Duration")
+        }
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> where E: serde::de::Error {
+            Duration::parse_iso8601_from(v).map_err(serde::de::Error::custom)
+        }
+    }
+    impl<'de> serde::Deserialize<'de> for Duration {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+            deserializer.deserialize_str(DurationVisitor)
+        }
+    }
+    impl serde::Serialize for Duration {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+            let mut buf : FixedU8Buf<128> = Default::default();
+            self.write_iso8601_exact_to(&mut buf).map_err(serde::ser::Error::custom)?;
+            let s = buf.as_str().map_err(serde::ser::Error::custom)?;
+            serializer.serialize_str(s)
+        }
+    }
+}
+
+#[cfg(all(test, feature = "alloc"))]
+mod tests {
+    use core::fmt::Error;
+    extern crate alloc;
+    use crate::units::duration::Duration;
+
+    #[test]
+    pub fn test_iso8601() -> Result<(), Error> {
+        let mut s = alloc::string::String::new();
+        let d = Duration::from_years(1);
+        d.write_iso8601_exact_to(&mut s)?;
+        assert_eq!("P1Y", s);
+
+        assert_eq!(Ok(d), Duration::parse_iso8601_from(&s));
+
+        let d = Duration::from_hms(1, 2, 3);
+        s.clear();
+        d.write_iso8601_sec_to(&mut s)?;
+        assert_eq!("PT1H2M3S", s);
+        assert_eq!(Ok(d), Duration::parse_iso8601_from(&s));
+
+        let d = Duration::from_seconds_f64(123456.789);
+        s.clear();
+        d.write_iso8601_exact_to(&mut s)?;
+        assert_eq!("P1DT10H17M36.78900000000431S", s);
+        assert_eq!(Ok(d), Duration::parse_iso8601_from(&s));
+
+        Ok(())
+    }
+
+    #[test]
+    #[cfg(all(feature = "serde", feature = "std"))]
+    pub fn serde_test() -> Result<(), Error> {
+        #[derive(serde::Serialize, serde::Deserialize, Eq, PartialEq, Debug)]
+        struct Test {
+            a: Duration,
+        }
+        impl Default for Test {
+            fn default() -> Self {
+                Self {
+                    a: Duration::default(),
+                }
+            }
+        }
+        let a = Test {
+            a: Duration::from_days(1),
+        };
+        let s = serde_json::to_string(&a).unwrap_or_default();
+        assert_eq!(s, "{\"a\":\"P1D\"}");
+        let b: Test = serde_json::from_str(&s).unwrap();
+        assert_eq!(a, b);
+        Ok(())
+    }
+}

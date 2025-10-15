@@ -184,7 +184,7 @@ pub const ONE_HYPERFINE_SECOND: Quantity<u64> = Quantity::new(9_192_631_770, Uni
 pub const SPEED_OF_LIGHT_VACUUM: Quantity<u64> = Quantity::new(299_792_458, Units::MeterPerSecond);
 pub const ELEMENTARY_CHARGE: Quantity<f64> = Quantity::new(1.602176634e-19, Units::Coulomb);
 
-#[cfg(all(test, feature = "alloc"))]
+#[cfg(all(test, feature = "std"))]
 mod test {
     use crate::quantities::{Quantity, Units};
 

@@ -3,7 +3,7 @@ name = "irox-units"
 description = "Physical Quantities, Units, & Reference Frames Library"
 keywords = ["irox", "coordinate", "epsg", "projections", "no_std"]
 categories = ["aerospace", "data-structures", "science", "mathematics", "no-std::no-alloc"]
-version= "0.4.7"
+version = "0.4.7"
 edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
@@ -16,12 +16,17 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
-irox-tools = {version = "^0", path = "../tools", default-features = false}
+irox-tools = { version = "^0", path = "../tools", default-features = false }
+serde = { workspace = true, optional = true, features = ["derive"] }
+
+[dev-dependencies]
+serde_json = { workspace = true }
 
 [features]
 default = []
-alloc = []
-std = ["alloc"]
+alloc = ["irox-tools/alloc"]
+std = ["alloc", "irox-tools/std"]
+serde = ["dep:serde"]
 
 [package.metadata.docs.rs]
 all-features = true
