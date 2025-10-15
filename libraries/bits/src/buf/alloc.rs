@@ -33,6 +33,10 @@ where
 
         Ok(self.buf.pop_front())
     }
+
+    fn read_some_into<R: MutBits>(&mut self, buf: &mut R) -> Result<usize, Error> {
+        self.inner.read_some_into(buf)
+    }
 }
 impl<'a, T: 'a> BufBits for BitsBuffer<'a, T>
 where

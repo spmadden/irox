@@ -45,6 +45,13 @@ mod stds {
             }
             Ok(Some(byte))
         }
+
+        fn read_some_into<R: MutBits>(&mut self, buf: &mut R) -> Result<usize, Error> {
+            let mut b = [0u8; 4096];
+            let read = self.read(&mut b)?;
+            buf.write_all_bytes(b.get(0..read).unwrap_or_default())?;
+            Ok(read)
+        }
     }
 
     impl<T> MutBits for BitsWrapper<'_, T>
@@ -53,6 +60,10 @@ mod stds {
     {
         fn write_u8(&mut self, val: u8) -> Result<(), Error> {
             Ok(self.write_all(&[val])?)
+        }
+
+        fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
+            Ok(self.write_all(val)?)
         }
     }
 }
