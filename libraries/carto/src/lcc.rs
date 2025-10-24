@@ -25,6 +25,10 @@ fn t(shape: &Ellipsoid, phi: &Angle) -> f64 {
     let low = ((1. - e * sinphi) / (1. + e * sinphi)).powf(e / 2.);
     u / low
 }
+fn t_tables(shape: &Ellipsoid, phi: &Latitude) -> f64 {
+    let phig = phi.geocentric_latitude(shape).0.as_radians().value();
+    (FRAC_PI_4 - phig / 2.).tan()
+}
 #[derive(Default)]
 pub struct LambertConformalConicBuilder {
     center: EllipticalCoordinate,
@@ -33,6 +37,7 @@ pub struct LambertConformalConicBuilder {
     second_parallel: Latitude,
     false_northing: Length,
     false_easting: Length,
+    use_old_table_math: bool,
 }
 impl LambertConformalConicBuilder {
     #[must_use]
@@ -66,6 +71,11 @@ impl LambertConformalConicBuilder {
         self
     }
     #[must_use]
+    pub fn use_old_table_math(mut self, oldmath: bool) -> Self {
+        self.use_old_table_math = oldmath;
+        self
+    }
+    #[must_use]
     pub fn build(self) -> LambertConformalConic {
         let phi0 = self.center.get_latitude();
         let phi1 = self.first_parallel;
@@ -92,6 +102,7 @@ impl LambertConformalConicBuilder {
             false_easting: self.false_easting,
             false_northing: self.false_northing,
             shape: self.shape,
+            use_old_table_math: self.use_old_table_math,
         }
     }
 }
@@ -105,6 +116,7 @@ pub struct LambertConformalConic {
     a: f64,
     n: f64,
     f: f64,
+    use_old_table_math: bool,
 }
 
 impl Projection for LambertConformalConic {
@@ -120,13 +132,17 @@ impl Projection for LambertConformalConic {
         let lam0 = self.center.get_longitude();
         let phi = coord.get_latitude();
         let lam = coord.get_longitude();
-        let t = t(&self.shape, phi);
+        let t = if self.use_old_table_math {
+            t_tables(&self.shape, phi)
+        } else {
+            t(&self.shape, phi)
+        };
         let theta = n * (lam.as_radians() - lam0.as_radians());
 
         let p = a * f * t.powf(n);
-
+        let y = p0 - p * theta.cos();
         let x = Length::new_meters(p * theta.sin());
-        let y = Length::new_meters(p0 - p * theta.cos());
+        let y = Length::new_meters(y);
 
         CartesianCoordinate::new(
             x + self.false_easting,
@@ -136,12 +152,12 @@ impl Projection for LambertConformalConic {
     }
 
     fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate {
-        let x = coord.get_x().as_meters().value();
-        let y = coord.get_y().as_meters().value();
-
-        let p = (x.powi(2) + (self.p0 - y).powi(2)).sqrt() * self.n.signum();
+        let x = (coord.get_x() - self.false_easting).as_meters().value();
+        let y = (coord.get_y() - self.false_northing).as_meters().value();
+        let p0 = self.p0; // * self.f * self.a;
+        let p = (x.powi(2) + (p0 - y).powi(2)).sqrt() * self.n.signum();
         let t = (p / (self.a * self.f)).powf(1.0 / self.n);
-        let theta = x.atan2(self.p0 - y);
+        let theta = x.atan2(p0 - y);
         let lam = theta / self.n + self.center.get_longitude().as_radians().value();
         let e = self.shape.first_eccentricity();
 
@@ -151,7 +167,7 @@ impl Projection for LambertConformalConic {
                 - 2. * (t * ((1. - e * phi.sin()) / (1. + e * phi.sin())).powf(e / 2.)).atan();
             let eps = (phit - phi).abs();
             phi = phit;
-            if eps < 1e-10 {
+            if eps < 1e-15 {
                 break;
             }
         }
@@ -170,8 +186,9 @@ mod test {
     use crate::lcc::{LambertConformalConicBuilder, Latitude};
     use crate::proj::Projection;
     use irox_tools::assert_eq_eps;
-    use irox_units::units::angle::Angle;
-    use irox_units::units::length::Length;
+    use irox_units::units::angle::{Angle, AngleUnits};
+    use irox_units::units::length::{Length, LengthUnits};
+    use irox_units::units::Unit;
 
     #[test]
     pub fn test_lambert_conic() {
@@ -185,20 +202,78 @@ mod test {
             ))
             .with_shape(StandardShapes::NAD27.as_ellipsoid())
             .build();
-        let xyz = lcc.project_to_cartesian(&EllipticalCoordinate::new(
-            Latitude(Angle::new_dms(35, 00, 0.0)),
-            Longitude(Angle::new_dms(-75, 00, 0.0)),
-            StandardShapes::NAD27.into(),
-        ));
-        assert_eq_eps!(1894410.9, xyz.get_x().as_meters().value(), 0.1);
-        assert_eq_eps!(1564649.5, xyz.get_y().as_meters().value(), 0.1);
+        let xyz = lcc
+            .project_to_cartesian(&EllipticalCoordinate::new(
+                Latitude(Angle::new_dms(35, 00, 0.0)),
+                Longitude(Angle::new_dms(-75, 00, 0.0)),
+                StandardShapes::NAD27.into(),
+            ))
+            .as_units(LengthUnits::Meters);
+        let lla = lcc
+            .project_to_elliptical(&CartesianCoordinate::new(
+                Length::new_meters(1894410.898357),
+                Length::new_meters(1564649.478496),
+                Length::ZERO,
+            ))
+            .as_unit(AngleUnits::Degrees);
+        println!("{xyz}");
+        println!("{lla}");
+        let expx = 1894410.898357;
+        let expy = 1564649.478496;
+        let x = xyz.get_x().as_meters().value();
+        let y = xyz.get_y().as_meters().value();
+        let dx = expx - x;
+        let dy = expy - y;
+        println!("dx/dy = {dx} {dy}");
 
-        let lla = lcc.project_to_elliptical(&CartesianCoordinate::new(
-            Length::new_meters(1894410.9),
-            Length::new_meters(1564649.5),
-            Length::ZERO,
-        ));
-        assert_eq_eps!(35.0, lla.get_latitude().as_degrees().value(), 1e-6);
-        assert_eq_eps!(-75.0, lla.get_longitude().as_degrees().value(), 1e-6);
+        assert_eq_eps!(expx, x, 1e-4);
+        assert_eq_eps!(expy, y, 1e-3);
+
+        assert_eq_eps!(35.0, lla.get_latitude().as_degrees().value(), 1e-8);
+        assert_eq_eps!(-75.0, lla.get_longitude().as_degrees().value(), 1e-8);
+    }
+
+    #[test]
+    pub fn test_lcc2() {
+        let lcc = LambertConformalConicBuilder::default()
+            .with_first_parallel(Latitude(Angle::new_dms(28, 23, 0.0)))
+            .with_second_parallel(Latitude(Angle::new_dms(30, 17, 0.0)))
+            .with_center(EllipticalCoordinate::new(
+                Latitude(Angle::new_dms(27, 50, 0.0)),
+                Longitude(Angle::new_dms(-99, 00, 0.0)),
+                StandardShapes::NAD27.into(),
+            ))
+            .with_false_easting(Length::new(2000000.00, LengthUnits::USSurveyFoot))
+            .with_shape(StandardShapes::NAD27.as_ellipsoid())
+            .build();
+        let xyz = lcc
+            .project_to_cartesian(&EllipticalCoordinate::new(
+                Latitude(Angle::new_dms(28, 30, 0.0)),
+                Longitude(Angle::new_dms(-96, 00, 0.0)),
+                StandardShapes::NAD27.into(),
+            ))
+            .as_units(LengthUnits::USSurveyFoot);
+        let lla = lcc
+            .project_to_elliptical(&CartesianCoordinate::new(
+                Length::new(2963503.91, LengthUnits::USSurveyFoot),
+                Length::new(254759.80, LengthUnits::USSurveyFoot),
+                Length::ZERO,
+            ))
+            .as_unit(AngleUnits::Degrees);
+
+        println!("{xyz}");
+        println!("{lla}");
+        assert_eq_eps!(
+            2963503.91,
+            xyz.get_x().as_unit(LengthUnits::USSurveyFoot).value(),
+            1e-1
+        );
+        assert_eq_eps!(
+            254759.80,
+            xyz.get_y().as_unit(LengthUnits::USSurveyFoot).value(),
+            1e-2
+        );
+        assert_eq_eps!(28.5, lla.get_latitude().as_degrees().value(), 1e-6);
+        assert_eq_eps!(-96.0, lla.get_longitude().as_degrees().value(), 1e-6);
     }
 }

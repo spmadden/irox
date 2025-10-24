@@ -8,9 +8,12 @@ edition.workspace = true
 authors.workspace = true
 homepage.workspace = true
 license.workspace = true
-exclude.workspace = true
 readme.workspace = true
 repository.workspace = true
+exclude = [
+    "doc",
+    "data/macontrol.csv"
+]
 
 [lints]
 workspace = true
@@ -31,6 +34,9 @@ windows = { workspace = true, optional = true }
 
 [build-dependencies]
 irox-csv.workspace = true
+[dev-dependencies]
+irox-csv.workspace = true
+irox-stats.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
