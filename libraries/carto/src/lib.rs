@@ -20,6 +20,7 @@ pub mod gps;
 pub mod position_type;
 pub mod proj;
 pub mod range;
+pub mod spcs;
 
 cfg_feature_std! {
     pub mod ecef;

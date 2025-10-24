@@ -5,6 +5,7 @@
 //! Map Projection Traits
 
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate};
+use crate::range::{CartesianRange, EllipticalRange};
 
 ///
 /// Allows a projection from Elliptical to Cartesian coordinates
@@ -17,4 +18,13 @@ pub trait Projection {
 
     /// Projects the cartesian coordinate to an equivalent elliptical coordinate
     fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate;
+
+    fn get_bounds(&self) -> Option<&ProjectionBounds> {
+        None
+    }
+}
+
+pub struct ProjectionBounds {
+    pub elliptical_bounds: EllipticalRange,
+    pub cartesian_range: CartesianRange,
 }
