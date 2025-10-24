@@ -153,6 +153,16 @@ impl Angle {
     pub fn acos(&self) -> f64 {
         self.as_radians().value.acos()
     }
+
+    #[cfg(feature = "std")]
+    pub fn tan(&self) -> f64 {
+        self.as_radians().value.tan()
+    }
+
+    #[must_use]
+    pub const fn min_value() -> Self {
+        Angle::new_degrees(0.0)
+    }
 }
 
 impl Display for Angle {

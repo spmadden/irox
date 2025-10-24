@@ -10,7 +10,8 @@ use core::cmp::Ordering;
 use core::fmt::{Display, Formatter};
 use core::ops::{Div, DivAssign, Mul, MulAssign};
 
-use crate::units::length::Length;
+use crate::units::length::{Length, LengthUnits};
+use crate::units::Unit;
 
 ///
 /// A way to describe a measurement of a Circle [`CircularAspect::Radius`] or
@@ -93,6 +94,14 @@ impl CircularDimension {
         match aspect {
             CircularAspect::Radius => self.as_radius(),
             CircularAspect::Diameter => self.as_diameter(),
+        }
+    }
+
+    #[must_use]
+    pub fn as_unit(&self, unit: LengthUnits) -> Self {
+        Self {
+            dimension_type: self.dimension_type,
+            dimension: self.dimension.as_unit(unit),
         }
     }
 }
