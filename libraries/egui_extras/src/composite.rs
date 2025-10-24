@@ -13,19 +13,11 @@ use egui::{Context, RawInput, Visuals};
 ///
 /// An implementation of `eframe::App` that allows the composition of multiple sub-apps.
 /// Each app is called in the order added to this structure
+#[derive(Default)]
 pub struct CompositeApp {
     apps: Vec<Box<dyn App>>,
 
     persist_egui_memory: bool,
-}
-
-impl Default for CompositeApp {
-    fn default() -> Self {
-        CompositeApp {
-            apps: Vec::new(),
-            persist_egui_memory: false,
-        }
-    }
 }
 
 impl CompositeApp {

@@ -32,8 +32,13 @@ pub fn main() {
                 cc,
                 Box::new(TestApp::new(cc)),
                 ToolFrameOptions {
-                    full_speed: false,
                     show_rendering_stats: true,
+                    enable_memory_ui: true,
+                    enable_texture_ui: true,
+                    enable_inspection_ui: true,
+                    enable_settings_ui: true,
+
+                    ..Default::default()
                 },
             )))
         }),

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -23,25 +23,28 @@ pub struct ToolFrame {
     style_ui: bool,
     full_speed: bool,
     show_rendering_stats: bool,
-    show_file_menu: bool,
+    disable_file_menu: bool,
+    enable_settings_ui: bool,
+    enable_inspection_ui: bool,
+    enable_texture_ui: bool,
+    enable_memory_ui: bool,
+    settings_ui: bool,
+    inspection_ui: bool,
+    texture_ui: bool,
+    memory_ui: bool,
     frame_history: FrameHistory,
     child: Box<dyn ToolApp>,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct ToolFrameOptions {
     pub full_speed: bool,
     pub show_rendering_stats: bool,
-    pub show_file_menu: bool,
-}
-impl Default for ToolFrameOptions {
-    fn default() -> Self {
-        Self {
-            full_speed: false,
-            show_rendering_stats: false,
-            show_file_menu: true,
-        }
-    }
+    pub disable_file_menu: bool,
+    pub enable_settings_ui: bool,
+    pub enable_inspection_ui: bool,
+    pub enable_texture_ui: bool,
+    pub enable_memory_ui: bool,
 }
 
 impl ToolFrame {
@@ -58,13 +61,25 @@ impl ToolFrame {
         let ToolFrameOptions {
             full_speed,
             show_rendering_stats,
-            show_file_menu,
+            disable_file_menu,
+            enable_settings_ui,
+            enable_inspection_ui,
+            enable_texture_ui,
+            enable_memory_ui,
         } = opts;
         Self {
             style_ui: false,
             full_speed,
             show_rendering_stats,
-            show_file_menu,
+            enable_settings_ui,
+            enable_inspection_ui,
+            enable_texture_ui,
+            enable_memory_ui,
+            disable_file_menu,
+            settings_ui: false,
+            inspection_ui: false,
+            texture_ui: false,
+            memory_ui: false,
             frame_history: FrameHistory::default(),
             child,
         }
@@ -85,10 +100,11 @@ impl App for ToolFrame {
 
         TopBottomPanel::top(Id::new("top_panel")).show(ctx, |ui| {
             menu::bar(ui, |ui| {
-                if self.show_file_menu {
+                if !self.disable_file_menu {
                     ui.menu_button("File", |ui| {
                         self.child.file_menu(ui);
 
+                        #[cfg(not(target_arch = "wasm32"))]
                         if ui.button("Exit").clicked() {
                             ctx.send_viewport_cmd(ViewportCommand::Close);
                         }
@@ -103,6 +119,34 @@ impl App for ToolFrame {
                     if ui.button("Style").clicked() {
                         self.style_ui = true;
                         ui.close_menu();
+                    }
+                    #[allow(clippy::collapsible_if)]
+                    if self.enable_settings_ui {
+                        if ui.button("Settings").clicked() {
+                            self.settings_ui = true;
+                            ui.close_menu();
+                        }
+                    }
+                    #[allow(clippy::collapsible_if)]
+                    if self.enable_inspection_ui {
+                        if ui.button("Inspections").clicked() {
+                            self.inspection_ui = true;
+                            ui.close_menu();
+                        }
+                    }
+                    #[allow(clippy::collapsible_if)]
+                    if self.enable_texture_ui {
+                        if ui.button("Textures").clicked() {
+                            self.texture_ui = true;
+                            ui.close_menu();
+                        }
+                    }
+                    #[allow(clippy::collapsible_if)]
+                    if self.enable_memory_ui {
+                        if ui.button("Memory").clicked() {
+                            self.memory_ui = true;
+                            ui.close_menu();
+                        }
                     }
                 });
 
@@ -122,6 +166,34 @@ impl App for ToolFrame {
                     ctx.style_ui(ui, ctx.theme());
                 });
         }
+        if self.memory_ui {
+            Window::new("memory")
+                .open(&mut self.memory_ui)
+                .show(ctx, |ui| {
+                    ctx.memory_ui(ui);
+                });
+        }
+        if self.settings_ui {
+            Window::new("settings")
+                .open(&mut self.settings_ui)
+                .show(ctx, |ui| {
+                    ctx.settings_ui(ui);
+                });
+        }
+        if self.texture_ui {
+            Window::new("textures")
+                .open(&mut self.texture_ui)
+                .show(ctx, |ui| {
+                    ctx.texture_ui(ui);
+                });
+        }
+        if self.inspection_ui {
+            Window::new("inspection")
+                .open(&mut self.inspection_ui)
+                .show(ctx, |ui| {
+                    ctx.inspection_ui(ui);
+                });
+        }
 
         TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
             ui.horizontal(|ui| {
@@ -131,14 +203,10 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    if ctx.style().visuals.dark_mode {
-                        if ui.button("\u{2600}").clicked() {
-                            ctx.set_theme(ThemePreference::Light);
-                        }
-                    } else {
-                        if ui.button("\u{1F318}").clicked() {
-                            ctx.set_theme(ThemePreference::Dark);
-                        }
+                    if ctx.style().visuals.dark_mode && ui.button("\u{2600}").clicked() {
+                        ctx.set_theme(ThemePreference::Light);
+                    } else if ui.button("\u{1F318}").clicked() {
+                        ctx.set_theme(ThemePreference::Dark);
                     }
                 });
             });

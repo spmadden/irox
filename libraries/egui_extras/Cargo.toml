@@ -57,7 +57,6 @@ irox-log = {workspace = true, features = ["std"]}
 puffin_http = { workspace = true }
 irox-csv = { workspace = true }
 irox-build-rs = { workspace = true, features = ["git"] }
-irox-log = {workspace = true, features = ["std"]}
 
 [target.'cfg(target_os = "linux")'.dependencies]
 eframe = { workspace = true, default-features = false, features = ["x11"] }
