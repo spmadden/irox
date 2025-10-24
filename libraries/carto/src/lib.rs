@@ -19,8 +19,11 @@ pub mod geo;
 pub mod gps;
 pub mod position_type;
 pub mod proj;
+pub mod range;
+
 cfg_feature_std! {
     pub mod ecef;
+    pub mod epsg2249;
     pub mod epsg3857;
     pub mod lcc;
     pub mod local;
