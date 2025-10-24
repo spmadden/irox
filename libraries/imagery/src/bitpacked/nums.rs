@@ -3,6 +3,8 @@
 //
 
 use crate::stacked::LinearStackedImage;
+use irox_bits::MutBits;
+use irox_tools::buf::FixedU8Buf;
 use irox_tools::hex;
 
 // 16x29 pixel images packed into 58 bytes, 1 bit/pixel
@@ -16,10 +18,22 @@ pub static SIX: [u8;58] = hex!("00000000000000600180030006000C0018001800300033E0
 pub static SEVEN: [u8;58] = hex!("00000000000000007FFC7FFC40180010003000200060004000C000800180010003000200060004000C0008000000000000000000000000000000");
 pub static EIGHT: [u8;58] = hex!("000000000000000007C00C601830183018301C200E40078003C00CE0187018303018301830181010082007C00000000000000000000000000000");
 pub static NINE: [u8;58] = hex!("000000000000000007800C6018303030301830183018301818180C580798001800300030006000C0018006000000000000000000000000000000");
-pub static ALL: [&[u8]; 10] = [
+pub static ALL: [&[u8; 58]; 10] = [
     &ZERO, &ONE, &TWO, &THREE, &FOUR, &FIVE, &SIX, &SEVEN, &EIGHT, &NINE,
 ];
 
+pub fn expand(img: &[u8; 58]) -> [u8; 464] {
+    let mut i = FixedU8Buf::<464>::new();
+    for j in 0..58 {
+        let px = img.get(j).copied().unwrap_or_default();
+        for k in 0..8 {
+            let sh = 7 - k;
+            let v = (px >> sh) & 0x01;
+            let _ = i.write_u8(v * 0xFF);
+        }
+    }
+    i.take()
+}
 pub const fn get_image() -> LinearStackedImage<464> {
     todo!()
 }
@@ -35,7 +49,7 @@ mod test {
     #[test]
     pub fn test() -> Result<(), Error> {
         for v in ALL {
-            let mut v = v;
+            let mut v = v.as_ref();
             let mut dec = BitStreamDecoder::new(BitsWrapper::Borrowed(&mut v));
             let mut out = FixedU8Buf::<464>::new();
             for _ in 0..464 {

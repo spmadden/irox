@@ -44,6 +44,7 @@ pub mod pwdlg;
 pub mod repainting;
 #[cfg(feature = "serde")]
 pub mod serde;
+pub mod testimage;
 pub mod toolframe;
 pub mod visuals;
 #[cfg(target_arch = "wasm32")]
