@@ -19,10 +19,11 @@ use irox_units::shapes::circular::CircularDimension;
 use irox_units::shapes::Ellipse;
 use irox_units::units::angle::{Angle, AngleUnits};
 use irox_units::units::compass::Azimuth;
-use irox_units::units::length::Length;
+use irox_units::units::length::{Length, LengthUnits};
 
 use alloc::string::{String, ToString};
 use irox_tools::format;
+use irox_units::units::Unit;
 
 cfg_feature_std! {
     use crate::ecef::{ECEF, WGS84ECEF};
@@ -69,20 +70,68 @@ pub enum RelativeCoordinateType {
     Cartesian(CartesianCoordinate),
     Horizontal(HorizontalCoordinate),
 }
-
+#[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)]
+pub struct GeocentricLatitude(pub Angle);
 /// Forcing type for Latitude
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)]
 pub struct Latitude(pub Angle);
+impl Latitude {
+    #[must_use]
+    pub const fn min_value() -> Self {
+        Self(Angle::new_degrees(-90.))
+    }
+
+    #[cfg(feature = "std")]
+    pub fn geocentric_latitude(
+        &self,
+        ellipsoid: &crate::geo::ellipsoid::Ellipsoid,
+    ) -> GeocentricLatitude {
+        let m = 1. - ellipsoid.first_eccentricity_squared();
+        let a = Angle::new_radians((self.tan() * m).atan());
+        GeocentricLatitude(a)
+    }
+}
 impl Deref for Latitude {
     type Target = Angle;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
+macro_rules! implops {
+    ($ty:ident) => {
+        impl core::ops::Add for $ty {
+            type Output = Self;
+
+            fn add(self, rhs: Self) -> Self::Output {
+                $ty(self.0 + rhs.0)
+            }
+        }
+        impl core::ops::Sub for $ty {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                Self(self.0 - rhs.0)
+            }
+        }
+        impl From<Angle> for $ty {
+            fn from(value: Angle) -> Self {
+                Self(value)
+            }
+        }
+    };
+}
+implops!(Latitude);
+implops!(Longitude);
 
 /// Forcing type for Longitude
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)]
 pub struct Longitude(pub Angle);
+impl Longitude {
+    #[must_use]
+    pub const fn min_value() -> Self {
+        Self(Angle::new_degrees(-180.))
+    }
+}
 impl Deref for Longitude {
     type Target = Angle;
     fn deref(&self) -> &Self::Target {
@@ -221,6 +270,22 @@ impl EllipticalCoordinate {
     pub fn position_uncertainty(&self) -> &Option<PositionUncertainty> {
         &self.position_uncertainty
     }
+
+    #[must_use]
+    pub fn as_unit(&self, unit: AngleUnits) -> Self {
+        Self {
+            latitude: Latitude(self.latitude.as_unit(unit)),
+            longitude: Longitude(self.longitude.as_unit(unit)),
+            ..*self
+        }
+    }
+
+    #[cfg(feature = "std")]
+    pub fn geocentric_latitude(&self) -> Result<Angle, ConvertError> {
+        let e = self.reference_frame.as_ellipsoid()?;
+        let m = 1. - e.first_eccentricity_squared();
+        Ok(Angle::new_radians((self.latitude.0.tan() * m).atan()))
+    }
 }
 
 ///
@@ -354,17 +419,20 @@ impl Display for CartesianCoordinate {
 
 impl CartesianCoordinate {
     #[must_use]
-    pub fn new(x: Length, y: Length, z: Length) -> CartesianCoordinate {
+    pub const fn new(x: Length, y: Length, z: Length) -> CartesianCoordinate {
         CartesianCoordinate {
             x,
             y,
             z,
-            ..CartesianCoordinate::default()
+            altitude: None,
+            altitude_uncertainty: None,
+            position_uncertainty: None,
+            timestamp: None,
         }
     }
 
     #[must_use]
-    pub fn new_meters(x_meters: f64, y_meters: f64, z_meters: f64) -> CartesianCoordinate {
+    pub const fn new_meters(x_meters: f64, y_meters: f64, z_meters: f64) -> CartesianCoordinate {
         Self::new(
             Length::new_meters(x_meters),
             Length::new_meters(y_meters),
@@ -421,6 +489,19 @@ impl CartesianCoordinate {
     #[must_use]
     pub fn position_uncertainty(&self) -> &Option<PositionUncertainty> {
         &self.position_uncertainty
+    }
+
+    #[must_use]
+    pub fn as_units(&self, units: LengthUnits) -> Self {
+        Self {
+            x: self.x.as_unit(units),
+            y: self.y.as_unit(units),
+            z: self.z.as_unit(units),
+            altitude: self.altitude.map(|v| v.as_unit(units)),
+            altitude_uncertainty: self.altitude_uncertainty.map(|v| v.as_unit(units)),
+            position_uncertainty: self.position_uncertainty.map(|v| v.as_unit(units)),
+            timestamp: None,
+        }
     }
 }
 
@@ -511,7 +592,17 @@ pub enum PositionUncertainty {
     /// Represents an uncertainty represented as an ellipse, optionally oriented
     EllipticalUncertainty(Ellipse),
 }
-
+impl PositionUncertainty {
+    #[must_use]
+    pub fn as_unit(&self, unit: LengthUnits) -> Self {
+        match self {
+            PositionUncertainty::CircularUncertainty(c) => {
+                PositionUncertainty::CircularUncertainty(c.as_unit(unit))
+            }
+            PositionUncertainty::EllipticalUncertainty(_) => *self,
+        }
+    }
+}
 impl Display for PositionUncertainty {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {

@@ -7,7 +7,8 @@
 
 use core::fmt::{Display, Formatter};
 
-use irox_units::units::length::Length;
+use irox_units::units::length::{Length, LengthUnits};
+use irox_units::units::Unit;
 
 /// The reference or zero point for a particular Altitude value
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
@@ -89,6 +90,14 @@ impl Altitude {
     #[must_use]
     pub fn reference_frame(&self) -> AltitudeReferenceFrame {
         self.reference_frame
+    }
+
+    #[must_use]
+    pub fn as_unit(&self, unit: LengthUnits) -> Self {
+        Self {
+            value: self.value.as_unit(unit),
+            reference_frame: self.reference_frame,
+        }
     }
 }
 
