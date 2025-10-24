@@ -1761,6 +1761,7 @@ version = "0.6.5"
 dependencies = [
  "irox-csv",
  "irox-enums",
+ "irox-stats",
  "irox-time",
  "irox-tools",
  "irox-units",
