@@ -1,22 +1,42 @@
-use egui::epaint::RectShape;
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 use egui::*;
 use irox_egui_extras::drawpanel::DrawPanel;
 use irox_egui_extras::fonts::{load_fonts, FontSet};
-use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
-use log::error;
+use irox_egui_extras::testimage::TestImage;
+use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
+use log::{error, Level};
 
 pub fn main() {
-    let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
+    irox_log::init_console_level(Level::Info);
+    let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 1024.));
 
     let native_options = eframe::NativeOptions {
         viewport,
-
+        multisampling: 0,
         ..Default::default()
     };
     if let Err(e) = eframe::run_native(
         "draw-panels",
         native_options,
-        Box::new(|cc| Ok(Box::new(ToolFrame::new(cc, Box::new(TestApp::new(cc)))))),
+        Box::new(|cc| {
+            cc.egui_ctx.set_pixels_per_point(1.0);
+            cc.egui_ctx.set_zoom_factor(1. / 1.25);
+            cc.egui_ctx.tessellation_options_mut(|v| {
+                v.feathering = false;
+                v.round_rects_to_pixels = false;
+            });
+            Ok(Box::new(ToolFrame::new_opts(
+                cc,
+                Box::new(TestApp::new(cc)),
+                ToolFrameOptions {
+                    full_speed: false,
+                    show_rendering_stats: true,
+                },
+            )))
+        }),
     ) {
         error!("{e:?}");
     };
@@ -24,6 +44,7 @@ pub fn main() {
 pub struct TestApp {
     panel: DrawPanel,
     init: bool,
+    img: Vec<TextureHandle>,
 }
 impl TestApp {
     pub fn new(cc: &eframe::CreationContext) -> Self {
@@ -31,25 +52,25 @@ impl TestApp {
         TestApp {
             panel: DrawPanel::default(),
             init: false,
+            img: Default::default(),
         }
     }
-    pub fn init(&mut self) {
+    pub fn init(&mut self, ctx: &Context) {
         if self.init {
             return;
         }
         self.init = true;
-
-        self.panel.shapes.push(Shape::Rect(RectShape::new(
-            Rect::from_x_y_ranges(-50.0..=50.0, -50.0..=50.0),
-            CornerRadius::ZERO,
-            Color32::BLACK,
-            Stroke::new(1.0, Color32::BLACK),
-            StrokeKind::Middle,
-        )));
+        let TestImage {
+            mut shapes,
+            handles,
+        } = TestImage::new(ctx);
+        self.img = handles;
+        self.panel.shapes.append(&mut shapes);
     }
 }
 impl eframe::App for TestApp {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+        self.init(ctx);
         CentralPanel::default().show(ctx, |ui| {
             self.panel.show(ui);
         });
