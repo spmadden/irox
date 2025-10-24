@@ -55,19 +55,7 @@ pub enum StandardShapes {
 
 impl From<&StandardShapes> for Ellipse {
     fn from(value: &StandardShapes) -> Self {
-        match value {
-            StandardShapes::WGS84 => WGS84_PARAMS,
-            StandardShapes::WGS84_MeanRadius => WGS84_MEAN_RADIUS_PARAMS,
-            StandardShapes::WGS84_EqualAreaSphere => WGS84_EQUAL_AREA_SPHERE_PARAMS,
-            StandardShapes::WGS84_EqualVolumeSphere => WGS84_EQUAL_VOLUME_SPHERE_PARAMS,
-
-            StandardShapes::Hayford_International | StandardShapes::NavionicsMercator => {
-                INTERNATIONAL_PARAMS
-            }
-            StandardShapes::Airy => AIRY_PARAMS,
-            StandardShapes::GRS80 | StandardShapes::NAD83 => GRS80_PARAMS,
-            StandardShapes::Clarke1866 | StandardShapes::NAD27 => CLARKE_1866_PARAMS,
-        }
+        value.as_ellipse()
     }
 }
 
@@ -84,8 +72,20 @@ impl From<StandardShapes> for EllipticalShape {
 
 impl StandardShapes {
     #[must_use]
-    pub fn as_ellipse(&self) -> Ellipse {
-        self.into()
+    pub const fn as_ellipse(&self) -> Ellipse {
+        match self {
+            StandardShapes::WGS84 => WGS84_PARAMS,
+            StandardShapes::WGS84_MeanRadius => WGS84_MEAN_RADIUS_PARAMS,
+            StandardShapes::WGS84_EqualAreaSphere => WGS84_EQUAL_AREA_SPHERE_PARAMS,
+            StandardShapes::WGS84_EqualVolumeSphere => WGS84_EQUAL_VOLUME_SPHERE_PARAMS,
+
+            StandardShapes::Hayford_International | StandardShapes::NavionicsMercator => {
+                INTERNATIONAL_PARAMS
+            }
+            StandardShapes::Airy => AIRY_PARAMS,
+            StandardShapes::GRS80 | StandardShapes::NAD83 => GRS80_PARAMS,
+            StandardShapes::Clarke1866 | StandardShapes::NAD27 => CLARKE_1866_PARAMS,
+        }
     }
 
     #[must_use]
