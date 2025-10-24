@@ -6,7 +6,7 @@
 //! Streaming Statistics
 //!
 
-use core::fmt::{Debug, Formatter};
+use core::fmt::{Debug, Display, Formatter};
 use core::ops::{Add, Div, Mul, Sub};
 use irox_tools::f64::FloatExt;
 
@@ -517,6 +517,21 @@ where
     #[must_use]
     pub fn num_samples(&self) -> u64 {
         self.mean.get_num_samples()
+    }
+}
+impl<T> Display for Summary<T>
+where
+    T: Default + Display + Copy,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        core::write!(
+            f,
+            "min({}) max({}) mean({}) stddev({})",
+            self.min.min_val.unwrap_or_default(),
+            self.max.max_val.unwrap_or_default(),
+            self.mean.last_mean.unwrap_or_default(),
+            self.stdev.last_result.unwrap_or_default()
+        )
     }
 }
 
