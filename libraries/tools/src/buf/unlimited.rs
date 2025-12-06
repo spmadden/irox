@@ -69,19 +69,23 @@ impl<T: Clone> UnlimitedBuffer<T> {
     }
 
     pub fn front(&self) -> Option<&T> {
-        self.data.front().and_then(|v| v.front())
+        let v = self.data.front()?;
+        v.front()
     }
 
     pub fn front_mut(&mut self) -> Option<&mut T> {
-        self.data.front_mut().and_then(|v| v.front_mut())
+        let v = self.data.front_mut()?;
+        v.front_mut()
     }
 
     pub fn back(&self) -> Option<&T> {
-        self.data.back().and_then(|v| v.back())
+        let v = self.data.back()?;
+        v.back()
     }
 
     pub fn back_mut(&mut self) -> Option<&mut T> {
-        self.data.back_mut().and_then(|v| v.back_mut())
+        let v = self.data.back_mut()?;
+        v.back_mut()
     }
 
     ///
@@ -157,9 +161,7 @@ impl<T: Clone> UnlimitedBuffer<T> {
     ///
     /// Iterate over each block of data stored
     pub fn iter_blocks<F: FnMut(&[Option<T>])>(&mut self, mut f: F) {
-        self.data.iter().for_each(|v| {
-            v.raw_buf(&mut f)
-        })
+        self.data.iter().for_each(|v| v.raw_buf(&mut f))
     }
 }
 

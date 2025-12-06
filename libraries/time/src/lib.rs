@@ -8,7 +8,7 @@
 //!  * [`crate`] - Contains the base `Time` struct, describing a standard `Hours/minutes/seconds` framework.
 //!  * [`datetime`] - Contains `UTCDateTime` structs, describing a `Date` with a `Time`
 //!  * [`epoch`] - Contains `Epoch`, `UnixEpoch`, `GPSEpoch`, and others, providing the datum anchor for timestamps
-//!     `UnixTimestamp`, `GPSTimestamp`, etc.
+//!    `UnixTimestamp`, `GPSTimestamp`, etc.
 //!  * [`gregorian`] - Contains `Date` and `Month`, that describe a gregorian calendar date.
 //!  * [`julian`] - Contains `JulianDate` and it's associated epochs.
 //!  * [`crate::format`] - Contains `Format` and `FormatParser` to tranlate dates to and from strings.

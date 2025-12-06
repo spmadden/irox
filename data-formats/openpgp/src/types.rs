@@ -470,7 +470,7 @@ impl MPI {
     #[allow(clippy::if_then_some_else_none)]
     pub fn try_from<T: Bits>(i: &mut T, is_curve: bool) -> Result<Self, Error> {
         let nbits = i.read_be_u16()?;
-        let mut len = (nbits + 7) / 8;
+        let mut len = nbits.div_ceil(8);
         let curve_prefix = if is_curve {
             len -= 1;
             Some(i.read_u8()?)
@@ -485,7 +485,7 @@ impl MPI {
         })
     }
     pub fn num_bytes(&self) -> usize {
-        let mut len = ((self.nbits + 7) / 8) as usize;
+        let mut len = self.nbits.div_ceil(8) as usize;
         if self.curve_prefix.is_some() {
             len += 1;
         }
