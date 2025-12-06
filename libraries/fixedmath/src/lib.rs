@@ -312,6 +312,14 @@ macro_rules! impl_unsigned_flops {
             fn significand(self) -> Self::Size {
                 irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
             }
+
+            fn sin(self) -> Self::Type {
+                todo!()
+            }
+
+            fn cos(self) -> Self::Type {
+                todo!()
+            }
         }
     };
 }
@@ -449,6 +457,14 @@ macro_rules! impl_signed_flops {
 
             fn significand(self) -> Self::Size {
                 irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
+            }
+
+            fn sin(self) -> Self::Type {
+                todo!()
+            }
+
+            fn cos(self) -> Self::Type {
+                todo!()
             }
         }
     };

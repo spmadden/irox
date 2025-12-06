@@ -52,6 +52,8 @@ pub trait FloatExt {
     fn to_bits(self) -> Self::Size;
     fn exponent(self) -> u16;
     fn significand(self) -> Self::Size;
+    fn sin(self) -> Self::Type;
+    fn cos(self) -> Self::Type;
 }
 
 #[cfg(not(feature = "std"))]
@@ -189,6 +191,13 @@ impl FloatExt for f64 {
     fn significand(self) -> Self::Size {
         self.to_bits() & 0xF_FFFF_FFFF_FFFF
     }
+
+    fn sin(self) -> Self::Type {
+        todo!()
+    }
+    fn cos(self) -> Self::Type {
+        todo!()
+    }
 }
 
 #[cfg(feature = "std")]
@@ -254,6 +263,14 @@ impl FloatExt for f64 {
 
     fn significand(self) -> Self::Size {
         self.to_bits() & 0xF_FFFF_FFFF_FFFF
+    }
+
+    fn sin(self) -> Self::Type {
+        f64::sin(self)
+    }
+
+    fn cos(self) -> Self::Type {
+        f64::cos(self)
     }
 }
 

@@ -98,14 +98,6 @@ impl crate::f64::FloatExt for f32 {
         (out * 2.0) as f32
     }
 
-    ///
-    /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
-    fn powf(self, a: Self::Type) -> Self::Type {
-        let z = self;
-
-        (a * z.ln()).exp()
-    }
-
     /// Naive implementation of integer power fn.  Will do something smarter later.
     fn powi(self, val: i32) -> Self::Type {
         let mut out = self;
@@ -114,6 +106,14 @@ impl crate::f64::FloatExt for f32 {
             out *= i;
         }
         out
+    }
+
+    ///
+    /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
+    fn powf(self, a: Self::Type) -> Self::Type {
+        let z = self;
+
+        (a * z.ln()).exp()
     }
 
     fn sqrt(self) -> Self::Type {
@@ -130,6 +130,22 @@ impl crate::f64::FloatExt for f32 {
 
     fn significand(self) -> Self::Size {
         self.to_bits() & 0x7FFFFF
+    }
+
+    fn sin(self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::sin(self)
+        } else {
+            todo!()
+        }
+    }
+
+    fn cos(self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::cos(self)
+        } else {
+            todo!()
+        }
     }
 }
 
