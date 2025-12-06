@@ -142,14 +142,14 @@ fn default() -> Result<(), Error> {
 }
 
 fn ci() -> Result<(), Error> {
-    deny()?;
-    format_check()?;
-    lints_deny()?;
     check_all()?;
     test()?;
+    lints_deny()?;
+    format_check()?;
     about()?;
     doc()?;
     upgrade()?;
+    deny()?;
     Ok(())
 }
 
