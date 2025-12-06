@@ -546,18 +546,20 @@ pub trait Bits {
         /// 2. The input reader returns 0 bytes read (or errors out)
         ///
         /// Note: The input stream position is left JUST AFTER the found search string.
-        fn consume_until(&mut self, search: &[u8]) -> Result<(), Error> {
+        ///
+        /// Returns true if the search was found, false otherwise.
+        fn consume_until(&mut self, search: &[u8]) -> Result<bool, Error> {
             let mut ringbuf: alloc::collections::VecDeque<u8> =
                 alloc::collections::VecDeque::with_capacity(search.len());
             self.read_exact_into(search.len(), &mut ringbuf)?;
 
             loop {
                 if ringbuf.iter().eq(search) {
-                    return Ok(());
+                    return Ok(true);
                 }
 
                 let Some(val) = self.next_u8()? else {
-                    return Ok(());
+                    return Ok(false);
                 };
 
                 ringbuf.pop_front();
