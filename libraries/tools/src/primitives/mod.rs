@@ -223,3 +223,44 @@ impl_to_u64!(f32);
 impl_to_u64!(f64);
 impl_to_u64!(bool);
 impl_to_u64!(char);
+
+pub trait One {
+    const ONE: Self;
+}
+pub trait Zero {
+    const ZERO: Self;
+}
+
+macro_rules! impl_onezero_f {
+    ($typ:ty) => {
+        impl One for $typ {
+            const ONE: Self = 1.0;
+        }
+        impl Zero for $typ {
+            const ZERO: Self = 0.0;
+        }
+    };
+}
+impl_onezero_f!(f32);
+impl_onezero_f!(f64);
+
+macro_rules! impl_onezero_i {
+    ($typ:ty) => {
+        impl One for $typ {
+            const ONE: Self = 1;
+        }
+        impl Zero for $typ {
+            const ZERO: Self = 0;
+        }
+    };
+}
+impl_onezero_i!(u8);
+impl_onezero_i!(i8);
+impl_onezero_i!(u16);
+impl_onezero_i!(i16);
+impl_onezero_i!(u32);
+impl_onezero_i!(i32);
+impl_onezero_i!(u64);
+impl_onezero_i!(i64);
+impl_onezero_i!(u128);
+impl_onezero_i!(i128);
