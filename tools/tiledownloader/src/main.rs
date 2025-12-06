@@ -1,13 +1,19 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 #![allow(clippy::print_stderr)]
 #![allow(clippy::print_stdout)]
 #![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 
 use clap::Parser;
-use indicatif::{ProgressBar, ProgressStyle};
 use irox_carto::coordinate::{EllipticalCoordinate, Latitude, Longitude};
 use irox_carto::epsg3857::SphericalMercatorProjection;
+use irox_progress::console::ConsoleProgressPrinter;
+use irox_progress::{ProgressPrinter, Task};
 use irox_tiledownloader::{config::Config, status::DownloadStatus, tile::TileData, url::URLParams};
 use irox_units::units::angle::Angle;
+use irox_units::units::duration::Duration;
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     ClientBuilder,
@@ -79,13 +85,14 @@ fn main() {
     ) {
         eprintln!("Error updating bounding box: {e}")
     }
-
+    let nzoom = max_zoom - min_zoom;
     let (tx, rx) = std::sync::mpsc::sync_channel(10);
     let joiner = std::thread::spawn(move || {
-        let mut pb = create_progress_bar(0);
-        let mut num_done = 0;
+        let pb = create_progress_bar();
+        let overall_task = Task::new_named("Download Task".to_string(), nzoom as u64);
+        pb.track_task_progress(&overall_task);
+        let mut current_level_task: Option<Task> = None;
         loop {
-            pb.tick();
             let Ok(cmd): Result<DownloadStatus, _> = rx.recv() else {
                 eprintln!("consumer thread closed");
                 break;
@@ -95,15 +102,28 @@ fn main() {
                     if let Err(e) = outfile.insert_tile(&data.as_tile_data()) {
                         eprintln!("Error {e:?}");
                     };
-                    num_done += 1;
-                    pb.set_position(num_done);
+                    if let Some(clt) = &current_level_task {
+                        clt.mark_some_completed(1);
+                    }
                 }
                 DownloadStatus::TileComplete(_addr) => {
-                    num_done += 1;
-                    pb.set_position(num_done);
+                    if let Some(clt) = &current_level_task {
+                        clt.mark_some_completed(1);
+                    }
                 }
-                DownloadStatus::ZoomLevelStarted(_zl, num_tiles) => {
-                    pb = create_progress_bar(num_tiles);
+                DownloadStatus::ZoomLevelStarted(zl, num_tiles) => {
+                    if let Some(clt) = current_level_task.take() {
+                        clt.mark_ended();
+                        clt.mark_all_completed();
+                        overall_task.mark_one_completed();
+                    }
+                    let newtask = overall_task.new_child_task(
+                        zl as u64,
+                        format!("Zoom Level {zl}"),
+                        num_tiles,
+                    );
+                    newtask.mark_started();
+                    current_level_task = Some(newtask);
                 }
                 DownloadStatus::ZoomLevelComplete(zl) => {
                     if let Err(e) = outfile.update_min_max_zooms(zl) {
@@ -111,6 +131,7 @@ fn main() {
                     }
                 }
                 DownloadStatus::Done => {
+                    overall_task.mark_all_completed();
                     break;
                 }
             };
@@ -121,7 +142,6 @@ fn main() {
         } else {
             println!("Database GC done.");
         }
-        pb.tick();
     });
 
     let upper_left = EllipticalCoordinate::new_degrees_wgs84(max_lat_deg, min_lon_deg);
@@ -238,11 +258,8 @@ fn main() {
     };
 }
 
-pub fn create_progress_bar(total_tiles: u64) -> ProgressBar {
-    let pb = ProgressBar::new(total_tiles);
-    if let Ok(st) = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {per_sec} {human_pos}/{human_len} ({eta_precise})") {
-        let st = st.progress_chars("#>-");
-        pb.set_style(st);
-    }
-    pb
+pub fn create_progress_bar() -> Box<dyn ProgressPrinter> {
+    Box::new(ConsoleProgressPrinter::new_update_rate(
+        Duration::from_millis(250),
+    ))
 }
