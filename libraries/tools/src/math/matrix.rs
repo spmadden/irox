@@ -4,12 +4,9 @@
 
 #![allow(clippy::indexing_slicing)]
 
-use crate::ToSigned;
-use core::ops::{Add, AddAssign, Deref, DerefMut, Index, IndexMut, Mul, Sub};
-
-cfg_feature_std! {
-    use crate::ToF64;
-}
+use crate::f64::FloatExt;
+use crate::{One, ToSigned, Zero};
+use core::ops::{Add, AddAssign, Deref, DerefMut, Index, IndexMut, Mul, Neg, Sub};
 
 pub trait AsMatrix<const M: usize, const N: usize, T: Sized + Copy + Default> {
     fn as_matrix(&self) -> Matrix<M, N, T>;
@@ -93,16 +90,18 @@ impl<const M: usize, const N: usize, T: Sized + Copy + Default> AsMatrix<M, N, T
         self.into()
     }
 }
-impl<const M: usize, const N: usize> Matrix<M, N, f64> {
+impl<const M: usize, const N: usize, T: Default + Copy + Zero + AddAssign + Mul<Output = T>>
+    Matrix<M, N, T>
+{
     #[must_use]
-    pub const fn mul<const P: usize>(&self, other: Matrix<N, P, f64>) -> Matrix<M, P, f64> {
-        let mut out = [[0.0f64; P]; M];
+    pub fn mul<const P: usize>(&self, other: Matrix<N, P, T>) -> Matrix<M, P, T> {
+        let mut out = [[T::ZERO; P]; M];
         let mut m = 0;
         while m < M {
             let mut p = 0;
             while p < P {
                 let mut n = 0;
-                let mut sum = 0.0;
+                let mut sum = T::ZERO;
                 while n < N {
                     sum += self.values[m][n] * other.values[n][p];
                     n += 1;
@@ -124,24 +123,21 @@ pub struct LUPDecomposition<const M: usize, const N: usize, T: Sized + Copy + De
 
 macro_rules! impl_square {
     ($N:literal) => {
-        impl<T: Sized + Copy + Default> Matrix<$N, $N, T> {
+        impl<T: Sized + Copy + Default + One> Matrix<$N, $N, T> {
             #[must_use]
             pub fn empty() -> Self {
                 Self {
                     values: [<[T; $N]>::default(); $N],
                 }
             }
-        }
-        impl Matrix<$N, $N, f64> {
             #[must_use]
             pub fn identity() -> Self {
                 let mut out = Self::empty();
                 for i in 0..$N {
-                    out[i][i] = 1.0;
+                    out[i][i] = One::ONE;
                 }
                 out
             }
-
             #[must_use]
             pub fn transpose(&self) -> Self {
                 let mut out = Self::empty();
@@ -152,7 +148,8 @@ macro_rules! impl_square {
                 }
                 out
             }
-
+        }
+        impl Matrix<$N, $N, f64> {
             pub fn lup_decompose(&self) -> LUPDecomposition<$N, $N, f64> {
                 let mut l = Self::identity();
                 let mut u = self.clone();
@@ -274,11 +271,11 @@ impl Matrix<2, 2, f64> {
     }
 
     #[must_use]
-    pub const fn sheered_x(factor: f64) -> Self {
+    pub fn sheered_x(factor: f64) -> Self {
         Self::new([[1., factor], [0., 1.]])
     }
     #[must_use]
-    pub const fn sheer_x(&self, factor: f64) -> Self {
+    pub fn sheer_x(&self, factor: f64) -> Self {
         self.mul(Self::sheered_x(factor))
     }
     #[must_use]
@@ -286,7 +283,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[1., 0.], [factor, 1.]])
     }
     #[must_use]
-    pub const fn sheer_y(&self, factor: f64) -> Self {
+    pub fn sheer_y(&self, factor: f64) -> Self {
         self.mul(Self::sheered_y(factor))
     }
 
@@ -295,7 +292,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[factor, 0.], [0., 1.]])
     }
     #[must_use]
-    pub const fn scale_x(&self, factor: f64) -> Self {
+    pub fn scale_x(&self, factor: f64) -> Self {
         self.mul(Self::scaled_x(factor))
     }
 
@@ -304,7 +301,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[1., 0.], [0., factor]])
     }
     #[must_use]
-    pub const fn scale_y(&self, factor: f64) -> Self {
+    pub fn scale_y(&self, factor: f64) -> Self {
         self.mul(Self::scaled_y(factor))
     }
 
@@ -313,7 +310,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[factor, 0.], [0., factor]])
     }
     #[must_use]
-    pub const fn scale(&self, factor: f64) -> Self {
+    pub fn scale(&self, factor: f64) -> Self {
         self.mul(Self::scaled(factor))
     }
     #[must_use]
@@ -321,7 +318,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[-1., 0.], [0., -1.]])
     }
     #[must_use]
-    pub const fn reflect(&self) -> Self {
+    pub fn reflect(&self) -> Self {
         self.mul(Self::reflected())
     }
 
@@ -330,7 +327,7 @@ impl Matrix<2, 2, f64> {
         Self::new([[1., 0.], [0., -1.]])
     }
     #[must_use]
-    pub const fn reflect_x(&self) -> Self {
+    pub fn reflect_x(&self) -> Self {
         self.mul(Self::reflected_x())
     }
     #[must_use]
@@ -338,86 +335,135 @@ impl Matrix<2, 2, f64> {
         Self::new([[-1., 0.], [0., 1.]])
     }
     #[must_use]
-    pub const fn reflect_y(&self) -> Self {
+    pub fn reflect_y(&self) -> Self {
         self.mul(Self::reflected_y())
     }
 }
-impl Matrix<3, 1, f64> {
+impl<
+        T: Copy
+            + Default
+            + FloatExt<Type = T>
+            + One
+            + Zero
+            + Neg<Output = T>
+            + Add
+            + AddAssign<T>
+            + Mul<Output = T>,
+    > Matrix<3, 1, T>
+{
     #[must_use]
-    pub const fn translate(&self, x: f64, y: f64) -> Self {
+    pub fn translate(&self, x: T, y: T) -> Self {
         Matrix::mul(
-            &Matrix::new([[1., 0., x], [0., 1., y], [0., 0., 1.]]),
+            &Matrix::new([
+                [T::ONE, T::ZERO, x],
+                [T::ZERO, T::ONE, y],
+                [T::ZERO, T::ZERO, T::ONE],
+            ]),
             *self,
         )
     }
     cfg_feature_std! {
         #[must_use]
-        pub fn rotate_x<T: ToF64 + Copy>(&self, angle: T) -> Self {
-            Matrix::<3, 3, f64>::rotated_x(angle).mul(*self)
+        pub fn rotate_x(&self, angle: T) -> Self {
+            Matrix::<3, 3, T>::rotated_x(angle).mul(*self)
         }
         #[must_use]
-        pub fn rotate_y<T: ToF64 + Copy>(&self, angle: T) -> Self {
-            Matrix::<3, 3, f64>::rotated_y(angle).mul(*self)
+        pub fn rotate_y(&self, angle: T) -> Self {
+            Matrix::<3, 3, T>::rotated_y(angle).mul(*self)
         }
         #[must_use]
-        pub fn rotate_z<T: ToF64 + Copy>(&self, angle: T) -> Self {
-            Matrix::<3, 3, f64>::rotated_z(angle).mul(*self)
+        pub fn rotate_z(&self, angle: T) -> Self {
+            Matrix::<3, 3, T>::rotated_z(angle).mul(*self)
         }
         #[must_use]
-        pub fn rotate_zyx<T: ToF64 + Copy>(&self, x_angle: T, y_angle: T, z_angle: T) -> Self {
-            Matrix::<3, 3, f64>::rotated_zyx(x_angle, y_angle, z_angle).mul(*self)
+        pub fn rotate_zyx(&self, x_angle: T, y_angle: T, z_angle: T) -> Self {
+            Matrix::<3, 3, T>::rotated_zyx(x_angle, y_angle, z_angle).mul(*self)
         }
     }
 }
-impl Matrix<3, 3, f64> {
+impl<
+        T: Copy
+            + Default
+            + FloatExt<Type = T>
+            + One
+            + Zero
+            + Neg<Output = T>
+            + Add
+            + AddAssign<T>
+            + Mul<Output = T>,
+    > Matrix<3, 3, T>
+{
     cfg_feature_std! {
         #[must_use]
-        pub fn rotated_x<T: ToF64 + Copy>(angle: T) -> Self {
-        let angle = angle.to_f64();
+        pub fn rotated_x(angle: T) -> Self {
             Self::new([
-                [1., 0., 0.],
-                [0., angle.cos(), -angle.sin()],
-                [0., angle.sin(), angle.cos()],
+                [T::ONE, T::ZERO, T::ZERO],
+                [T::ZERO, angle.cos(), -angle.sin()],
+                [T::ZERO, angle.sin(), angle.cos()],
             ])
         }
         #[must_use]
-        pub fn rotate_x<T: ToF64 + Copy>(&self, angle: T) -> Self {
+        pub fn rotate_x(&self, angle: T) -> Self {
             self.mul(Self::rotated_x(angle))
         }
         #[must_use]
-        pub fn rotated_y<T: ToF64 + Copy>(angle: T) -> Self {
-            let angle = angle.to_f64();
+        pub fn rotated_y(angle: T) -> Self {
                 Self::new([
-                    [angle.cos(), 0.0, angle.sin()],
-                    [0., 1., 0.],
-                    [-angle.sin(), 0., angle.cos()],
+                    [angle.cos(), T::ZERO, angle.sin()],
+                    [T::ZERO, T::ONE, T::ZERO],
+                    [-angle.sin(), T::ZERO, angle.cos()],
                 ])
             }
             #[must_use]
-        pub fn rotate_y<T: ToF64 + Copy>(&self, angle: T) -> Self {
+        pub fn rotate_y(&self, angle: T) -> Self {
             self.mul(Self::rotated_y(angle))
         }
         #[must_use]
-        pub fn rotated_z<T: ToF64 + Copy>(angle: T) -> Self {
-            let angle = angle.to_f64();
+        pub fn rotated_z(angle: T) -> Self {
                 Self::new([
-                    [angle.cos(), angle.sin(), 0.],
-                    [-angle.sin(), angle.cos(), 0.],
-                    [0., 0., 1.],
+                    [angle.cos(), angle.sin(), T::ZERO],
+                    [-angle.sin(), angle.cos(), T::ZERO],
+                    [T::ZERO,T::ZERO, T::ONE],
                 ])
             }
         #[must_use]
-        pub fn rotate_z<T: ToF64 + Copy>(&self, angle: T) -> Self {
+        pub fn rotate_z(&self, angle: T) -> Self {
             self.mul(Self::rotated_z(angle))
         }
 
         #[must_use]
-        pub fn rotated_zyx<T: ToF64 + Copy>(x_angle: T, y_angle: T, z_angle: T) -> Self {
+        pub fn rotated_zyx(x_angle: T, y_angle: T, z_angle: T) -> Self {
             Self::rotated_z(z_angle).rotate_y(y_angle).rotate_x(x_angle)
         }
         #[must_use]
-        pub fn rotate_zyx<T: ToF64 + Copy>(&self, x_angle: T, y_angle: T, z_angle: T) -> Self {
+        pub fn rotate_zyx(&self, x_angle: T, y_angle: T, z_angle: T) -> Self {
             self.rotate_z(z_angle).rotate_y(y_angle).rotate_x(x_angle)
+        }
+
+         #[must_use]
+        pub const fn scaled_x(factor: T) -> Self {
+            Self::new([[factor, T::ZERO, T::ZERO], [T::ZERO, T::ONE, T::ZERO], [T::ZERO, T::ZERO, T::ONE]])
+        }
+        #[must_use]
+        pub fn scale_x(&self, factor: T) -> Self {
+            self.mul(Self::scaled_x(factor))
+        }
+
+        #[must_use]
+        pub const fn scaled_y(factor: T) -> Self {
+            Self::new([[T::ONE, T::ZERO, T::ZERO], [T::ZERO, factor, T::ZERO], [T::ZERO, T::ZERO, T::ONE]])
+        }
+        #[must_use]
+        pub fn scale_y(&self, factor: T) -> Self {
+            self.mul(Self::scaled_y(factor))
+        }
+        #[must_use]
+        pub const fn scaled_z(factor: T) -> Self {
+            Self::new([[T::ONE, T::ZERO, T::ZERO], [T::ZERO, T::ONE, T::ZERO], [T::ZERO, T::ZERO, factor]])
+        }
+        #[must_use]
+        pub fn scale_z(&self, factor: T) -> Self {
+            self.mul(Self::scaled_z(factor))
         }
     }
 }
