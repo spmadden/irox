@@ -239,7 +239,7 @@ impl Debug for MBTiles {
 pub fn create_mbtiles_db<T: AsRef<Path>>(path: &T, options: &CreateOptions) -> Result<MBTiles> {
     let path = path.as_ref();
     if path.exists() {
-        return Error::io_exists(format!("DB already exists: {path:?}").as_str());
+        return Error::io_exists(format!("DB already exists: {}", path.display()).as_str());
     }
 
     let conn = {

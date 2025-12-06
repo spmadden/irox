@@ -11,7 +11,7 @@ pub struct TempFilePath {
 }
 impl Debug for TempFilePath {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        write!(f, "TempFile({:?})", self.path)
+        write!(f, "TempFile({})", self.path.display())
     }
 }
 
@@ -91,7 +91,7 @@ impl Drop for TempDirPath {
 }
 impl Debug for TempDirPath {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        write!(f, "TempDir({:?})", self.path)
+        write!(f, "TempDir({})", self.path.display())
     }
 }
 impl TempDirPath {
