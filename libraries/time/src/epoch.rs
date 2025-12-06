@@ -256,7 +256,7 @@ impl UnixTimestamp {
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(t) => UnixTimestamp::from_offset(t.into()),
             Err(t) => {
-                UnixTimestamp::from_offset(Duration::new_seconds(-1.0 * t.duration().as_secs_f64()))
+                UnixTimestamp::from_offset(Duration::new_seconds(-t.duration().as_secs_f64()))
             }
         }
     }
