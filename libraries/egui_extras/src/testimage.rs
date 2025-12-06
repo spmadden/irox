@@ -68,16 +68,15 @@ pub fn imgmeshshape(tx: TextureId, drawpos: Rect) -> Shape {
 pub fn walking(ctx: &Context, pat: u64, shr: bool) -> TextureHandle {
     let mut greys = [0u8; 4096];
 
-    let mut off = 0;
     let mut pat = pat;
+    let mut g = greys.iter_mut();
     for _ in 0..64 {
         for i in 0..64 {
             let idx = 63 - i;
             let v = (pat >> idx) & 0x1;
-            if let Some(g) = greys.get_mut(off) {
+            if let Some(g) = g.next() {
                 *g = 0xFF * v as u8;
             }
-            off += 1;
         }
         if shr {
             pat = pat.rotate_right(1);
