@@ -68,7 +68,7 @@ pub struct BuildEnvironment {
     pub(crate) variables: BTreeMap<String, BuildVariable>,
 }
 impl BuildEnvironment {
-    pub fn as_parsed_environment(&self) -> ParsedBuildVariables {
+    pub fn as_parsed_environment(&self) -> ParsedBuildVariables<'_> {
         let mut out = ParsedBuildVariables::default();
         for (k, v) in &self.variables {
             let v = v.value.as_str();

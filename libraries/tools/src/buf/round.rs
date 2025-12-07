@@ -89,7 +89,7 @@ impl<const N: usize, T: Sized> RoundBuffer<N, T> {
             mod_count: 0,
         }
     }
-    pub fn iter(&self) -> Iter<N, T> {
+    pub fn iter(&self) -> Iter<'_, N, T> {
         let iter = Moderator::new_limited(self.head, N, self.size);
         Iter { buf: self, iter }
     }

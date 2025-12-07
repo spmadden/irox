@@ -187,7 +187,7 @@ impl<const N: usize, T: Sized + Default + Copy> FixedBuf<N, T> {
     }
 }
 impl<const N: usize, T: Sized> FixedBuf<N, T> {
-    pub fn iter(&self) -> FixedBufIter<N, T> {
+    pub fn iter(&self) -> FixedBufIter<'_, N, T> {
         FixedBufIter { buf: self, idx: 0 }
     }
 }

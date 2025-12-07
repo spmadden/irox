@@ -146,7 +146,7 @@ impl PartialEq for TiffTagType {
 impl Eq for TiffTagType {}
 impl PartialOrd for TiffTagType {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.tag_id.cmp(&other.tag_id))
+        Some(self.cmp(other))
     }
 }
 impl Ord for TiffTagType {

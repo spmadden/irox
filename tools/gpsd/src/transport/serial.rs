@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2025 IROX Contributors
+//
+
 use std::io::{Read, Write};
 
 use crate::error::GPSdError;
@@ -91,7 +95,7 @@ impl IntoSettings for &SerialConfig {
 
 pub struct SerErr(pub GPSdError);
 
-pub fn open(config: &SerialConfig) -> Result<BitsWrapper<impl Read + Write>, SerErr> {
+pub fn open(config: &SerialConfig) -> Result<BitsWrapper<'_, impl Read + Write>, SerErr> {
     let port = SerialPort::open(&config.serial_port, config)?;
     info!("Successfully opened serial port: {}", config.serial_port);
     let port = BitsWrapper::Owned(port);

@@ -200,7 +200,7 @@ impl<T> SharedCell<T> {
 
     ///
     /// Returns a shared (locked) reference to the inner object
-    pub fn as_ref(&self) -> ReadGuard<T> {
+    pub fn as_ref(&self) -> ReadGuard<'_, T> {
         if let Ok(lock) = self.inner.read() {
             return Some(lock).into();
         }
@@ -215,7 +215,7 @@ impl<T> SharedCell<T> {
     }
     ///
     /// Returns a mutable (locked) reference to the inner object.
-    pub fn as_mut(&self) -> WriteGuard<T> {
+    pub fn as_mut(&self) -> WriteGuard<'_,T> {
         if let Ok(lock) = self.inner.write() {
             return Some(lock).into();
         }

@@ -69,7 +69,7 @@ mod windows {
         pub fn on_location_changed<T: FnMut(WindowsCoordinate) + Send + 'static>(
             &self,
             mut cb: T,
-        ) -> Result<LocationHandler, Error> {
+        ) -> Result<LocationHandler<'_>, Error> {
             let handler = TypedEventHandler::new(
                 move |_sender: &Option<Geolocator>, result: &Option<PositionChangedEventArgs>| {
                     let Some(args) = result else {
@@ -96,7 +96,7 @@ mod windows {
         pub fn on_status_changed<T: FnMut(PositionStatus) + Send + 'static>(
             &self,
             mut cb: T,
-        ) -> Result<StatusHandler, Error> {
+        ) -> Result<StatusHandler<'_>, Error> {
             let handler = TypedEventHandler::new(
                 move |_sender: &Option<Geolocator>, result: &Option<StatusChangedEventArgs>| {
                     let Some(args) = result else {

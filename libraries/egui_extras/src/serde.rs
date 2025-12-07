@@ -36,7 +36,7 @@ impl EguiSerializer {
         }
     }
 
-    pub(crate) fn named(&mut self, named_type: &'static str, name: String) -> Named {
+    pub(crate) fn named(&mut self, named_type: &'static str, name: String) -> Named<'_> {
         Named::new(self, named_type, name)
     }
 }

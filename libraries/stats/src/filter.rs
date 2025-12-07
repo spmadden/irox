@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! This module provides Discrete Convolution Filters for Digital Signals Processing.
@@ -48,7 +49,7 @@ impl StreamingFilter {
 
     ///
     /// Drains the residual data in the buffer to the caller.
-    pub fn drain(&mut self) -> Drain<f64> {
+    pub fn drain(&mut self) -> Drain<'_, f64> {
         self.buffer.drain(..)
     }
 }

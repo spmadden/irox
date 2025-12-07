@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Implementation of the EIEIO traits for NMEA0183.
@@ -34,7 +35,7 @@ impl Codec for NMEA0183Codec {
         NMEA0183Codec::new()
     }
 
-    fn get_codec_id(&self) -> CodecIdentifier {
+    fn get_codec_id(&self) -> CodecIdentifier<'_> {
         CodecIdentifier::new_desc("NMEA-0183", "NMEA-0183 GPS and AIS messages")
     }
 
@@ -42,7 +43,7 @@ impl Codec for NMEA0183Codec {
         vec![MessageType::GnssFix]
     }
 
-    fn get_supported_readers(&self) -> SupportedReaders {
+    fn get_supported_readers(&self) -> SupportedReaders<'_> {
         SupportedReadersBuilder::new().with_bytes(self).build()
     }
 

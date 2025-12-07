@@ -40,7 +40,7 @@ pub fn discover_repo_or_worktree_at<T: AsRef<Path>>(directory: T) -> Result<Repo
 ///
 /// Resolves `HEAD` to a commit for the specified repo.  Returns an error if `HEAD` doesn't exist, or `HEAD` doesn't
 /// point to a commit in the provided repository
-pub fn get_head_for_repo(repo: &Repository) -> Result<Commit, Error> {
+pub fn get_head_for_repo(repo: &Repository) -> Result<Commit<'_>, Error> {
     let Ok(head) = repo.head() else {
         return Error::head(repo.path());
     };
@@ -50,7 +50,7 @@ pub fn get_head_for_repo(repo: &Repository) -> Result<Commit, Error> {
 
 ///
 /// Resolved the branch for `HEAD` if one exists
-pub fn get_branch_for_head(repo: &Repository) -> Result<Branch, Error> {
+pub fn get_branch_for_head(repo: &Repository) -> Result<Branch<'_>, Error> {
     let Ok(reference) = repo.head() else {
         return Error::head(repo.path());
     };

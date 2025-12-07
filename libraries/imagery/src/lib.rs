@@ -29,6 +29,7 @@ pub mod colormaps;
 mod error;
 mod pixel;
 mod stacked;
+pub use stacked::*;
 
 cfg_feature_alloc! {
     mod allocimpls;

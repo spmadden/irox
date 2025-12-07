@@ -97,7 +97,7 @@ impl<T> Eq for Timestamp<T> {}
 
 impl<T> PartialOrd for Timestamp<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.offset.cmp(&other.offset))
+        Some(self.cmp(other))
     }
 }
 impl<T> Ord for Timestamp<T> {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -28,7 +28,7 @@ pub trait Codec {
 
     ///
     /// Returns the unique identifier for this codec implementation
-    fn get_codec_id(&self) -> CodecIdentifier;
+    fn get_codec_id(&self) -> CodecIdentifier<'_>;
 
     ///
     /// Returns a list of the [`MessageType`]s that are supported.  It is expected that if the
@@ -40,7 +40,7 @@ pub trait Codec {
     /// Returns a set of supported reading/parsing operations.
     ///
     /// Writing operations are performed on the message object itself.
-    fn get_supported_readers(&self) -> SupportedReaders;
+    fn get_supported_readers(&self) -> SupportedReaders<'_>;
 
     ///
     /// Returns a new builder for the [`crate::GNSSFix`] type

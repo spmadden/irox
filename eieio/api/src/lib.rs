@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! IROX EIEIO API Traits - A system of abstracting common data-structures behind facades
@@ -51,7 +52,7 @@ pub enum Message {
 pub trait BaseMessage {
     /// Returns a set of encoding methods that this particular message supports.  If no encodings
     /// are possible, then this will be an empty struct full of [`None`]s.
-    fn get_supported_writers(&self) -> SupportedWriters;
+    fn get_supported_writers(&self) -> SupportedWriters<'_>;
 
     ///
     /// Returns the [`MessageType`] for this message.

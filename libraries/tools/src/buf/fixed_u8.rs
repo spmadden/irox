@@ -43,7 +43,7 @@ impl<const N: usize> FixedU8Buf<N> {
 
     ///
     /// Returns an iterator to the data in this buffer
-    pub fn iter(&self) -> FixedU8BufIter<N> {
+    pub fn iter(&self) -> FixedU8BufIter<'_, N> {
         FixedU8BufIter { buf: self, idx: 0 }
     }
 

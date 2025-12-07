@@ -131,7 +131,7 @@ impl SDFConnection {
             .collect())
     }
 
-    pub fn get_tracks(&self) -> Result<Vec<Track>, Error> {
+    pub fn get_tracks(&self) -> Result<Vec<Track<'_>>, Error> {
         Ok(self
             .run_sql("SELECT * FROM Tracks")?
             .iter()

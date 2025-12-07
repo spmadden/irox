@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! A utility to scan for tokens in a byte stream
@@ -234,7 +235,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     /// Returns `Ok(N)` if it found the token in the input stream, or hit the end of the buffer without finding the token
     /// Returns `Ok(None)` if there are no additional characters to read in the buffer - we've hit EOF.
     /// Returns `Err(e)` if there's an error reading from the underlying stream
-    pub fn scan_until_next(&mut self) -> Result<FoundToken<R>, std::io::Error> {
+    pub fn scan_until_next(&mut self) -> Result<FoundToken<'_, R>, std::io::Error> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         let mut num_read = 0;
@@ -257,7 +258,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         })
     }
 
-    pub fn read_next(&mut self) -> Result<ReadToken<R>, std::io::Error> {
+    pub fn read_next(&mut self) -> Result<ReadToken<'_, R>, std::io::Error> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         for char in &mut self.reader {

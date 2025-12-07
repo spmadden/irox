@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -52,7 +52,7 @@ pub trait GNSSFix {
 macro_rules! impl_base {
     ($e:ty) => {
         impl BaseMessage for $e {
-            fn get_supported_writers(&self) -> SupportedWriters {
+            fn get_supported_writers(&self) -> SupportedWriters<'_> {
                 self.get_super().get_supported_writers()
             }
 

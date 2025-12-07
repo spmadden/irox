@@ -40,7 +40,7 @@ impl WriteToString for GNSSFixImpl {
 }
 
 impl BaseMessage for GNSSFixImpl {
-    fn get_supported_writers(&self) -> SupportedWriters {
+    fn get_supported_writers(&self) -> SupportedWriters<'_> {
         SupportedWritersBuilder::new()
             .with_bytes(self)
             .with_string(self)

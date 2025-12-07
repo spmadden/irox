@@ -39,7 +39,9 @@ macro_rules! zeroize {
     ($name:ident,$ty:ty) => {
         #[inline]
         pub fn $name(v: &mut [$ty]) {
-            v.iter_mut().for_each(|x| *x = 0);
+            for x in v.iter_mut() {
+                *x = 0;
+            }
         }
     };
 }
