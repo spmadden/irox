@@ -79,7 +79,7 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
                 continue;
             }
             match line {
-                MESSAGE_HEADER => {
+                MESSAGE_HEADER | SIGNED_MESSAGE_HEADER => {
                     self.set_armor_type(ArmorType::Message)?;
                     self.try_consume_headers()?;
                 }
@@ -89,7 +89,7 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
                         return Err(ErrorKind::InvalidInput.into());
                     };
                 }
-                SIG_HEADER => {
+                SIG_HEADER | SIGNED_MESSAGE_SIGNATURE => {
                     self.set_armor_type(ArmorType::Signature)?;
                     self.try_consume_headers()?;
                 }
@@ -118,14 +118,6 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
                     let Some(ArmorType::PrivKey) = self.armor_type else {
                         return Err(ErrorKind::InvalidInput.into());
                     };
-                }
-                SIGNED_MESSAGE_HEADER => {
-                    self.set_armor_type(ArmorType::Message)?;
-                    self.try_consume_headers()?;
-                }
-                SIGNED_MESSAGE_SIGNATURE => {
-                    self.set_armor_type(ArmorType::Signature)?;
-                    self.try_consume_headers()?;
                 }
                 SIGNED_MESSAGE_FOOTER => {
                     self.done = true;
