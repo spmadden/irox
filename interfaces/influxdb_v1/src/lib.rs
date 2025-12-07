@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 #![forbid(unsafe_code)]
 
@@ -282,10 +283,7 @@ impl InfluxDB {
             );
         };
         if !data.contains_key(name) {
-            data.insert(
-                name.to_string(),
-                MeasurementDescriptor::new(name.to_string()),
-            );
+            data.insert(name.clone(), MeasurementDescriptor::new(name.clone()));
         }
         let Some(meas) = data.get_mut(name) else {
             return Error::err(ErrorType::NameKeyMismatch, "Missing name in map?");

@@ -622,7 +622,7 @@ impl BasicPlot {
         let mut y_label_additional_width = 0.0;
         if let Some(y_label) = &self.y_axis_left.user_data.axis_label {
             let galley = painter.layout_no_wrap(
-                y_label.to_string(),
+                y_label.clone(),
                 large_font.clone(),
                 ui.visuals().text_color(),
             );
@@ -637,7 +637,7 @@ impl BasicPlot {
         let mut x_label_additional_width = 0.0;
         if let Some(x_label) = &self.x_axis.user_data.axis_label {
             let galley = painter.layout_no_wrap(
-                x_label.to_string(),
+                x_label.clone(),
                 large_font.clone(),
                 ui.visuals().text_color(),
             );
@@ -661,7 +661,7 @@ impl BasicPlot {
             .iter()
             .map(|(_, str)| {
                 let galley =
-                    painter.layout_no_wrap(str.to_string(), small_font.clone(), Color32::default());
+                    painter.layout_no_wrap(str.clone(), small_font.clone(), Color32::default());
                 galley.size().x
             })
             .reduce(f32::max)
@@ -1100,7 +1100,7 @@ impl BasicPlot {
         let mut align = Align2::LEFT_BOTTOM;
 
         // figure out if it extends out past the rectangle
-        let galley = painter.layout_no_wrap(text.to_string(), font_id.clone(), color);
+        let galley = painter.layout_no_wrap(text.clone(), font_id.clone(), color);
         let txtrect = align.anchor_size(draw_pos, galley.size());
 
         if txtrect.max.x >= rect.max.x {

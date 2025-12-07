@@ -55,7 +55,7 @@ impl MBTiles {
             let mut rows = stmt.query(params![])?;
             while let Ok(Some(row)) = rows.next() {
                 let name: String = row.get(0)?;
-                tables.push(name.to_string());
+                tables.push(name.clone());
             }
         }
 

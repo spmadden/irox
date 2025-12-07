@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use std::collections::BTreeMap;
@@ -109,11 +109,11 @@ impl MeasurementDescriptor {
             );
         };
         let field = match field_type.as_str() {
-            "float" => NamedVariable::new(field_key.to_string(), Primitives::f64.into()),
+            "float" => NamedVariable::new(field_key.clone(), Primitives::f64.into()),
             "integer" | "timestamp" => {
-                NamedVariable::new(field_key.to_string(), Primitives::i64.into())
+                NamedVariable::new(field_key.clone(), Primitives::i64.into())
             }
-            "string" => NamedVariable::new(field_key.to_string(), VariableType::str.into()),
+            "string" => NamedVariable::new(field_key.clone(), VariableType::str.into()),
             missing => {
                 return Error::err_str(
                     ErrorType::UnsupportedType(missing.to_string()),
@@ -147,7 +147,7 @@ impl MeasurementDescriptor {
                 "Missing key tagKey".to_string(),
             );
         };
-        self.tags.push(tag_key.to_string());
+        self.tags.push(tag_key.clone());
         Ok(())
     }
 }

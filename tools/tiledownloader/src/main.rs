@@ -149,7 +149,7 @@ fn main() {
     let lower_left = EllipticalCoordinate::new_degrees_wgs84(min_lat_deg, min_lon_deg);
     let lower_right = EllipticalCoordinate::new_degrees_wgs84(min_lat_deg, max_lon_deg);
 
-    let coords = vec![upper_left, upper_right, lower_right, lower_left];
+    let coords = [upper_left, upper_right, lower_right, lower_left];
 
     let rt = match tokio::runtime::Builder::new_current_thread()
         .enable_all()

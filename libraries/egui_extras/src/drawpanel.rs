@@ -101,7 +101,7 @@ impl DrawPanel {
         let mut align = Align2::LEFT_BOTTOM;
 
         // figure out if it extends out past the rectangle
-        let galley = painter.layout_no_wrap(text.to_string(), font_id.clone(), color);
+        let galley = painter.layout_no_wrap(text.clone(), font_id.clone(), color);
         let txtrect = align.anchor_size(draw_pos, galley.size());
 
         if txtrect.max.x >= rect.max.x {

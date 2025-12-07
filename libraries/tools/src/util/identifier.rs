@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -45,7 +45,7 @@ impl Identifier {
     pub fn as_string(&self) -> Identifier {
         match self {
             Identifier::Integer(i) => Identifier::String(format!("{i}")),
-            Identifier::String(s) => Identifier::String(s.to_string()),
+            Identifier::String(s) => Identifier::String(s.clone()),
             Identifier::UUID(u) => Identifier::String(format!("{u}")),
         }
     }
