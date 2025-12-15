@@ -10,8 +10,9 @@ crate::cfg_feature_alloc! {
 }
 use crate::buf::{FixedU8Buf, StrBuf};
 use crate::cfg_feature_alloc;
+use crate::iterators::BChunks;
 use core::fmt::Write;
-use irox_bits::{BitsError, BitsErrorKind, Error, ErrorKind, FormatBits, MutBits};
+use irox_bits::{Bits, BitsError, BitsErrorKind, Error, ErrorKind, FormatBits, MutBits};
 
 /// 0-9, A-F
 pub static HEX_UPPER_CHARS: [char; 16] = [
@@ -28,25 +29,26 @@ pub static HEX_LOWER_CHARS: [char; 16] = [
 pub trait HexDump {
     crate::cfg_feature_std! {
         /// Hexdump this data structure to stdout
-        fn hexdump(&self);
+        fn hexdump(&mut self);
     }
 
     /// Hexdump to the specified writer.
-    fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error>;
+    fn hexdump_to<T: MutBits + ?Sized>(&mut self, out: &mut T) -> Result<(), Error>;
 }
 
-impl<S: AsRef<[u8]>> HexDump for S {
+impl<S: Bits> HexDump for S {
     crate::cfg_feature_std! {
-        fn hexdump(&self) {
+        fn hexdump(&mut self) {
             let _ = self.hexdump_to(&mut irox_bits::BitsWrapper::Borrowed(&mut std::io::stdout().lock()));
         }
     }
 
-    fn hexdump_to<T: MutBits + ?Sized>(&self, out: &mut T) -> Result<(), Error> {
+    fn hexdump_to<T: MutBits + ?Sized>(&mut self, out: &mut T) -> Result<(), Error> {
         let mut idx = 0;
-        let chunks = self.as_ref().chunks(16);
+        let chunks = self.chunks::<16>();
         let mut out: FormatBits<T> = out.into();
         for chunk in chunks {
+            let chunk = chunk.as_ref_used();
             write!(out, "{idx:08X}  ")?;
             for v in chunk {
                 write!(out, "{v:02X} ")?;
@@ -392,7 +394,7 @@ mod tests {
         assert_eq_hex_slice!(&[] as &[u8], &raw_hex);
         let raw_hex = hex!("00");
         assert_eq_hex_slice!(&[0x0u8], &raw_hex);
-        raw_hex.hexdump();
+        (&mut raw_hex.as_slice()).hexdump();
         Ok(())
     }
 }

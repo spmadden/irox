@@ -313,7 +313,7 @@ pub fn test_packetizer() -> Result<(), Error> {
     );
     while let Some((ty, len, pkt)) = stream.read_next_packet()? {
         write!(out, "TYPE: {ty}, LEN: {:02X}", len)?;
-        pkt.hexdump_to(out)?;
+        (&mut pkt.as_slice()).hexdump_to(out)?;
     }
     Ok(())
 }

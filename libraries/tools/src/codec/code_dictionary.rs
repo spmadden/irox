@@ -279,7 +279,7 @@ mod test {
             let used = codec.encode_4(&[0xAAAA, 0xBBBBBB, 0xCC, 0xDDDDDDDD])?;
             assert_eq!(used, 5);
         }
-        buf.hexdump();
+        buf.as_ref_used().hexdump();
 
         assert_eq!(5 + 16 + 5, buf.len());
         assert_eq_hex_slice!(

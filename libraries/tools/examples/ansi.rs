@@ -7,8 +7,8 @@ use irox_tools::hex::HexDump;
 
 pub fn main() -> Result<(), std::io::Error> {
     let res = get_termcap("TN;")?;
-    res.hexdump();
+    (&mut res.as_slice()).hexdump();
     let res = get_textarea_size_pixels()?;
-    res.hexdump();
+    (&mut res.as_slice()).hexdump();
     Ok(())
 }

@@ -215,7 +215,7 @@ impl<'a> Serializer for &'a mut EguiSerializer {
 
     fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok, Self::Error> {
         let mut val = String::new();
-        let _ = v.hexdump_to(&mut val);
+        let _ = (&mut v.iter().as_slice()).hexdump_to(&mut val);
         self.values.push(Event::Row(val));
         Ok(())
     }

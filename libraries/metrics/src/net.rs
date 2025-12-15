@@ -129,14 +129,14 @@ mod tests {
 
         let mut e = RoadWarrior::new(pubkey)?;
         let data = random_data()?;
-        data.hexdump();
+        (&mut data.as_slice()).hexdump();
 
         let ciphertext = e.seal(&data)?;
-        ciphertext.hexdump();
+        ciphertext.iter().as_slice().hexdump();
 
         let hb = HomeBase::new(privkey)?;
         let decrypted = hb.unseal(ciphertext)?;
-        decrypted.hexdump();
+        decrypted.as_slice().hexdump();
         assert_eq_hex_slice!(decrypted, data);
         Ok(())
     }
