@@ -26,6 +26,7 @@ pub fn is_github_action() -> bool {
 
 pub fn logstart(group: &str) {
     if !is_github_action() {
+        println!("{group}");
         return;
     }
 
