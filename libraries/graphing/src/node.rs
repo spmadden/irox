@@ -2,9 +2,11 @@
 // Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
 use crate::{NodeDescriptor, SharedEdge};
-use std::hash::{Hash, Hasher};
-use std::sync::{Arc, Mutex};
+use alloc::sync::Arc;
+use core::hash::{Hash, Hasher};
+use std::sync::Mutex;
 
 pub struct Node {
     pub descriptor: NodeDescriptor,

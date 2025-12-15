@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::{EdgeDescriptor, SharedNode};
-use std::hash::{Hash, Hasher};
-use std::sync::{Arc, Mutex};
+use alloc::sync::Arc;
+use core::hash::{Hash, Hasher};
+use std::sync::Mutex;
 
 pub enum Edge {
     Directed {
@@ -22,8 +23,7 @@ pub enum Edge {
 impl Edge {
     pub fn descriptor(&self) -> &EdgeDescriptor {
         match self {
-            Edge::Directed { descriptor, .. } => descriptor,
-            Edge::Undirected { descriptor, .. } => descriptor,
+            Edge::Directed { descriptor, .. } | Edge::Undirected { descriptor, .. } => descriptor,
         }
     }
 }

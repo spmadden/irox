@@ -80,7 +80,11 @@ impl SIPrefix {
         }
     }
 
-    pub fn display<T: irox_tools::ToF64>(&self, t: &T, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    pub fn display<T: irox_tools::ToF64>(
+        &self,
+        t: &T,
+        f: &mut core::fmt::Formatter<'_>,
+    ) -> core::fmt::Result {
         let val = t.to_f64() / self.scale_factor;
         core::write!(f, "{val:.3}{}", self.symbol)
     }

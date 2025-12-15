@@ -430,7 +430,9 @@ macro_rules! impl_signed_flops {
                 }
                 out
             }
-
+            fn log10(self) -> Self::Type {
+                self.ln() / Self::LN10
+            }
             fn powi(self, val: i32) -> Self::Type {
                 let mut out = self;
                 let i = self;
@@ -792,7 +794,6 @@ impl FixedI128 {
     pub const ONE_HALF: FixedI128 = FixedI128::from_parts(0, 9_223_372_036_854_775_807);
     pub const RESOLUTION: FixedI128 = FixedI128::from_parts(0, 1);
     pub const LN10: FixedI128 = FixedI128::from_parts(2, 5_581_709_770_980_770_000);
-
 }
 impl_base!(FixedI128, i128, i64, i128, I128_SHIFT, I128_VAL, I128_MASK);
 impl_signed_flops!(FixedI128, i128, i64, I128_SHIFT, I128_VAL, I128_MASK);

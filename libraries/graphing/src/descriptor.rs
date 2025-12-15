@@ -2,11 +2,14 @@
 // Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
+
+use alloc::collections::BTreeMap;
+use alloc::sync::Arc;
+use core::hash::{Hash, Hasher};
+use core::ops::{Deref, DerefMut};
 use irox_tools::identifier::Identifier;
-use std::collections::BTreeMap;
-use std::hash::{Hash, Hasher};
-use std::ops::{Deref, DerefMut};
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Descriptor {

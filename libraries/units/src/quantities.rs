@@ -143,13 +143,17 @@ impl Units {
         }
     }
 
-    pub fn display<T: irox_tools::ToF64>(&self, v: &T, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    pub fn display<T: irox_tools::ToF64>(
+        &self,
+        v: &T,
+        f: &mut core::fmt::Formatter<'_>,
+    ) -> core::fmt::Result {
         let value = v.to_f64();
         if let Some(prefix) = crate::prefixes::PrefixSet::Common.best_prefix_for(&value) {
             let scale = value / prefix.scale_factor();
             write!(f, "{scale:.3}{}{}", prefix.symbol(), self.symbol())
         } else {
-            write!(f, "{:.3}{}", value, self.symbol() )
+            write!(f, "{:.3}{}", value, self.symbol())
         }
     }
 }
