@@ -14,11 +14,13 @@ use self::looping_forever::LoopingForever;
 use crate::iterators::join::MultiJoining;
 use alloc::vec::Vec;
 
+mod chunks;
 mod join;
 pub mod looping_forever;
 mod streaming;
 mod zip;
 
+pub use chunks::*;
 pub use streaming::*;
 pub use zip::*;
 
