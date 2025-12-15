@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Application Helpers Toolkit, by IROX
@@ -11,4 +12,7 @@
 #![warn(clippy::std_instead_of_core)]
 
 mod args;
+mod os;
+
 pub use args::*;
+pub use os::*;
