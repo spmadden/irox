@@ -1,0 +1,25 @@
+[package]
+name = "irox-graphing"
+description = "Graphs (Nodes/Edges) Algorithms, and Graph Drawing"
+keywords = ["irox"]
+categories = ["algorithms", "data-structures", "mathematics", "visualization"]
+
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = {workspace = true}
+irox-units = {workspace = true}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

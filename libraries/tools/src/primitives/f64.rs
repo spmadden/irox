@@ -44,6 +44,7 @@ pub trait FloatExt {
 
     fn exp(self) -> Self::Type;
     fn ln(self) -> Self::Type;
+    fn log10(self) -> Self::Type;
 
     fn powi(self, val: i32) -> Self::Type;
     fn powf(self, val: Self::Type) -> Self::Type;
@@ -55,7 +56,6 @@ pub trait FloatExt {
     fn sin(self) -> Self::Type;
     fn cos(self) -> Self::Type;
 }
-
 #[cfg(not(feature = "std"))]
 impl FloatExt for f64 {
     type Type = f64;
@@ -152,6 +152,10 @@ impl FloatExt for f64 {
         out
     }
 
+    fn log10(self) -> Self::Type {
+        self.ln() / core::f64::consts::LN_10
+    }
+
     ///
     /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
     fn powf(self, a: Self::Type) -> Self::Type {
@@ -239,6 +243,10 @@ impl FloatExt for f64 {
 
     fn ln(self) -> Self::Type {
         f64::ln(self)
+    }
+
+    fn log10(self) -> Self::Type {
+        f64::log10(self)
     }
 
     fn powi(self, val: i32) -> Self::Type {

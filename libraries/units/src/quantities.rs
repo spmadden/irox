@@ -3,8 +3,12 @@
 //
 
 use core::ops::{Deref, DerefMut};
-use irox_tools::{cfg_feature_std, ToF64};
+use irox_tools::{cfg_feature_alloc, ToF64};
 
+cfg_feature_alloc! {
+    extern crate alloc;
+    use alloc::format;
+}
 #[allow(unused_imports)]
 use irox_tools::f64::FloatExt;
 
@@ -127,8 +131,8 @@ impl Units {
         }
     }
 
-    cfg_feature_std! {
-        pub fn format<T: ToF64>(&self, v: &T) -> String {
+    cfg_feature_alloc! {
+        pub fn format<T: ToF64>(&self, v: &T) -> alloc::string::String {
             let value = v.to_f64();
             if let Some(prefix) = crate::prefixes::PrefixSet::Common.best_prefix_for(&value) {
                 let scale = value / prefix.scale_factor();
@@ -136,6 +140,16 @@ impl Units {
             } else {
                 format!("{:.3}{}", value, self.symbol() )
             }
+        }
+    }
+
+    pub fn display<T: irox_tools::ToF64>(&self, v: &T, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let value = v.to_f64();
+        if let Some(prefix) = crate::prefixes::PrefixSet::Common.best_prefix_for(&value) {
+            let scale = value / prefix.scale_factor();
+            write!(f, "{scale:.3}{}{}", prefix.symbol(), self.symbol())
+        } else {
+            write!(f, "{:.3}{}", value, self.symbol() )
         }
     }
 }
@@ -171,12 +185,9 @@ impl<T: ToF64> DerefMut for Quantity<T> {
     }
 }
 
-cfg_feature_std! {
-    use core::fmt::{Display, Formatter};
-    impl<T: ToF64> Display for Quantity<T> {
-        fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-            f.write_str(&self.unit.format(self.value()))
-        }
+impl<T: ToF64> core::fmt::Display for Quantity<T> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        self.unit.display(self.value(), f)
     }
 }
 

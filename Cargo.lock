@@ -1676,6 +1676,7 @@ dependencies = [
  "irox-fixedmath",
  "irox-git-tools",
  "irox-gpx",
+ "irox-graphing",
  "irox-imagery",
  "irox-influxdb_v1",
  "irox-log",
@@ -1922,6 +1923,14 @@ dependencies = [
  "irox-units",
  "log",
  "xml",
+]
+
+[[package]]
+name = "irox-graphing"
+version = "0.1.0"
+dependencies = [
+ "irox-tools",
+ "irox-units",
 ]
 
 [[package]]

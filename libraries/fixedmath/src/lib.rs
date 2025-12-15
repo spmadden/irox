@@ -281,6 +281,10 @@ macro_rules! impl_unsigned_flops {
                 out
             }
 
+            fn log10(self) -> Self::Type {
+                self.ln() / Self::LN10
+            }
+
             fn powi(self, val: i32) -> Self::Type {
                 let mut out = self;
                 let i = self;
@@ -689,6 +693,7 @@ impl FixedU32 {
     pub const PI: FixedU32 = FixedU32::from_parts(3, 9_279);
     pub const ONE_HALF: FixedU32 = FixedU32::from_parts(0, 32_768);
     pub const RESOLUTION: FixedU32 = FixedU32::from_parts(0, 1);
+    pub const LN10: FixedU32 = FixedU32::from_parts(2, 19_830);
 }
 impl_base!(FixedU32, u32, u16, u64, U32_SHIFT, U32_VAL, U32_MASK);
 impl_prim_ops!(FixedU32, u16, u8);
@@ -722,6 +727,7 @@ impl FixedU64 {
     pub const PI: FixedU64 = FixedU64::from_parts(3, 608_135_816);
     pub const ONE_HALF: FixedU64 = FixedU64::from_parts(0, 2_147_483_648);
     pub const RESOLUTION: FixedU64 = FixedU64::from_parts(0, 1);
+    pub const LN10: FixedU64 = FixedU64::from_parts(2, 1_299_593_075);
 }
 impl_base!(FixedU64, u64, u32, u128, U64_SHIFT, U64_VAL, U64_MASK);
 impl_unsigned_flops!(FixedU64, u64, u32, U64_SHIFT, U64_VAL, U64_MASK);
@@ -759,6 +765,7 @@ impl FixedU128 {
     pub const PI: FixedU128 = FixedU128::from_parts(3, 2_611_923_443_488_327_891);
     pub const ONE_HALF: FixedU128 = FixedU128::from_parts(0, 9_223_372_036_854_775_808);
     pub const RESOLUTION: FixedU128 = FixedU128::from_parts(0, 1);
+    pub const LN10: FixedU128 = FixedU128::from_parts(2, 5_581_709_770_980_770_000);
 }
 impl_base!(FixedU128, u128, u64, u128, U128_SHIFT, U128_VAL, U128_MASK);
 impl_unsigned_flops!(FixedU128, u128, u64, U128_SHIFT, U128_VAL, U128_MASK);
@@ -784,6 +791,8 @@ impl FixedI128 {
     pub const PI: FixedI128 = FixedI128::from_parts(3, 2_611_923_443_488_327_891);
     pub const ONE_HALF: FixedI128 = FixedI128::from_parts(0, 9_223_372_036_854_775_807);
     pub const RESOLUTION: FixedI128 = FixedI128::from_parts(0, 1);
+    pub const LN10: FixedI128 = FixedI128::from_parts(2, 5_581_709_770_980_770_000);
+
 }
 impl_base!(FixedI128, i128, i64, i128, I128_SHIFT, I128_VAL, I128_MASK);
 impl_signed_flops!(FixedI128, i128, i64, I128_SHIFT, I128_VAL, I128_MASK);

@@ -98,6 +98,10 @@ impl crate::f64::FloatExt for f32 {
         (out * 2.0) as f32
     }
 
+    fn log10(self) -> Self::Type {
+        self.ln() / core::f32::consts::LN_10
+    }
+
     /// Naive implementation of integer power fn.  Will do something smarter later.
     fn powi(self, val: i32) -> Self::Type {
         let mut out = self;

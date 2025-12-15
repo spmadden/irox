@@ -28,6 +28,8 @@ pub extern crate irox_fixedmath;
 pub extern crate irox_git_tools;
 #[cfg(feature = "gpx")]
 pub extern crate irox_gpx;
+#[cfg(feature = "graphing")]
+pub extern crate irox_graphing;
 #[cfg(feature = "influxdb_v1")]
 pub extern crate irox_influxdb_v1;
 #[cfg(feature = "log")]
@@ -97,6 +99,9 @@ pub use irox_enums_derive;
 
 #[cfg(feature = "git-tools")]
 pub use irox_git_tools as git_tools;
+
+#[cfg(feature = "graphing")]
+pub use irox_graphing as graphing;
 
 #[cfg(feature = "gpx")]
 pub use irox_gpx as gpx;

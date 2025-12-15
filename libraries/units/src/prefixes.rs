@@ -3,14 +3,13 @@
 //
 
 use core::cmp::Ordering;
-use irox_tools::{cfg_feature_alloc, cfg_feature_std};
+use irox_tools::cfg_feature_alloc;
 
 #[allow(unused_imports)]
 use irox_tools::f64::FloatExt;
 
 cfg_feature_alloc! {
     extern crate alloc;
-    use alloc::string::String;
     use alloc::format;
 }
 
@@ -70,15 +69,20 @@ impl SIPrefix {
     }
 
     cfg_feature_alloc! {
-        pub fn format<T: irox_tools::ToF64>(&self, t: &T) -> String {
+        pub fn format<T: irox_tools::ToF64>(&self, t: &T) -> alloc::string::String {
             let val = t.to_f64() / self.scale_factor;
             format!("{val:.3}{}", self.symbol)
         }
-        pub fn format_args<T: irox_tools::ToF64>(&self, fmt: PrefixFormat, t: &T) -> String {
+        pub fn format_args<T: irox_tools::ToF64>(&self, fmt: PrefixFormat, t: &T) -> alloc::string::String {
             let val = t.to_f64() / self.scale_factor;
 
             format!("{val:precision$.width$}{}", self.symbol, width = fmt.width, precision = fmt.precision)
         }
+    }
+
+    pub fn display<T: irox_tools::ToF64>(&self, t: &T, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let val = t.to_f64() / self.scale_factor;
+        core::write!(f, "{val:.3}{}", self.symbol)
     }
 }
 
@@ -157,121 +161,143 @@ impl PrefixSet {
             Self::Common => COMMON_PREFIXES,
         }
     }
-    cfg_feature_std! {
-        pub fn best_prefix_for<T: irox_tools::ToF64>(&self, t: &T) -> Option<SIPrefix> {
-            let v = t.to_f64().abs();
-            let e = v.log10();
-            if (0. ..1.).contains(&e) {
+    pub fn best_prefix_for<T: irox_tools::ToF64>(&self, t: &T) -> Option<SIPrefix> {
+        let v = t.to_f64().abs();
+        let e = v.log10();
+        if (0. ..1.).contains(&e) {
+            return None;
+        }
+        let mut last_matched = None;
+        let fixes: &'static [SIPrefix] = self.prefixes();
+        for prefix in fixes {
+            let exp = prefix.base_exponent as f64;
+
+            last_matched = Some(*prefix);
+            if exp <= e {
+                break;
+            }
+        }
+        if let Some(lm) = last_matched {
+            let var = e - lm.base_exponent as f64;
+            if !(0. ..3.).contains(&var) {
                 return None;
             }
-            let mut last_matched = None;
-            let fixes: &'static [SIPrefix] = self.prefixes();
-            for prefix in fixes {
-                let exp = prefix.base_exponent as f64;
-
-                last_matched = Some(*prefix);
-                if exp <= e {
-                    break;
-                }
-            }
-            if let Some(lm) = last_matched {
-                let var = e - lm.base_exponent as f64;
-                if !(0. ..3.).contains(&var) {
-                    return None;
-                }
-            }
-            last_matched
         }
+        last_matched
     }
 }
 
-#[cfg(all(test, feature = "std"))]
+#[cfg(test)]
 mod test {
     use crate::prefixes::{
-        PrefixFormat, PrefixSet, ATTO, CENTI, DECA, DECI, EXA, FEMTO, GIGA, HECTO, KILO, MEGA,
-        MICRO, MILLI, NANO, PETA, PICO, QUECTO, QUETTA, RONNA, RONTO, TERA, YOCTO, YOTTA, ZEPTO,
-        ZETTA,
+        PrefixSet, ATTO, CENTI, DECA, DECI, EXA, FEMTO, GIGA, HECTO, KILO, MEGA, MICRO, MILLI,
+        NANO, PETA, PICO, QUECTO, QUETTA, RONNA, RONTO, TERA, YOCTO, YOTTA, ZEPTO, ZETTA,
     };
 
+    macro_rules! impl_test {
+        ($name:ident, $com:expr, $v:literal, $all:expr) => {
+            #[test]
+            pub fn $name() {
+                assert_eq!($com, PrefixSet::Common.best_prefix_for(&$v), "{:e}", $v);
+                assert_eq!($all, PrefixSet::All.best_prefix_for(&$v), "{:e}", $v);
+
+                let v: f64 = ($v as f64).abs();
+                let f = 10f64.powf(v.log10() + 0.3f64);
+                assert_eq!($com, PrefixSet::Common.best_prefix_for(&f), "{v:e} {f:e}");
+                let f = 10f64.powf(v.log10() + 0.7f64);
+                assert_eq!($com, PrefixSet::Common.best_prefix_for(&f), "{v:e} {f:e}");
+            }
+        };
+    }
+    impl_test!(test_quecto_30, None, 1e-30, Some(QUECTO));
+    impl_test!(test_quecto_29, None, 1e-29, Some(QUECTO));
+    impl_test!(test_quecto_28, None, 1e-28, Some(QUECTO));
+
+    impl_test!(test_ronto_27, None, 1e-27, Some(RONTO));
+    impl_test!(test_ronto_26, None, 1e-26, Some(RONTO));
+    impl_test!(test_ronto_25, None, 1e-25, Some(RONTO));
+
+    impl_test!(test_yocto_24, Some(YOCTO), 1e-24, Some(YOCTO));
+    impl_test!(test_yocto_23, Some(YOCTO), 1e-23, Some(YOCTO));
+    impl_test!(test_yocto_22, Some(YOCTO), 1e-22, Some(YOCTO));
+
+    impl_test!(test_zepto_21, Some(ZEPTO), 1e-21, Some(ZEPTO));
+    impl_test!(test_zepto_20, Some(ZEPTO), 1e-20, Some(ZEPTO));
+    impl_test!(test_zepto_19, Some(ZEPTO), 1e-19, Some(ZEPTO));
+
+    impl_test!(test_atto_18, Some(ATTO), 1e-18, Some(ATTO));
+    impl_test!(test_atto_17, Some(ATTO), 1e-17, Some(ATTO));
+    impl_test!(test_atto_16, Some(ATTO), 1e-16, Some(ATTO));
+
+    impl_test!(test_femto_15, Some(FEMTO), 1e-15, Some(FEMTO));
+    impl_test!(test_femto_14, Some(FEMTO), 1e-14, Some(FEMTO));
+    impl_test!(test_femto_13, Some(FEMTO), 1e-13, Some(FEMTO));
+
+    impl_test!(test_pico_12, Some(PICO), 1e-12, Some(PICO));
+    impl_test!(test_pico_11, Some(PICO), 1e-11, Some(PICO));
+    impl_test!(test_pico_10, Some(PICO), 1e-10, Some(PICO));
+
+    impl_test!(test_nano_09, Some(NANO), 1e-9, Some(NANO));
+    impl_test!(test_nano_08, Some(NANO), 1e-8, Some(NANO));
+    impl_test!(test_nano_07, Some(NANO), 1e-7, Some(NANO));
+
+    impl_test!(test_micro_06, Some(MICRO), 1e-6, Some(MICRO));
+    impl_test!(test_micro_m06, Some(MICRO), -1e-6, Some(MICRO));
+    impl_test!(test_micro_05, Some(MICRO), 1e-5, Some(MICRO));
+    impl_test!(test_micro_m05, Some(MICRO), -1e-5, Some(MICRO));
+    impl_test!(test_micro_04, Some(MICRO), 1e-4, Some(MICRO));
+    impl_test!(test_micro_m04, Some(MICRO), -1e-4, Some(MICRO));
+
+    impl_test!(test_milli_03, Some(MILLI), 1e-3, Some(MILLI));
+    impl_test!(test_milli_02, Some(MILLI), 1e-2, Some(CENTI));
+    impl_test!(test_milli_01, Some(MILLI), 1e-1, Some(DECI));
+
+    impl_test!(test_none, None, 1e0, None);
+    impl_test!(test_deca_01, None, 1e1, Some(DECA));
+    impl_test!(test_hecto_02, None, 1e2, Some(HECTO));
+
+    impl_test!(test_kilo_03, Some(KILO), 1e3, Some(KILO));
+    impl_test!(test_kilo_04, Some(KILO), 1e4, Some(KILO));
+    impl_test!(test_kilo_05, Some(KILO), 1e5, Some(KILO));
+
+    impl_test!(test_mega_06, Some(MEGA), 1e6, Some(MEGA));
+    impl_test!(test_mega_07, Some(MEGA), 1e7, Some(MEGA));
+    impl_test!(test_mega_08, Some(MEGA), 1e8, Some(MEGA));
+
+    impl_test!(test_giga_09, Some(GIGA), 1e9, Some(GIGA));
+    impl_test!(test_giga_10, Some(GIGA), 1e10, Some(GIGA));
+    impl_test!(test_giga_11, Some(GIGA), 1e11, Some(GIGA));
+
+    impl_test!(test_tera_12, Some(TERA), 1e12, Some(TERA));
+    impl_test!(test_tera_13, Some(TERA), 1e13, Some(TERA));
+    impl_test!(test_tera_14, Some(TERA), 1e14, Some(TERA));
+
+    impl_test!(test_peta_15, Some(PETA), 1e15, Some(PETA));
+    impl_test!(test_peta_16, Some(PETA), 1e16, Some(PETA));
+    impl_test!(test_peta_17, Some(PETA), 1e17, Some(PETA));
+
+    impl_test!(test_exa_18, Some(EXA), 1e18, Some(EXA));
+    impl_test!(test_exa_19, Some(EXA), 1e19, Some(EXA));
+    impl_test!(test_exa_20, Some(EXA), 1e20, Some(EXA));
+
+    impl_test!(test_zetta_21, Some(ZETTA), 1e21, Some(ZETTA));
+    impl_test!(test_zetta_22, Some(ZETTA), 1e22, Some(ZETTA));
+    impl_test!(test_zetta_23, Some(ZETTA), 1e23, Some(ZETTA));
+
+    impl_test!(test_yotta_24, Some(YOTTA), 1e24, Some(YOTTA));
+    impl_test!(test_yotta_25, Some(YOTTA), 1e25, Some(YOTTA));
+    impl_test!(test_yotta_26, Some(YOTTA), 1e26, Some(YOTTA));
+
+    impl_test!(test_ronna_27, None, 1e27, Some(RONNA));
+    impl_test!(test_ronna_28, None, 1e28, Some(RONNA));
+    impl_test!(test_ronna_29, None, 1e29, Some(RONNA));
+    impl_test!(test_quetta_30, None, 1e30, Some(QUETTA));
+    impl_test!(test_quetta_31, None, 1e31, Some(QUETTA));
+
+    #[cfg(feature = "alloc")]
     #[test]
-    pub fn test() {
-        let tests = &[
-            (None, 1e-30, Some(QUECTO)),
-            (None, 1e-29, Some(QUECTO)),
-            (None, 1e-28, Some(QUECTO)),
-            (None, 1e-27, Some(RONTO)),
-            (None, 1e-26, Some(RONTO)),
-            (None, 1e-25, Some(RONTO)),
-            (Some(YOCTO), 1e-24, Some(YOCTO)),
-            (Some(YOCTO), 1e-23, Some(YOCTO)),
-            (Some(YOCTO), 1e-22, Some(YOCTO)),
-            (Some(ZEPTO), 1e-21, Some(ZEPTO)),
-            (Some(ZEPTO), 1e-20, Some(ZEPTO)),
-            (Some(ZEPTO), 1e-19, Some(ZEPTO)),
-            (Some(ATTO), 1e-18, Some(ATTO)),
-            (Some(ATTO), 1e-17, Some(ATTO)),
-            (Some(ATTO), 1e-16, Some(ATTO)),
-            (Some(FEMTO), 1e-15, Some(FEMTO)),
-            (Some(FEMTO), 1e-14, Some(FEMTO)),
-            (Some(FEMTO), 1e-13, Some(FEMTO)),
-            (Some(PICO), 1e-12, Some(PICO)),
-            (Some(PICO), 1e-11, Some(PICO)),
-            (Some(PICO), 1e-10, Some(PICO)),
-            (Some(NANO), 1e-9, Some(NANO)),
-            (Some(NANO), 1e-8, Some(NANO)),
-            (Some(NANO), 1e-7, Some(NANO)),
-            (Some(MICRO), 1e-6, Some(MICRO)),
-            (Some(MICRO), -1e-6, Some(MICRO)),
-            (Some(MICRO), 1e-5, Some(MICRO)),
-            (Some(MICRO), -1e-5, Some(MICRO)),
-            (Some(MICRO), 1e-4, Some(MICRO)),
-            (Some(MILLI), 1e-3, Some(MILLI)),
-            (Some(MILLI), 1e-2, Some(CENTI)),
-            (Some(MILLI), 1e-1, Some(DECI)),
-            (None, 1e0, None),
-            (None, 1e1, Some(DECA)),
-            (None, 1e2, Some(HECTO)),
-            (Some(KILO), 1e3, Some(KILO)),
-            (Some(KILO), 1e4, Some(KILO)),
-            (Some(KILO), 1e5, Some(KILO)),
-            (Some(MEGA), 1e6, Some(MEGA)),
-            (Some(MEGA), 1e7, Some(MEGA)),
-            (Some(MEGA), 1e8, Some(MEGA)),
-            (Some(GIGA), 1e9, Some(GIGA)),
-            (Some(GIGA), 1e10, Some(GIGA)),
-            (Some(GIGA), 1e11, Some(GIGA)),
-            (Some(TERA), 1e12, Some(TERA)),
-            (Some(TERA), 1e13, Some(TERA)),
-            (Some(TERA), 1e14, Some(TERA)),
-            (Some(PETA), 1e15, Some(PETA)),
-            (Some(PETA), 1e16, Some(PETA)),
-            (Some(PETA), 1e17, Some(PETA)),
-            (Some(EXA), 1e18, Some(EXA)),
-            (Some(EXA), 1e19, Some(EXA)),
-            (Some(EXA), 1e20, Some(EXA)),
-            (Some(ZETTA), 1e21, Some(ZETTA)),
-            (Some(ZETTA), 1e22, Some(ZETTA)),
-            (Some(ZETTA), 1e23, Some(ZETTA)),
-            (Some(YOTTA), 1e24, Some(YOTTA)),
-            (Some(YOTTA), 1e25, Some(YOTTA)),
-            (Some(YOTTA), 1e26, Some(YOTTA)),
-            (None, 1e27, Some(RONNA)),
-            (None, 1e28, Some(RONNA)),
-            (None, 1e29, Some(RONNA)),
-            (None, 1e30, Some(QUETTA)),
-            (None, 1e31, Some(QUETTA)),
-        ];
-        for (com, v, all) in tests {
-            assert_eq!(*com, PrefixSet::Common.best_prefix_for(v), "{v:e}");
-            assert_eq!(*all, PrefixSet::All.best_prefix_for(v), "{v:e}");
-
-            let v: f64 = (*v as f64).abs();
-            let f = 10f64.powf(v.log10() + 0.3);
-            assert_eq!(*com, PrefixSet::Common.best_prefix_for(&f), "{v:e} {f:e}");
-            let f = 10f64.powf(v.log10() + 0.7);
-            assert_eq!(*com, PrefixSet::Common.best_prefix_for(&f), "{v:e} {f:e}");
-        }
-
+    pub fn test_format() {
+        use crate::prefixes::PrefixFormat;
         assert_eq!("2.000k", KILO.format(&2e3));
         assert_eq!(
             "2.25k",
