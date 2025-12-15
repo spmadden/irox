@@ -66,4 +66,16 @@ mod stds {
             Ok(self.write_all(val)?)
         }
     }
+
+    impl<T> std::io::Read for BitsWrapper<'_, T>
+    where
+        T: Bits,
+    {
+        fn read(&mut self, mut buf: &mut [u8]) -> std::io::Result<usize> {
+            Ok(match self {
+                BitsWrapper::Owned(o) => Bits::read_some_into(o, &mut buf)?,
+                BitsWrapper::Borrowed(b) => Bits::read_some_into(*b, &mut buf)?,
+            })
+        }
+    }
 }
