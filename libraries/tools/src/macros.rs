@@ -119,6 +119,18 @@ macro_rules! cfg_feature_egui {
         )*
     }
 }
+/// Enables feature-specific code.
+/// Use this macro instead of `cfg(feature = "eframe")` to generate docs properly.
+#[macro_export]
+macro_rules! cfg_feature_eframe {
+    ($($item:item)*) => {
+        $(
+            #[cfg(any(all(doc, docsrs), all(feature = "eframe", any(feature = "glow", feature = "wgpu"))))]
+            #[cfg_attr(docsrs, doc(cfg(all(feature = "eframe", any(feature = "glow", feature = "wgpu")))))]
+            $item
+        )*
+    }
+}
 
 /// Enables feature-specific code.
 /// Use this macro instead of `cfg(feature = "plots")` to generate docs properly.

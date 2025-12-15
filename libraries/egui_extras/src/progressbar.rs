@@ -5,8 +5,8 @@
 //!
 //! Augmentations and tweaks for a better progress bar
 
-use eframe::emath::lerp;
-use eframe::epaint::text::TextWrapMode;
+use egui::emath::lerp;
+use egui::epaint::text::TextWrapMode;
 use egui::{
     Color32, NumExt, Rect, Response, Rgba, Sense, Stroke, StrokeKind, TextStyle, Ui, Vec2, Widget,
     WidgetText,

@@ -16,22 +16,23 @@ repository.workspace = true
 workspace = true
 
 [features]
-default = []
-serde = ["dep:serde", "egui/serde", "dep:irox-tools", "dep:irox-bits"]
-plots = ["dep:irox-tools", "dep:irox-units", "dep:irox-stats"]
+default = ["eframe", "eframe?/wgpu"]
+serde = ["dep:serde", "egui/serde", "irox-tools/std", "dep:irox-bits"]
+plots = ["dep:irox-units", "dep:irox-stats"]
 profiling = ["dep:profiling", "dep:puffin"]
 dump_csv = []
-docsrs = ["eframe/x11", "eframe/wayland"]
-wgpu = ["eframe/wgpu"]
-glow = ["eframe/glow", "dep:glow"]
+docsrs = ["eframe/x11", "eframe/wayland", "wgpu"]
+wgpu = ["dep:eframe","eframe/wgpu"]
+glow = ["dep:eframe","eframe/glow", "dep:glow"]
+eframe = ["dep:eframe"]
 
 [dependencies]
 egui.workspace = true
-eframe = { workspace = true, default-features = false, features = [] }
+eframe = { workspace = true, default-features = false, features = [], optional = true }
 ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
-irox-tools = { workspace = true, optional = true, features = ["std"] }
+irox-tools = { workspace = true }
 irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, optional = true, features = ["std"] }
 irox-imagery = { workspace = true }
@@ -43,7 +44,6 @@ puffin = { workspace = true, optional = true }
 glow = {workspace = true, optional = true}
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-eframe = { workspace = true, default-features = false, features = [] }
 wasm-bindgen.workspace = true
 wasm-bindgen-futures.workspace = true
 web-sys.workspace = true
@@ -66,19 +66,19 @@ eframe = { workspace = true, default-features = false, features = ["wayland"] }
 
 [[example]]
 name = "irox_egui_gallery"
-required-features = ["serde", "plots"]
+required-features = ["eframe", "wgpu", "serde", "plots"]
 
 [[example]]
 name = "plotsperf"
-required-features = ["plots"]
+required-features = ["eframe", "wgpu", "plots"]
 
 [[example]]
 name = "dialog"
-required-features = ["wgpu"]
+required-features = ["eframe", "wgpu"]
 
 [[example]]
 name = "draw_panels"
-required-features = ["wgpu"]
+required-features = ["eframe", "wgpu"]
 
 [package.metadata.docs.rs]
 all-features = true

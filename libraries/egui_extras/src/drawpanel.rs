@@ -2,8 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
-use eframe::emath::{Pos2, Rect};
-use egui::emath::TSTransform;
+use egui::emath::{Pos2, Rect, TSTransform};
 use egui::{Align, Align2, Color32, Painter, Response, Sense, Shape, TextStyle, Ui};
 
 #[derive(Default)]

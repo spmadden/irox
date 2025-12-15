@@ -9,8 +9,7 @@ use crate::frame_history::FrameHistory;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame, Storage};
 use egui::{
-    menu, Context, Id, Layout, RawInput, ThemePreference, TopBottomPanel, Ui, ViewportCommand,
-    Visuals, Window,
+    menu, Context, Id, Layout, RawInput, ThemePreference, TopBottomPanel, Ui, Visuals, Window,
 };
 use std::time::Duration;
 
@@ -106,7 +105,7 @@ impl App for ToolFrame {
 
                         #[cfg(not(target_arch = "wasm32"))]
                         if ui.button("Exit").clicked() {
-                            ctx.send_viewport_cmd(ViewportCommand::Close);
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
                     });
                 }

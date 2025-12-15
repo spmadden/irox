@@ -17,17 +17,24 @@ macro_rules! profile_scope {
         profiling::scope!($name, $data);
     };
 }
+#[cfg(all(feature = "eframe", any(feature = "glow", feature = "wgpu")))]
 pub use eframe;
+
 pub use egui;
 
 /// Historical frame rendering statistics
 pub mod frame_history;
 
 /// Utilities around [`egui::style`]
-#[cfg(feature = "serde")]
+#[cfg(all(
+    feature = "serde",
+    feature = "eframe",
+    any(feature = "glow", feature = "wgpu")
+))]
 pub mod styles;
 
 /// [`eframe::App`] composition tools
+#[cfg(all(feature = "eframe", any(feature = "glow", feature = "wgpu")))]
 pub mod composite;
 
 pub mod about;
@@ -45,9 +52,14 @@ pub mod repainting;
 #[cfg(feature = "serde")]
 pub mod serde;
 pub mod testimage;
+#[cfg(all(feature = "eframe", any(feature = "glow", feature = "wgpu")))]
 pub mod toolframe;
 pub mod visuals;
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(
+    target_arch = "wasm32",
+    feature = "eframe",
+    any(feature = "glow", feature = "wgpu")
+))]
 pub mod wasm;
 
 pub trait WithAlpha {

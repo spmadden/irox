@@ -2,9 +2,9 @@
 // Copyright 2025 IROX Contributors
 //
 
-use eframe::emath::Align;
-use eframe::Frame;
+use egui::emath::Align;
 use egui::{Context, Id, Key, Layout, Modifiers, TextEdit, Vec2, ViewportCommand, Widget};
+use irox_tools::cfg_feature_eframe;
 use log::error;
 use std::sync::mpsc::Sender;
 
@@ -153,11 +153,13 @@ impl DialogWidget {
         }
     }
 }
-impl eframe::App for DialogWidget {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            self.ui(ctx, ui);
-        });
+cfg_feature_eframe! {
+    impl eframe::App for DialogWidget {
+        fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+            egui::CentralPanel::default().show(ctx, |ui| {
+                self.ui(ctx, ui);
+            });
+        }
     }
 }
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
@@ -210,7 +212,11 @@ pub struct Details {
 /// Options to create a dialog frame/window
 pub struct DialogOptions {
     /// Native Options for the frame
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(all(
+        feature = "eframe",
+        any(feature = "glow", feature = "wgpu"),
+        not(target_arch = "wasm32")
+    ))]
     pub native_options: eframe::NativeOptions,
     /// Title for the frame
     pub title: String,
@@ -220,7 +226,11 @@ pub struct DialogOptions {
 impl Default for DialogOptions {
     fn default() -> Self {
         DialogOptions {
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(all(
+                feature = "eframe",
+                any(feature = "glow", feature = "wgpu"),
+                not(target_arch = "wasm32")
+            ))]
             native_options: eframe::NativeOptions {
                 multisampling: 0,
                 persist_window: false,
@@ -243,7 +253,11 @@ impl Default for DialogOptions {
 
 ///
 /// Pop and run a dialog frame with the provided options.
-#[cfg(all(any(feature = "glow", feature = "wgpu"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    feature = "eframe",
+    any(feature = "glow", feature = "wgpu"),
+    not(target_arch = "wasm32")
+))]
 pub fn dialog_options<F: FnOnce(&mut DialogOptions)>(opts: F) -> Option<UserResponse> {
     let mut options = DialogOptions::default();
     opts(&mut options);

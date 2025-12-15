@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
-use eframe::epaint::text::FontData;
-use egui::{Context, FontDefinitions, FontFamily};
-
 extern crate alloc;
+use egui::epaint::text::FontData;
+use egui::{Context, FontDefinitions, FontFamily};
 
 pub const UBUNTU: &[u8] = include_bytes!("../fonts/Ubuntu-R.ttf");
 pub const UBUNTU_BOLD: &[u8] = include_bytes!("../fonts/Ubuntu-B.ttf");
