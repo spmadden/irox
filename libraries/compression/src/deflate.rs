@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use core::fmt::Debug;
 use irox_bits::{BitStreamDecoder, Bits, BitsError, BitsErrorKind, BitsWrapper, Error, MutBits};
-use irox_tools::buf::ZeroedBuffer;
+use irox_tools::buf::{UnlimitedBuffer, ZeroedBuffer};
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
@@ -392,6 +392,29 @@ impl<'a, T: Bits> Inflater<'a, T> {
         }
         let v = self.block.make_contiguous();
         Ok(v.get(self.block_offset..))
+    }
+    #[must_use]
+    pub fn to_bits(self) -> InflaterBits<'a, T> {
+        InflaterBits {
+            buf: UnlimitedBuffer::new(),
+            inf: self,
+        }
+    }
+}
+
+pub struct InflaterBits<'a, T: Bits> {
+    buf: UnlimitedBuffer<u8>,
+    inf: Inflater<'a, T>,
+}
+impl<T: Bits> Bits for InflaterBits<'_, T> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        if self.buf.is_empty() {
+            let Some(v) = self.inf.read_deflate_block()? else {
+                return Ok(None);
+            };
+            self.buf.append_slice(v);
+        }
+        Ok(self.buf.pop_front())
     }
 }
 
