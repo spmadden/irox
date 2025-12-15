@@ -14,7 +14,7 @@ use std::io::{BufRead, BufReader, Read};
 ///
 /// Calls to `read()` and `next()` fill the internal buffer & peek the data, but do not consume it.  Call either
 /// `drain()` or one of the `consume_*` functions.
-#[derive()]
+#[derive(Debug)]
 pub struct Buffer<T> {
     reader: BufReader<T>,
     buffer: VecDeque<u8>,
@@ -29,6 +29,13 @@ impl<T: Read> Buffer<T> {
         }
     }
 
+    pub fn len(&self) -> usize {
+        self.buffer.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
     /// The associated iterator call 'next' fills the buffer and returns the
     /// individual byte-by-byte values.  This function returns and clears the
     /// buffer as a consecutive block, up to 'len' items.
