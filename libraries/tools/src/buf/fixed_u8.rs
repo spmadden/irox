@@ -387,3 +387,9 @@ impl<const N: usize> MutBits for FixedU8Buf<N> {
         self.append(val)
     }
 }
+
+impl<const N: usize> Bits for FixedU8Buf<N> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        Ok(self.pop_front())
+    }
+}
