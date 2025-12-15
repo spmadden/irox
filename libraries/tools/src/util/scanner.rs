@@ -7,10 +7,12 @@
 //!
 
 extern crate alloc;
+
+use crate::hex;
+use crate::read::Buffer;
+use alloc::borrow::Cow;
 use alloc::collections::VecDeque;
 use std::io::{BufReader, Read};
-
-use crate::read::Buffer;
 
 ///
 /// What characters are considered "quotes"
@@ -104,6 +106,22 @@ pub enum ReadToken<'a, T: Clone> {
     EndOfData { data: Vec<u8> },
     NotFound,
 }
+impl<T: Clone> ReadToken<'_, T> {
+    pub fn get_data(self) -> Option<Vec<u8>> {
+        match self {
+            ReadToken::Found { data, .. } | ReadToken::EndOfData { data, .. } => Some(data),
+            ReadToken::NotFound => None,
+        }
+    }
+    pub fn as_str(&self) -> Cow<'_, str> {
+        match self {
+            ReadToken::Found { data, .. } | ReadToken::EndOfData { data, .. } => {
+                String::from_utf8_lossy(data.as_slice())
+            }
+            ReadToken::NotFound => Default::default(),
+        }
+    }
+}
 
 struct TokenWorkingMem<'a, T: Clone> {
     token: &'a Token<T>,
@@ -122,7 +140,12 @@ impl<'a, T: Clone> TokenWorkingMem<'a, T> {
             offset: 0,
         }
     }
-
+    pub fn reset(&mut self) {
+        self.ringbuf.clear();
+        self.found_escape = false;
+        self.last_found_quote_char = None;
+        self.offset = 0;
+    }
     /// Is there any unfilled capacity?
     pub fn is_full(&self) -> bool {
         self.ringbuf.capacity() - self.ringbuf.len() == 0
@@ -205,6 +228,7 @@ where
 {
     reader: Buffer<BufReader<T>>,
     tokens: Vec<Token<R>>,
+    skip_empty_data: bool,
 }
 
 impl<T: Read + Sized, R: Clone> Scanner<T, R> {
@@ -214,6 +238,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         Scanner {
             reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
             tokens: Vec::from(delimiters),
+            skip_empty_data: false,
         }
     }
 
@@ -223,6 +248,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         Scanner {
             reader: Buffer::new(BufReader::with_capacity(max_buffer, input)),
             tokens: Vec::from(delimiters),
+            skip_empty_data: false,
         }
     }
 
@@ -239,18 +265,26 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         let mut num_read = 0;
-        for char in &mut self.reader {
+        while let Some(char) = self.reader.next() {
+            let mut reset = false;
             for mem in &mut workingmem {
                 mem.push_back(char);
 
                 if mem.matches() {
+                    if self.skip_empty_data && (self.reader.is_empty() || mem.offset == 0) {
+                        reset = true;
+                        self.reader.consume_read_buffer();
+                        break;
+                    }
                     return Ok(FoundToken::Found {
                         offset: mem.offset,
                         token: mem.token,
                     });
                 }
             }
-
+            if reset {
+                workingmem.iter_mut().for_each(TokenWorkingMem::reset);
+            }
             num_read += 1;
         }
         Ok(FoundToken::EndOfData {
@@ -261,11 +295,17 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     pub fn read_next(&mut self) -> Result<ReadToken<'_, R>, std::io::Error> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
-        for char in &mut self.reader {
+
+        while let Some(char) = self.reader.next() {
+            let mut reset = false;
             for mem in &mut workingmem {
                 mem.push_back(char);
-
                 if mem.matches() {
+                    if self.skip_empty_data && (self.reader.is_empty() || mem.offset == 0) {
+                        reset = true;
+                        self.reader.consume_read_buffer();
+                        break;
+                    }
                     let buf = self.reader.consume_read_buffer();
                     let mut data: Vec<u8> = buf.into();
                     data.truncate(mem.offset);
@@ -274,6 +314,9 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
                         token: mem.token,
                     });
                 }
+            }
+            if reset {
+                workingmem.iter_mut().for_each(TokenWorkingMem::reset);
             }
         }
         let buf = self.reader.consume_read_buffer();
@@ -291,24 +334,60 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     pub fn take_back(self) -> Buffer<BufReader<T>> {
         self.reader
     }
+
+    pub fn skip_empty_data(&mut self) {
+        self.skip_empty_data = true;
+    }
 }
 impl<T: Read + Sized> Scanner<T, LineEnding> {
     pub fn new_lf(input: T) -> Self {
         Scanner {
             reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
             tokens: vec![Token::new("\n", LineEnding::LineFeed)],
+            skip_empty_data: false,
         }
     }
     pub fn new_crlf(input: T) -> Self {
         Scanner {
             reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
             tokens: vec![Token::new("\r\n", LineEnding::CarriageReturnLineFeed)],
+            skip_empty_data: false,
         }
     }
     pub fn new_cr(input: T) -> Self {
         Scanner {
             reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
             tokens: vec![Token::new("\r", LineEnding::CarriageReturn)],
+            skip_empty_data: false,
+        }
+    }
+}
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum WhitespaceCharacter {
+    Tab,
+    LineFeed,
+    VerticalTab,
+    FormFeed,
+    CarriageReturn,
+    Space,
+    NextLine,
+    NBSP,
+}
+impl<T: Read + Sized> Scanner<T, WhitespaceCharacter> {
+    pub fn new_whitespace(input: T) -> Self {
+        Scanner {
+            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            skip_empty_data: true,
+            tokens: vec![
+                Token::new(hex!("09"), WhitespaceCharacter::Tab),
+                Token::new(hex!("0A"), WhitespaceCharacter::LineFeed),
+                Token::new(hex!("0B"), WhitespaceCharacter::VerticalTab),
+                Token::new(hex!("0C"), WhitespaceCharacter::FormFeed),
+                Token::new(hex!("0D"), WhitespaceCharacter::CarriageReturn),
+                Token::new(hex!("20"), WhitespaceCharacter::Space),
+                Token::new(hex!("85"), WhitespaceCharacter::NextLine),
+                Token::new(hex!("A0"), WhitespaceCharacter::NBSP),
+            ],
         }
     }
 }
