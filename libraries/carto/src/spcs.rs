@@ -62,7 +62,7 @@ impl Projection for SPCS {
             .as_meters()
             .value();
         let r = self.params.r0 - n;
-        let gamma = (e / r).tan();
+        let gamma = (e / r).atan();
         let b0 = self.params.ctr.get_latitude();
         let l0 = self.params.ctr.get_longitude();
         let lon = Longitude(Angle::new_radians(
@@ -75,17 +75,14 @@ impl Projection for SPCS {
         let dphi = dphi * u + g2;
         let dphi = dphi * u + g1;
         let dphi = dphi * u;
-        let phi = Latitude(Angle::new_radians(dphi) + b0.0);
+        let phi = Latitude(Angle::new_degrees(dphi) + b0.0);
         EllipticalCoordinate::new(phi, lon, WGS84_SHAPE)
     }
 }
 
 pub const MASS_MAINLAND: SPCS = SPCS {
     params: SPCSPolyParams {
-        ctr: EllipticalCoordinate::new_degrees_wgs84(
-            41., //42.200_625_2872,
-            -71.5,
-        ),
+        ctr: EllipticalCoordinate::new_degrees_wgs84(42.200_625_287_2, -71.5),
         offset: CartesianCoordinate::new_meters(200_000.0, 883353.0384, 0.0),
         l: [111073.2431, 9.71650, 5.63098, 0.021759, 0.0],
         g: [9.003068344e-6, -7.09026e-15, -3.69789e-20, -1.1855e-27, 0.0],

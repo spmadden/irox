@@ -1740,6 +1740,7 @@ dependencies = [
 name = "irox-carto"
 version = "0.6.5"
 dependencies = [
+ "irox-compression",
  "irox-csv",
  "irox-enums",
  "irox-stats",

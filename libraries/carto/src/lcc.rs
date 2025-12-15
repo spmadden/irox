@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
@@ -9,6 +9,23 @@ use core::f64::consts::FRAC_PI_4;
 use irox_units::units::angle::Angle;
 use irox_units::units::length::Length;
 use std::f64::consts::FRAC_PI_2;
+
+fn q(shape: &Ellipsoid, phi: &Latitude) -> f64 {
+    let e = shape.first_eccentricity;
+    let s = phi.sin();
+    let a = 1.0 + s;
+    let b = 1.0 - s;
+    let c = 1.0 + e * s;
+    let d = 1.0 - e * s;
+    let a = (a / b).ln();
+    let b = e * (c / d).ln();
+    (a - b) / 2.0
+}
+fn w(shape: &Ellipsoid, phi: &Angle) -> f64 {
+    let e2 = shape.first_eccentricity_squared();
+    let s2 = phi.sin().powi(2);
+    (1.0 - e2 * s2).sqrt()
+}
 
 fn m(shape: &Ellipsoid, phi: &Angle) -> f64 {
     let phi = phi.as_radians().value();
@@ -76,7 +93,7 @@ impl LambertConformalConicBuilder {
         self
     }
     #[must_use]
-    pub fn build(self) -> LambertConformalConic {
+    pub fn build_elliptical(self) -> LambertConformalConicElliptical {
         let phi0 = self.center.get_latitude();
         let phi1 = self.first_parallel;
         let phi2 = self.second_parallel;
@@ -93,7 +110,7 @@ impl LambertConformalConicBuilder {
         let n = (m1.ln() - m2.ln()) / (t1.ln() - t2.ln());
         let f = m1 / (n * t1.powf(n));
         let p0 = a * f * t0.powf(n);
-        LambertConformalConic {
+        LambertConformalConicElliptical {
             a,
             n,
             f,
@@ -105,9 +122,41 @@ impl LambertConformalConicBuilder {
             use_old_table_math: self.use_old_table_math,
         }
     }
+
+    pub fn build_spherical(self) -> LambertConformalConicSpherical {
+        let phin = self.first_parallel.as_radians();
+        let phis = self.second_parallel.as_radians();
+
+        let qb = q(&self.shape, self.center.get_latitude());
+        let qn = q(&self.shape, &self.first_parallel);
+        let qs = q(&self.shape, &self.second_parallel);
+        let wn = w(&self.shape, &self.first_parallel);
+        let ws = w(&self.shape, &self.second_parallel);
+        let a = wn * phis.cos();
+        let b = ws * phin.cos();
+        let sphi0 = (a / b).ln() / (qn - qs);
+
+        let sma = self.shape.semi_major_axis_a();
+        let a = sma * phis.cos() * (qs * sphi0).exp();
+        let b = ws * sphi0;
+        let k = a / b;
+        let _kn = sma * phin.cos() * (qn * sphi0).exp() / (wn * sphi0);
+
+        let rb = k / (qb * sphi0).exp();
+
+        LambertConformalConicSpherical {
+            sphi0,
+            rb,
+            k,
+            false_easting: self.false_easting,
+            false_northing: self.false_northing,
+            center: self.center,
+            shape: self.shape,
+        }
+    }
 }
 
-pub struct LambertConformalConic {
+pub struct LambertConformalConicElliptical {
     center: EllipticalCoordinate,
     shape: Ellipsoid,
     false_northing: Length,
@@ -119,7 +168,7 @@ pub struct LambertConformalConic {
     use_old_table_math: bool,
 }
 
-impl Projection for LambertConformalConic {
+impl Projection for LambertConformalConicElliptical {
     fn get_center_coords(&self) -> &EllipticalCoordinate {
         &self.center
     }
@@ -161,21 +210,105 @@ impl Projection for LambertConformalConic {
         let lam = theta / self.n + self.center.get_longitude().as_radians().value();
         let e = self.shape.first_eccentricity();
 
-        let mut phi = FRAC_PI_2 - 2. * t.atan();
-        loop {
-            let phit = FRAC_PI_2
-                - 2. * (t * ((1. - e * phi.sin()) / (1. + e * phi.sin())).powf(e / 2.)).atan();
-            let eps = (phit - phi).abs();
-            phi = phit;
-            if eps < 1e-15 {
-                break;
+        let phi = if self.use_old_table_math {
+            let phig = FRAC_PI_2 - 2. * t.atan();
+            (phig.tan() / (1.0 - self.shape.first_eccentricity_squared)).atan()
+        } else {
+            let mut phi = FRAC_PI_2 - 2. * t.atan();
+            loop {
+                let phit = FRAC_PI_2
+                    - 2. * (t * ((1. - e * phi.sin()) / (1. + e * phi.sin())).powf(e / 2.)).atan();
+                let eps = (phit - phi).abs();
+                phi = phit;
+                if eps < 1e-15 {
+                    break;
+                }
             }
-        }
+            phi
+        };
 
         let lat = Latitude(Angle::new_radians(phi));
         let lon = Longitude(Angle::new_radians(lam));
 
         EllipticalCoordinate::new(lat, lon, self.shape.into())
+    }
+}
+
+pub struct LambertConformalConicSpherical {
+    k: Length,
+    rb: Length,
+    sphi0: f64,
+    false_northing: Length,
+    false_easting: Length,
+    center: EllipticalCoordinate,
+    shape: Ellipsoid,
+}
+impl Projection for LambertConformalConicSpherical {
+    fn get_center_coords(&self) -> &EllipticalCoordinate {
+        &self.center
+    }
+
+    fn project_to_cartesian(&self, coord: &EllipticalCoordinate) -> CartesianCoordinate {
+        let que = q(&self.shape, coord.get_latitude());
+        let r = self.k / (self.sphi0 * que).exp();
+
+        // let phi = coord.get_latitude().as_radians().value();
+        // let ta = (FRAC_PI_4 + phi / 2.0).tan().powf(self.n);
+        // let r = self.shape.semi_major_axis_a();
+        // let p = r * self.f / ta;
+
+        // nb = false_northing @ base
+        // n0 883353
+
+        let gamma =
+            (coord.get_longitude().0 - self.center.get_longitude().0).as_radians() * self.sphi0;
+        let x = r * gamma.sin();
+        let gc = gamma.cos();
+        let y = self.rb / gc + self.false_northing / gc - r;
+        let y = y * gc;
+        CartesianCoordinate::new(x + self.false_easting, y, Length::default())
+    }
+
+    fn project_to_elliptical(&self, coord: &CartesianCoordinate) -> EllipticalCoordinate {
+        let ep = coord.get_x() - self.false_easting;
+        let rp = self.rb + self.false_northing - coord.get_y();
+
+        let gamma = (ep / rp).atan();
+        let lam = Longitude(
+            self.center.get_longitude().as_radians() + Angle::new_radians(gamma / self.sphi0),
+        );
+        let r = (rp * rp + ep * ep).sqrt();
+        let q = (self.k / r).as_meters().value().ln() / self.sphi0;
+        let e2q = (2.0 * q).exp();
+        let mut sphi = (e2q - 1.) / (e2q + 1.);
+
+        let e = self.shape.first_eccentricity;
+        let e2 = self.shape.first_eccentricity_squared;
+        let mut off = 1.0;
+        while off > f64::EPSILON {
+            let a = ((1. + sphi) / (1. - sphi)).ln();
+            let b = e * ((1. + e * sphi) / (1. - e * sphi)).ln();
+            let f1 = (a - b) / 2.0 - q;
+            let a = 1. / (1. - sphi * sphi);
+            let b = e2 / (1. - e2 * sphi * sphi);
+            let f2 = a / b;
+
+            off = -f1 / f2;
+            sphi += off;
+        }
+        let phi = Latitude(Angle::new_radians(sphi.asin()));
+
+        EllipticalCoordinate::new(phi, lam, self.shape.into())
+        // let dy = self.p0 - y;
+        //
+        // let p = (x * x + dy * dy).sqrt();
+        // let p = p * self.n.signum();
+        // let rfp = self.shape.semi_major_axis_a() * self.f / p;
+        // let phi = 2.0 * (rfp.as_meters().value().atan()).powf(1./self.n) - FRAC_PI_2;
+        // let lam = phi / self.n + self.center.get_longitude().as_radians().value();
+        // let lat = Latitude(Angle::new_radians(phi));
+        // let lon = Longitude(Angle::new_radians(lam));
+        // EllipticalCoordinate::new(lat, lon, self.shape.into())
     }
 }
 
@@ -201,7 +334,7 @@ mod test {
                 StandardShapes::NAD27.into(),
             ))
             .with_shape(StandardShapes::NAD27.as_ellipsoid())
-            .build();
+            .build_elliptical();
         let xyz = lcc
             .project_to_cartesian(&EllipticalCoordinate::new(
                 Latitude(Angle::new_dms(35, 00, 0.0)),
@@ -245,7 +378,7 @@ mod test {
             ))
             .with_false_easting(Length::new(2000000.00, LengthUnits::USSurveyFoot))
             .with_shape(StandardShapes::NAD27.as_ellipsoid())
-            .build();
+            .build_elliptical();
         let xyz = lcc
             .project_to_cartesian(&EllipticalCoordinate::new(
                 Latitude(Angle::new_dms(28, 30, 0.0)),

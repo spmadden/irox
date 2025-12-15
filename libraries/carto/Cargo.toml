@@ -37,6 +37,7 @@ irox-csv.workspace = true
 [dev-dependencies]
 irox-csv.workspace = true
 irox-stats.workspace = true
+irox-compression.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
