@@ -13,6 +13,7 @@ use core::cmp::Ordering;
 use core::fmt::Formatter;
 use core::str::FromStr;
 pub use irox_tools::f64::FloatExt;
+pub use irox_tools::Cast;
 
 macro_rules! consts {
     ($prim:ty, $val:literal, $shift:ident, $valt:ident, $mask:ident) => {
@@ -178,7 +179,7 @@ macro_rules! impl_fmt_as_inner {
 }
 
 macro_rules! impl_unsigned_flops {
-    ($typ:ty, $prim:ty, $lower_prim:ty, $shift:ident, $val:ident, $mask:ident) => {
+    ($typ:ty, $sign:ty, $prim:ty, $lower_prim:ty, $shift:ident, $val:ident, $mask:ident) => {
         impl core::ops::Add<f64> for $typ {
             type Output = Self;
             fn add(self, rhs: f64) -> Self::Output {
@@ -325,6 +326,29 @@ macro_rules! impl_unsigned_flops {
                 todo!()
             }
         }
+        impl irox_tools::One for $typ {
+            const ONE: Self = Self::from_parts(1, 0);
+        }
+        impl irox_tools::Zero for $typ {
+            const ZERO: Self = Self::from_parts(0, 0);
+        }
+        impl irox_tools::ToF64 for $typ {
+            fn to_f64(&self) -> f64 {
+                self.as_f64()
+            }
+        }
+        impl irox_tools::ToSigned for $typ {
+            type Output = $sign;
+            fn to_signed(self) -> Self::Output {
+                Self::Output {
+                    data: self.data.cast(),
+                }
+            }
+            fn negative_one() -> Self::Output {
+                <$sign>::from_parts(-1, 0)
+            }
+        }
+        impl irox_tools::FloatIsh for $typ {}
     };
 }
 macro_rules! impl_signed_flops {
@@ -700,7 +724,7 @@ impl FixedU32 {
 impl_base!(FixedU32, u32, u16, u64, U32_SHIFT, U32_VAL, U32_MASK);
 impl_prim_ops!(FixedU32, u16, u8);
 impl_prim_ops!(FixedU32, u16, u16);
-impl_unsigned_flops!(FixedU32, u32, u16, U32_SHIFT, U32_VAL, U32_MASK);
+impl_unsigned_flops!(FixedU32, FixedI32, u32, u16, U32_SHIFT, U32_VAL, U32_MASK);
 
 ///
 /// Fixed precision [`i32`] - upper 16 bits is value, lower 16 bits are the fractional portion of the
@@ -732,7 +756,7 @@ impl FixedU64 {
     pub const LN10: FixedU64 = FixedU64::from_parts(2, 1_299_593_075);
 }
 impl_base!(FixedU64, u64, u32, u128, U64_SHIFT, U64_VAL, U64_MASK);
-impl_unsigned_flops!(FixedU64, u64, u32, U64_SHIFT, U64_VAL, U64_MASK);
+impl_unsigned_flops!(FixedU64, FixedI64, u64, u32, U64_SHIFT, U64_VAL, U64_MASK);
 impl_prim_ops!(FixedU64, u32, u8);
 impl_prim_ops!(FixedU64, u32, u16);
 impl_prim_ops!(FixedU64, u32, u32);
@@ -770,7 +794,7 @@ impl FixedU128 {
     pub const LN10: FixedU128 = FixedU128::from_parts(2, 5_581_709_770_980_770_000);
 }
 impl_base!(FixedU128, u128, u64, u128, U128_SHIFT, U128_VAL, U128_MASK);
-impl_unsigned_flops!(FixedU128, u128, u64, U128_SHIFT, U128_VAL, U128_MASK);
+impl_unsigned_flops!(FixedU128, FixedI128, u128, u64, U128_SHIFT, U128_VAL, U128_MASK);
 impl_prim_ops!(FixedU128, u64, u8);
 impl_prim_ops!(FixedU128, u64, u16);
 impl_prim_ops!(FixedU128, u64, u32);
