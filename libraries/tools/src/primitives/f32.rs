@@ -6,7 +6,7 @@
 //! A collection of utilities for the f32 built-in
 //!
 
-use crate::{ToF64, ToSigned};
+use crate::{FloatIsh, ToF64, ToSigned};
 
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
@@ -170,6 +170,8 @@ impl ToSigned for f32 {
         -1.
     }
 }
+
+impl FloatIsh for f32 {}
 
 #[cfg(all(test, not(feature = "std")))]
 mod tests {

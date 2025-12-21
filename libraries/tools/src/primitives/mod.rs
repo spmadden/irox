@@ -11,6 +11,7 @@ pub mod u64;
 pub mod u8;
 mod wrapping;
 
+use crate::f64::FloatExt;
 use irox_bits::{Error, MutBits, WriteToBEBits};
 pub use wrapping::*;
 
@@ -264,3 +265,33 @@ impl_onezero_i!(u64);
 impl_onezero_i!(i64);
 impl_onezero_i!(u128);
 impl_onezero_i!(i128);
+
+pub trait FloatIsh: One + Zero + ToF64 + ToSigned + FloatExt {}
+
+pub trait Cast<Output = Self> {
+    fn cast(self) -> Output;
+}
+macro_rules! impl_cast {
+    ($src:ty, $($dst:ty)*) => {
+        $(
+            impl Cast<$dst> for $src {
+
+                fn cast(self) -> $dst {
+                    self as $dst
+                }
+            }
+        )*
+    };
+}
+impl_cast!(u8 , u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(i8 , u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(u16, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(i16, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(u32, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(i32, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(u64, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(i64, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(u128, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(i128, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(f32, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);
+impl_cast!(f64, u8 u16 u32 u64 u128 i8 i16 i32 i64 i128 f32 f64);

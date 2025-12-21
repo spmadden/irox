@@ -6,7 +6,7 @@
 //! A collection of utilities for the f64 built-in
 //!
 
-use crate::{ToF64, ToSigned, WrappingSub};
+use crate::{FloatIsh, ToF64, ToSigned, WrappingSub};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -302,6 +302,8 @@ impl ToSigned for f64 {
         -1.
     }
 }
+
+impl FloatIsh for f64 {}
 
 #[cfg(test)]
 mod tests {
