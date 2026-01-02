@@ -12,6 +12,8 @@ pub mod u8;
 mod wrapping;
 
 use crate::f64::FloatExt;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use core::str::FromStr;
 use irox_bits::{Error, MutBits, WriteToBEBits};
 pub use wrapping::*;
 
@@ -131,6 +133,10 @@ impl_from_integer!(i128, IntegerValue::I128);
 /// Converts this value into a F64 using the `as` cast operation.
 pub trait ToF64 {
     fn to_f64(&self) -> f64;
+}
+
+pub trait FromF64 {
+    fn from_f64(value: f64) -> Self;
 }
 
 ///
@@ -266,7 +272,36 @@ impl_onezero_i!(i64);
 impl_onezero_i!(u128);
 impl_onezero_i!(i128);
 
-pub trait FloatIsh: One + Zero + ToF64 + ToSigned + FloatExt {}
+pub trait PrimitiveMath:
+    Sized
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + Mul<Output = Self>
+    + Div<Output = Self>
+    + AddAssign
+    + SubAssign
+    + MulAssign
+    + DivAssign
+{
+}
+
+pub trait FloatIsh:
+    One
+    + Zero
+    + ToF64
+    + FromF64
+    + FromStr
+    + ToSigned
+    + FloatExt
+    + Sized
+    + Copy
+    + Clone
+    + PartialEq
+    + PartialOrd
+    + Default
+    + PrimitiveMath
+{
+}
 
 pub trait Cast<Output = Self> {
     fn cast(self) -> Output;

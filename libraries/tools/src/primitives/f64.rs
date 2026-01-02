@@ -6,7 +6,7 @@
 //! A collection of utilities for the f64 built-in
 //!
 
-use crate::{FloatIsh, ToF64, ToSigned, WrappingSub};
+use crate::{FloatIsh, FromF64, PrimitiveMath, ToF64, ToSigned, WrappingSub};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -292,6 +292,11 @@ impl ToF64 for f64 {
         *self
     }
 }
+impl FromF64 for f64 {
+    fn from_f64(value: f64) -> Self {
+        value
+    }
+}
 impl ToSigned for f64 {
     type Output = f64;
 
@@ -303,6 +308,7 @@ impl ToSigned for f64 {
     }
 }
 
+impl PrimitiveMath for f64 {}
 impl FloatIsh for f64 {}
 
 #[cfg(test)]

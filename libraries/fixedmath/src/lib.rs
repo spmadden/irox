@@ -337,6 +337,11 @@ macro_rules! impl_unsigned_flops {
                 self.as_f64()
             }
         }
+        impl irox_tools::FromF64 for $typ {
+            fn from_f64(value: f64) -> Self {
+                value.into()
+            }
+        }
         impl irox_tools::ToSigned for $typ {
             type Output = $sign;
             fn to_signed(self) -> Self::Output {
@@ -348,6 +353,7 @@ macro_rules! impl_unsigned_flops {
                 <$sign>::from_parts(-1, 0)
             }
         }
+        impl irox_tools::PrimitiveMath for $typ {}
         impl irox_tools::FloatIsh for $typ {}
     };
 }

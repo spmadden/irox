@@ -6,7 +6,7 @@
 //! A collection of utilities for the f32 built-in
 //!
 
-use crate::{FloatIsh, ToF64, ToSigned};
+use crate::{FloatIsh, FromF64, PrimitiveMath, ToF64, ToSigned};
 
 impl crate::f64::FloatExt for f32 {
     type Type = f32;
@@ -158,6 +158,11 @@ impl ToF64 for f32 {
         *self as f64
     }
 }
+impl FromF64 for f32 {
+    fn from_f64(value: f64) -> Self {
+        value as f32
+    }
+}
 
 impl ToSigned for f32 {
     type Output = f32;
@@ -171,6 +176,7 @@ impl ToSigned for f32 {
     }
 }
 
+impl PrimitiveMath for f32 {}
 impl FloatIsh for f32 {}
 
 #[cfg(all(test, not(feature = "std")))]
