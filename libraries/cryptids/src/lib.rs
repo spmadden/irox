@@ -18,6 +18,8 @@ mod chacha20;
 pub mod ed25519;
 mod pbkdf2;
 mod poly1305;
+mod salsa;
+mod scrypt;
 pub mod x25519;
 
 pub use aead::*;
@@ -26,6 +28,7 @@ pub use chacha20::*;
 pub use irox_tools::hash::sha2;
 pub use pbkdf2::*;
 pub use poly1305::*;
+pub use salsa::*;
 
 use irox_tools::cfg_feature_std;
 cfg_feature_std! {
