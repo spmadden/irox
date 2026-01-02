@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -12,3 +12,6 @@ crate::cfg_feature_std! {
 }
 pub mod bases;
 pub mod uuid;
+crate::cfg_feature_alloc! {
+    pub mod levenshtein;
+}
