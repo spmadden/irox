@@ -82,7 +82,7 @@ macro_rules! sha2_impl {
             fn finish(self) -> [u8; $output_size] {
                 $name::finish(self)
             }
-            fn algorithm(&self) -> HashAlgorithm {
+            fn algorithm() -> HashAlgorithm {
                 HashAlgorithm::$name
             }
         }

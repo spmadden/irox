@@ -185,7 +185,7 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for SHA1 {
         SHA1::finish(self)
     }
 
-    fn algorithm(&self) -> HashAlgorithm {
+    fn algorithm() -> HashAlgorithm {
         HashAlgorithm::SHA1
     }
 }

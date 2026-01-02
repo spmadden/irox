@@ -31,7 +31,7 @@ pub trait HashDigest<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize>: Default
     fn write(&mut self, bytes: &[u8]);
     fn hash(self, bytes: &[u8]) -> [u8; OUTPUT_SIZE];
     fn finish(self) -> [u8; OUTPUT_SIZE];
-    fn algorithm(&self) -> HashAlgorithm;
+    fn algorithm() -> HashAlgorithm;
 }
 
 /// HMAC using the SHA1 algorithm

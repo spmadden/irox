@@ -208,7 +208,7 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for MD5 {
         MD5::finish(self).to_be_bytes() as [u8; OUTPUT_SIZE]
     }
 
-    fn algorithm(&self) -> HashAlgorithm {
+    fn algorithm() -> HashAlgorithm {
         HashAlgorithm::MD5
     }
 }

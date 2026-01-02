@@ -190,7 +190,7 @@ macro_rules! impl_blake2 {
             fn write(&mut self, v: &[u8]) {
                 Self::write(self, v)
             }
-            fn algorithm(&self) -> HashAlgorithm {
+            fn algorithm() -> HashAlgorithm {
                 todo!()
             }
         }
