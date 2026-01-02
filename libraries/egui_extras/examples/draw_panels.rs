@@ -3,7 +3,7 @@
 //
 
 use egui::*;
-use irox_egui_extras::drawpanel::DrawPanel;
+use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::testimage::TestImage;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
@@ -65,12 +65,10 @@ impl TestApp {
             return;
         }
         self.init = true;
-        let TestImage {
-            mut shapes,
-            handles,
-        } = TestImage::new(ctx);
+        let TestImage { shapes, handles } = TestImage::new(ctx);
         self.img = handles;
-        self.panel.shapes.append(&mut shapes);
+        let sender = self.panel.add_layer("test".to_string(), true);
+        let _ = sender.send(LayerCommand::ClearSetShapes(shapes));
     }
 }
 impl eframe::App for TestApp {

@@ -4,11 +4,71 @@
 
 use egui::emath::{Pos2, Rect, TSTransform};
 use egui::{Align, Align2, Color32, Painter, Response, Sense, Shape, TextStyle, Ui};
+use std::sync::mpsc::{channel, Receiver, Sender};
+
+pub enum LayerCommand {
+    AppendShape(Shape),
+    ClearShapes,
+    ClearSetShapes(Vec<Shape>),
+    SetVisible(bool),
+}
+
+pub struct Layer {
+    pub name: String,
+    pub sender: Sender<LayerCommand>,
+    pub visible: bool,
+    pub shapes: Vec<Shape>,
+    receiver: Receiver<LayerCommand>,
+}
+impl Layer {
+    pub fn new(name: String, visible: bool) -> Self {
+        let (tx, rx) = channel::<LayerCommand>();
+
+        Layer {
+            name,
+            sender: tx,
+            receiver: rx,
+            visible,
+            shapes: Vec::default(),
+        }
+    }
+    pub fn sender(&self) -> Sender<LayerCommand> {
+        self.sender.clone()
+    }
+    fn process_commands(&mut self) {
+        profile_scope!("drawpanel.layer.process_commands", self.name.as_str());
+        while let Ok(shp) = self.receiver.try_recv() {
+            match shp {
+                LayerCommand::AppendShape(shp) => {
+                    self.shapes.push(shp);
+                }
+                LayerCommand::ClearShapes => self.shapes.clear(),
+                LayerCommand::ClearSetShapes(shps) => {
+                    self.shapes = shps;
+                }
+                LayerCommand::SetVisible(v) => {
+                    self.visible = v;
+                }
+            }
+        }
+    }
+    pub fn show(&mut self, transform: &TSTransform, painter: &Painter) {
+        profile_scope!("drawpanel.layer.show", self.name.as_str());
+        self.process_commands();
+        if self.visible {
+            for sh in &self.shapes {
+                let mut sh = sh.clone();
+                sh.transform(*transform);
+                painter.add(sh);
+            }
+        }
+    }
+}
 
 #[derive(Default)]
 pub struct DrawPanel {
     pub name: String,
-    pub shapes: Vec<Shape>,
+    pub layers: Vec<Layer>,
     pub transform: TSTransform,
 }
 impl DrawPanel {
@@ -17,6 +77,12 @@ impl DrawPanel {
             name: name.as_ref().to_string(),
             ..Default::default()
         }
+    }
+    pub fn add_layer(&mut self, name: String, visible: bool) -> Sender<LayerCommand> {
+        let layer = Layer::new(name, visible);
+        let sender = layer.sender();
+        self.layers.push(layer);
+        sender
     }
     pub fn show(&mut self, ui: &mut egui::Ui) {
         profile_scope!("drawpanel.show", self.name.as_str());
@@ -27,10 +93,8 @@ impl DrawPanel {
 
         let mut transform = self.transform;
         transform.translation += rect.min.to_vec2();
-        for sh in &self.shapes {
-            let mut sh = sh.clone();
-            sh.transform(transform);
-            painter.add(sh);
+        for layer in &mut self.layers {
+            layer.show(&transform, &painter);
         }
 
         self.draw_cursor(ui, &mut response, &mut painter, None, &rect);
