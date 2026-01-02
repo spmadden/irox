@@ -433,6 +433,16 @@ impl_large_array!(
 ); // 384 bit
 
 impl_large_array!(
+    u32,
+    16,
+    64,
+    write_be_u32,
+    write_le_u32,
+    next_be_u32,
+    next_le_u32
+); // 512 bit
+
+impl_large_array!(
     u64,
     3,
     24,
