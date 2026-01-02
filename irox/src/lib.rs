@@ -24,6 +24,8 @@ pub extern crate irox_egui_extras;
 pub extern crate irox_enums;
 #[cfg(feature = "fixedmath")]
 pub extern crate irox_fixedmath;
+#[cfg(feature = "geometry")]
+pub extern crate irox_geometry;
 #[cfg(feature = "git-tools")]
 pub extern crate irox_git_tools;
 #[cfg(feature = "gpx")]
@@ -96,6 +98,9 @@ pub use irox_fixedmath as fixedmath;
 
 #[cfg(feature = "enums_derive")]
 pub use irox_enums_derive;
+
+#[cfg(feature = "geometry")]
+pub use irox_geometry as geometry;
 
 #[cfg(feature = "git-tools")]
 pub use irox_git_tools as git_tools;

@@ -1,0 +1,23 @@
+[package]
+name = "irox-geometry"
+description = "2D and 3D Geometry Primitives"
+keywords = ["irox"]
+categories = ["data-structures", "mathematics", "science::geo"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = {workspace = true}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -41,6 +41,7 @@ members = [
     "libraries/enums_derive",
     "libraries/fixedmath",
     "libraries/git-tools",
+    "libraries/geometry",
     "libraries/graphing",
     "libraries/imagery",
     "libraries/log",
@@ -128,6 +129,7 @@ irox-enums = { version = "^0", path = "libraries/enums" }
 irox-enums_derive = { version = "^0", path = "libraries/enums_derive" }
 irox-fixedmath = { version = "^0", path = "libraries/fixedmath" }
 irox-git-tools = { version = "^0", path = "libraries/git-tools" }
+irox-geometry = { version = "^0", path = "libraries/geometry" }
 irox-graphing = { version = "^0", path = "libraries/graphing" }
 irox-imagery = { version = "^0", path = "libraries/imagery" }
 irox-log = { version = "^0", path = "libraries/log" }

@@ -1674,6 +1674,7 @@ dependencies = [
  "irox-enums",
  "irox-enums_derive",
  "irox-fixedmath",
+ "irox-geometry",
  "irox-git-tools",
  "irox-gpx",
  "irox-graphing",
@@ -1867,6 +1868,13 @@ dependencies = [
 [[package]]
 name = "irox-fixedmath"
 version = "0.1.2"
+dependencies = [
+ "irox-tools",
+]
+
+[[package]]
+name = "irox-geometry"
+version = "0.1.0"
 dependencies = [
  "irox-tools",
 ]
