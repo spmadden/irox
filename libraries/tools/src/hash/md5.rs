@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 //!
@@ -8,7 +8,7 @@
 //! *THIS SHOULD NOT BE USED FOR ANYTHING SECURITY RELATED*
 
 use crate::buf::U32ArrayBuf;
-use crate::hash::HashDigest;
+use crate::hash::{HashAlgorithm, HashDigest};
 use crate::u32::ToU32Array;
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Error, MutBits, WriteToLEBits};
@@ -206,6 +206,10 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for MD5 {
 
     fn finish(self) -> [u8; OUTPUT_SIZE] {
         MD5::finish(self).to_be_bytes() as [u8; OUTPUT_SIZE]
+    }
+
+    fn algorithm(&self) -> HashAlgorithm {
+        HashAlgorithm::MD5
     }
 }
 

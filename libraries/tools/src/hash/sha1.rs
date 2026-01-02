@@ -10,7 +10,7 @@
 #![allow(clippy::indexing_slicing)]
 
 use crate::buf::{Buffer, FixedBuf, RoundBuffer};
-use crate::hash::HashDigest;
+use crate::hash::{HashAlgorithm, HashDigest};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
 use irox_bits::{Bits, Error, MutBits};
 
@@ -183,6 +183,10 @@ impl HashDigest<BLOCK_SIZE, OUTPUT_SIZE> for SHA1 {
 
     fn finish(self) -> [u8; OUTPUT_SIZE] {
         SHA1::finish(self)
+    }
+
+    fn algorithm(&self) -> HashAlgorithm {
+        HashAlgorithm::SHA1
     }
 }
 

@@ -6,6 +6,7 @@
 
 use crate::buf::ArrayBuf;
 use crate::buf::FixedU8Buf;
+use crate::hash::HashAlgorithm;
 use crate::hash::HashDigest;
 use core::ops::{BitXorAssign, Not};
 use irox_bits::WriteToLEBits;
@@ -181,12 +182,15 @@ macro_rules! impl_blake2 {
         }
         impl<const NN: usize> HashDigest<$bb, NN> for $name<NN> {
             fn finish(self) -> [u8; NN] {
-                todo!()
+                Self::finish(self)
             }
-            fn hash(self, _: &[u8]) -> [u8; NN] {
-                todo!()
+            fn hash(self, v: &[u8]) -> [u8; NN] {
+                Self::hash(self, v)
             }
-            fn write(&mut self, _: &[u8]) {
+            fn write(&mut self, v: &[u8]) {
+                Self::write(self, v)
+            }
+            fn algorithm(&self) -> HashAlgorithm {
                 todo!()
             }
         }

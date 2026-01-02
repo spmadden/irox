@@ -82,6 +82,9 @@ macro_rules! sha2_impl {
             fn finish(self) -> [u8; $output_size] {
                 $name::finish(self)
             }
+            fn algorithm(&self) -> HashAlgorithm {
+                HashAlgorithm::$name
+            }
         }
         impl MutBits for $name {
             fn write_u8(&mut self, val: u8) -> Result<(), Error> {
@@ -100,6 +103,7 @@ pub const SHA256_BLOCK_SIZE: usize = 64;
 pub const SHA256_WORD_SIZE: usize = 16;
 mod sha224_256 {
     use crate::buf::{ArrayBuf, U32ArrayBuf};
+    use crate::hash::HashAlgorithm;
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
 
@@ -343,6 +347,7 @@ pub const SHA512_BLOCK_SIZE: usize = 128;
 pub const SHA512_WORD_SIZE: usize = 32;
 mod sha384_512 {
     use crate::buf::{ArrayBuf, U64ArrayBuf};
+    use crate::hash::HashAlgorithm;
     use core::ops::{BitAnd, BitXor, Not};
     use irox_bits::{Error, MutBits};
 
