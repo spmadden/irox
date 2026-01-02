@@ -38,11 +38,13 @@ use crate::x25519::{
     check_valid_publickey, invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER,
 };
 use core::fmt::{Display, Formatter};
-use core::ops::MulAssign;
+use core::marker::PhantomData;
 use core::ops::{AddAssign, SubAssign};
+use core::ops::{Deref, MulAssign};
 use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 use irox_tools::arrays::copy_subset;
 use irox_tools::hash::SHA512;
+use irox_tools::hash::{HashAlgorithm, HashDigest};
 use irox_tools::hex;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -204,6 +206,43 @@ impl Ed25519PublicKey {
 
         Ok(())
     }
+
+    ///
+    /// Verifies the signature (sig) of the message (msg) that was signed using this public key.
+    pub fn verify_signed_message_custom_hash<HASH: HashDigest<BLKSZ, 64>, const BLKSZ: usize>(
+        &self,
+        msg: &[u8],
+        sig: &[u8; 64],
+    ) -> Result<(), Ed25519Error> {
+        let mut q = empty_gf4();
+        let mut p = empty_gf4();
+        unpack_neg(&mut q, &self.0)?;
+
+        let mut h = HASH::default();
+        h.write(&sig[0..32]);
+        h.write(&self.0);
+        let mut h = h.hash(msg);
+        swap_reduce(&mut h);
+        let mut e: [u8; 32] = copy_subset(&h);
+
+        scalarmult(&mut p, &mut q, &e);
+        zeroize_u8(&mut e);
+
+        scalarbase(&mut q, &copy_subset(&sig[32..]));
+        add!(p, q);
+
+        let t = pack(&p);
+        let sm: [u8; 32] = copy_subset(sig);
+
+        // debug_assert_eq!(
+        //     sm, t,
+        //     "Signature verification failed.  Signature is invalid.");
+        if !equal(&sm, &t) {
+            return Err(Ed25519Error::InvalidSignature);
+        }
+
+        Ok(())
+    }
 }
 
 ///
@@ -335,6 +374,60 @@ impl Ed25519KeyPair {
             signature: sig,
         }
     }
+
+    ///
+    /// Signs the provided message using the associated secret key.  Returns a
+    /// detatched signature.
+    #[allow(non_snake_case)]
+    #[allow(clippy::manual_memcpy)]
+    pub fn sign_message_custom_hash<HASH: HashDigest<BLKSZ, 64>, const BLKSZ: usize>(
+        &self,
+        msg: &[u8],
+    ) -> Ed25519SigCustomHash<HASH, BLKSZ> {
+        let mut d = HASH::default().hash(&self.secret_key.0);
+        d[0] &= 0xF8;
+        d[31] &= 0x7F;
+        d[31] |= 0x40;
+        let mut h = HASH::default();
+        h.write(&d[32..]);
+        let mut r = h.hash(msg);
+        swap_reduce(&mut r);
+        let mut p = empty_gf4();
+        let t = copy_subset(&r);
+        scalarbase(&mut p, &t);
+
+        let R = pack(&p);
+        let mut h = HASH::default();
+        h.write(&R);
+        h.write(&self.public_key.0);
+        let mut h = h.hash(msg);
+        swap_reduce(&mut h);
+        let mut x = [0i64; 64];
+
+        for i in 0..32 {
+            x[i] = r[i] as i64;
+        }
+        for i in 0..32 {
+            for j in 0..32 {
+                x[i + j] += h[i] as i64 * d[j] as i64;
+            }
+        }
+        mod_l(&mut h, &mut x);
+        let mut sig = [0u8; 64];
+        for i in 0..32 {
+            sig[i] = R[i];
+            sig[i + 32] = h[i];
+        }
+        let sig = Ed25519Signature {
+            pubkey: self.public_key.clone(),
+            signature: sig,
+        };
+        Ed25519SigCustomHash {
+            signature: sig,
+            hash_algorithm: HASH::algorithm(),
+            _phan: PhantomData,
+        }
+    }
 }
 
 #[derive(Eq, PartialEq, Clone)]
@@ -362,6 +455,27 @@ impl WriteToBEBits for Ed25519Signature {
         bits.write_all_bytes(&self.pubkey.0)?;
         bits.write_all_bytes(&self.signature)?;
         Ok(96)
+    }
+}
+
+/// An Ed25519 Signature using a hash algorithm that may not be SHA512
+#[derive(Eq, PartialEq, Clone)]
+pub struct Ed25519SigCustomHash<HASH: HashDigest<BLKSZ, 64>, const BLKSZ: usize> {
+    pub hash_algorithm: HashAlgorithm,
+    pub signature: Ed25519Signature,
+    pub _phan: PhantomData<HASH>,
+}
+impl<HASH: HashDigest<BLKSZ, 64>, const BLKSZ: usize> Deref for Ed25519SigCustomHash<HASH, BLKSZ> {
+    type Target = Ed25519Signature;
+
+    fn deref(&self) -> &Self::Target {
+        &self.signature
+    }
+}
+impl<HASH: HashDigest<BLKSZ, 64>, const BLKSZ: usize> Ed25519SigCustomHash<HASH, BLKSZ> {
+    pub fn validate_hash(&self, hash: &[u8]) -> Result<(), Ed25519Error> {
+        self.pubkey
+            .verify_signed_message_custom_hash::<HASH, BLKSZ>(hash, &self.signature.signature)
     }
 }
 
