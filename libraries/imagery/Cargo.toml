@@ -16,6 +16,7 @@ readme = "README.md"
 default = []
 alloc = ["irox-bits/alloc", "irox-tools/alloc"]
 std = ["irox-bits/std", "irox-tools/std", "irox-log/std", "alloc"]
+egui = ["dep:egui"]
 
 [lints]
 workspace = true
@@ -24,3 +25,4 @@ workspace = true
 irox-log = { workspace = true }
 irox-bits = { workspace = true }
 irox-tools = { workspace = true }
+egui = {workspace = true, optional = true}

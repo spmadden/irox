@@ -3,6 +3,7 @@
 //
 
 use crate::{Color, ColorDepth, Image, ImageError, ImageMut, ImageSpace};
+use irox_tools::cfg_feature_egui;
 
 #[derive(Clone, PartialEq)]
 pub struct StackedImage<const W: usize, const H: usize> {
@@ -51,12 +52,22 @@ impl<const W: usize, const H: usize> ImageMut for StackedImage<W, H> {
         Ok(())
     }
 }
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LinearStackedImage<const N: usize> {
-    data: [Color; N],
-    width: usize,
-    height: usize,
-    world_dimensions: Option<(f64, f64)>,
+    pub(crate) data: [Color; N],
+    pub(crate) width: usize,
+    pub(crate) height: usize,
+    pub(crate) world_dimensions: Option<(f64, f64)>,
+}
+impl<const N: usize> Default for LinearStackedImage<N> {
+    fn default() -> Self {
+        Self {
+            data: [Color::default(); N],
+            width: 0,
+            height: 0,
+            world_dimensions: None,
+        }
+    }
 }
 impl<const N: usize> Image for LinearStackedImage<N> {
     type DimType = Option<(f64, f64)>;
@@ -102,6 +113,17 @@ impl<const N: usize> ImageMut for LinearStackedImage<N> {
         };
         *v = color;
         Ok(())
+    }
+}
+cfg_feature_egui! {
+    impl<const N: usize> From<LinearStackedImage<N>> for egui::epaint::ColorImage {
+        fn from(value: LinearStackedImage<N>) -> Self {
+            egui::epaint::ColorImage {
+                size: [value.width, value.height],
+                pixels: value.data.as_slice().iter().map(Into::into).collect(),
+            }
+        }
+
     }
 }
 

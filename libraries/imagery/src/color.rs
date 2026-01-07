@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 
 use irox_bits::{BitStreamDecoder, Bits, BitsError};
+use irox_tools::cfg_feature_egui;
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct RGBColor {
@@ -28,6 +29,11 @@ pub struct HSVColor {
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct Greyscale8Bit {
     pub value: u8,
+}
+impl From<u8> for Greyscale8Bit {
+    fn from(value: u8) -> Self {
+        Self { value }
+    }
 }
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Color {
@@ -130,6 +136,20 @@ impl Color {
                 let v = g.value;
                 [0xFF, v, v, v]
             }
+        }
+    }
+}
+cfg_feature_egui! {
+    impl From<Color> for egui::Color32 {
+        fn from(value: Color) -> Self {
+            let [a, r,g,b] = value.argb_values();
+            egui::ecolor::Color32::from_rgba_unmultiplied(r,g,b,a)
+        }
+    }
+    impl From<&Color> for egui::Color32 {
+        fn from(value: &Color) -> Self {
+            let [a, r,g,b] = value.argb_values();
+            egui::ecolor::Color32::from_rgba_unmultiplied(r,g,b,a)
         }
     }
 }

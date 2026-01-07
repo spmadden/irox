@@ -64,6 +64,24 @@ pub trait Image {
     fn get_pixel_value(&self, x: usize, y: usize) -> Option<Color>;
 }
 
-pub trait ImageMut {
+pub trait ImageMut: Image {
     fn set_pixel_value(&mut self, x: usize, y: usize, color: Color) -> Result<(), ImageError>;
+}
+
+pub fn map_color<T: ImageMut>(img: &mut T, adj: &[(Color, Color)]) -> Result<(), ImageError> {
+    let width = img.get_width_pixels();
+    let height = img.get_height_pixels();
+    for y in 0..height {
+        for x in 0..width {
+            let Some(color) = img.get_pixel_value(x, y) else {
+                continue;
+            };
+            for (from, to) in adj {
+                if color == *from {
+                    img.set_pixel_value(x, y, *to)?;
+                }
+            }
+        }
+    }
+    Ok(())
 }
