@@ -53,6 +53,7 @@ pub struct FontSet {
     pub ubuntu_mono_bold: bool,
     pub ubuntu_mono_italic: bool,
     pub ubuntu_mono_bold_italic: bool,
+    pub set_as_defaults: bool,
 }
 impl FontSet {
     pub fn all() -> Self {
@@ -71,6 +72,45 @@ impl FontSet {
             ubuntu_mono_bold: true,
             ubuntu_mono_italic: true,
             ubuntu_mono_bold_italic: true,
+            set_as_defaults: false,
+        }
+    }
+    pub fn all_as_defaults() -> Self {
+        Self {
+            ubuntu: true,
+            ubuntu_bold: true,
+            ubuntu_italic: true,
+            ubuntu_bold_italic: true,
+            ubuntu_condensed: true,
+            ubuntu_light: true,
+            ubuntu_light_italic: true,
+            ubuntu_medium: true,
+            ubuntu_medium_italic: true,
+            ubuntu_thin: true,
+            ubuntu_mono: true,
+            ubuntu_mono_bold: true,
+            ubuntu_mono_italic: true,
+            ubuntu_mono_bold_italic: true,
+            set_as_defaults: true,
+        }
+    }
+    pub fn basics() -> Self {
+        Self {
+            ubuntu: true,
+            ubuntu_bold: false,
+            ubuntu_italic: false,
+            ubuntu_bold_italic: false,
+            ubuntu_condensed: false,
+            ubuntu_light: false,
+            ubuntu_light_italic: false,
+            ubuntu_medium: false,
+            ubuntu_medium_italic: false,
+            ubuntu_thin: false,
+            ubuntu_mono: true,
+            ubuntu_mono_bold: false,
+            ubuntu_mono_italic: false,
+            ubuntu_mono_bold_italic: false,
+            set_as_defaults: true,
         }
     }
 }
@@ -90,6 +130,13 @@ pub fn load_fonts(set: FontSet, ctx: &Context) {
     let mut fonts = FontDefinitions::default();
     if set.ubuntu {
         load_instance!(fonts, REGULAR, UBUNTU);
+        if set.set_as_defaults {
+            fonts
+                .families
+                .entry(FontFamily::Proportional)
+                .or_default()
+                .push(REGULAR.into());
+        }
     }
     if set.ubuntu_bold {
         load_instance!(fonts, BOLD, UBUNTU_BOLD);
@@ -120,6 +167,13 @@ pub fn load_fonts(set: FontSet, ctx: &Context) {
     }
     if set.ubuntu_mono {
         load_instance!(fonts, MONOSPACE, UBUNTU_MONOSPACE);
+        if set.set_as_defaults {
+            fonts
+                .families
+                .entry(FontFamily::Monospace)
+                .or_default()
+                .push(MONOSPACE.into());
+        }
     }
     if set.ubuntu_mono_bold {
         load_instance!(fonts, MONOSPACE_BOLD, UBUNTU_MONOSPACE_BOLD);
