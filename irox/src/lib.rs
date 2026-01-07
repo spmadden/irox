@@ -32,6 +32,8 @@ pub extern crate irox_git_tools;
 pub extern crate irox_gpx;
 #[cfg(feature = "graphing")]
 pub extern crate irox_graphing;
+#[cfg(feature = "imagery")]
+pub extern crate irox_imagery;
 #[cfg(feature = "influxdb_v1")]
 pub extern crate irox_influxdb_v1;
 #[cfg(feature = "log")]
@@ -110,6 +112,9 @@ pub use irox_graphing as graphing;
 
 #[cfg(feature = "gpx")]
 pub use irox_gpx as gpx;
+
+#[cfg(feature = "imagery")]
+pub use irox_imagery as imagery;
 
 #[cfg(feature = "influxdb_v1")]
 pub use irox_influxdb_v1 as influxdb_v1;
