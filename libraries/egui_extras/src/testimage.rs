@@ -7,7 +7,6 @@ use egui::{
     Color32, ColorImage, Context, CornerRadius, ImageData, Mesh, Pos2, Rect, Shape, TextureHandle,
     TextureId, TextureOptions, Vec2,
 };
-use irox_imagery::bitpacked::nums::{expand, ALL};
 use std::sync::{Arc, OnceLock};
 
 static LENA: &[u8] = include_bytes!("../data/lena.data");
@@ -24,8 +23,11 @@ static NUM_LOADED: OnceLock<[TextureHandle; 10]> = OnceLock::new();
 pub fn get_img(ctx: &Context, num: usize) -> Option<TextureId> {
     let nums = NUM_LOADED.get_or_init(|| {
         let mut idx = 0;
-        ALL.map(|v| {
-            let img = ImageData::Color(Arc::new(ColorImage::from_gray([16, 29], &expand(v))));
+        [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39].map(|v| {
+            let img = irox_imagery::bitpacked::nums::INFO
+                .get_glyph(v)
+                .unwrap_or_default();
+            let img = ImageData::Color(Arc::new(img.into()));
             let name = idx.to_string();
             idx += 1;
             ctx.load_texture(name, img, TextureOptions::NEAREST)
@@ -92,6 +94,8 @@ pub fn walking(ctx: &Context, pat: u64, shr: bool) -> TextureHandle {
 pub struct TestImage {
     pub handles: Vec<TextureHandle>,
     pub shapes: Vec<Shape>,
+    pub width: f32,
+    pub height: f32,
 }
 
 impl TestImage {
@@ -413,6 +417,11 @@ impl TestImage {
             let pos = Rect::from_min_max(min, max);
             shapes.push(imgmeshshape(tx, pos));
         }
-        Self { handles, shapes }
+        Self {
+            handles,
+            shapes,
+            width: 1024.,
+            height: 1024.,
+        }
     }
 }

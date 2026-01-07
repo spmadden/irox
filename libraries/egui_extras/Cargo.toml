@@ -35,7 +35,7 @@ irox-bits = { workspace = true, optional = true, features = ["alloc"] }
 irox-tools = { workspace = true }
 irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, optional = true, features = ["std"] }
-irox-imagery = { workspace = true }
+irox-imagery = { workspace = true, features = ["egui"] }
 irox-stats = { workspace = true, optional = true, features = ["emath", "std"] }
 irox-progress = {workspace = true}
 log.workspace = true

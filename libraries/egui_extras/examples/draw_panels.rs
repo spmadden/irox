@@ -65,7 +65,9 @@ impl TestApp {
             return;
         }
         self.init = true;
-        let TestImage { shapes, handles } = TestImage::new(ctx);
+        let TestImage {
+            shapes, handles, ..
+        } = TestImage::new(ctx);
         self.img = handles;
         let sender = self.panel.add_layer("test".to_string(), true);
         let _ = sender.send(LayerCommand::ClearSetShapes(shapes));
