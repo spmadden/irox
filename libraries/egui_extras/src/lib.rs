@@ -44,6 +44,7 @@ pub mod progressbar;
 pub mod progresswindow;
 
 pub mod drawpanel;
+pub mod fontmesh;
 pub mod fonts;
 #[cfg(feature = "plots")]
 pub mod logplot;
