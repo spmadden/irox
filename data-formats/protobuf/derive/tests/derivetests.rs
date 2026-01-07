@@ -23,7 +23,7 @@ fn test_derive() -> Result<(), BitsError> {
     Ok(())
 }
 
-struct TestMsg2 {
+pub struct TestMsg2 {
     pub val: u32,
 }
 impl ProtobufBinary for TestMsg2 {
