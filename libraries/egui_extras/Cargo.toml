@@ -16,7 +16,7 @@ repository.workspace = true
 workspace = true
 
 [features]
-default = ["eframe", "eframe?/wgpu"]
+default = ["eframe", "eframe/wgpu", "wgpu"]
 serde = ["dep:serde", "egui/serde", "irox-tools/std", "dep:irox-bits"]
 plots = ["dep:irox-units", "dep:irox-stats"]
 profiling = ["dep:profiling", "dep:puffin"]
