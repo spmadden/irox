@@ -1,0 +1,24 @@
+
+BUILD_FLAGS := ""
+WASM_OPT_FLAGS := "-O2 --fast-math"
+set windows-shell := ["powershell.exe", "-C"]
+
+setup:
+  rustup target add wasm32-unknown-unknown
+  cargo install --locked --quiet wasm-bindgen-cli --version 0.2.104
+  cargo install --locked --quiet wasm-opt --version 0.116.1
+
+
+build:
+  cargo build {{BUILD_FLAGS}} --lib --target wasm32-unknown-unknown
+  wasm-bindgen ../../target/wasm32-unknown-unknown/debug/irox_dotdraw.wasm --out-dir ../../target/wasm32-unknown-unknown/debug/web --out-name dotviewer --no-modules --no-typescript
+  cp web/* ../../target/wasm32-unknown-unknown/debug/web/
+
+release:
+   cargo build {{BUILD_FLAGS}} --lib --target wasm32-unknown-unknown --release
+   wasm-bindgen ../../target/wasm32-unknown-unknown/release/irox_dotdraw.wasm --out-dir ../../target/wasm32-unknown-unknown/release/ --out-name dotviewer --no-modules --no-typescript
+   wasm-opt ../../target/wasm32-unknown-unknown/release/dotviewer_bg.wasm -O2 --fast-math -o ../../target/wasm32-unknown-unknown/release/web/dotviewer_opt.wasm
+   cp web/* ../../target/wasm32-unknown-unknown/release/web/
+
+main:
+   cargo run --bin main --target x86_64-pc-windows-msvc --release

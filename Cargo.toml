@@ -57,6 +57,7 @@ members = [
     "libraries/threading",
     "libraries/tools",
     "libraries/types",
+    "tools/dotdraw",
     "tools/gpsd",
     "tools/halflifes",
     "tools/influx-cli",
@@ -68,6 +69,7 @@ members = [
 egui = { version = "^0.31", default-features = false }
 eframe = { version = "^0.31", default-features = false }
 emath = { version = "^0.31", default-features = false }
+ehttp = { version = "0.6.0", default-features = false }
 profiling = { version = "^1.0", features = ["profile-with-puffin"] }
 puffin = { version = "^0.19", features = [] }
 puffin_http = { version = "^0.16", features = [] }
@@ -90,15 +92,15 @@ xml = { version = "^0.8", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.20.0", default-features = false, features = ["vendored-libgit2"] }
-wasm-bindgen = {version = "0.2", default-features = false, features = []}
-wasm-bindgen-futures = "0.4"
+wasm-bindgen = {version = "0.2.104", default-features = false, features = []}
+wasm-bindgen-futures = "0.4.54"
 criterion = "0.5"
 core_affinity = "0.8"
 toml = "0.8"
 glow = "0.16"
 
 irox-arch-x86-64 = { version = "0.1" }
-web-sys = {version = "0.3"}
+web-sys = {version = "0.3.81"}
 
 irox-cargo-metadata = { version = "^0", path = "data-formats/cargo-metadata" }
 irox-csv = { version = "^0", path = "data-formats/csv" }
