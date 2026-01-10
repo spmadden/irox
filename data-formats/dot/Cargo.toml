@@ -15,5 +15,14 @@ readme = "README.md"
 [lints]
 workspace = true
 
+[features]
+drawing = ["dep:serde", "dep:serde_json"]
+egui = ["drawing", "dep:irox-egui-extras", "dep:irox-log"]
+
 [dependencies]
 irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true}
+irox-log = {workspace = true, optional = true}
+irox-egui-extras = {workspace = true, optional = true, features = ["eframe"]}
+serde = {workspace = true, optional = true, features = ['derive', 'alloc']}
+serde_json = {workspace = true, optional = true}

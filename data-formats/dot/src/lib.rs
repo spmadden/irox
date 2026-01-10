@@ -39,6 +39,23 @@
 
 #![forbid(unsafe_code)]
 
+/// Enables feature-specific code.
+/// Use this macro instead of `cfg(feature = "drawing")` to generate docs properly.
+#[macro_export]
+macro_rules! cfg_feature_drawing {
+    ($($item:item)*) => {
+        $(
+            #[cfg(any(all(doc, docsrs), feature = "drawing"))]
+            #[cfg_attr(docsrs, doc(cfg(feature = "drawing")))]
+            $item
+        )*
+    }
+}
+
+cfg_feature_drawing! {
+    pub mod drawing;
+}
+
 use irox_bits::{BitsError, FormatBits, MutBits};
 use std::collections::HashSet;
 use std::fmt::Write;
