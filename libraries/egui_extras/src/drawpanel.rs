@@ -65,11 +65,27 @@ impl Layer {
     }
 }
 
-#[derive(Default)]
+#[derive()]
 pub struct DrawPanel {
     pub name: String,
     pub layers: Vec<Layer>,
     pub transform: TSTransform,
+    pub initial_transform: TSTransform,
+
+    pub last_window_area: Option<Rect>,
+    pub world_area: Rect,
+}
+impl Default for DrawPanel {
+    fn default() -> Self {
+        Self {
+            name: Default::default(),
+            layers: vec![],
+            transform: Default::default(),
+            initial_transform: Default::default(),
+            last_window_area: Default::default(),
+            world_area: Rect::ZERO,
+        }
+    }
 }
 impl DrawPanel {
     pub fn new<T: AsRef<str>>(name: T) -> Self {
@@ -84,12 +100,13 @@ impl DrawPanel {
         self.layers.push(layer);
         sender
     }
-    pub fn show(&mut self, ui: &mut egui::Ui) {
+    pub fn show(&mut self, ui: &mut Ui) {
         profile_scope!("drawpanel.show", self.name.as_str());
         let size = ui.available_size();
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
-        let rect = response.rect;
         self.check_zoom(ui, &mut response);
+        let rect = response.rect;
+        self.last_window_area = Some(rect);
 
         let mut transform = self.transform;
         transform.translation += rect.min.to_vec2();
@@ -122,7 +139,7 @@ impl DrawPanel {
             }
         }
         if response.double_clicked() {
-            self.transform = TSTransform::IDENTITY;
+            self.transform = self.initial_transform;
         }
     }
     fn draw_cursor(
