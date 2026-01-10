@@ -32,7 +32,7 @@ impl<T: Read + Write> Chronyc<'_, T> {
         self.internal.flush()?;
 
         let mut buf = Vec::<u8>::new_zeroed(PAYLOAD_LEN);
-        self.internal.read_some_into(&mut buf)?;
+        self.internal.read_some_into(&mut buf.as_mut_slice())?;
         buf.hexdump();
         Ok(())
     }
@@ -54,6 +54,7 @@ cfg_unix! {
             );
         };
         let mysocketdir = parent.join(format!("irxchronyc.{pid}"));
+        let tmppath = TempDirPath::from(&mysocketdir);
         let mysocketrnd = &mysocketdir.join(format!("{random:0X}"));
         let mysocket = &mysocketrnd.join("sock");
         std::fs::create_dir_all(mysocketrnd)?;
@@ -64,7 +65,7 @@ cfg_unix! {
         std::fs::set_permissions(mysocketrnd, Permissions::from_mode(0o711))?;
         std::fs::set_permissions(mysocket, Permissions::from_mode(0o666))?;
         let sock = TempSock {
-            path: Some(mysocketdir.into()),
+            path: Some(tmppath),
             sock,
         };
         let mut buf = BitsBuffer::new(BitsWrapper::Owned(sock));
@@ -81,6 +82,14 @@ cfg_unix! {
         pub fn path(&self) -> Option<&TempDirPath> {
             self.path.as_ref()
         }
+    }
+    impl Drop for TempSock {
+        fn drop(&mut self) {
+            if let Some(p) = self.path.take() {
+                drop(p);
+            }
+        }
+
     }
     impl Read for TempSock {
         fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {

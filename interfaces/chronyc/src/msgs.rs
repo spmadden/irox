@@ -59,7 +59,7 @@ impl Struct for ChronycRequest {
         buf.write_u8(self.version)?;
         buf.write_u8(self.packet_type)?;
         buf.write_le_u16(self.reserved1)?;
-        buf.write_le_u16(self.command as u16)?;
+        buf.write_be_u16(self.command as u16)?;
         buf.write_le_u16(self.attempt)?;
         buf.write_le_u32(self.sequence)?;
         buf.write_le_u32(self.pad1)?;
@@ -67,6 +67,7 @@ impl Struct for ChronycRequest {
 
         self.payload.write_to(&mut buf)?;
         buf.resize(PAYLOAD_LEN, 0);
+        // buf.resize(32, 0);
         out.write_all_bytes(&buf)?;
         Ok(())
     }

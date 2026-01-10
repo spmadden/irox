@@ -13,6 +13,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod msgs;
+pub mod resp;
 irox_tools::cfg_unix! {
     mod client;
     pub use client::*;
