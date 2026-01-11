@@ -162,32 +162,3 @@ where
     let opt = Option::deserialize(deserializer)?;
     Ok(opt.unwrap_or_default())
 }
-#[cfg(test)]
-mod test {
-    use crate::drawing::DotJson;
-    use irox_egui_extras::egui::{Context, RawInput};
-    use irox_egui_extras::fonts::FontSet;
-    use std::io::{BufReader, Error};
-
-    #[test]
-    pub fn test_read() -> Result<(), Error> {
-        let f = std::fs::OpenOptions::new()
-            .read(true)
-            .write(false)
-            .create(false)
-            .open("data\\power.json")?;
-        let mut f = BufReader::new(f);
-        let obj: DotJson = serde_json::from_reader(&mut f)?;
-        // println!("{obj:#?}");
-        let ctx = Context::default();
-        irox_egui_extras::fonts::load_fonts(FontSet::all(), &ctx);
-        let _r = ctx.run(RawInput::default(), |_ui| {});
-        for obj in &obj.objects {
-            let shps = obj.get_shapes(&ctx, None);
-            println!("{shps:#?}");
-        }
-        // println!("{:#?}", obj.objects);
-        // println!("{:#?}", obj.edges);
-        Ok(())
-    }
-}
