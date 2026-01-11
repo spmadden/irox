@@ -137,17 +137,19 @@ impl Angle {
         (deg * sign, min)
     }
 
-    #[cfg(feature = "std")]
     pub fn sin(&self) -> f64 {
-        self.as_radians().value.sin()
+        use irox_tools::f64::FloatExt;
+        let v = self.as_radians().value;
+        FloatExt::sin(v)
     }
     #[cfg(feature = "std")]
     pub fn asin(&self) -> f64 {
         self.as_radians().value.asin()
     }
-    #[cfg(feature = "std")]
     pub fn cos(&self) -> f64 {
-        self.as_radians().value.cos()
+        use irox_tools::f64::FloatExt;
+        let v = self.as_radians().value;
+        FloatExt::cos(v)
     }
     #[cfg(feature = "std")]
     pub fn acos(&self) -> f64 {
