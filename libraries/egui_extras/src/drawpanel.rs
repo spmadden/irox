@@ -3,32 +3,56 @@
 //
 
 use egui::emath::{Pos2, Rect, TSTransform};
-use egui::{Align, Align2, Color32, Painter, Response, Sense, Shape, TextStyle, Ui};
+use egui::{Align, Align2, Color32, Painter, Response, Sense, Shape, TextStyle, Ui, Vec2};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 pub enum LayerCommand {
     AppendShape(Shape),
     ClearShapes,
     ClearSetShapes(Vec<Shape>),
-    SetVisible(bool),
+    UpdateOptions(LayerOpts),
 }
-
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+pub enum ScaleMode {
+    #[default]
+    ScaleEverything,
+    ScaleOnlyPosition,
+}
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct LayerOpts {
+    pub visible: bool,
+    pub scale_mode: ScaleMode,
+}
+impl Default for LayerOpts {
+    fn default() -> Self {
+        LayerOpts {
+            visible: true,
+            scale_mode: ScaleMode::ScaleEverything,
+        }
+    }
+}
 pub struct Layer {
     pub name: String,
     pub sender: Sender<LayerCommand>,
     pub visible: bool,
     pub shapes: Vec<Shape>,
+    pub scale_mode: ScaleMode,
     receiver: Receiver<LayerCommand>,
 }
 impl Layer {
-    pub fn new(name: String, visible: bool) -> Self {
+    pub fn new(name: String, opts: LayerOpts) -> Self {
         let (tx, rx) = channel::<LayerCommand>();
 
+        let LayerOpts {
+            visible,
+            scale_mode,
+        } = opts;
         Layer {
             name,
             sender: tx,
             receiver: rx,
             visible,
+            scale_mode,
             shapes: Vec::default(),
         }
     }
@@ -46,8 +70,9 @@ impl Layer {
                 LayerCommand::ClearSetShapes(shps) => {
                     self.shapes = shps;
                 }
-                LayerCommand::SetVisible(v) => {
-                    self.visible = v;
+                LayerCommand::UpdateOptions(opts) => {
+                    self.visible = opts.visible;
+                    self.scale_mode = opts.scale_mode;
                 }
             }
         }
@@ -58,9 +83,59 @@ impl Layer {
         if self.visible {
             for sh in &self.shapes {
                 let mut sh = sh.clone();
-                sh.transform(*transform);
+                match self.scale_mode {
+                    ScaleMode::ScaleEverything => {
+                        sh.transform(*transform);
+                    }
+                    ScaleMode::ScaleOnlyPosition => Self::scale_position(&mut sh, *transform),
+                }
+
                 painter.add(sh);
             }
+        }
+    }
+
+    fn scale_position(shape: &mut Shape, transform: TSTransform) {
+        match shape {
+            Shape::Text(txt) => {
+                txt.pos = transform.mul_pos(txt.pos);
+            }
+            Shape::Circle(c) => {
+                c.center = transform.mul_pos(c.center);
+            }
+            Shape::Ellipse(e) => {
+                e.center = transform.mul_pos(e.center);
+            }
+            Shape::LineSegment { points, .. } => {
+                for p in points {
+                    *p = transform * *p;
+                }
+            }
+            Shape::Path(p) => {
+                for p in &mut p.points {
+                    *p = transform * *p;
+                }
+            }
+            Shape::Rect(r) => {
+                let xlate = transform * r.rect.left_top();
+                r.rect = Rect::from_min_size(xlate, r.rect.size());
+            }
+            Shape::QuadraticBezier(b) => {
+                for p in &mut b.points {
+                    *p = transform * *p;
+                }
+            }
+            Shape::CubicBezier(b) => {
+                for p in &mut b.points {
+                    *p = transform * *p;
+                }
+            }
+            Shape::Vec(v) => {
+                for v in v {
+                    Self::scale_position(v, transform);
+                }
+            }
+            v => v.transform(transform),
         }
     }
 }
@@ -82,7 +157,7 @@ impl Default for DrawPanel {
             layers: vec![],
             transform: Default::default(),
             initial_transform: Default::default(),
-            last_window_area: Default::default(),
+            last_window_area: None,
             world_area: Rect::ZERO,
         }
     }
@@ -94,18 +169,27 @@ impl DrawPanel {
             ..Default::default()
         }
     }
-    pub fn add_layer(&mut self, name: String, visible: bool) -> Sender<LayerCommand> {
-        let layer = Layer::new(name, visible);
+    pub fn add_layer(&mut self, name: String, opts: LayerOpts) -> Sender<LayerCommand> {
+        let layer = Layer::new(name, opts);
         let sender = layer.sender();
         self.layers.push(layer);
         sender
     }
     pub fn show(&mut self, ui: &mut Ui) {
         profile_scope!("drawpanel.show", self.name.as_str());
+        if ui.ctx().cumulative_pass_nr_for(ui.ctx().viewport_id()) == 0 {
+            // skip first frame because we need to know where we are in the frame.
+            return;
+        };
         let size = ui.available_size();
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
         self.check_zoom(ui, &mut response);
         let rect = response.rect;
+
+        if self.last_window_area.is_none() {
+            self.initial_transform.translation += Vec2::new(rect.width() / 2., rect.height() / 2.);
+            self.transform = self.initial_transform;
+        }
         self.last_window_area = Some(rect);
 
         let mut transform = self.transform;

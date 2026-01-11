@@ -8,7 +8,7 @@ use eframe::epaint::Color32;
 use egui::emath::TSTransform;
 use egui::epaint::{RectShape, Stroke, StrokeKind};
 use egui::{Align, Layout, PointerButton, Response, Shape, Ui};
-use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand};
+use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts};
 use irox_egui_extras::eframe;
 use irox_egui_extras::egui;
 use irox_egui_extras::egui::{CentralPanel, Context, CornerRadius};
@@ -44,8 +44,8 @@ impl App {
         irox_egui_extras::fonts::load_fonts(FontSet::all_as_defaults(), &cc.egui_ctx);
 
         let mut dda = DrawPanel::default();
-        let main_layer = dda.add_layer("main".to_string(), true);
-        let hilite_layer = dda.add_layer("hilites".to_string(), true);
+        let main_layer = dda.add_layer("main".to_string(), LayerOpts::default());
+        let hilite_layer = dda.add_layer("hilites".to_string(), LayerOpts::default());
         Self {
             dda,
             init: false,
