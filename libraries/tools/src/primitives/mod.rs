@@ -292,7 +292,7 @@ pub trait FloatIsh:
     + FromF64
     + FromStr
     + ToSigned
-    + FloatExt
+    + FloatExt<Type = Self>
     + Sized
     + Copy
     + Clone
