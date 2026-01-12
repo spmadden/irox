@@ -55,6 +55,7 @@ pub mod serde;
 pub mod testimage;
 #[cfg(all(feature = "eframe", any(feature = "glow", feature = "wgpu")))]
 pub mod toolframe;
+mod utils;
 pub mod visuals;
 #[cfg(all(
     target_arch = "wasm32",
@@ -62,6 +63,7 @@ pub mod visuals;
     any(feature = "glow", feature = "wgpu")
 ))]
 pub mod wasm;
+pub use utils::*;
 
 pub trait WithAlpha {
     #[must_use]
