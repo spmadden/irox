@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
+
+mod shared;
 
 use proc_macro::{Literal, TokenStream};
 
@@ -363,4 +365,9 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
         });
     }
     ts
+}
+
+#[proc_macro_derive(Shared, attributes(shared))]
+pub fn shared_derive(input: TokenStream) -> TokenStream {
+    shared::shared_derive(input)
 }
