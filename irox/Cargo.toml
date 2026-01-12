@@ -60,7 +60,7 @@ std = [
     "irox-networking?/std", "irox-metrics?/std", "irox-stats?/std", "irox-time?/std", "irox-tools?/std",
     "irox-units?/std"]
 alloc = ["irox-bits?/alloc", "irox-structs?/alloc", "irox-tools?/alloc", "irox-units?/alloc"]
-egui = ["irox-egui-extras?/plots"]
+egui = ["irox-imagery?/egui", "irox-dot?/egui", "irox-graphing?/egui"]
 eframe = ["irox-egui-extras?/eframe"]
 emath = ["irox-stats?/emath"]
 git = ["irox-build-rs?/git"]
