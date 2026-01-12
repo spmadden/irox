@@ -12,11 +12,11 @@ use irox_egui_extras::{line_to_bezier, WithAlpha};
 use std::sync::mpsc::Sender;
 
 pub struct FDPSimulationWidget {
-    sim: Simulation,
-    panel: DrawPanel,
-    graph_layer: Sender<LayerCommand>,
-    play: bool,
-    last_tick: f64,
+    pub sim: Simulation,
+    pub panel: DrawPanel,
+    pub graph_layer: Sender<LayerCommand>,
+    pub play: bool,
+    pub last_tick: f64,
 }
 impl FDPSimulationWidget {
     pub fn new(graph: &Graph) -> Self {
