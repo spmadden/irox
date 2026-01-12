@@ -32,8 +32,14 @@ pub mod rects;
 pub mod sampling;
 pub mod streaming;
 pub mod streams;
-#[cfg(any(all(doc, docsrs), all(feature = "std", feature = "miniz")))]
-#[cfg_attr(docsrs, doc(cfg(all(feature = "std", feature = "miniz"))))]
+#[cfg(any(
+    all(doc, docsrs),
+    all(feature = "std", any(unix, windows), feature = "miniz")
+))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(feature = "std", any(unix, windows), feature = "miniz")))
+)]
 pub mod tsdf;
 #[cfg(any(all(doc, docsrs), feature = "std"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
