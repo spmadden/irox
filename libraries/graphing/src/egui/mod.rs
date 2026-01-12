@@ -63,7 +63,7 @@ impl FDPSimulationWidget {
         let time = ctx.input(|i| i.time);
         if time - self.last_tick > 0.0 {
             self.last_tick = time;
-            self.tick();
+            self.tick(ctx);
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
@@ -72,7 +72,7 @@ impl FDPSimulationWidget {
             self.play_tick(ui.ctx());
             ui.horizontal(|ui| {
                 if ui.button("Tick!").clicked() {
-                    self.tick();
+                    self.tick(ui.ctx());
                 }
                 let text = if self.play { "\u{23F8}" } else { "\u{23F5}" };
                 ui.checkbox(&mut self.play, text);
