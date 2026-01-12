@@ -149,6 +149,7 @@ pub struct DrawPanel {
 
     pub last_window_area: Option<Rect>,
     pub world_area: Rect,
+    pub draw_cursor_crosshairs: bool,
 }
 impl Default for DrawPanel {
     fn default() -> Self {
@@ -159,6 +160,7 @@ impl Default for DrawPanel {
             initial_transform: Default::default(),
             last_window_area: None,
             world_area: Rect::ZERO,
+            draw_cursor_crosshairs: true,
         }
     }
 }
@@ -197,8 +199,9 @@ impl DrawPanel {
         for layer in &mut self.layers {
             layer.show(&transform, &painter);
         }
-
-        self.draw_cursor(ui, &mut response, &mut painter, None, &rect);
+        if self.draw_cursor_crosshairs {
+            self.draw_cursor(ui, &mut response, &mut painter, None, &rect);
+        }
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         profile_scope!("check_zoom", self.name.as_str());
