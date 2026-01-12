@@ -9,12 +9,12 @@ use alloc::sync::Arc;
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
 use irox_tools::identifier::Identifier;
-use std::sync::Mutex;
+use std::sync::RwLock;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Descriptor {
     pub id: Identifier,
-    pub description: String,
+    pub description: Option<String>,
     pub attrs: BTreeMap<String, String>,
 }
 impl Hash for Descriptor {
@@ -22,12 +22,21 @@ impl Hash for Descriptor {
         Hash::hash(&self.id, state)
     }
 }
+impl From<Identifier> for Descriptor {
+    fn from(value: Identifier) -> Self {
+        Descriptor {
+            id: value,
+            description: None,
+            attrs: BTreeMap::default(),
+        }
+    }
+}
 
-pub type SharedDescriptor = Arc<Mutex<Descriptor>>;
+pub type SharedDescriptor = Arc<RwLock<Descriptor>>;
 
 macro_rules! impl_descriptor {
     ($name:ident, $shname: ident) => {
-        #[derive(Debug, Clone, PartialEq, Hash)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct $name(pub Descriptor);
         impl Deref for $name {
             type Target = Descriptor;
@@ -41,7 +50,7 @@ macro_rules! impl_descriptor {
                 &mut self.0
             }
         }
-        pub type $shname = Arc<Mutex<$name>>;
+        pub type $shname = Arc<RwLock<$name>>;
     };
 }
 

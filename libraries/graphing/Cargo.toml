@@ -16,9 +16,25 @@ readme = "README.md"
 [lints]
 workspace = true
 
+[features]
+default = []
+egui = ["dep:irox-egui-extras"]
+
 [dependencies]
-irox-tools = {workspace = true}
-irox-units = {workspace = true}
+irox-tools = {workspace = true, features = ["std"]}
+irox-units = {workspace = true, features = ["std"]}
+irox-geometry = {workspace = true}
+irox-structs_derive = {workspace = true}
+irox-log = {workspace = true, features = ["std"]}
+irox-egui-extras = {workspace = true, features = ["default"], optional = true}
+
+[dev-dependencies]
+serde_json = {workspace = true, features = ["preserve_order"] }
+serde = {workspace = true, features = ["derive"]}
+
+[[example]]
+name = "miserables"
+required-features = ["egui"]
 
 [package.metadata.docs.rs]
 all-features = true

@@ -14,14 +14,21 @@
 
 mod descriptor;
 mod edge;
+pub mod fdp;
 mod flow;
 mod graph;
 mod node;
 mod paths;
+cfg_feature_egui! {
+    pub mod egui;
+
+
+}
 
 pub use descriptor::*;
 pub use edge::*;
 pub use flow::*;
 pub use graph::*;
+use irox_tools::cfg_feature_egui;
 pub use node::*;
 pub use paths::*;
