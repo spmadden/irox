@@ -9,6 +9,8 @@
 #![forbid(unsafe_code)]
 
 extern crate proc_macro;
+#[cfg(feature = "syn")]
+pub extern crate syn;
 
 use irox_tools::iterators::Itertools;
 use proc_macro::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
@@ -70,6 +72,10 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
             Self::create_ident(name),
         ])
     }
+    /// Creates a `mut [name]` token stream;
+    fn create_mut_ident(name: &str) -> TokenStream {
+        TokenStream::from_iter([Self::create_ident("mut"), Self::create_ident(name)])
+    }
     /// Creates a `&'lifetime mut [name]` token stream;
     fn create_mut_ref_ident_lifetime(name: &str, lifetime: &str) -> TokenStream {
         TokenStream::from_iter([
@@ -130,6 +136,14 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
                 TokenTree::Punct(Punct::new(':', Spacing::Joint)),
                 TokenTree::Punct(Punct::new(':', Spacing::Alone)),
             ])
+            .collect()
+    }
+    /// Creates the elements as a call chain, a series of [`Ident`]s separated by `.`
+    fn create_callchain(elems: &[&str]) -> TokenStream {
+        elems
+            .iter()
+            .map(|e| TokenTree::Ident(Ident::new(e, Span::call_site())))
+            .joining(TokenTree::Punct(Punct::new('.', Spacing::Alone)))
             .collect()
     }
     /// Appends the elements as a path, a series of [`Ident`]s separated by `::`
@@ -245,5 +259,3 @@ mod synhelp {
 }
 #[cfg(feature = "syn")]
 pub use synhelp::*;
-#[cfg(feature = "syn")]
-pub extern crate syn;
