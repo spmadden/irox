@@ -15,7 +15,9 @@
 mod line;
 mod point;
 mod polygon;
+mod vector;
 
 pub use line::*;
 pub use point::*;
 pub use polygon::*;
+pub use vector::*;

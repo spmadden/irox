@@ -2,6 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::Vector;
+use core::ops::Add;
 use irox_tools::FloatIsh;
 
 pub trait Point2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
@@ -30,6 +32,14 @@ pub struct Point<T: FloatIsh> {
     pub y: T,
     pub z: Option<T>,
     pub m: Option<T>,
+}
+impl<T: FloatIsh> Point<T> {
+    pub fn to_vector(&self) -> Vector<T> {
+        Vector {
+            vx: self.x,
+            vy: self.y,
+        }
+    }
 }
 impl<T: FloatIsh> Point2D<T> for Point<T> {
     fn x(&self) -> T {
@@ -98,4 +108,17 @@ pub struct PointZM<T: FloatIsh> {
     pub y: T,
     pub z: T,
     pub m: T,
+}
+
+impl<T: FloatIsh> Add<Vector<T>> for Point<T> {
+    type Output = Self;
+
+    fn add(self, rhs: Vector<T>) -> Self::Output {
+        Self {
+            x: self.x + rhs.vx,
+            y: self.y + rhs.vy,
+            z: self.z,
+            m: self.m,
+        }
+    }
 }
