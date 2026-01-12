@@ -175,18 +175,21 @@ impl Simulation {
             forces,
         }
     }
+    pub fn is_done(&self) -> bool {
+        self.params.alpha < self.params.alpha_min
+    }
     pub fn restart(&mut self) {
         self.params.alpha = 1.0;
     }
     pub fn stepping<F: FnMut(&Simulation)>(&mut self, mut on_step: F) {
-        while self.params.alpha > self.params.alpha_min {
+        while !self.is_done() {
             self.tick();
             on_step(self);
         }
     }
 
     pub fn tick(&mut self) {
-        if self.params.alpha < self.params.alpha_min {
+        if self.is_done() {
             return;
         }
         let alpha = self.params.tick();

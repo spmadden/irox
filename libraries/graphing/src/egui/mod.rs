@@ -17,6 +17,7 @@ pub struct FDPSimulationWidget {
     pub graph_layer: Sender<LayerCommand>,
     pub play: bool,
     pub last_tick: f64,
+    pub show_tick_controls: bool,
 }
 impl FDPSimulationWidget {
     pub fn new(graph: &Graph) -> Self {
@@ -46,10 +47,14 @@ impl FDPSimulationWidget {
             graph_layer: sender,
             play: true,
             last_tick: 0.0,
+            show_tick_controls: false,
         }
     }
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self, ctx: &Context) {
         self.sim.tick();
+        if !self.sim.is_done() {
+            ctx.request_repaint();
+        }
     }
     pub fn play_tick(&mut self, ctx: &Context) {
         if !self.play {
@@ -62,15 +67,17 @@ impl FDPSimulationWidget {
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
-        ui.label(format!("Tick: {}", self.sim.params.tick));
-        self.play_tick(ui.ctx());
-        ui.horizontal(|ui| {
-            if ui.button("Tick!").clicked() {
-                self.tick();
-            }
-            let text = if self.play { "\u{23F8}" } else { "\u{23F5}" };
-            ui.checkbox(&mut self.play, text);
-        });
+        if self.show_tick_controls {
+            ui.label(format!("Tick: {}", self.sim.params.tick));
+            self.play_tick(ui.ctx());
+            ui.horizontal(|ui| {
+                if ui.button("Tick!").clicked() {
+                    self.tick();
+                }
+                let text = if self.play { "\u{23F8}" } else { "\u{23F5}" };
+                ui.checkbox(&mut self.play, text);
+            });
+        }
         let fgc = ui.visuals().widgets.active.fg_stroke.color;
         let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
         let mut shapes = Vec::new();
