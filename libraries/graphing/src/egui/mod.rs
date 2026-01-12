@@ -67,9 +67,9 @@ impl FDPSimulationWidget {
         }
     }
     pub fn show(&mut self, ui: &mut Ui) {
+        self.play_tick(ui.ctx());
         if self.show_tick_controls {
             ui.label(format!("Tick: {}", self.sim.params.tick));
-            self.play_tick(ui.ctx());
             ui.horizontal(|ui| {
                 if ui.button("Tick!").clicked() {
                     self.tick(ui.ctx());
