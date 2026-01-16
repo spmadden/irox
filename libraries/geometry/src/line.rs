@@ -2,7 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::{Point, Point2D};
+use crate::{Point, Point2D, Vector, Vector2D};
 use irox_tools::FloatIsh;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]
@@ -60,11 +60,38 @@ impl<T: FloatIsh> LineSegment<T> {
         let py = point.y - self.start.y;
         (dx * py - dy * px) <= T::ZERO
     }
+
+    pub fn length(&self) -> T {
+        let dx = self.end.x - self.start.x;
+        let dy = self.end.y - self.start.y;
+        (dx * dx + dy * dy).sqrt()
+    }
+
+    pub fn point_along_length(&self, pct: T) -> Point<T> {
+        let dx = self.end.x - self.start.x;
+        let dy = self.end.y - self.start.y;
+        let proj = Vector::new(dx * pct, dy * pct);
+        self.start + proj
+    }
+
+    pub fn distance_to(&self, point: &Point<T>) -> T {
+        let dx = self.end.x - self.start.x;
+        let dy = self.end.y - self.start.y;
+        let px = point.x - self.start.x;
+        let py = point.y - self.start.y;
+        let len = self.length();
+        let pct = ((px * dx) + (py * dy)) / (len * len);
+        let pct = pct.clamp(T::ZERO, T::ONE);
+        let point_on_segment = self.point_along_length(pct);
+        let v = *point - point_on_segment;
+        v.magnitude()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{LineSegment, Point, Point2D};
+    use irox_tools::assert_eq_eps;
 
     #[test]
     pub fn test1() {
@@ -85,5 +112,38 @@ mod tests {
         assert!(!line.is_clockwise(&Point::new_point(5., 10.)));
         assert!(line.is_clockwise(&Point::new_point(5., 5.)));
         assert!(line.is_clockwise(&Point::new_point(10., 5.)));
+    }
+
+    #[test]
+    pub fn test_distance() {
+        let line = LineSegment {
+            start: Point::new_point(50., 80.),
+            end: Point::new_point(50., -800.),
+        };
+        let d = line.distance_to(&Point::new_point(20., 1000.));
+        assert_eq_eps!(920.4890004280828f64, d, f64::EPSILON);
+
+        let line = LineSegment {
+            start: Point::new_point(0., 0.),
+            end: Point::new_point(10., 0.),
+        };
+        let pnt = line.point_along_length(0.5);
+        assert_eq!(pnt, Point::new_point(5.0, 0.0));
+        let d = line.distance_to(&Point::new_point(0., 10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(5., 10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(10., 10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(10., -10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(5., -10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(0., -10.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(-10., 0.));
+        assert_eq_eps!(10f64, d, 1e-13);
+        let d = line.distance_to(&Point::new_point(20., 0.));
+        assert_eq_eps!(10f64, d, 1e-13);
     }
 }

@@ -4,6 +4,7 @@
 
 use crate::Vector;
 use core::ops::Add;
+use core::ops::Sub;
 use irox_tools::FloatIsh;
 
 pub trait Point2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
@@ -120,5 +121,13 @@ impl<T: FloatIsh> Add<Vector<T>> for Point<T> {
             z: self.z,
             m: self.m,
         }
+    }
+}
+
+impl<T: FloatIsh> Sub for Point<T> {
+    type Output = Vector<T>;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        self.to_vector() - rhs.to_vector()
     }
 }

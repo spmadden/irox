@@ -29,6 +29,11 @@ pub struct Vector<T: FloatIsh> {
     pub vx: T,
     pub vy: T,
 }
+impl<T: FloatIsh> Vector<T> {
+    pub fn new(vx: T, vy: T) -> Self {
+        Self { vx, vy }
+    }
+}
 
 impl<T: FloatIsh> Vector2D<T> for Vector<T> {
     fn vx(&self) -> T {
