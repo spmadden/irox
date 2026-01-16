@@ -41,6 +41,7 @@ pub trait FloatExt {
     fn floor(self) -> Self::Type;
     fn ceil(self) -> Self::Type;
     fn signum(self) -> Self::Type;
+    fn clamp(self, min: Self, max: Self) -> Self::Type;
 
     fn exp(self) -> Self::Type;
     fn ln(self) -> Self::Type;
@@ -104,6 +105,15 @@ impl FloatExt for f64 {
             return -1.0;
         }
         1.0
+    }
+
+    fn clamp(self, min: Self, max: Self) -> Self::Type {
+        if self < min {
+            return min;
+        } else if self > max {
+            return max;
+        }
+        self
     }
 
     ///
@@ -235,6 +245,10 @@ impl FloatExt for f64 {
 
     fn signum(self) -> Self::Type {
         f64::signum(self)
+    }
+
+    fn clamp(self, min: Self, max: Self) -> Self::Type {
+        f64::clamp(self, min, max)
     }
 
     fn exp(self) -> Self::Type {

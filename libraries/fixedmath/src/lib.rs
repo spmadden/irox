@@ -244,6 +244,15 @@ macro_rules! impl_unsigned_flops {
                 1.into()
             }
 
+            fn clamp(self, min: Self, max: Self) -> Self::Type {
+                if self < min {
+                    return min;
+                } else if self > max {
+                    return max;
+                }
+                self
+            }
+
             ///
             /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
             fn exp(self) -> Self::Type {
@@ -421,6 +430,15 @@ macro_rules! impl_signed_flops {
 
             fn signum(self) -> Self::Type {
                 1.into()
+            }
+
+            fn clamp(self, min: Self, max: Self) -> Self::Type {
+                if self < min {
+                    return min;
+                } else if self > max {
+                    return max;
+                }
+                self
             }
 
             ///

@@ -12,6 +12,7 @@ pub mod u8;
 mod wrapping;
 
 use crate::f64::FloatExt;
+use core::fmt::{Debug, Display};
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use core::str::FromStr;
 use irox_bits::{Error, MutBits, WriteToBEBits};
@@ -300,6 +301,8 @@ pub trait FloatIsh:
     + PartialOrd
     + Default
     + PrimitiveMath
+    + Debug
+    + Display
 {
 }
 

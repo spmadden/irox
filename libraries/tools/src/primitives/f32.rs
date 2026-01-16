@@ -50,6 +50,16 @@ impl crate::f64::FloatExt for f32 {
         }
         1.0
     }
+
+    fn clamp(self, min: Self, max: Self) -> Self::Type {
+        if self < min {
+            return min;
+        } else if self > max {
+            return max;
+        }
+        self
+    }
+
     ///
     /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
     fn exp(self) -> Self::Type {
