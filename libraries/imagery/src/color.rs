@@ -20,11 +20,44 @@ pub struct ARGBColor {
     pub blue: u8,
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct HSVColor {
+    /// Hue range [0,360)
     pub hue: u32,
-    pub saturation: u32,
-    pub value: u32,
+    /// Saturation range [0,1]
+    pub saturation: f64,
+    /// Value range [0..1]
+    pub value: f64,
+}
+impl Eq for HSVColor {}
+impl From<HSVColor> for RGBColor {
+    fn from(value: HSVColor) -> Self {
+        let HSVColor {
+            hue,
+            saturation,
+            value,
+        } = value;
+        let hue = hue % 360;
+        let saturation = saturation.clamp(0.0, 1.0);
+        let value = value.clamp(0.0, 1.0);
+        let c = value * saturation;
+        let adj = ((hue as f64 / 60.) % 2.) - 1.;
+        let adj = 1. - adj.abs();
+        let x = c * adj;
+        let m = value - c;
+        let [r, g, b] = match hue {
+            0..60 => [c, x, 0.0],
+            60..120 => [x, c, 0.0],
+            120..180 => [0.0, c, x],
+            180..240 => [0.0, x, c],
+            240..300 => [x, 0.0, c],
+            300.. => [c, 0.0, x],
+        };
+        let red = ((r + m) * 255.) as u8;
+        let green = ((g + m) * 255.) as u8;
+        let blue = ((b + m) * 255.) as u8;
+        RGBColor { red, green, blue }
+    }
 }
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct Greyscale8Bit {
@@ -93,9 +126,7 @@ impl Color {
             Self::RGB(_) | Self::ARGB(_) => *self,
 
             Self::Raw(val) => Self::argb_array(val),
-            Self::HSV(_hsv) => {
-                todo!()
-            }
+            Self::HSV(hsv) => Self::RGB(*hsv.into()),
             Self::Greyscale(g) => {
                 let v = g.value;
                 Self::argb_array(&[0xFF, v, v, v])
@@ -107,8 +138,9 @@ impl Color {
         match self {
             Color::RGB(v) => [v.red, v.green, v.blue],
             Color::ARGB(a) => [a.red, a.green, a.blue],
-            Color::HSV(_) => {
-                todo!()
+            Color::HSV(h) => {
+                let v: RGBColor = *h.into();
+                [v.red, v.green, v.blue]
             }
             Color::Raw(v) => {
                 let [_, red, green, blue] = *v;
@@ -125,8 +157,9 @@ impl Color {
         match self {
             Color::RGB(v) => [255, v.red, v.green, v.blue],
             Color::ARGB(a) => [a.alpha, a.red, a.green, a.blue],
-            Color::HSV(_) => {
-                todo!()
+            Color::HSV(h) => {
+                let v: RGBColor = *h.into();
+                [255, v.red, v.green, v.blue]
             }
             Color::Raw(v) => {
                 let [alpha, red, green, blue] = *v;
