@@ -23,6 +23,7 @@ pub struct ToolFrame {
     full_speed: bool,
     show_rendering_stats: bool,
     disable_file_menu: bool,
+    disable_settings_menu: bool,
     enable_settings_ui: bool,
     enable_inspection_ui: bool,
     enable_texture_ui: bool,
@@ -40,6 +41,7 @@ pub struct ToolFrameOptions {
     pub full_speed: bool,
     pub show_rendering_stats: bool,
     pub disable_file_menu: bool,
+    pub disable_settings_menu: bool,
     pub enable_settings_ui: bool,
     pub enable_inspection_ui: bool,
     pub enable_texture_ui: bool,
@@ -61,6 +63,7 @@ impl ToolFrame {
             full_speed,
             show_rendering_stats,
             disable_file_menu,
+            disable_settings_menu,
             enable_settings_ui,
             enable_inspection_ui,
             enable_texture_ui,
@@ -75,6 +78,7 @@ impl ToolFrame {
             enable_texture_ui,
             enable_memory_ui,
             disable_file_menu,
+            disable_settings_menu,
             settings_ui: false,
             inspection_ui: false,
             texture_ui: false,
@@ -109,45 +113,46 @@ impl App for ToolFrame {
                         }
                     });
                 }
+                if !self.disable_settings_menu {
+                    ui.menu_button("Settings", |ui| {
+                        self.child.settings_menu(ui);
+                        ui.checkbox(&mut self.show_rendering_stats, "Show Rendering Metrics");
+                        ui.checkbox(&mut self.full_speed, "Continuous Render");
 
-                ui.menu_button("Settings", |ui| {
-                    self.child.settings_menu(ui);
-                    ui.checkbox(&mut self.show_rendering_stats, "Show Rendering Metrics");
-                    ui.checkbox(&mut self.full_speed, "Continuous Render");
-
-                    if ui.button("Style").clicked() {
-                        self.style_ui = true;
-                        ui.close_menu();
-                    }
-                    #[allow(clippy::collapsible_if)]
-                    if self.enable_settings_ui {
-                        if ui.button("Settings").clicked() {
-                            self.settings_ui = true;
+                        if ui.button("Style").clicked() {
+                            self.style_ui = true;
                             ui.close_menu();
                         }
-                    }
-                    #[allow(clippy::collapsible_if)]
-                    if self.enable_inspection_ui {
-                        if ui.button("Inspections").clicked() {
-                            self.inspection_ui = true;
-                            ui.close_menu();
+                        #[allow(clippy::collapsible_if)]
+                        if self.enable_settings_ui {
+                            if ui.button("Settings").clicked() {
+                                self.settings_ui = true;
+                                ui.close_menu();
+                            }
                         }
-                    }
-                    #[allow(clippy::collapsible_if)]
-                    if self.enable_texture_ui {
-                        if ui.button("Textures").clicked() {
-                            self.texture_ui = true;
-                            ui.close_menu();
+                        #[allow(clippy::collapsible_if)]
+                        if self.enable_inspection_ui {
+                            if ui.button("Inspections").clicked() {
+                                self.inspection_ui = true;
+                                ui.close_menu();
+                            }
                         }
-                    }
-                    #[allow(clippy::collapsible_if)]
-                    if self.enable_memory_ui {
-                        if ui.button("Memory").clicked() {
-                            self.memory_ui = true;
-                            ui.close_menu();
+                        #[allow(clippy::collapsible_if)]
+                        if self.enable_texture_ui {
+                            if ui.button("Textures").clicked() {
+                                self.texture_ui = true;
+                                ui.close_menu();
+                            }
                         }
-                    }
-                });
+                        #[allow(clippy::collapsible_if)]
+                        if self.enable_memory_ui {
+                            if ui.button("Memory").clicked() {
+                                self.memory_ui = true;
+                                ui.close_menu();
+                            }
+                        }
+                    });
+                }
 
                 self.child.menu(ui);
             });
