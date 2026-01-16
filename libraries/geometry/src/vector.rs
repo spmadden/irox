@@ -33,6 +33,9 @@ impl<T: FloatIsh> Vector<T> {
     pub fn new(vx: T, vy: T) -> Self {
         Self { vx, vy }
     }
+    pub fn splat(v: T) -> Self {
+        Self::new(v, v)
+    }
 }
 
 impl<T: FloatIsh> Vector2D<T> for Vector<T> {
