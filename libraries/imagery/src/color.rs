@@ -11,6 +11,15 @@ pub struct RGBColor {
     pub green: u8,
     pub blue: u8,
 }
+/// per https://www.w3.org/TR/WCAG20/#relativeluminancedef
+pub fn srgb_relative_luminance_value(value: u8) -> f64 {
+    let v = value as f64 / 255.;
+    if v <= 0.03928 {
+        v / 12.92
+    } else {
+        ((v + 0.055) / 1.055).powf(2.4)
+    }
+}
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct ARGBColor {
@@ -183,6 +192,23 @@ impl Color {
                 [0xFF, v, v, v]
             }
         }
+    }
+    #[must_use]
+    pub fn luminance(&self) -> f64 {
+        //  using ITU-R Recommendation BT. 709 values
+        let [r, g, b] = self.rgb_values();
+        let r = srgb_relative_luminance_value(r) * 0.2126;
+        let g = srgb_relative_luminance_value(g) * 0.7152;
+        let b = srgb_relative_luminance_value(b) * 0.0722;
+        r + g + b
+    }
+    #[must_use]
+    pub const fn invert(&self) -> Self {
+        let [r, g, b] = self.rgb_values();
+        let red = 255 - r;
+        let green = 255 - g;
+        let blue = 255 - b;
+        Self::RGB(RGBColor { red, green, blue })
     }
 }
 cfg_feature_egui! {
