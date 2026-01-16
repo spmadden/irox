@@ -29,15 +29,22 @@ pub struct HSVColor {
     /// Value range [0..1]
     pub value: f64,
 }
-impl Eq for HSVColor {}
-impl From<HSVColor> for RGBColor {
-    fn from(value: HSVColor) -> Self {
+impl HSVColor {
+    #[must_use]
+    pub const fn new(hue: u32, saturation: f64, value: f64) -> Self {
+        Self {
+            hue,
+            saturation,
+            value,
+        }
+    }
+    #[must_use]
+    pub const fn to_rgb(&self) -> RGBColor {
         let HSVColor {
             hue,
             saturation,
             value,
-        } = value;
-        let hue = hue % 360;
+        } = *self;
         let saturation = saturation.clamp(0.0, 1.0);
         let value = value.clamp(0.0, 1.0);
         let c = value * saturation;
@@ -57,6 +64,12 @@ impl From<HSVColor> for RGBColor {
         let green = ((g + m) * 255.) as u8;
         let blue = ((b + m) * 255.) as u8;
         RGBColor { red, green, blue }
+    }
+}
+impl Eq for HSVColor {}
+impl From<HSVColor> for RGBColor {
+    fn from(value: HSVColor) -> Self {
+        value.to_rgb()
     }
 }
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
@@ -126,7 +139,7 @@ impl Color {
             Self::RGB(_) | Self::ARGB(_) => *self,
 
             Self::Raw(val) => Self::argb_array(val),
-            Self::HSV(hsv) => Self::RGB(*hsv.into()),
+            Self::HSV(hsv) => Self::RGB(hsv.to_rgb()),
             Self::Greyscale(g) => {
                 let v = g.value;
                 Self::argb_array(&[0xFF, v, v, v])
@@ -139,7 +152,7 @@ impl Color {
             Color::RGB(v) => [v.red, v.green, v.blue],
             Color::ARGB(a) => [a.red, a.green, a.blue],
             Color::HSV(h) => {
-                let v: RGBColor = *h.into();
+                let v = h.to_rgb();
                 [v.red, v.green, v.blue]
             }
             Color::Raw(v) => {
@@ -158,7 +171,7 @@ impl Color {
             Color::RGB(v) => [255, v.red, v.green, v.blue],
             Color::ARGB(a) => [a.alpha, a.red, a.green, a.blue],
             Color::HSV(h) => {
-                let v: RGBColor = *h.into();
+                let v = h.to_rgb();
                 [255, v.red, v.green, v.blue]
             }
             Color::Raw(v) => {
