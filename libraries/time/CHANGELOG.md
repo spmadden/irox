@@ -1,5 +1,45 @@
 
 
+## v0.5.0 (2026-02-01)
+
+### Chore
+
+ - <csr-id-54c6e76019de271abbd461b2b38dc84fe6aeca92/> bump version to 0.5.0
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+ - <csr-id-a24770267796c817d071c9576138b5acb58deaae/> fix lints & bump to 1.88
+ - <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/> fix lints & bump to 1.86
+ - <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/> cleaning up the remainder of the feature cleanup detritus
+
+### New Features
+
+ - <csr-id-2887b672c485b972abea89f29010bb2aeebaae50/> implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime
+ - <csr-id-49682d84e91f8a9d898c7006855485b1da58d0da/> new ISO8601 format trait to allow easier autocompletion
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 7 commits contributed to the release.
+ - 337 days passed between releases.
+ - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.5.0 ([`54c6e76`](https://github.com/spmadden/irox/commit/54c6e76019de271abbd461b2b38dc84fe6aeca92))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Fix lints & bump to 1.88 ([`a247702`](https://github.com/spmadden/irox/commit/a24770267796c817d071c9576138b5acb58deaae))
+    - Fix lints & bump to 1.86 ([`84ff4e9`](https://github.com/spmadden/irox/commit/84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc))
+    - Cleaning up the remainder of the feature cleanup detritus ([`80339f6`](https://github.com/spmadden/irox/commit/80339f6fd1474cf4182bca867517b3e9f83a98ca))
+    - Implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime ([`2887b67`](https://github.com/spmadden/irox/commit/2887b672c485b972abea89f29010bb2aeebaae50))
+    - New ISO8601 format trait to allow easier autocompletion ([`49682d8`](https://github.com/spmadden/irox/commit/49682d84e91f8a9d898c7006855485b1da58d0da))
+</details>
+
 ## v0.4.9 (2025-03-01)
 
 ### New Features
@@ -13,7 +53,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 14 calendar days.
+ - 3 commits contributed to the release over the course of 14 calendar days.
  - 17 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +65,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.4.9 ([`479095c`](https://github.com/spmadden/irox/commit/479095c717af455b70c49a716e9f39bb8b8f1fcc))
     - Add epochs with corresponding offsets and integrate Julian date transformations ([`78b893a`](https://github.com/spmadden/irox/commit/78b893a3d5028db4e01f65382fd5d5043995aa90))
     - Make timestamp methods `const` and refactor constructors. ([`661dc93`](https://github.com/spmadden/irox/commit/661dc938fe0f3e3992b336d20cab33ef945b040e))
 </details>
