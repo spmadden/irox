@@ -12,12 +12,20 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+mod geometry;
+mod kdtree;
 mod line;
 mod point;
 mod polygon;
+mod quadtree;
+mod rectangle;
 mod vector;
 
+pub use geometry::*;
+pub use kdtree::*;
 pub use line::*;
 pub use point::*;
 pub use polygon::*;
+pub use quadtree::*;
+pub use rectangle::*;
 pub use vector::*;

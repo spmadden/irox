@@ -2,6 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::geometry::{Centroid, Geometry};
+use crate::rectangle::Rectangle;
 use crate::{Point, Point2D, Vector, Vector2D};
 use irox_tools::FloatIsh;
 
@@ -85,6 +87,30 @@ impl<T: FloatIsh> LineSegment<T> {
         let point_on_segment = self.point_along_length(pct);
         let v = *point - point_on_segment;
         v.magnitude()
+    }
+}
+
+impl<T: FloatIsh> Centroid<T> for LineSegment<T> {
+    fn centroid(&self) -> Point<T> {
+        self.point_along_length(T::from_f64(0.5))
+    }
+}
+
+impl<T: FloatIsh> Geometry<T> for LineSegment<T> {
+    fn contains(&self, _point: &Point<T>) -> bool {
+        todo!()
+    }
+
+    fn distance_to(&self, point: &Point<T>) -> T {
+        LineSegment::distance_to(self, point)
+    }
+
+    fn intersects(&self, _point: &Point<T>) -> bool {
+        todo!()
+    }
+
+    fn bounding_rectangle(&self) -> Rectangle<T> {
+        todo!()
     }
 }
 

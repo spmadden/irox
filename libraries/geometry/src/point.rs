@@ -2,9 +2,12 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::Vector;
+use crate::geometry::{Centroid, Geometry};
+use crate::rectangle::Rectangle;
+use crate::{Vector, Vector2D};
 use core::ops::Add;
 use core::ops::Sub;
+use core::ops::{AddAssign, SubAssign};
 use irox_tools::FloatIsh;
 
 pub trait Point2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
@@ -129,5 +132,45 @@ impl<T: FloatIsh> Sub for Point<T> {
 
     fn sub(self, rhs: Self) -> Self::Output {
         self.to_vector() - rhs.to_vector()
+    }
+}
+impl<T: FloatIsh> SubAssign<Vector<T>> for Point<T> {
+    fn sub_assign(&mut self, rhs: Vector<T>) {
+        self.x -= rhs.vx;
+        self.y -= rhs.vy;
+    }
+}
+impl<T: FloatIsh> AddAssign<Vector<T>> for Point<T> {
+    fn add_assign(&mut self, rhs: Vector<T>) {
+        self.x += rhs.vx;
+        self.y += rhs.vy;
+    }
+}
+
+impl<T: FloatIsh> Centroid<T> for Point<T> {
+    fn centroid(&self) -> Point<T> {
+        *self
+    }
+}
+
+impl<T: FloatIsh> Geometry<T> for Point<T> {
+    fn contains(&self, point: &Point<T>) -> bool {
+        self == point
+    }
+
+    fn distance_to(&self, point: &Point<T>) -> T {
+        let d = *self - *point;
+        d.magnitude()
+    }
+
+    fn intersects(&self, point: &Point<T>) -> bool {
+        self.contains(point)
+    }
+
+    fn bounding_rectangle(&self) -> Rectangle<T> {
+        Rectangle {
+            min: *self,
+            size: Vector::default(),
+        }
     }
 }

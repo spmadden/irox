@@ -17,6 +17,7 @@ workspace = true
 
 [dependencies]
 irox-tools = {workspace = true}
+irox-units = {workspace = true}
 
 [package.metadata.docs.rs]
 all-features = true

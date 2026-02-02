@@ -2,8 +2,11 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::geometry::{Centroid, Geometry};
 use crate::line::LineSegment;
 use crate::point::Point;
+use crate::rectangle::Rectangle;
+use crate::Vector2D;
 use core::slice::Iter;
 use irox_tools::iterators::{LendingIterator, Windows};
 use irox_tools::FloatIsh;
@@ -56,5 +59,34 @@ impl<T: FloatIsh> Iterator for PolygonSegmentIter<'_, T> {
         } else {
             self.last.take()
         }
+    }
+}
+impl<T: FloatIsh> Centroid<T> for Polygon<T> {
+    fn centroid(&self) -> Point<T> {
+        let mut out = Point::default().to_vector();
+        for p in &self.points {
+            out += p.to_vector();
+        }
+        out /= T::from_f64(self.points.len() as f64);
+
+        out.to_point()
+    }
+}
+
+impl<T: FloatIsh> Geometry<T> for Polygon<T> {
+    fn contains(&self, _point: &Point<T>) -> bool {
+        todo!()
+    }
+
+    fn distance_to(&self, _point: &Point<T>) -> T {
+        todo!()
+    }
+
+    fn intersects(&self, _point: &Point<T>) -> bool {
+        todo!()
+    }
+
+    fn bounding_rectangle(&self) -> Rectangle<T> {
+        todo!()
     }
 }
