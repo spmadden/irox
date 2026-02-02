@@ -1806,7 +1806,7 @@ dependencies = [
 
 [[package]]
 name = "irox-derive-helpers"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "irox-tools",
  "syn",
