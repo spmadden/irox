@@ -1,6 +1,36 @@
 
 
+## v0.1.1 (2026-02-01)
+
+### Bug Fixes
+
+ - <csr-id-841968f65860c4b70f41d3391b66457164c1fad9/> fix docsrs build :<
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix docsrs build :< ([`841968f`](https://github.com/spmadden/irox/commit/841968f65860c4b70f41d3391b66457164c1fad9))
+</details>
+
 ## v0.1.0 (2026-02-01)
+
+<csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/>
+<csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
+<csr-id-2de510fd54646200cf214dadcd2323273bd1db94/>
+<csr-id-d2df47065c23ebaf632143cb1c8a4cb6dad559cc/>
+<csr-id-759bf9c7de15076346de3c8f5c93b493b81729d8/>
 
 ### Chore
 
@@ -56,7 +86,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 40 commits contributed to the release over the course of 428 calendar days.
+ - 41 commits contributed to the release over the course of 428 calendar days.
  - 38 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -67,6 +97,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-cryptids v0.1.0 ([`cdc5c9a`](https://github.com/spmadden/irox/commit/cdc5c9a54d33ce83dc72a5316244948e14946762))
     - Salsa rounds & key functions ([`e1dba89`](https://github.com/spmadden/irox/commit/e1dba89b4e14ebcff14d88760352c85690441a00))
     - Ed25519 option for different hash alg than SHA512 ([`5a2fd2d`](https://github.com/spmadden/irox/commit/5a2fd2d0a9e5f3bd564946dab3594b180fb4c2fc))
     - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
