@@ -1,6 +1,36 @@
 
 
+## v0.5.1 (2026-02-01)
+
+### Bug Fixes
+
+ - <csr-id-8d5cb30c5b104abf4d5b8a77cb6a3240d70b0338/> fix docsrs build
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix docsrs build ([`8d5cb30`](https://github.com/spmadden/irox/commit/8d5cb30c5b104abf4d5b8a77cb6a3240d70b0338))
+</details>
+
 ## v0.5.0 (2026-02-01)
+
+<csr-id-54c6e76019de271abbd461b2b38dc84fe6aeca92/>
+<csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/>
+<csr-id-a24770267796c817d071c9576138b5acb58deaae/>
+<csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/>
+<csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/>
 
 ### Chore
 
@@ -19,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 7 commits contributed to the release.
+ - 8 commits contributed to the release.
  - 337 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -31,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.5.0 ([`076e407`](https://github.com/spmadden/irox/commit/076e407f33a99674cfb61f499e1b090c5525b275))
     - Bump version to 0.5.0 ([`54c6e76`](https://github.com/spmadden/irox/commit/54c6e76019de271abbd461b2b38dc84fe6aeca92))
     - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
     - Fix lints & bump to 1.88 ([`a247702`](https://github.com/spmadden/irox/commit/a24770267796c817d071c9576138b5acb58deaae))

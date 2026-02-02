@@ -2226,7 +2226,7 @@ dependencies = [
 
 [[package]]
 name = "irox-time"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "irox-enums",
  "irox-fixedmath",
