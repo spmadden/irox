@@ -6,7 +6,7 @@
 //! A collection of utilities for the f64 built-in
 //!
 
-use crate::{FloatIsh, FromF64, PrimitiveMath, ToF64, ToSigned, WrappingSub};
+use crate::{FloatIsh, FromF64, One, PrimitiveMath, ToF64, ToSigned, WrappingSub, Zero};
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -31,7 +31,7 @@ pub fn min_max(iter: &[f64]) -> (f64, f64) {
     (min, max)
 }
 
-pub trait FloatExt {
+pub trait FloatExt: PrimitiveMath {
     type Type;
     type Size;
     fn trunc(self) -> Self::Type;
@@ -56,6 +56,115 @@ pub trait FloatExt {
     fn significand(self) -> Self::Size;
     fn sin(self) -> Self::Type;
     fn cos(self) -> Self::Type;
+    fn tan(self) -> Self::Type;
+    fn atan(self) -> Self::Type;
+    fn atan2(self, o: Self) -> Self::Type;
+}
+#[allow(unused)]
+fn cordic_k(n: usize) -> f64 {
+    let mut k = 1.0;
+    let mut i = n;
+    let mut ik = 1.0;
+    while i > 0 {
+        k *= 1. / f64::sqrt(1. + ik);
+        ik /= 4.0;
+        i -= 1;
+    }
+    k
+}
+const CORDIC_K_64: f64 = 0.6072529350088814;
+const CORDIC_ITERS: usize = 64;
+const THETA_TABLE: [f64; CORDIC_ITERS] = [
+    core::f64::consts::FRAC_PI_4,
+    0.4636476090008061,
+    0.24497866312686414,
+    0.12435499454676144,
+    0.06241880999595735,
+    0.031239833430268277,
+    0.015623728620476831,
+    0.007812341060101111,
+    0.0039062301319669718,
+    0.0019531225164788188,
+    0.0009765621895593195,
+    0.0004882812111948983,
+    0.00024414062014936177,
+    0.00012207031189367021,
+    0.00006103515617420877,
+    0.000030517578115526096,
+    0.000015258789061315762,
+    0.00000762939453110197,
+    0.000003814697265606496,
+    0.000001907348632810187,
+    0.0000009536743164059608,
+    0.00000047683715820308884,
+    0.00000023841857910155797,
+    0.00000011920928955078068,
+    0.00000005960464477539055,
+    0.000000029802322387695303,
+    0.000000014901161193847655,
+    0.000000007450580596923828,
+    0.000000003725290298461914,
+    0.000000001862645149230957,
+    0.0000000009313225746154785,
+    0.0000000004656612873077393,
+    0.00000000023283064365386963,
+    0.00000000011641532182693481,
+    0.00000000005820766091346741,
+    0.000000000029103830456733704,
+    0.000000000014551915228366852,
+    0.000000000007275957614183426,
+    0.000000000003637978807091713,
+    0.0000000000018189894035458565,
+    0.0000000000009094947017729282,
+    0.0000000000004547473508864641,
+    0.00000000000022737367544323206,
+    0.00000000000011368683772161603,
+    0.00000000000005684341886080802,
+    0.00000000000002842170943040401,
+    0.000000000000014210854715202004,
+    0.000000000000007105427357601002,
+    0.000000000000003552713678800501,
+    0.0000000000000017763568394002505,
+    0.0000000000000008881784197001252,
+    0.0000000000000004440892098500626,
+    0.0000000000000002220446049250313,
+    0.00000000000000011102230246251565,
+    0.00000000000000005551115123125783,
+    0.000000000000000027755575615628914,
+    0.000000000000000013877787807814457,
+    0.000000000000000006938893903907228,
+    0.000000000000000003469446951953614,
+    0.000000000000000001734723475976807,
+    0.0000000000000000008673617379884035,
+    0.0000000000000000004336808689942018,
+    0.0000000000000000002168404344971009,
+    0.00000000000000000010842021724855044,
+];
+/// https://en.wikipedia.org/wiki/CORDIC
+pub fn cordic<T: PrimitiveMath + One + Zero + FromF64 + PartialOrd + Copy>(alpha: T) -> (T, T) {
+    let k_n = T::from_f64(CORDIC_K_64);
+    let mut theta = T::ZERO;
+    let mut x = T::ONE;
+    let mut y = T::ZERO;
+    let mut p2i = T::ONE;
+    let mut idx = 0;
+    while idx < CORDIC_ITERS {
+        #[allow(clippy::indexing_slicing)]
+        let atan = T::from_f64(THETA_TABLE[idx]);
+        let xt = x;
+        if theta < alpha {
+            theta += atan;
+            x -= y * p2i;
+            y += xt * p2i;
+        } else {
+            theta -= atan;
+            x += y * p2i;
+            y -= xt * p2i;
+        }
+        p2i /= T::from_f64(2.);
+        idx += 1;
+    }
+    (x * k_n, y * k_n)
 }
 #[cfg(not(feature = "std"))]
 impl FloatExt for f64 {
@@ -207,9 +316,21 @@ impl FloatExt for f64 {
     }
 
     fn sin(self) -> Self::Type {
-        todo!()
+        cordic(self).0
     }
     fn cos(self) -> Self::Type {
+        cordic(self).1
+    }
+
+    fn tan(self) -> Self::Type {
+        self.sin() / self.cos()
+    }
+
+    fn atan(self) -> Self::Type {
+        todo!()
+    }
+
+    fn atan2(self, _o: Self) -> Self::Type {
         todo!()
     }
 }
@@ -294,6 +415,18 @@ impl FloatExt for f64 {
     fn cos(self) -> Self::Type {
         f64::cos(self)
     }
+
+    fn tan(self) -> Self::Type {
+        f64::tan(self)
+    }
+
+    fn atan(self) -> Self::Type {
+        f64::atan(self)
+    }
+
+    fn atan2(self, o: Self) -> Self::Type {
+        f64::atan2(self, o)
+    }
 }
 
 impl WrappingSub for f64 {
@@ -327,6 +460,9 @@ impl FloatIsh for f64 {}
 
 #[cfg(test)]
 mod tests {
+    use crate::f64::{cordic, cordic_k};
+    use std::f64::consts::PI;
+
     #[test]
     pub fn test_ln() {
         assert_eq_eps!(0.0, crate::f64::FloatExt::ln(1.0f64), 1e-16);
@@ -358,5 +494,29 @@ mod tests {
     #[test]
     pub fn test_sqrt() {
         assert_eq!(2., crate::f64::FloatExt::sqrt(4.0f64));
+    }
+
+    #[test]
+    #[ignore]
+    pub fn theta_table() {
+        println!("{}\n", cordic_k(80));
+        for i in 0..80 {
+            println!("{},", 1f64.atan2(2f64.powi(i)))
+        }
+    }
+    #[test]
+    pub fn test_cordic() {
+        for x in -90..90 {
+            let x = x as f64;
+            let angr = x * (PI / 180.);
+            let (cosx, sinx) = cordic(angr);
+            let dcos = cosx - angr.cos();
+            let dsin = sinx - angr.sin();
+            let dcosulps = dcos / f64::EPSILON;
+            let dsinulps = dsin / f64::EPSILON;
+            println!("{x:0.05} {sinx:0.16} {dsin:0.16} {dsinulps:0.1} {cosx:0.16} {dcos:0.16} {dcosulps:0.1}");
+            assert!(dcosulps.abs() < 5.0, "{x}");
+            assert!(dsinulps.abs() < 5.0, "{x}");
+        }
     }
 }

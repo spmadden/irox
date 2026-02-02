@@ -161,6 +161,30 @@ impl crate::f64::FloatExt for f32 {
             todo!()
         }
     }
+    fn tan(self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::tan(self)
+        } else {
+            self.sin() / self.cos()
+        }
+    }
+
+    fn atan(self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::atan(self)
+        } else {
+            todo!()
+        }
+    }
+
+    fn atan2(self, o: Self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::atan2(self, o)
+        } else {
+            let _o = o;
+            todo!()
+        }
+    }
 }
 
 impl ToF64 for f32 {

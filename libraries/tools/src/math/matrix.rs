@@ -251,23 +251,21 @@ impl_square!(9);
 impl_square!(10);
 
 impl Matrix<2, 2, f64> {
-    cfg_feature_std! {
-        #[must_use]
-        pub fn rotation_counterclockwise(angle: f64) -> Self {
-            Self::new([[angle.cos(), -angle.sin()], [angle.sin(), angle.cos()]])
-        }
-        #[must_use]
-        pub fn rotate_counterclockwise(&self, angle: f64) -> Self {
-            self.mul(Self::rotation_counterclockwise(angle))
-        }
-        #[must_use]
-        pub fn rotation_clockwise(angle: f64) -> Self {
-            Self::new([[angle.cos(), angle.sin()], [-angle.sin(), angle.cos()]])
-        }
-        #[must_use]
-        pub fn rotate_clockwise(&self, angle: f64) -> Self {
-            self.mul(Self::rotation_clockwise(angle))
-        }
+    #[must_use]
+    pub fn rotation_counterclockwise(angle: f64) -> Self {
+        Self::new([[angle.cos(), -angle.sin()], [angle.sin(), angle.cos()]])
+    }
+    #[must_use]
+    pub fn rotate_counterclockwise(&self, angle: f64) -> Self {
+        self.mul(Self::rotation_counterclockwise(angle))
+    }
+    #[must_use]
+    pub fn rotation_clockwise(angle: f64) -> Self {
+        Self::new([[angle.cos(), angle.sin()], [-angle.sin(), angle.cos()]])
+    }
+    #[must_use]
+    pub fn rotate_clockwise(&self, angle: f64) -> Self {
+        self.mul(Self::rotation_clockwise(angle))
     }
 
     #[must_use]
