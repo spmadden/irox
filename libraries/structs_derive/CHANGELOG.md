@@ -1,6 +1,38 @@
 
 
 
+## v0.5.0 (2026-02-01)
+
+### Chore
+
+ - <csr-id-b4557e31ce7e4e9335ec1e25753733b858293995/> bump version to 0.5.0
+
+### New Features
+
+ - <csr-id-b0386c20f52f1d585e7f74efe159b3e822dd138f/> ability to derive a basic SharedX variant of a struct that wraps the inner struct's fields with an RwLock
+ - <csr-id-4e504268ee4b91d397e688542722a66495812895/> add todo!(), Self: Sized, and syn compile error helper
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 415 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.5.0 ([`b4557e3`](https://github.com/spmadden/irox/commit/b4557e31ce7e4e9335ec1e25753733b858293995))
+    - Ability to derive a basic SharedX variant of a struct that wraps the inner struct's fields with an RwLock ([`b0386c2`](https://github.com/spmadden/irox/commit/b0386c20f52f1d585e7f74efe159b3e822dd138f))
+    - Add todo!(), Self: Sized, and syn compile error helper ([`4e50426`](https://github.com/spmadden/irox/commit/4e504268ee4b91d397e688542722a66495812895))
+</details>
+
 ## v0.4.0 (2024-12-13)
 
 ### New Features (BREAKING)
@@ -11,8 +43,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 168 days passed between releases.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.4.0 ([`c09cf6a`](https://github.com/spmadden/irox/commit/c09cf6a256ad7abdd5abf8d7376dd6ffcf6d0433))
     - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
 </details>
 
@@ -37,7 +69,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 3 commits contributed to the release over the course of 37 calendar days.
  - 68 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -108,8 +140,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release.
- - 123 days passed between releases.
+ - 4 commits contributed to the release over the course of 1 calendar day.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -142,8 +173,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
- - 30 days passed between releases.
+ - 3 commits contributed to the release over the course of 9 calendar days.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -244,7 +274,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release.
+ - 8 commits contributed to the release over the course of 21 calendar days.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
