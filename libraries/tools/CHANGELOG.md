@@ -1,7 +1,45 @@
 
 
 
+## v0.11.1 (2026-02-01)
+
+### Bug Fixes
+
+ - <csr-id-13e25487cc41d3ba530be94fa054d59ff1553398/> readding unsafe forbidden flag
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Readding unsafe forbidden flag ([`13e2548`](https://github.com/spmadden/irox/commit/13e25487cc41d3ba530be94fa054d59ff1553398))
+</details>
+
 ## v0.11.0 (2026-02-01)
+
+<csr-id-e89ac5f4fe6579db999e18db9b02f8e49668bb08/>
+<csr-id-b7b95a377765d1af3c529cdf9bcf901579d74545/>
+<csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/>
+<csr-id-789f6fbb81e815454d18c68c310d9a8e58f969c5/>
+<csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/>
+<csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/>
+<csr-id-f10ad9347376d5321920d23da0ebe787c3fe5150/>
+<csr-id-626b51ace277f02658e47da7c4beeac66912ea40/>
+<csr-id-2de510fd54646200cf214dadcd2323273bd1db94/>
+<csr-id-5beb610d54822c4045d088b378604ba3caab7d10/>
+<csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/>
+<csr-id-59f35131513a8b43d7e288832276943532e6bfee/>
+<csr-id-79458eaa00099c41ce5908191fee46a52af942a2/>
 
 ### Chore
 
@@ -82,7 +120,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 60 commits contributed to the release.
+ - 61 commits contributed to the release.
  - 337 days passed between releases.
  - 60 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -94,6 +132,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.11.0 ([`b0589f9`](https://github.com/spmadden/irox/commit/b0589f9eae1dcd1486d9aa817406c1e9f9516d7f))
     - Bump version to 0.11.0 ([`e89ac5f`](https://github.com/spmadden/irox/commit/e89ac5f4fe6579db999e18db9b02f8e49668bb08))
     - Implementation of CORDIC ([`29b09c4`](https://github.com/spmadden/irox/commit/29b09c4ae1ab79ba5a1ffcb52dcced42db0e2f09))
     - Floatish gets clamp() ([`08ca5c0`](https://github.com/spmadden/irox/commit/08ca5c08d742fd1c2a5e64c0a164166f084a4e6f))
