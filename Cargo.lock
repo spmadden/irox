@@ -2191,7 +2191,7 @@ dependencies = [
 
 [[package]]
 name = "irox-structs_derive"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "irox-derive-helpers",
  "irox-tools",
