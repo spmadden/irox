@@ -12,6 +12,7 @@
 use core::cmp::Ordering;
 use core::fmt::Formatter;
 use core::str::FromStr;
+use irox_tools::f64::cordic;
 pub use irox_tools::f64::FloatExt;
 pub use irox_tools::Cast;
 
@@ -328,10 +329,19 @@ macro_rules! impl_unsigned_flops {
             }
 
             fn sin(self) -> Self::Type {
-                todo!()
+                cordic(self).0
             }
 
             fn cos(self) -> Self::Type {
+                cordic(self).1
+            }
+            fn tan(self) -> Self::Type {
+                self.sin() / self.cos()
+            }
+            fn atan(self) -> Self::Type {
+                todo!()
+            }
+            fn atan2(self, _o: Self) -> Self::Type {
                 todo!()
             }
         }
@@ -393,6 +403,33 @@ macro_rules! impl_signed_flops {
                 self - v
             }
         }
+        impl irox_tools::One for $typ {
+            const ONE: Self = Self::from_parts(1, 0);
+        }
+        impl irox_tools::Zero for $typ {
+            const ZERO: Self = Self::from_parts(0, 0);
+        }
+        impl irox_tools::ToF64 for $typ {
+            fn to_f64(&self) -> f64 {
+                self.as_f64()
+            }
+        }
+        impl irox_tools::FromF64 for $typ {
+            fn from_f64(value: f64) -> Self {
+                value.into()
+            }
+        }
+        impl irox_tools::ToSigned for $typ {
+            type Output = Self;
+            fn to_signed(self) -> Self::Output {
+                self
+            }
+            fn negative_one() -> Self::Output {
+                Self::from_parts(-1, 0)
+            }
+        }
+        impl irox_tools::PrimitiveMath for $typ {}
+        impl irox_tools::FloatIsh for $typ {}
         impl irox_tools::f64::FloatExt for $typ {
             type Type = Self;
             type Size = $prim;
@@ -514,10 +551,19 @@ macro_rules! impl_signed_flops {
             }
 
             fn sin(self) -> Self::Type {
-                todo!()
+                cordic(self).0
             }
 
             fn cos(self) -> Self::Type {
+                cordic(self).1
+            }
+            fn tan(self) -> Self::Type {
+                self.sin() / self.cos()
+            }
+            fn atan(self) -> Self::Type {
+                todo!()
+            }
+            fn atan2(self, _o: Self) -> Self::Type {
                 todo!()
             }
         }
