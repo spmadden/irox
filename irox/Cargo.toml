@@ -142,7 +142,7 @@ irox-cryptids = { version = "^0.1.2", optional = true, path = "../libraries/cryp
 irox-derive-helpers = { version = "^0.1.1", optional = true, path = "../libraries/derive-helpers" }
 irox-egui-extras = { version = "^0.7.0", optional = true, path = "../libraries/egui_extras" }
 irox-enums = { version = "^0.2.2", optional = true, path = "../libraries/enums" }
-irox-enums_derive = { version = "^0.2.2", optional = true, path = "../libraries/enums_derive" }
+irox-enums_derive = { version = "^0.2.4", optional = true, path = "../libraries/enums_derive" }
 irox-fixedmath = { version = "^0.2.0", optional = true, path = "../libraries/fixedmath" }
 irox-git-tools = { version = "^0.2.1", optional = true, path = "../libraries/git-tools" }
 irox-geometry = { version = "^0.1.0", optional = true, path = "../libraries/geometry" }
