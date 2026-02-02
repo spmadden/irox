@@ -1,7 +1,167 @@
 
 
 
+## v0.11.0 (2026-02-01)
+
+### Chore
+
+ - <csr-id-e89ac5f4fe6579db999e18db9b02f8e49668bb08/> bump version to 0.11.0
+ - <csr-id-b7b95a377765d1af3c529cdf9bcf901579d74545/> fix lints & bump to 1.91
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+ - <csr-id-789f6fbb81e815454d18c68c310d9a8e58f969c5/> fix lints & bump to 1.87
+ - <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/> fix lints & bump to 1.86
+ - <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/> cleaning up the remainder of the feature cleanup detritus
+ - <csr-id-f10ad9347376d5321920d23da0ebe787c3fe5150/> cleanup test code
+
+### New Features
+
+ - <csr-id-29b09c4ae1ab79ba5a1ffcb52dcced42db0e2f09/> Implementation of CORDIC
+ - <csr-id-08ca5c08d742fd1c2a5e64c0a164166f084a4e6f/> Floatish gets clamp()
+ - <csr-id-70d5ca91070c8981d1d59ac3ebad2343dee3b257/> lock FloatIsh to FloatExt<Self>
+ - <csr-id-2ad1d74789b1668398f8cac8ff567d0a1e47b231/> add Levenshtein distance fn
+ - <csr-id-7b3f53bf3c7c871bc2d0f8b1942fecbdcbb8fe1c/> new FromF64, PrimitiveMath, and FloatIsh traits
+ - <csr-id-5979ef38b46c3e2e514b89d0476a9fc13d221d95/> add algorithm to HashDigest trait
+ - <csr-id-012bde174864e1f8047be4b5fa29acb9441d0b2b/> new traits Cast, FloatIsh
+ - <csr-id-af61b0eba0d8bfb0ea718026f22268c88d0251e3/> Scanner gets Whitespace and the ability to skip empty/repeated tokens
+ - <csr-id-4b66cd71025161a4195ae1ae9ba1950ab0af4904/> BChunks - chunks for Bits
+ - <csr-id-1df2807c5f34e3da0aec4532e66e939acb9e0613/> add len() and is_empty() to Buffer
+ - <csr-id-fbc278e417f3f8697262a99f9b67b73bc40c67a5/> Impl Bits for FixedU8Buf
+ - <csr-id-9c836149bedbba16eb21cffb8105d5ad7f20286d/> generalize Matrix for both f32 and f64
+ - <csr-id-306fc7c3079c38fb33cb5052442cf595468d9a94/> add Sin and Cos to FloatExt trait
+ - <csr-id-0a9869677df28963b091825801ff31f97a2b444a/> Add One and Zero traits
+ - <csr-id-9c9ccbac6937da99e31e23486ffddd61215a073b/> add string float parsing from FixedU8Buf
+ - <csr-id-faff2898a93fc7848c5ea99f182baca435616e3b/> matrix augmentation and splitting
+ - <csr-id-698c6d00c29351bbb5158c80e64d0f89fbf9eca7/> rejigger to be more compatible with wasm32
+ - <csr-id-cb129abe0ebc07cfd64dc0e9882aac6433564f6a/> additional tempdir functionality
+ - <csr-id-9e31376a3aa89f60f024fe71a7ff7c3acbcfd860/> building out tempfiles
+ - <csr-id-2887b672c485b972abea89f29010bb2aeebaae50/> implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime
+ - <csr-id-190d91082e9da4d6869d2cc23ba1ef48bb48376f/> Temp files helpers
+ - <csr-id-095699e932c2c44ed2da8f845dabd9a4b72f0a55/> Random numbers without modulo-bias
+ - <csr-id-03368d146a331e2b89f5915a3f0e0bf600ef9118/> easier whole-file hashing for HashAlgorithm
+ - <csr-id-31c8a6152bc733ab18b1ca3dae835efeb0d5c38a/> add string convolution comparison
+ - <csr-id-bb68b29e1a425d07a1656962f1109cc4311637fc/> more ansi control codes work
+ - <csr-id-a0b36095d77f8b6ace1d16b1ca5646d8d1cdb86b/> add LUPDecomposition to matrix
+ - <csr-id-8f155ebacc33237b2b2fef644887af8539ff2064/> cleaning up vbyte and le conversions
+ - <csr-id-06dc86fd1ef69b20f936684620d58cb36a1150dd/> hashes implement Clone
+ - <csr-id-c2c1a9cc40acf1adab60914261810fdeb1eca745/> new MaybeLocked enumeration for lifetime & borrowing easement
+ - <csr-id-4fe2f667c655a6e19078272c1527cd6dd71fcdf9/> Hasher gets a 'hash_file' fn
+ - <csr-id-500bde65794df78da584d8ffa63ff331375ae041/> adding docs to static_init!
+ - <csr-id-d95374ba3a6bbfbd934c4a80510ef0faecc2242c/> new HasherCounting to track written bytes
+ - <csr-id-aba995e9a914ff7abe86452623181892ad3ec755/> less copies in murmur3 for perf
+ - <csr-id-781a33d7a20502a1f425d7ca8cba1d6997db0e12/> tweak FixedU8Buf for perf
+ - <csr-id-ba50d4f13f7e9b84d8d59541050e229597764bf0/> new Hasher generic hash function struct
+ - <csr-id-836dc742c8fd1e90d7a6902efeee2d0a6ec393a3/> impl ZeroedBuffer for Box<[T]>
+ - <csr-id-027a9d4ca0f21dc2dc3c098ed4d0aac4b8fa30b9/> blake2 now actually passes all test vectors
+ - <csr-id-d907fdf428dc92feab30af38868029f7162562d2/> add 'from_slice' to FixedU8Buf
+ - <csr-id-78a6bcf9968385c367a02a2abcdfe0a6f65eedca/> rejigger md5 for perf
+ - <csr-id-2c0ff36cf1ccbe1890d99d9613f2c1b899208ac8/> rejigger murmur3 for perf
+ - <csr-id-4a8154a8efe25b1200264179bbeb53fde10492d7/> impl blake2b/blake2s
+ - <csr-id-17c0da06ed7cd216b8580af9be4d55894aeeecd0/> new ArrayTools and SliceTools traits for bonus helper functions
+ - <csr-id-d562dd01591c4988ad5f595282634c6b2b64e4a3/> some checks for invalid curve inputs
+
+### Bug Fixes
+
+ - <csr-id-765876d9dca00cd5a6f71e8b2a06223bf6b41a72/> lock pagefile and multistream behind os features
+ - <csr-id-6f8080966a5e5e259d47bf556d7599f3409e8def/> fix missing box import
+ - <csr-id-c81b779514e19fc9e459d8c1db3c4b3380c634a8/> fix compilation problem around alloc
+ - <csr-id-380026234f60a4beaa213d711ee359c63d93e877/> fix issue in sha2 where buffer wasn't fully counted
+
+### Other
+
+ - <csr-id-626b51ace277f02658e47da7c4beeac66912ea40/> units & graphing
+ - <csr-id-2de510fd54646200cf214dadcd2323273bd1db94/> cryptids
+
+### Refactor
+
+ - <csr-id-5beb610d54822c4045d088b378604ba3caab7d10/> Drop self parameter from HashDigest::algorithm
+ - <csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/> move eframe behind feature
+ - <csr-id-59f35131513a8b43d7e288832276943532e6bfee/> hexdump read -> bits
+ - <csr-id-79458eaa00099c41ce5908191fee46a52af942a2/> rejigger ArrayBuf for performance
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 60 commits contributed to the release.
+ - 337 days passed between releases.
+ - 60 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.11.0 ([`e89ac5f`](https://github.com/spmadden/irox/commit/e89ac5f4fe6579db999e18db9b02f8e49668bb08))
+    - Implementation of CORDIC ([`29b09c4`](https://github.com/spmadden/irox/commit/29b09c4ae1ab79ba5a1ffcb52dcced42db0e2f09))
+    - Floatish gets clamp() ([`08ca5c0`](https://github.com/spmadden/irox/commit/08ca5c08d742fd1c2a5e64c0a164166f084a4e6f))
+    - Lock FloatIsh to FloatExt<Self> ([`70d5ca9`](https://github.com/spmadden/irox/commit/70d5ca91070c8981d1d59ac3ebad2343dee3b257))
+    - Add Levenshtein distance fn ([`2ad1d74`](https://github.com/spmadden/irox/commit/2ad1d74789b1668398f8cac8ff567d0a1e47b231))
+    - Drop self parameter from HashDigest::algorithm ([`5beb610`](https://github.com/spmadden/irox/commit/5beb610d54822c4045d088b378604ba3caab7d10))
+    - New FromF64, PrimitiveMath, and FloatIsh traits ([`7b3f53b`](https://github.com/spmadden/irox/commit/7b3f53bf3c7c871bc2d0f8b1942fecbdcbb8fe1c))
+    - Add algorithm to HashDigest trait ([`5979ef3`](https://github.com/spmadden/irox/commit/5979ef38b46c3e2e514b89d0476a9fc13d221d95))
+    - New traits Cast, FloatIsh ([`012bde1`](https://github.com/spmadden/irox/commit/012bde174864e1f8047be4b5fa29acb9441d0b2b))
+    - Units & graphing ([`626b51a`](https://github.com/spmadden/irox/commit/626b51ace277f02658e47da7c4beeac66912ea40))
+    - Move eframe behind feature ([`159001f`](https://github.com/spmadden/irox/commit/159001f900b2ca97dd398671a85c548c90fc07c4))
+    - Hexdump read -> bits ([`59f3513`](https://github.com/spmadden/irox/commit/59f35131513a8b43d7e288832276943532e6bfee))
+    - Scanner gets Whitespace and the ability to skip empty/repeated tokens ([`af61b0e`](https://github.com/spmadden/irox/commit/af61b0eba0d8bfb0ea718026f22268c88d0251e3))
+    - BChunks - chunks for Bits ([`4b66cd7`](https://github.com/spmadden/irox/commit/4b66cd71025161a4195ae1ae9ba1950ab0af4904))
+    - Add len() and is_empty() to Buffer ([`1df2807`](https://github.com/spmadden/irox/commit/1df2807c5f34e3da0aec4532e66e939acb9e0613))
+    - Impl Bits for FixedU8Buf ([`fbc278e`](https://github.com/spmadden/irox/commit/fbc278e417f3f8697262a99f9b67b73bc40c67a5))
+    - Fix lints & bump to 1.91 ([`b7b95a3`](https://github.com/spmadden/irox/commit/b7b95a377765d1af3c529cdf9bcf901579d74545))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Fix lints & bump to 1.87 ([`789f6fb`](https://github.com/spmadden/irox/commit/789f6fbb81e815454d18c68c310d9a8e58f969c5))
+    - Fix lints & bump to 1.86 ([`84ff4e9`](https://github.com/spmadden/irox/commit/84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc))
+    - Generalize Matrix for both f32 and f64 ([`9c83614`](https://github.com/spmadden/irox/commit/9c836149bedbba16eb21cffb8105d5ad7f20286d))
+    - Add Sin and Cos to FloatExt trait ([`306fc7c`](https://github.com/spmadden/irox/commit/306fc7c3079c38fb33cb5052442cf595468d9a94))
+    - Add One and Zero traits ([`0a98696`](https://github.com/spmadden/irox/commit/0a9869677df28963b091825801ff31f97a2b444a))
+    - Add string float parsing from FixedU8Buf ([`9c9ccba`](https://github.com/spmadden/irox/commit/9c9ccbac6937da99e31e23486ffddd61215a073b))
+    - Matrix augmentation and splitting ([`faff289`](https://github.com/spmadden/irox/commit/faff2898a93fc7848c5ea99f182baca435616e3b))
+    - Rejigger to be more compatible with wasm32 ([`698c6d0`](https://github.com/spmadden/irox/commit/698c6d00c29351bbb5158c80e64d0f89fbf9eca7))
+    - Lock pagefile and multistream behind os features ([`765876d`](https://github.com/spmadden/irox/commit/765876d9dca00cd5a6f71e8b2a06223bf6b41a72))
+    - Additional tempdir functionality ([`cb129ab`](https://github.com/spmadden/irox/commit/cb129abe0ebc07cfd64dc0e9882aac6433564f6a))
+    - Building out tempfiles ([`9e31376`](https://github.com/spmadden/irox/commit/9e31376a3aa89f60f024fe71a7ff7c3acbcfd860))
+    - Cleaning up the remainder of the feature cleanup detritus ([`80339f6`](https://github.com/spmadden/irox/commit/80339f6fd1474cf4182bca867517b3e9f83a98ca))
+    - Implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime ([`2887b67`](https://github.com/spmadden/irox/commit/2887b672c485b972abea89f29010bb2aeebaae50))
+    - Temp files helpers ([`190d910`](https://github.com/spmadden/irox/commit/190d91082e9da4d6869d2cc23ba1ef48bb48376f))
+    - Random numbers without modulo-bias ([`095699e`](https://github.com/spmadden/irox/commit/095699e932c2c44ed2da8f845dabd9a4b72f0a55))
+    - Easier whole-file hashing for HashAlgorithm ([`03368d1`](https://github.com/spmadden/irox/commit/03368d146a331e2b89f5915a3f0e0bf600ef9118))
+    - Add string convolution comparison ([`31c8a61`](https://github.com/spmadden/irox/commit/31c8a6152bc733ab18b1ca3dae835efeb0d5c38a))
+    - More ansi control codes work ([`bb68b29`](https://github.com/spmadden/irox/commit/bb68b29e1a425d07a1656962f1109cc4311637fc))
+    - Cleanup test code ([`f10ad93`](https://github.com/spmadden/irox/commit/f10ad9347376d5321920d23da0ebe787c3fe5150))
+    - Add LUPDecomposition to matrix ([`a0b3609`](https://github.com/spmadden/irox/commit/a0b36095d77f8b6ace1d16b1ca5646d8d1cdb86b))
+    - Cleaning up vbyte and le conversions ([`8f155eb`](https://github.com/spmadden/irox/commit/8f155ebacc33237b2b2fef644887af8539ff2064))
+    - Hashes implement Clone ([`06dc86f`](https://github.com/spmadden/irox/commit/06dc86fd1ef69b20f936684620d58cb36a1150dd))
+    - New MaybeLocked enumeration for lifetime & borrowing easement ([`c2c1a9c`](https://github.com/spmadden/irox/commit/c2c1a9cc40acf1adab60914261810fdeb1eca745))
+    - Hasher gets a 'hash_file' fn ([`4fe2f66`](https://github.com/spmadden/irox/commit/4fe2f667c655a6e19078272c1527cd6dd71fcdf9))
+    - Adding docs to static_init! ([`500bde6`](https://github.com/spmadden/irox/commit/500bde65794df78da584d8ffa63ff331375ae041))
+    - Fix missing box import ([`6f80809`](https://github.com/spmadden/irox/commit/6f8080966a5e5e259d47bf556d7599f3409e8def))
+    - New HasherCounting to track written bytes ([`d95374b`](https://github.com/spmadden/irox/commit/d95374ba3a6bbfbd934c4a80510ef0faecc2242c))
+    - Less copies in murmur3 for perf ([`aba995e`](https://github.com/spmadden/irox/commit/aba995e9a914ff7abe86452623181892ad3ec755))
+    - Tweak FixedU8Buf for perf ([`781a33d`](https://github.com/spmadden/irox/commit/781a33d7a20502a1f425d7ca8cba1d6997db0e12))
+    - New Hasher generic hash function struct ([`ba50d4f`](https://github.com/spmadden/irox/commit/ba50d4f13f7e9b84d8d59541050e229597764bf0))
+    - Impl ZeroedBuffer for Box<[T]> ([`836dc74`](https://github.com/spmadden/irox/commit/836dc742c8fd1e90d7a6902efeee2d0a6ec393a3))
+    - Blake2 now actually passes all test vectors ([`027a9d4`](https://github.com/spmadden/irox/commit/027a9d4ca0f21dc2dc3c098ed4d0aac4b8fa30b9))
+    - Add 'from_slice' to FixedU8Buf ([`d907fdf`](https://github.com/spmadden/irox/commit/d907fdf428dc92feab30af38868029f7162562d2))
+    - Rejigger md5 for perf ([`78a6bcf`](https://github.com/spmadden/irox/commit/78a6bcf9968385c367a02a2abcdfe0a6f65eedca))
+    - Rejigger murmur3 for perf ([`2c0ff36`](https://github.com/spmadden/irox/commit/2c0ff36cf1ccbe1890d99d9613f2c1b899208ac8))
+    - Rejigger ArrayBuf for performance ([`79458ea`](https://github.com/spmadden/irox/commit/79458eaa00099c41ce5908191fee46a52af942a2))
+    - Impl blake2b/blake2s ([`4a8154a`](https://github.com/spmadden/irox/commit/4a8154a8efe25b1200264179bbeb53fde10492d7))
+    - Fix compilation problem around alloc ([`c81b779`](https://github.com/spmadden/irox/commit/c81b779514e19fc9e459d8c1db3c4b3380c634a8))
+    - Fix issue in sha2 where buffer wasn't fully counted ([`3800262`](https://github.com/spmadden/irox/commit/380026234f60a4beaa213d711ee359c63d93e877))
+    - New ArrayTools and SliceTools traits for bonus helper functions ([`17c0da0`](https://github.com/spmadden/irox/commit/17c0da06ed7cd216b8580af9be4d55894aeeecd0))
+    - Some checks for invalid curve inputs ([`d562dd0`](https://github.com/spmadden/irox/commit/d562dd01591c4988ad5f595282634c6b2b64e4a3))
+    - Cryptids ([`2de510f`](https://github.com/spmadden/irox/commit/2de510fd54646200cf214dadcd2323273bd1db94))
+</details>
+
 ## v0.10.3 (2025-03-01)
+
+<csr-id-fef64a162b568961be8445ec418918d64f3cadde/>
+<csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/>
+<csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/>
+<csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
 
 ### Chore
 
@@ -41,7 +201,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release over the course of 14 calendar days.
+ - 16 commits contributed to the release over the course of 14 calendar days.
  - 17 days passed between releases.
  - 15 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -53,6 +213,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.10.3 ([`f6c9070`](https://github.com/spmadden/irox/commit/f6c9070254c2494cebd3d3dc7d4572f303a8b969))
     - Better iteration for UnlimitedBuffer ([`47084c9`](https://github.com/spmadden/irox/commit/47084c92d924079e50d8b020d411ece48cda76f9))
     - Add Murmur3_32 implementation and hashing benchmarks ([`2794f0f`](https://github.com/spmadden/irox/commit/2794f0f8209f681621fb462accc30ec8ae65ecc9))
     - Add `copy_subset` function for copying slices into statically sized arrays ([`cae124c`](https://github.com/spmadden/irox/commit/cae124cb47519325cbd8ee1938faf5b8867c532d))
