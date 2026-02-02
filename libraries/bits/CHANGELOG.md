@@ -1,6 +1,72 @@
 
 
+## v0.5.0 (2026-02-01)
+
+### Chore
+
+ - <csr-id-dc305634f1eda45a6a3137a6d270f9d406579c7c/> bump version to 0.5.0
+
+### New Features
+
+ - <csr-id-79cd221db336001a43bf474011f6779a30db731e/> impl u32 to/from [u8;64]
+ - <csr-id-4cd4f7b3c81c27d30335b98f48a493f24f5cac90/> Impl Read for BitsWrapper
+ - <csr-id-8b214d075998dbeb3860d4d5071058792dbfc1fc/> consume_until now returns a bool to if it found the search string
+ - <csr-id-9bcd25c7ccf9798c6f83c1ee71996cfaf8d9bb21/> improved alloc/std bits passthroughs
+ - <csr-id-c741ea689400b84dffebc67e0cd001136d998c1a/> new Bits::remaining function
+ - <csr-id-89ea040cd9eb02c73be86cd7c09960d1a48cd0e3/> Ability to flush the BitsBuffer periodically
+ - <csr-id-ab5451d8710710536ec66c62761c75ef73f1936c/> New backtrace feature for BitsError to show where it came from
+ - <csr-id-8e7c85bcb84c3c9c2c16fd9780d1460908d41075/> new BitsBuffer struct, that wraps & buffers a Bits impl
+ - <csr-id-e756d343f862b1b593ca5a6302379a4f4f82b01c/> better TCP stream buffering
+ - <csr-id-5c38bc11a69d10824a056b34582a8cf0113e81a8/> new read_str_nul_terminated fns
+ - <csr-id-9c9a598cc6a9ce6e5543209456945a8c381ee2d5/> more impls of WriteToBEBits
+ - <csr-id-39931e44889ad1f02af308721533fb8c0ec60b01/> new 'read_filling' method
+ - <csr-id-e3e39b9dbbfc1bf627e62d4ac207ad228f7a8454/> adding LE, peek, and delegation to BitStream
+ - <csr-id-04e6a38e72b10f7db063b0cc1881849e8cd390b1/> new SerializeToBits and DeserializeFromBits traits for specific encoding formats
+ - <csr-id-a7bddcec69b0ab5a04b718f24881818339e1b449/> impl ToBEBytes for some array lengths
+
+### Bug Fixes
+
+ - <csr-id-0fbe42ff747075b5bf60e0ba3294d6d9da73b9da/> clean imports for non-standard os's
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 17 commits contributed to the release.
+ - 337 days passed between releases.
+ - 17 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.5.0 ([`dc30563`](https://github.com/spmadden/irox/commit/dc305634f1eda45a6a3137a6d270f9d406579c7c))
+    - Impl u32 to/from [u8;64] ([`79cd221`](https://github.com/spmadden/irox/commit/79cd221db336001a43bf474011f6779a30db731e))
+    - Impl Read for BitsWrapper ([`4cd4f7b`](https://github.com/spmadden/irox/commit/4cd4f7b3c81c27d30335b98f48a493f24f5cac90))
+    - Consume_until now returns a bool to if it found the search string ([`8b214d0`](https://github.com/spmadden/irox/commit/8b214d075998dbeb3860d4d5071058792dbfc1fc))
+    - Improved alloc/std bits passthroughs ([`9bcd25c`](https://github.com/spmadden/irox/commit/9bcd25c7ccf9798c6f83c1ee71996cfaf8d9bb21))
+    - Clean imports for non-standard os's ([`0fbe42f`](https://github.com/spmadden/irox/commit/0fbe42ff747075b5bf60e0ba3294d6d9da73b9da))
+    - New Bits::remaining function ([`c741ea6`](https://github.com/spmadden/irox/commit/c741ea689400b84dffebc67e0cd001136d998c1a))
+    - Ability to flush the BitsBuffer periodically ([`89ea040`](https://github.com/spmadden/irox/commit/89ea040cd9eb02c73be86cd7c09960d1a48cd0e3))
+    - New backtrace feature for BitsError to show where it came from ([`ab5451d`](https://github.com/spmadden/irox/commit/ab5451d8710710536ec66c62761c75ef73f1936c))
+    - New BitsBuffer struct, that wraps & buffers a Bits impl ([`8e7c85b`](https://github.com/spmadden/irox/commit/8e7c85bcb84c3c9c2c16fd9780d1460908d41075))
+    - Better TCP stream buffering ([`e756d34`](https://github.com/spmadden/irox/commit/e756d343f862b1b593ca5a6302379a4f4f82b01c))
+    - New read_str_nul_terminated fns ([`5c38bc1`](https://github.com/spmadden/irox/commit/5c38bc11a69d10824a056b34582a8cf0113e81a8))
+    - More impls of WriteToBEBits ([`9c9a598`](https://github.com/spmadden/irox/commit/9c9a598cc6a9ce6e5543209456945a8c381ee2d5))
+    - New 'read_filling' method ([`39931e4`](https://github.com/spmadden/irox/commit/39931e44889ad1f02af308721533fb8c0ec60b01))
+    - Adding LE, peek, and delegation to BitStream ([`e3e39b9`](https://github.com/spmadden/irox/commit/e3e39b9dbbfc1bf627e62d4ac207ad228f7a8454))
+    - New SerializeToBits and DeserializeFromBits traits for specific encoding formats ([`04e6a38`](https://github.com/spmadden/irox/commit/04e6a38e72b10f7db063b0cc1881849e8cd390b1))
+    - Impl ToBEBytes for some array lengths ([`a7bddce`](https://github.com/spmadden/irox/commit/a7bddcec69b0ab5a04b718f24881818339e1b449))
+</details>
+
 ## v0.4.2 (2025-03-01)
+
+<csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/>
+<csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
 
 ### Chore
 
@@ -16,7 +82,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 13 calendar days.
+ - 5 commits contributed to the release over the course of 13 calendar days.
  - 17 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +94,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.4.2 ([`da45a93`](https://github.com/spmadden/irox/commit/da45a93d8a0e1621f4ac63dc77f8e00528cffba4))
     - Add impl WriteToBEBits for Arc<String> ([`f91538d`](https://github.com/spmadden/irox/commit/f91538d1cb3ebae7eaee1273cbaaca08979b99e2))
     - Fix lints for 1.84, update to 1.84 ([`4f516d7`](https://github.com/spmadden/irox/commit/4f516d71e4db3ff1874da92d226939ad2e1478de))
     - Cleanup bitmask order-of-operations ([`1f48b70`](https://github.com/spmadden/irox/commit/1f48b70c64fb0cde031bf379fe3d6b5b276b6f51))
