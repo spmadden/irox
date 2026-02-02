@@ -1,7 +1,60 @@
 
 
 
+## v0.5.0 (2026-02-01)
+
+### Chore
+
+ - <csr-id-d6b1811a557f18d2a1c806c29562dafab66d2492/> bump version to 0.5.0
+ - <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/> fix lints & bump to 1.86
+
+### New Features
+
+ - <csr-id-f5f3e19e5d6b144b94e2269bf6a6e20765e54f7a/> no-std sin/cos for FloatExt
+ - <csr-id-13ec8049503eb17a0830e4a4ff401cad62803759/> improve USFT conversion precision
+ - <csr-id-016929e27bb976a7c5b467539ff1b7c81dd9f8a5/> as_unit conversoins for angles
+ - <csr-id-fecbd29ca8947aac45436b5683a67bcd6e84089f/> add basic serialization for Duration, fix test features
+ - <csr-id-c808ce6c98bc341f2a9db7e922f64862de4cca93/> new Frequency, Drift types
+ - <csr-id-61dfa4e378fa83ce23fa3b46d96c55027d77c8fe/> Add Picoseconds to Duration
+ - <csr-id-b4a9e52197f2ae24e47873e2e1717d603f97c3aa/> add Angle::new_dm (degrees minutes) function
+
+### Other
+
+ - <csr-id-5a2ef90e7bafeec40e35a61f68c34ad2935996b1/> units & graphing
+ - <csr-id-626b51ace277f02658e47da7c4beeac66912ea40/> units & graphing
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release.
+ - 337 days passed between releases.
+ - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump version to 0.5.0 ([`d6b1811`](https://github.com/spmadden/irox/commit/d6b1811a557f18d2a1c806c29562dafab66d2492))
+    - No-std sin/cos for FloatExt ([`f5f3e19`](https://github.com/spmadden/irox/commit/f5f3e19e5d6b144b94e2269bf6a6e20765e54f7a))
+    - Units & graphing ([`5a2ef90`](https://github.com/spmadden/irox/commit/5a2ef90e7bafeec40e35a61f68c34ad2935996b1))
+    - Units & graphing ([`626b51a`](https://github.com/spmadden/irox/commit/626b51ace277f02658e47da7c4beeac66912ea40))
+    - Fix lints & bump to 1.86 ([`84ff4e9`](https://github.com/spmadden/irox/commit/84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc))
+    - Improve USFT conversion precision ([`13ec804`](https://github.com/spmadden/irox/commit/13ec8049503eb17a0830e4a4ff401cad62803759))
+    - As_unit conversoins for angles ([`016929e`](https://github.com/spmadden/irox/commit/016929e27bb976a7c5b467539ff1b7c81dd9f8a5))
+    - Add basic serialization for Duration, fix test features ([`fecbd29`](https://github.com/spmadden/irox/commit/fecbd29ca8947aac45436b5683a67bcd6e84089f))
+    - New Frequency, Drift types ([`c808ce6`](https://github.com/spmadden/irox/commit/c808ce6c98bc341f2a9db7e922f64862de4cca93))
+    - Add Picoseconds to Duration ([`61dfa4e`](https://github.com/spmadden/irox/commit/61dfa4e378fa83ce23fa3b46d96c55027d77c8fe))
+    - Add Angle::new_dm (degrees minutes) function ([`b4a9e52`](https://github.com/spmadden/irox/commit/b4a9e52197f2ae24e47873e2e1717d603f97c3aa))
+</details>
+
 ## v0.4.7 (2025-03-01)
+
+<csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/>
 
 ### Chore
 
@@ -11,7 +64,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 24 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +76,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.4.7 ([`3804364`](https://github.com/spmadden/irox/commit/380436484f31e4e074e05a62aae3e85d6bb2cdd0))
     - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
 </details>
 
