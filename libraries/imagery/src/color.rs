@@ -5,6 +5,10 @@
 use irox_bits::{BitStreamDecoder, Bits, BitsError};
 use irox_tools::cfg_feature_egui;
 
+#[cfg(not(feature = "std"))]
+#[allow(unused_imports)]
+use irox_tools::f64::FloatExt;
+
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct RGBColor {
     pub red: u8,
