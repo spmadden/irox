@@ -1,10 +1,10 @@
 
 
-## v0.1.1 (2026-02-01)
+## v0.1.2 (2026-02-01)
 
 ### Bug Fixes
 
- - <csr-id-841968f65860c4b70f41d3391b66457164c1fad9/> fix docsrs build :<
+ - <csr-id-442dc8cc475b26d8e6801a3a1ccbb85c99100520/> docsrs fix round 2
 
 ### Commit Statistics
 
@@ -21,6 +21,31 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Docsrs fix round 2 ([`442dc8c`](https://github.com/spmadden/irox/commit/442dc8cc475b26d8e6801a3a1ccbb85c99100520))
+</details>
+
+## v0.1.1 (2026-02-01)
+
+### Bug Fixes
+
+ - <csr-id-841968f65860c4b70f41d3391b66457164c1fad9/> fix docsrs build :<
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-cryptids v0.1.1 ([`c2a26ad`](https://github.com/spmadden/irox/commit/c2a26ada67146c4e827877619d222da1954859e6))
     - Fix docsrs build :< ([`841968f`](https://github.com/spmadden/irox/commit/841968f65860c4b70f41d3391b66457164c1fad9))
 </details>
 
