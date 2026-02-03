@@ -2,6 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
+use irox_arch_x86_64::cpu::CpuFeature;
 use irox_tools::cfg_feature_std;
 
 cfg_feature_std! {
@@ -17,7 +18,15 @@ cfg_feature_std! {
     pub fn rand64() -> Option<u64> {
         #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
         {
-            irox_arch_x86_64::rand::rdseed64()
+            let features = irox_arch_x86_64::cpu::cpu_features();
+            if features.has_feature(CpuFeature::RDRAND) {
+                return irox_arch_x86_64::rand::rdseed64()
+            }
+        }
+        #[cfg(target_os = "linux")]
+        {
+            std::fs::File::open("/dev/urandom").ok()?
+            .read_be_u64().ok()
         }
         #[cfg(target_arch = "wasm32")]
         {

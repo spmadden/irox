@@ -1677,16 +1677,16 @@ dependencies = [
 name = "irox"
 version = "0.10.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-build-rs",
  "irox-carto",
  "irox-cryptids",
  "irox-csv",
- "irox-derive-helpers",
+ "irox-derive-helpers 0.1.1",
  "irox-dot",
  "irox-egui-extras",
- "irox-enums",
- "irox-enums_derive",
+ "irox-enums 0.2.2",
+ "irox-enums_derive 0.2.4",
  "irox-fixedmath",
  "irox-geometry",
  "irox-git-tools",
@@ -1707,7 +1707,7 @@ dependencies = [
  "irox-structs_derive",
  "irox-threading",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-types",
  "irox-ubx",
  "irox-units",
@@ -1718,19 +1718,29 @@ dependencies = [
 name = "irox-app-helpers"
 version = "0.1.0"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-types",
 ]
 
 [[package]]
 name = "irox-arch-x86-64"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "952dd670630c1638a752f4b4c47556a66e12014e91f6a55cd2bf8640f27310c3"
+checksum = "06ce4d23c2b7ea63fbf38d168146968765cef784c6dbb288a7a4d331075d9190"
+dependencies = [
+ "irox-enums 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "irox-enums_derive 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "irox-bits"
 version = "0.5.0"
+
+[[package]]
+name = "irox-bits"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b2c33e4d4ba7dca30fdb321ae93bee0ffa1ad3796b0ba7a4269debc1d378df6"
 
 [[package]]
 name = "irox-build-rs"
@@ -1739,14 +1749,14 @@ dependencies = [
  "git2",
  "irox-git-tools",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-cargo-metadata"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "serde",
  "serde_json",
  "toml",
@@ -1758,10 +1768,10 @@ version = "0.6.5"
 dependencies = [
  "irox-compression",
  "irox-csv",
- "irox-enums",
+ "irox-enums 0.2.2",
  "irox-stats",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "windows 0.59.0",
 ]
@@ -1770,18 +1780,18 @@ dependencies = [
 name = "irox-chronyc"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
- "irox-enums",
+ "irox-bits 0.5.0",
+ "irox-enums 0.2.2",
  "irox-structs",
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-compression"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
- "irox-tools",
+ "irox-bits 0.5.0",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
@@ -1791,9 +1801,9 @@ dependencies = [
  "core_affinity",
  "criterion",
  "irox-arch-x86-64",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-stats",
- "irox-tools",
+ "irox-tools 0.11.1",
  "web-sys",
 ]
 
@@ -1801,25 +1811,34 @@ dependencies = [
 name = "irox-csv"
 version = "0.5.1"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-derive-helpers"
 version = "0.1.1"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
  "syn",
+]
+
+[[package]]
+name = "irox-derive-helpers"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e64f4cf03bbfad6573b601d0a0fb91423aab36eb38e960e626a06b83bb9ff736"
+dependencies = [
+ "irox-tools 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "irox-dot"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-egui-extras",
  "irox-log",
- "irox-tools",
+ "irox-tools 0.11.1",
  "serde",
  "serde_json",
 ]
@@ -1845,7 +1864,7 @@ dependencies = [
  "eframe",
  "egui",
  "glow",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-build-rs",
  "irox-csv",
  "irox-imagery",
@@ -1853,7 +1872,7 @@ dependencies = [
  "irox-progress",
  "irox-stats",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "log",
  "profiling",
@@ -1870,7 +1889,7 @@ dependencies = [
 name = "irox-eieio-api"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-carto",
  "irox-time",
 ]
@@ -1887,14 +1906,33 @@ dependencies = [
 name = "irox-enums"
 version = "0.2.2"
 dependencies = [
- "irox-enums_derive",
+ "irox-enums_derive 0.2.4",
+]
+
+[[package]]
+name = "irox-enums"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac9e2ef0ec6807c038e3067d3644e8284fbe3f8626c0d6469edf3499af716b7a"
+dependencies = [
+ "irox-enums_derive 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "irox-enums_derive"
 version = "0.2.4"
 dependencies = [
- "irox-derive-helpers",
+ "irox-derive-helpers 0.1.1",
+ "syn",
+]
+
+[[package]]
+name = "irox-enums_derive"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93d3a1606a0f906b8152141fb3aba0c5f0b6597bdacc0f9c3b923db212324c42"
+dependencies = [
+ "irox-derive-helpers 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn",
 ]
 
@@ -1902,14 +1940,14 @@ dependencies = [
 name = "irox-fixedmath"
 version = "0.2.0"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-geometry"
 version = "0.1.0"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
 ]
 
@@ -1918,18 +1956,18 @@ name = "irox-git-tools"
 version = "0.2.2"
 dependencies = [
  "git2",
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-gnss"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-log",
  "irox-nmea0183",
  "irox-sirf",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-ubx",
 ]
 
@@ -1940,13 +1978,13 @@ dependencies = [
  "clap",
  "clap-verbosity-flag",
  "env_logger",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-carto",
  "irox-networking",
  "irox-nmea0183",
  "irox-sirf",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "irox-winlocation-api",
  "log",
@@ -1975,7 +2013,7 @@ dependencies = [
  "irox-geometry",
  "irox-log",
  "irox-structs_derive",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "serde",
  "serde_json",
@@ -2000,9 +2038,9 @@ name = "irox-imagery"
 version = "0.1.3"
 dependencies = [
  "egui",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-log",
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
@@ -2032,7 +2070,7 @@ name = "irox-log"
 version = "0.2.3"
 dependencies = [
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "log",
 ]
 
@@ -2041,7 +2079,7 @@ name = "irox-mbtiles"
 version = "0.1.0"
 dependencies = [
  "irox-carto",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "rusqlite",
 ]
@@ -2051,10 +2089,10 @@ name = "irox-metrics"
 version = "0.1.0"
 dependencies = [
  "criterion",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-cryptids",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-types",
 ]
 
@@ -2062,11 +2100,11 @@ dependencies = [
 name = "irox-networking"
 version = "0.4.7"
 dependencies = [
- "irox-bits",
- "irox-enums",
+ "irox-bits 0.5.0",
+ "irox-enums 0.2.2",
  "irox-log",
  "irox-structs",
- "irox-tools",
+ "irox-tools 0.11.1",
  "log",
  "serde",
  "serde_json",
@@ -2076,11 +2114,11 @@ dependencies = [
 name = "irox-nmea0183"
 version = "0.5.5"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-carto",
- "irox-enums",
+ "irox-enums 0.2.2",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "log",
 ]
@@ -2089,20 +2127,20 @@ dependencies = [
 name = "irox-openpgp"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-cryptids",
- "irox-enums",
+ "irox-enums 0.2.2",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-progress"
 version = "0.6.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "log",
 ]
 
@@ -2110,17 +2148,17 @@ dependencies = [
 name = "irox-protobuf"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
- "irox-tools",
+ "irox-bits 0.5.0",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
 name = "irox-protobuf-derive"
 version = "0.1.0"
 dependencies = [
- "irox-derive-helpers",
+ "irox-derive-helpers 0.1.1",
  "irox-protobuf",
- "irox-tools",
+ "irox-tools 0.11.1",
  "syn",
 ]
 
@@ -2128,10 +2166,10 @@ dependencies = [
 name = "irox-raymarine-sonar"
 version = "0.6.0"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-carto",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-types",
  "irox-units",
  "log",
@@ -2144,9 +2182,9 @@ dependencies = [
 name = "irox-sirf"
 version = "0.4.2"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-structs",
- "irox-tools",
+ "irox-tools 0.11.1",
  "log",
 ]
 
@@ -2160,7 +2198,7 @@ dependencies = [
  "irox-carto",
  "irox-gpx",
  "irox-raymarine-sonar",
- "irox-tools",
+ "irox-tools 0.11.1",
  "log",
 ]
 
@@ -2171,11 +2209,11 @@ dependencies = [
  "eframe",
  "egui",
  "emath",
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-egui-extras",
  "irox-log",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-types",
  "irox-units",
  "miniz_oxide",
@@ -2185,7 +2223,7 @@ dependencies = [
 name = "irox-structs"
 version = "0.5.1"
 dependencies = [
- "irox-bits",
+ "irox-bits 0.5.0",
  "irox-structs_derive",
 ]
 
@@ -2193,8 +2231,8 @@ dependencies = [
 name = "irox-structs_derive"
 version = "0.5.0"
 dependencies = [
- "irox-derive-helpers",
- "irox-tools",
+ "irox-derive-helpers 0.1.1",
+ "irox-tools 0.11.1",
  "irox-types",
  "quote",
  "syn",
@@ -2218,7 +2256,7 @@ dependencies = [
  "irox-carto",
  "irox-mbtiles",
  "irox-progress",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "reqwest",
  "tokio",
@@ -2228,9 +2266,9 @@ dependencies = [
 name = "irox-time"
 version = "0.5.1"
 dependencies = [
- "irox-enums",
+ "irox-enums 0.2.2",
  "irox-fixedmath",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
  "serde",
  "serde_json",
@@ -2242,19 +2280,28 @@ version = "0.11.1"
 dependencies = [
  "core_affinity",
  "criterion",
- "irox-bits",
+ "irox-bits 0.5.0",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "irox-tools"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a8ac4be6ccb85c310c6759aa958b1e9afc96cbb7491334a36b0b5630444f66f"
+dependencies = [
+ "irox-bits 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "irox-types"
 version = "0.5.2"
 dependencies = [
- "irox-bits",
- "irox-enums",
- "irox-enums_derive",
- "irox-tools",
+ "irox-bits 0.5.0",
+ "irox-enums 0.2.2",
+ "irox-enums_derive 0.2.4",
+ "irox-tools 0.11.1",
  "syn",
 ]
 
@@ -2262,11 +2309,11 @@ dependencies = [
 name = "irox-ubx"
 version = "0.1.0"
 dependencies = [
- "irox-bits",
- "irox-enums",
+ "irox-bits 0.5.0",
+ "irox-enums 0.2.2",
  "irox-structs",
  "irox-time",
- "irox-tools",
+ "irox-tools 0.11.1",
  "irox-units",
 ]
 
@@ -2274,7 +2321,7 @@ dependencies = [
 name = "irox-units"
 version = "0.5.0"
 dependencies = [
- "irox-tools",
+ "irox-tools 0.11.1",
  "serde",
  "serde_json",
 ]
