@@ -2,7 +2,6 @@
 // Copyright 2025 IROX Contributors
 //
 
-use irox_arch_x86_64::cpu::CpuFeature;
 use irox_tools::cfg_feature_std;
 
 cfg_feature_std! {
@@ -19,7 +18,7 @@ cfg_feature_std! {
         #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
         {
             let features = irox_arch_x86_64::cpu::cpu_features();
-            if features.has_feature(CpuFeature::RDRAND) {
+            if features.has_feature(irox_arch_x86_64::cpu::CpuFeature::RDRAND) {
                 return irox_arch_x86_64::rand::rdseed64()
             }
         }
