@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::Point;
 use irox_tools::FloatIsh;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub enum QuadtreeNode<T: FloatIsh, V: Clone> {

@@ -2,8 +2,11 @@
 // Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
+
 use crate::geometry::GeometryType;
 use irox_tools::FloatIsh;
+use alloc::boxed::Box;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct KDTree<PlaneType: FloatIsh, ValueType> {

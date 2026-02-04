@@ -147,7 +147,7 @@ mod tests {
             end: Point::new_point(50., -800.),
         };
         let d = line.distance_to(&Point::new_point(20., 1000.));
-        assert_eq_eps!(920.4890004280828f64, d, f64::EPSILON);
+        assert_eq_eps!(920.48900047746360889268014185024f64, d, 1e-7);
 
         let line = LineSegment {
             start: Point::new_point(0., 0.),

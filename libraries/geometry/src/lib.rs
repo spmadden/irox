@@ -11,21 +11,26 @@
 #![warn(clippy::std_instead_of_alloc)]
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(not(feature = "std"), no_std)]
+
+use irox_tools::cfg_feature_alloc;
 
 mod geometry;
-mod kdtree;
+cfg_feature_alloc! {
+    mod kdtree;
+    pub use kdtree::*;
+    mod polygon;
+    pub use polygon::*;
+    mod quadtree;
+    pub use quadtree::*;
+}
 mod line;
 mod point;
-mod polygon;
-mod quadtree;
 mod rectangle;
 mod vector;
 
 pub use geometry::*;
-pub use kdtree::*;
 pub use line::*;
 pub use point::*;
-pub use polygon::*;
-pub use quadtree::*;
 pub use rectangle::*;
 pub use vector::*;

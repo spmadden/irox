@@ -15,6 +15,11 @@ readme = "README.md"
 [lints]
 workspace = true
 
+[features]
+default = []
+alloc = ["irox-tools/alloc", "irox-units/alloc"]
+std = ["irox-tools/std", "irox-units/std"]
+
 [dependencies]
 irox-tools = {workspace = true}
 irox-units = {workspace = true}

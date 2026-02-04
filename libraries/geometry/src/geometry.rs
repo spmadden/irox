@@ -3,13 +3,16 @@
 //
 
 use crate::rectangle::Rectangle;
-use crate::{LineSegment, Point, Polygon};
+#[cfg(feature = "alloc")]
+use crate::Polygon;
+use crate::{LineSegment, Point};
 use irox_tools::FloatIsh;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GeometryType<T: FloatIsh> {
     Point(Point<T>),
     Line(LineSegment<T>),
+    #[cfg(feature = "alloc")]
     Polygon(Polygon<T>),
     Rectangle(Rectangle<T>),
 }
@@ -23,6 +26,7 @@ impl<T: FloatIsh> Geometry<T> for GeometryType<T> {
         match self {
             GeometryType::Point(p) => p.contains(point),
             GeometryType::Line(l) => l.contains(point),
+            #[cfg(feature = "alloc")]
             GeometryType::Polygon(p) => p.contains(point),
             GeometryType::Rectangle(r) => r.contains(point),
         }
@@ -32,6 +36,7 @@ impl<T: FloatIsh> Geometry<T> for GeometryType<T> {
         match self {
             GeometryType::Point(p) => p.distance_to(point),
             GeometryType::Line(l) => l.distance_to(point),
+            #[cfg(feature = "alloc")]
             GeometryType::Polygon(p) => p.distance_to(point),
             GeometryType::Rectangle(r) => r.distance_to(point),
         }
@@ -41,6 +46,7 @@ impl<T: FloatIsh> Geometry<T> for GeometryType<T> {
         match self {
             GeometryType::Point(p) => p.intersects(point),
             GeometryType::Line(l) => l.intersects(point),
+            #[cfg(feature = "alloc")]
             GeometryType::Polygon(p) => p.intersects(point),
             GeometryType::Rectangle(r) => r.intersects(point),
         }
@@ -50,6 +56,7 @@ impl<T: FloatIsh> Geometry<T> for GeometryType<T> {
         match self {
             GeometryType::Point(p) => p.bounding_rectangle(),
             GeometryType::Line(l) => l.bounding_rectangle(),
+            #[cfg(feature = "alloc")]
             GeometryType::Polygon(p) => p.bounding_rectangle(),
             GeometryType::Rectangle(r) => r.bounding_rectangle(),
         }

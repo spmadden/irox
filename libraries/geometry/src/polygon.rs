@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::geometry::{Centroid, Geometry};
 use crate::line::LineSegment;
 use crate::point::Point;
 use crate::rectangle::Rectangle;
 use crate::Vector2D;
 use core::slice::Iter;
+use alloc::vec::Vec;
 use irox_tools::iterators::{LendingIterator, Windows};
 use irox_tools::FloatIsh;
 
