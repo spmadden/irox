@@ -19,6 +19,7 @@ pub enum ArmorType {
 pub struct ArmorResult {
     pub armor_type: ArmorType,
     pub headers: Vec<(String, String)>,
+    pub data: Option<Vec<u8>>,
 }
 pub trait Dearmor<T: Bits> {
     fn dearmor(&mut self) -> Dearmorer<'_, T>;
@@ -26,6 +27,7 @@ pub trait Dearmor<T: Bits> {
 pub struct Dearmorer<'a, T: Bits> {
     inner: BitsWrapper<'a, T>,
     buf: VecDeque<u8>,
+    databuf: Option<Vec<u8>>,
     headers: Vec<(String, String)>,
     armor_type: Option<ArmorType>,
     done: bool,
@@ -35,12 +37,19 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
         Self {
             inner,
             buf: VecDeque::new(),
+            databuf: Default::default(),
             headers: Default::default(),
             armor_type: None,
             done: false,
         }
     }
     fn set_armor_type(&mut self, armor_type: ArmorType) -> Result<(), Error> {
+        if let Some(ArmorType::Message) = self.armor_type {
+            if armor_type == ArmorType::Signature {
+                self.armor_type = Some(ArmorType::Signature);
+                return Ok(());
+            }
+        }
         if self.armor_type.is_some() {
             return Err(ErrorKind::AlreadyExists.into());
         }
@@ -74,11 +83,8 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
             return Ok(0);
         }
         while let Some(line) = self.inner.read_line_str()? {
-            let line = line.trim();
-            if line.is_empty() {
-                continue;
-            }
-            match line {
+            let trline = line.trim();
+            match trline {
                 MESSAGE_HEADER | SIGNED_MESSAGE_HEADER => {
                     self.set_armor_type(ArmorType::Message)?;
                     self.try_consume_headers()?;
@@ -132,8 +138,15 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
                 }
 
                 _ => {
+                    if let Some(ArmorType::Message) = self.armor_type {
+                        let buf = self.databuf.get_or_insert_default();
+                        let line = line.trim_end();
+                        buf.extend_from_slice(line.as_bytes());
+                        buf.extend_from_slice(b"\r\n");
+                        continue;
+                    }
                     // base64 decode the line
-                    if line.starts_with('=') {
+                    if line.starts_with('=') || line.trim().is_empty() {
                         // checksum, skip.
                         continue;
                     }
@@ -143,13 +156,22 @@ impl<'a, T: Bits> Dearmorer<'a, T> {
         }
         Ok(0)
     }
-    pub fn finish(self) -> Result<ArmorResult, Error> {
+    pub fn finish(mut self) -> Result<ArmorResult, Error> {
         let Some(armor_type) = self.armor_type else {
             return Err(ErrorKind::InvalidInput.into());
         };
+        if let Some(data) = &mut self.databuf {
+            if data.ends_with(b"\r\n") {
+                let _ = data.pop();
+                let _ = data.pop();
+            } else if data.ends_with(b"\n") {
+                let _ = data.pop();
+            }
+        }
         Ok(ArmorResult {
             armor_type,
             headers: self.headers,
+            data: self.databuf,
         })
     }
 }

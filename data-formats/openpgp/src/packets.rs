@@ -344,6 +344,7 @@ pub enum SignatureTarget {
     PublicKey(Fingerprint),
     Subkey(Fingerprint),
     Data(Hash),
+    EmbeddedData(Hash, Vec<u8>),
     UnknownTarget,
 }
 impl Debug for SignatureTarget {
@@ -352,6 +353,9 @@ impl Debug for SignatureTarget {
             SignatureTarget::PublicKey(fp) => write!(f, "PublicKey({fp:?})"),
             SignatureTarget::Subkey(fp) => write!(f, "Subkey({fp:?})"),
             SignatureTarget::Data(h) => write!(f, "Data({h:?})"),
+            SignatureTarget::EmbeddedData(h, d) => {
+                write!(f, "EmbeddedData({h:?}, {} bytes)", d.len())
+            }
             SignatureTarget::UnknownTarget => write!(f, "Unknown"),
         }
     }

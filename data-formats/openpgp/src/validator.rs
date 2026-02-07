@@ -2,7 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::armor::Dearmor;
+use crate::armor::{ArmorType, Dearmor};
 use crate::keybox::{Keybox, MultiKeybox};
 use crate::packets::{
     OpenPGPMessage, OpenPGPPacketData, SignatureTarget, SignatureValidationResult,
@@ -35,6 +35,13 @@ impl<'a> SignatureValidator<'a> {
         let mut file = BufReader::new(file);
         let mut file = file.dearmor();
         let sig = OpenPGPMessage::build_from(&mut file)?;
+        let result = file.finish()?;
+        if result.armor_type != ArmorType::Signature {
+            return Err(Error::new(
+                BitsErrorKind::InvalidInput,
+                "Input wasn't a signature",
+            ));
+        }
         if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
             r?;
         }
@@ -102,6 +109,59 @@ impl<'a> SignatureValidator<'a> {
                 hash,
                 algorithm: sig.get_hash_alg(),
             }),
+            signer: sig.get_signature_issuer(),
+            result,
+        })
+    }
+
+    pub fn verify_attached_armored_signature<S: AsRef<Path>>(
+        &mut self,
+        sigfile: S,
+    ) -> Result<SignatureValidationResult, Error> {
+        let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
+        let mut file = BufReader::new(file);
+        let mut file = file.dearmor();
+        let sig = OpenPGPMessage::build_from(&mut file)?;
+        let result = file.finish()?;
+        if result.armor_type != ArmorType::Signature {
+            return Err(Error::new(
+                BitsErrorKind::InvalidInput,
+                "Input wasn't a signature",
+            ));
+        }
+        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
+            r?;
+        }
+        let Some(data) = result.data else {
+            return Err(Error::new(BitsErrorKind::InvalidInput, "Missing data"));
+        };
+        let Some(sig) = sig.packets.iter().find_map(|p| {
+            if let OpenPGPPacketData::Signature(sig) = &p.data {
+                Some(sig)
+            } else {
+                None
+            }
+        }) else {
+            return Err(Error::new(
+                BitsErrorKind::NotFound,
+                "No signature packet found",
+            ));
+        };
+
+        let mut hasher: Hasher = sig.get_hash_alg().try_into()?;
+        hasher.write(data.as_ref());
+        let hash = hasher.clone().finish();
+        let result = sig.validate_signature(&self.keybox, hasher);
+
+        Ok(SignatureValidationResult {
+            sigtype: sig.get_subtype(),
+            target: SignatureTarget::EmbeddedData(
+                Hash {
+                    hash,
+                    algorithm: sig.get_hash_alg(),
+                },
+                data,
+            ),
             signer: sig.get_signature_issuer(),
             result,
         })
