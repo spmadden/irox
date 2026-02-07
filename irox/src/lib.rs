@@ -44,6 +44,8 @@ pub extern crate irox_metrics;
 pub extern crate irox_networking;
 #[cfg(feature = "nmea0183")]
 pub extern crate irox_nmea0183;
+#[cfg(feature = "openpgp")]
+pub extern crate irox_openpgp;
 #[cfg(feature = "progress")]
 pub extern crate irox_progress;
 #[cfg(feature = "protobuf")]
@@ -130,6 +132,9 @@ pub use irox_networking as networking;
 
 #[cfg(feature = "nmea0183")]
 pub use irox_nmea0183 as nmea0183;
+
+#[cfg(feature = "openpgp")]
+pub use irox_openpgp as openpgp;
 
 #[cfg(feature = "progress")]
 pub use irox_progress as progress;

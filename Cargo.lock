@@ -1698,6 +1698,7 @@ dependencies = [
  "irox-metrics",
  "irox-networking",
  "irox-nmea0183",
+ "irox-openpgp",
  "irox-progress",
  "irox-protobuf",
  "irox-raymarine-sonar",
