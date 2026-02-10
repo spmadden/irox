@@ -24,7 +24,7 @@ cfg_feature_std! {
         }
         #[cfg(target_os = "linux")]
         {
-            std::fs::File::open("/dev/urandom").ok()?
+            return std::fs::File::open("/dev/urandom").ok()?
             .read_be_u64().ok()
         }
         #[cfg(target_arch = "wasm32")]
@@ -33,9 +33,8 @@ cfg_feature_std! {
             let w = web_sys::window()?;
             let c = w.crypto().ok()?;
             c.get_random_values_with_u8_array(&mut v).ok()?;
-            Some(u64::from_be_bytes(v))
+            return Some(u64::from_be_bytes(v))
         }
-        #[cfg(not(any(target_arch = "x86_64", target_arch = "wasm32")))]
         None
     }
 
