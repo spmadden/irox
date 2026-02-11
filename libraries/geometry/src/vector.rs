@@ -3,8 +3,8 @@
 //
 
 use crate::{Point, Point2D};
-use core::ops::DivAssign;
 use core::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
+use core::ops::{Div, DivAssign};
 use irox_tools::math::Matrix;
 use irox_tools::FloatIsh;
 use irox_units::units::angle::Angle;
@@ -33,10 +33,13 @@ pub struct Vector<T: FloatIsh> {
     pub vy: T,
 }
 impl<T: FloatIsh> Vector<T> {
-    pub fn new(vx: T, vy: T) -> Self {
+    pub const ONE: Vector<T> = Vector::new(T::ONE, T::ONE);
+    pub const ZERO: Vector<T> = Vector::new(T::ZERO, T::ZERO);
+
+    pub const fn new(vx: T, vy: T) -> Self {
         Self { vx, vy }
     }
-    pub fn splat(v: T) -> Self {
+    pub const fn splat(v: T) -> Self {
         Self::new(v, v)
     }
     pub fn to_matrix(&self) -> Matrix<2, 1, f64> {
@@ -152,5 +155,15 @@ impl<T: FloatIsh> DivAssign<T> for Vector<T> {
     fn div_assign(&mut self, rhs: T) {
         self.vx /= rhs;
         self.vy /= rhs;
+    }
+}
+impl<T: FloatIsh> Div for Vector<T> {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Vector {
+            vx: self.vx / rhs.vx,
+            vy: self.vy / rhs.vy,
+        }
     }
 }
