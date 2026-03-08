@@ -20,4 +20,3 @@ syn = ["dep:syn"]
 
 [dependencies]
 syn = {workspace = true, optional = true}
-irox-tools.workspace = true

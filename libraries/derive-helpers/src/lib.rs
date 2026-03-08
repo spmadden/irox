@@ -12,7 +12,6 @@ extern crate proc_macro;
 #[cfg(feature = "syn")]
 pub extern crate syn;
 
-use irox_tools::iterators::Itertools;
 use proc_macro::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
 
 ///
@@ -49,16 +48,16 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     fn create_ref_ident(name: &str) -> TokenStream {
         TokenStream::from_iter([Self::create_punct('&'), Self::create_ident(name)])
     }
+    fn create_lifetime(lifetime: &str) -> TokenStream {
+        TokenStream::from_iter([
+            TokenTree::Punct(Punct::new('&', Spacing::Alone)),
+            TokenTree::Punct(Punct::new('\'', Spacing::Joint)),
+            TokenTree::Ident(Ident::new(lifetime, Span::call_site())),
+        ])
+    }
     /// Creates a `&'lifetime [name]` token stream.
     fn create_ref_ident_lifetime(name: &str, lifetime: &str) -> TokenStream {
-        TokenStream::from_iter([
-            TokenStream::from_iter([
-                TokenTree::Punct(Punct::new('&', Spacing::Alone)),
-                TokenTree::Punct(Punct::new('\'', Spacing::Joint)),
-                TokenTree::Ident(Ident::new(lifetime, Span::call_site())),
-            ]),
-            Self::create_ident(name),
-        ])
+        TokenStream::from_iter([Self::create_lifetime(lifetime), Self::create_ident(name)])
     }
     /// Creates a `&'static [name]` token stream.
     fn create_ref_ident_static(name: &str) -> TokenStream {
@@ -129,22 +128,34 @@ pub trait DeriveMethods: Extend<TokenStream> + Extend<TokenTree> {
     }
     /// Creates the elements as a path, a series of [`Ident`]s separated by `::`
     fn create_path(elems: &[&str]) -> TokenStream {
-        elems
-            .iter()
-            .map(|e| TokenTree::Ident(Ident::new(e, Span::call_site())))
-            .joining_multi(&[
-                TokenTree::Punct(Punct::new(':', Spacing::Joint)),
-                TokenTree::Punct(Punct::new(':', Spacing::Alone)),
-            ])
-            .collect()
+        let mut out = TokenStream::new();
+        let mut need_prefix = false;
+        for e in elems {
+            if need_prefix {
+                out.extend([
+                    TokenTree::Punct(Punct::new(':', Spacing::Joint)),
+                    TokenTree::Punct(Punct::new(':', Spacing::Alone)),
+                ]);
+            }
+            need_prefix = true;
+            let tt: TokenTree = TokenTree::Ident(Ident::new(e, Span::call_site()));
+            out.extend([tt]);
+        }
+        out
     }
     /// Creates the elements as a call chain, a series of [`Ident`]s separated by `.`
     fn create_callchain(elems: &[&str]) -> TokenStream {
-        elems
-            .iter()
-            .map(|e| TokenTree::Ident(Ident::new(e, Span::call_site())))
-            .joining(TokenTree::Punct(Punct::new('.', Spacing::Alone)))
-            .collect()
+        let mut out = TokenStream::new();
+        let mut need_prefix = false;
+        for e in elems {
+            if need_prefix {
+                out.extend([TokenTree::Punct(Punct::new('.', Spacing::Alone))]);
+            }
+            need_prefix = true;
+            let tt: TokenTree = TokenTree::Ident(Ident::new(e, Span::call_site()));
+            out.extend([tt]);
+        }
+        out
     }
     /// Appends the elements as a path, a series of [`Ident`]s separated by `::`
     fn add_path(&mut self, elems: &[&str]) {
