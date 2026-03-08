@@ -28,6 +28,7 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
     };
     let mut match_elements = alloc::vec::Vec::<TokenStream>::new();
     let mut name_literals = alloc::vec::Vec::<TokenStream>::new();
+    let mut elements = alloc::vec::Vec::<TokenStream>::new();
 
     for field in s.variants {
         // println!("{}: {:?}", field.ident, field);
@@ -39,13 +40,17 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
             ts.add_punc(',');
             ts
         });
-        match_elements.push(if field.fields.is_empty() {
+        if field.fields.is_empty() {
             let mut ts = TokenStream::new();
             ts.append_match_item(
                 TokenStream::create_path(&["Self", &field_name]),
                 TokenStream::create_literal(&field_name),
             );
-            ts
+            match_elements.push(ts);
+            elements.extend([
+                TokenStream::create_path(&["Self", &field_name]),
+                TokenStream::create_punct(','),
+            ]);
         } else {
             let mut ts = TokenStream::new();
             ts.append_match_item(
@@ -56,8 +61,8 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
                 },
                 TokenStream::create_literal(&field_name),
             );
-            ts
-        });
+            match_elements.push(ts);
+        }
     }
 
     let enum_name = input.ident;
@@ -87,49 +92,55 @@ pub fn enumname_derive(input: TokenStream) -> TokenStream {
             ts
         });
 
-        //pub fn iter_names() -> impl Iterator<Item=&'static str>{
-        //    extern crate alloc;
-        //    let names = alloc::vec![#(#names),*];
-        //    names.into_iter()
+        //pub fn iter_names() -> &'static [&'static str]{
+        //    &[#(#names),*]
         //}
         ts.add_ident("pub");
         ts.add_ident("fn");
         ts.add_ident("iter_names");
         ts.extend(TokenStream::create_empty_type());
         ts.add_single_arrow();
-        ts.add_ident("impl");
-        ts.add_ident("Iterator");
-        ts.wrap_generics({
+        ts.extend(TokenStream::create_lifetime("static"));
+        ts.extend({
             let mut ts = TokenStream::new();
-            ts.add_ident("Item");
-            ts.add_punc('=');
-            ts.extend(TokenStream::create_ref_ident_static("str"));
+            ts.wrap_brackets(TokenStream::create_ref_ident_lifetime("str", "static"));
             ts
         });
         ts.wrap_braces({
             let mut ts = TokenStream::new();
-            ts.add_ident("extern");
-            ts.add_ident("crate");
-            ts.add_ident("alloc");
-            ts.add_punc(';');
-            ts.add_ident("let");
-            ts.add_ident("names");
-            ts.add_punc('=');
-            ts.add_path(&["alloc", "vec"]);
-            ts.add_punc('!');
+            ts.add_punc('&');
             ts.wrap_brackets({
                 let mut ts = TokenStream::new();
                 ts.extend(name_literals);
                 ts
             });
-            ts.add_punc(';');
-            ts.add_ident("names");
-            ts.add_punc('.');
-            ts.add_ident("into_iter");
-            ts.extend(TokenStream::create_empty_type());
             ts
         });
 
+        //pub fn items() -> &'static [Self]{
+        //    &[#(#names),*]
+        //}
+        ts.add_ident("pub");
+        ts.add_ident("fn");
+        ts.add_ident("items");
+        ts.extend(TokenStream::create_empty_type());
+        ts.add_single_arrow();
+        ts.extend(TokenStream::create_lifetime("static"));
+        ts.extend({
+            let mut ts = TokenStream::new();
+            ts.wrap_brackets(TokenStream::create_ident("Self"));
+            ts
+        });
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_punc('&');
+            ts.wrap_brackets({
+                let mut ts = TokenStream::new();
+                ts.extend(elements);
+                ts
+            });
+            ts
+        });
         ts
     });
 

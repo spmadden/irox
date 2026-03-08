@@ -20,11 +20,11 @@ pub fn test_name() {
 }
 #[test]
 pub fn test_iter_names() {
-    let mut names = TestEnum::iter_names();
-    assert_eq!("First", names.next().unwrap());
-    assert_eq!("Second", names.next().unwrap());
-    assert_eq!("Third", names.next().unwrap());
-    assert_eq!("Fourth", names.next().unwrap());
+    let mut names = TestEnum::iter_names().iter();
+    assert_eq!(&"First", names.next().unwrap());
+    assert_eq!(&"Second", names.next().unwrap());
+    assert_eq!(&"Third", names.next().unwrap());
+    assert_eq!(&"Fourth", names.next().unwrap());
     assert_eq!(None, names.next());
 }
 
@@ -58,6 +58,7 @@ pub fn test_complex() {
     assert_eq!("Second", TestEnum2::Second.name());
 
     let mut names = TestEnum2::iter_names();
-    assert_eq!("First", names.next().unwrap());
-    assert_eq!("Second", names.next().unwrap());
+    let mut names = names.iter();
+    assert_eq!(&"First", names.next().unwrap());
+    assert_eq!(&"Second", names.next().unwrap());
 }
