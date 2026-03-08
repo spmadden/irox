@@ -11,7 +11,9 @@
 
 use crate::cfg_feature_alloc;
 pub use blake2::*;
+use core::fmt::{Display, Formatter};
 use core::ops::BitXorAssign;
+use core::str::FromStr;
 use irox_bits::MutBits;
 pub use md5::MD5;
 pub use murmur3::{murmur3_128, murmur3_128_seed};
@@ -113,9 +115,9 @@ impl<const BLOCK_SIZE: usize, const OUTPUT_SIZE: usize, T: HashDigest<BLOCK_SIZE
         outer.hash(&inner)
     }
 }
-
+use irox_enums_derive::*;
 #[non_exhaustive]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumName)]
 pub enum HashAlgorithm {
     MD5,
     SHA1,
@@ -135,20 +137,50 @@ pub enum HashAlgorithm {
     BLAKE2b384,
     BLAKE2b512,
 }
+impl Display for HashAlgorithm {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.name())
+    }
+}
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
+pub struct MissingAlgError;
+impl core::fmt::Display for MissingAlgError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(f, "Missing Algorithm")
+    }
+}
+impl core::error::Error for MissingAlgError {}
 impl TryFrom<&str> for HashAlgorithm {
-    type Error = ();
+    type Error = MissingAlgError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
             "md5" => Self::MD5,
             "sha1" => Self::SHA1,
+            "sha224" => Self::SHA224,
             "sha256" => Self::SHA256,
+            "sha384" => Self::SHA384,
             "sha512" => Self::SHA512,
             "murmur3_128" | "murmur3" | "m3" => Self::Murmur3_128,
             "b2" | "b2b" | "blake2b" | "blake2b512" => Self::BLAKE2b512,
             "b2s" | "blake2s" | "blake2s256" => Self::BLAKE2s256,
-            _ => return Err(()),
+            "murmur3_32" => Self::Murmur3_32,
+            "blake2s128" => Self::BLAKE2s128,
+            "blake2s160" => Self::BLAKE2s160,
+            "blake2s224" => Self::BLAKE2s224,
+            "blake2b256" => Self::BLAKE2b256,
+            "blake2b160" => Self::BLAKE2b160,
+            "blake2b224" => Self::BLAKE2b224,
+            "blake2b384" => Self::BLAKE2b384,
+            _ => return Err(MissingAlgError),
         })
+    }
+}
+impl FromStr for HashAlgorithm {
+    type Err = MissingAlgError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        TryFrom::try_from(value)
     }
 }
 
@@ -220,7 +252,15 @@ cfg_feature_alloc! {
                 $(
                     HashAlgorithm::$hash => Ok(Hasher::$hash(<$hash>::default())),
                 )*
-                _ => todo!()
+            }
+        };
+    }
+    macro_rules! impl_hash {
+        ($value:ident, [$($hash:ident),+]) => {
+            match $value {
+                $(
+                    HashAlgorithm::$hash => Hasher::$hash(<$hash>::default()),
+                )*
             }
         };
     }
@@ -230,7 +270,7 @@ cfg_feature_alloc! {
         fn try_from(value: HashAlgorithm) -> Result<Self, Self::Error> {
             impl_hash_from!(value,
                 [
-                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    MD5, SHA1, SHA224, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
                     BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
                     BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
                 ])
@@ -242,7 +282,6 @@ cfg_feature_alloc! {
                 $(
                     Hasher::$hash(h) => h.write($val),
                 )*
-                _ => todo!()
             }
         };
     }
@@ -253,7 +292,6 @@ cfg_feature_alloc! {
                 $(
                     Hasher::$hash(v) => alloc::boxed::Box::from(v.finish().to_be_bytes()),
                 )*
-                _ => todo!()
             }
         };
     }
@@ -261,7 +299,7 @@ cfg_feature_alloc! {
         pub fn write(&mut self, val: &[u8]) {
             impl_hash_write!(self, val,
                 [
-                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    MD5, SHA1, SHA224, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
                     BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
                     BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
                 ])
@@ -269,7 +307,7 @@ cfg_feature_alloc! {
         pub fn finish(self) -> alloc::boxed::Box<[u8]> {
             impl_hash_finish!(self,
                 [
-                    MD5, SHA1, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                    MD5, SHA1, SHA224, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
                     BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
                     BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
                 ])
@@ -303,6 +341,16 @@ cfg_feature_alloc! {
         fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), Error> {
             self.write(val);
             Ok(())
+        }
+    }
+    impl HashAlgorithm {
+        pub fn hasher(&self) -> Hasher {
+            impl_hash!(self,
+            [
+                MD5, SHA1, SHA224, SHA256, SHA384, SHA512, Murmur3_128, Murmur3_32,
+                BLAKE2s128, BLAKE2s160, BLAKE2s224, BLAKE2s256,
+                BLAKE2b160, BLAKE2b224, BLAKE2b256, BLAKE2b384, BLAKE2b512
+            ])
         }
     }
     crate::cfg_feature_std! {

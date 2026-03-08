@@ -16,6 +16,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+irox-enums_derive = {workspace = true}
 irox-bits.workspace = true
 serde = {workspace = true, optional = true}
 
