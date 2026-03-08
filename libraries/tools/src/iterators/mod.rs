@@ -134,6 +134,25 @@ pub trait Itertools: Iterator {
         MultiJoining::new(self, delim)
     }
 }
+pub trait ContainsWindowed {
+    type Item;
+    fn contains_windowed(self, search: &[Self::Item]) -> bool;
+}
+impl<T> ContainsWindowed for &[T]
+where
+    T: PartialEq,
+{
+    type Item = T;
+
+    fn contains_windowed(self, search: &[Self::Item]) -> bool {
+        for w in self.windows(search.len()) {
+            if w == search {
+                return true;
+            }
+        }
+        false
+    }
+}
 
 impl<T: ?Sized> Itertools for T where T: Iterator {}
 
