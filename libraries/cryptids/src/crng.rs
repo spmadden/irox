@@ -14,6 +14,7 @@ cfg_feature_std! {
     use irox_tools::buf::FixedU8Buf;
     use irox_tools::static_init;
 
+    #[allow(unreachable_code)]
     pub fn rand64() -> Option<u64> {
         #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
         {
