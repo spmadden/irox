@@ -4,7 +4,7 @@
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use irox_tools::hash::murmur3::{Murmur3_128, Murmur3_32};
-use irox_tools::hash::{BLAKE2b512, BLAKE2s256, MD5, SHA256, SHA512};
+use irox_tools::hash::{BLAKE2b256, BLAKE2b512, BLAKE2s256, MD5, SHA1, SHA256, SHA512};
 
 struct Hasher {
     iter: [u8; 4096],
@@ -25,7 +25,7 @@ impl Hasher {
         let _ = hash.hash(&self.iter);
         self.iter[0] += 1;
     }
-    pub fn hash_sha356(&mut self) {
+    pub fn hash_sha256(&mut self) {
         let _hash = SHA256::new().hash(&self.iter);
         self.iter[0] += 1;
     }
@@ -33,8 +33,12 @@ impl Hasher {
         let _hash = SHA512::new().hash(&self.iter);
         self.iter[0] += 1;
     }
-    pub fn hash_blake2s(&mut self) {
+    pub fn hash_blake2s256(&mut self) {
         let _hash = BLAKE2s256::default().hash(&self.iter);
+        self.iter[0] += 1;
+    }
+    pub fn hash_blake2b256(&mut self) {
+        let _hash = BLAKE2b256::default().hash(&self.iter);
         self.iter[0] += 1;
     }
     pub fn hash_blake2b(&mut self) {
@@ -43,6 +47,10 @@ impl Hasher {
     }
     pub fn hash_md5(&mut self) {
         let _hash = MD5::default().hash(&self.iter);
+        self.iter[0] += 1;
+    }
+    pub fn hash_sha1(&mut self) {
+        let _hash = SHA1::default().hash(&self.iter);
         self.iter[0] += 1;
     }
 }
@@ -62,7 +70,15 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     grp.throughput(Throughput::Bytes(4096));
     grp.bench_function("hash_sha256", |b| {
         b.iter(|| {
-            hasher.hash_sha356();
+            hasher.hash_sha256();
+        })
+    });
+    grp.finish();
+    let mut grp = c.benchmark_group("sha1");
+    grp.throughput(Throughput::Bytes(4096));
+    grp.bench_function("hash_sha1", |b| {
+        b.iter(|| {
+            hasher.hash_sha1();
         })
     });
     grp.finish();
@@ -89,7 +105,15 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     grp.throughput(Throughput::Bytes(4096));
     grp.bench_function("hash_blake2s256", |b| {
         b.iter(|| {
-            hasher.hash_blake2s();
+            hasher.hash_blake2s256();
+        })
+    });
+    grp.finish();
+    let mut grp = c.benchmark_group("blake2b256");
+    grp.throughput(Throughput::Bytes(4096));
+    grp.bench_function("hash_blake2b256", |b| {
+        b.iter(|| {
+            hasher.hash_blake2b256();
         })
     });
     grp.finish();

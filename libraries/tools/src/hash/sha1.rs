@@ -9,10 +9,10 @@
 
 #![allow(clippy::indexing_slicing)]
 
-use crate::buf::{Buffer, FixedBuf, RoundBuffer};
+use crate::buf::{FixedBuf, U32ArrayBuf};
 use crate::hash::{HashAlgorithm, HashDigest};
 use core::ops::{BitAnd, BitOr, BitXor, Not};
-use irox_bits::{Bits, Error, MutBits};
+use irox_bits::{Error, MutBits};
 
 pub const BLOCK_SIZE: usize = 64;
 pub const OUTPUT_SIZE: usize = 20;
@@ -25,7 +25,7 @@ pub const OUTPUT_SIZE: usize = 20;
 #[derive(Clone)]
 pub struct SHA1 {
     written_length: u64,
-    buf: RoundBuffer<BLOCK_SIZE, u8>,
+    buf: U32ArrayBuf<16>,
 
     h0: u32,
     h1: u32,
@@ -43,7 +43,7 @@ impl Default for SHA1 {
             h3: 0x10325476,
             h4: 0xC3D2E1F0,
             written_length: 0,
-            buf: RoundBuffer::default(),
+            buf: U32ArrayBuf::default(),
         }
     }
 }
@@ -54,18 +54,19 @@ impl SHA1 {
         Self::default()
     }
     fn try_chomp(&mut self) {
-        if self.buf.len() < BLOCK_SIZE {
+        if !self.buf.is_full() {
             return;
         }
+        let inp: [u32; 16] = self.buf.take_be_buf();
         let mut words: FixedBuf<80, u32> = FixedBuf::default();
         for i in 0..16 {
-            words[i] = self.buf.read_be_u32().unwrap_or_default();
+            words[i] = inp[i];
         }
         for i in 16..=79 {
-            let w1 = words.get(i - 3).copied().unwrap_or_default();
-            let w2 = words.get(i - 8).copied().unwrap_or_default();
-            let w3 = words.get(i - 14).copied().unwrap_or_default();
-            let w4 = words.get(i - 16).copied().unwrap_or_default();
+            let w1 = words[i - 3];
+            let w2 = words[i - 8];
+            let w3 = words[i - 14];
+            let w4 = words[i - 16];
             words[i] = w1.bitxor(w2).bitxor(w3).bitxor(w4).rotate_left(1);
         }
 
@@ -99,7 +100,7 @@ impl SHA1 {
                     // unreachable
                 }
             }
-            let w = words.get(i as usize).copied().unwrap_or_default();
+            let w = words[i as usize];
             let temp = a
                 .rotate_left(5)
                 .wrapping_add(f)
