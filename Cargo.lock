@@ -1713,6 +1713,7 @@ dependencies = [
  "irox-ubx",
  "irox-units",
  "irox-winlocation-api",
+ "irox-zip",
 ]
 
 [[package]]
@@ -1778,6 +1779,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-checksum"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "irox-tools 0.11.1",
+ "tokio",
+]
+
+[[package]]
 name = "irox-chronyc"
 version = "0.1.0"
 dependencies = [
@@ -1819,7 +1829,6 @@ dependencies = [
 name = "irox-derive-helpers"
 version = "0.1.1"
 dependencies = [
- "irox-tools 0.11.1",
  "syn",
 ]
 
@@ -2282,6 +2291,7 @@ dependencies = [
  "core_affinity",
  "criterion",
  "irox-bits 0.5.0",
+ "irox-enums_derive 0.2.4",
  "serde",
  "serde_json",
 ]
@@ -2336,6 +2346,14 @@ dependencies = [
  "irox-units",
  "log",
  "windows 0.59.0",
+]
+
+[[package]]
+name = "irox-zip"
+version = "0.1.0"
+dependencies = [
+ "irox-bits 0.5.0",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]
@@ -4124,7 +4142,9 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
+ "parking_lot",
  "pin-project-lite",
+ "signal-hook-registry",
  "socket2",
  "tokio-macros",
  "windows-sys 0.61.2",

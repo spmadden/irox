@@ -1,0 +1,24 @@
+[package]
+name = "irox-zip"
+description = "Low-level zip file I/O"
+keywords = ["irox"]
+categories = ["compression", "encoding", "parser-implementations"]
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+irox-tools = { workspace = true, features = ["alloc"] }
+irox-bits = { workspace = true, features = ["alloc"] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

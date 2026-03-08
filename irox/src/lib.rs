@@ -70,6 +70,9 @@ pub extern crate irox_types;
 pub extern crate irox_units;
 #[cfg(feature = "win-loc-api")]
 pub extern crate irox_winlocation_api;
+#[cfg(feature = "zip")]
+pub extern crate irox_zip;
+
 #[cfg(feature = "bits")]
 pub use irox_bits as bits;
 
@@ -177,3 +180,6 @@ pub use irox_ubx as ubx;
 
 #[cfg(feature = "win-loc-api")]
 pub use irox_winlocation_api as winlocation_api;
+
+#[cfg(feature = "zip")]
+pub use irox_zip as zip;
