@@ -18,5 +18,8 @@ workspace = true
 [dependencies]
 irox-tools = {workspace = true, features = ["std"]}
 irox-types = {workspace = true, features = ["bits"]}
+irox-openpgp = {workspace = true, features = []}
 
-
+ureq = {workspace = true, features = []}
+serde = {workspace = true}
+toml = {workspace = true}

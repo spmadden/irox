@@ -12,7 +12,12 @@
 #![warn(clippy::std_instead_of_core)]
 
 mod args;
+mod manifest;
+mod pgp;
+mod updater;
+
 mod os;
 
 pub use args::*;
+pub use manifest::*;
 pub use os::*;
