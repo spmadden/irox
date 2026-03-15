@@ -16,15 +16,23 @@ use std::path::Path;
 
 pub struct SignatureValidator<'a> {
     pub keybox: MultiKeybox<'a>,
+    pub auto_add_pks: bool,
 }
 impl<'a> SignatureValidator<'a> {
     pub fn new_empty() -> Self {
         SignatureValidator {
             keybox: MultiKeybox::Owned(Keybox::default()),
+            auto_add_pks: false,
         }
     }
     pub fn new_keybox(keybox: MultiKeybox<'a>) -> Self {
-        Self { keybox }
+        Self {
+            keybox,
+            auto_add_pks: false,
+        }
+    }
+    pub fn automatically_add_found_pks(&mut self) {
+        self.auto_add_pks = true;
     }
     pub fn verify_detached_armored_signature<S: AsRef<Path>, D: AsRef<Path>>(
         &'a mut self,
@@ -42,8 +50,10 @@ impl<'a> SignatureValidator<'a> {
                 "Input wasn't a signature",
             ));
         }
-        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
-            r?;
+        if self.auto_add_pks {
+            if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig, false)) {
+                r?;
+            }
         }
 
         let Some(sig) = sig.packets.iter().find_map(|p| {
@@ -82,8 +92,10 @@ impl<'a> SignatureValidator<'a> {
         let file = OpenOptions::new().read(true).create(false).open(sigfile)?;
         let mut file = BufReader::new(file);
         let sig = OpenPGPMessage::build_from(&mut file)?;
-        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
-            r?;
+        if self.auto_add_pks {
+            if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig, false)) {
+                r?;
+            }
         }
 
         let Some(sig) = sig.packets.iter().find_map(|p| {
@@ -128,9 +140,6 @@ impl<'a> SignatureValidator<'a> {
                 BitsErrorKind::InvalidInput,
                 "Input wasn't a signature",
             ));
-        }
-        if let Some(r) = self.keybox.map_mut(|v| v.add_to_keybox(&sig)) {
-            r?;
         }
         let Some(data) = result.data else {
             return Err(Error::new(BitsErrorKind::InvalidInput, "Missing data"));

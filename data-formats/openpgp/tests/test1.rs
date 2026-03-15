@@ -742,7 +742,7 @@ pub fn test_verify_sig() -> Result<(), Error> {
 macro_rules! check_msg {
     ($key:ident,$keybox:ident, $asserts:expr) => {
         let message = OpenPGPMessage::build_from(&mut $key)?;
-        if let Some(r) = $keybox.map_mut(|v| v.add_to_keybox(&message)) {
+        if let Some(r) = $keybox.map_mut(|v| v.add_to_keybox(&message, false)) {
             r?;
         }
         // message.add_to_keybox(&mut $keybox)?;

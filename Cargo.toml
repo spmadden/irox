@@ -110,6 +110,7 @@ irox-dot = { version = "^0", path = "data-formats/dot" }
 irox-gpx = { version = "^0", path = "data-formats/gpx" }
 irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
 irox-protobuf = { version = "^0", path = "data-formats/protobuf/lib" }
+irox-openpgp = {version = "^0", path = "data-formats/openpgp"}
 irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0", path = "data-formats/sirf" }
 irox-ubx = { version = "^0", path = "data-formats/ubx" }

@@ -47,6 +47,9 @@ impl HashAlgorithm {
             HashAlgorithm::Blake2b512 => 101,
         }
     }
+    pub fn into_hasher(self) -> Result<irox_tools::hash::Hasher, Error> {
+        self.try_into()
+    }
 }
 impl TryFrom<u8> for HashAlgorithm {
     type Error = Error;

@@ -4,12 +4,15 @@
 
 extern crate alloc;
 
-use crate::packets::{OpenPGPMessage, OpenPGPPacketData, SignatureSubpacket};
+use crate::packets::{
+    OpenPGPMessage, OpenPGPPacketData, SignatureSubpacket, SignatureSubtype, SignatureTarget,
+};
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
 use core::fmt::{Debug, Formatter};
+use core::ops::Deref;
 use core::ops::DerefMut;
-use irox_bits::{BitsErrorKind, Error};
+use irox_bits::{Bits, BitsErrorKind, Error};
 use irox_cryptids::ed25519::Ed25519PublicKey;
 use irox_cryptids::x25519::Curve25519PublicKey;
 use irox_time::datetime::UTCDateTime;
@@ -22,6 +25,15 @@ pub struct Keybox {
     pubkeys: BTreeMap<Fingerprint, SharedPubkey>,
 }
 impl Keybox {
+    pub fn read_from<T: Bits>(
+        source: &mut T,
+        validate_all_signatures: bool,
+    ) -> Result<Self, Error> {
+        let msg = OpenPGPMessage::build_from(source)?;
+        let mut kbx = Keybox::default();
+        kbx.add_to_keybox(&msg, validate_all_signatures)?;
+        Ok(kbx)
+    }
     pub fn find_fingerprint(&self, fp: &Fingerprint) -> Option<SharedPubkey> {
         for pk in self.pubkeys.values() {
             if &pk.get_fingerprint()? == fp {
@@ -41,8 +53,63 @@ impl Keybox {
         Ok(fp)
     }
 
-    pub fn add_to_keybox(&mut self, msg: &OpenPGPMessage) -> Result<(), Error> {
+    pub fn add_to_keybox(
+        &mut self,
+        msg: &OpenPGPMessage,
+        validate_all_signatures: bool,
+    ) -> Result<(), Error> {
         let mut last_pubkey = None;
+
+        // scan and add first pubkey, look for valid sig
+        let mut validatorkbx = Keybox::default();
+        let mut expected_fp = None;
+        for pkt in &msg.packets {
+            if let OpenPGPPacketData::PublicKey(pk) = &pkt.data {
+                let fp = pk.add_to_keybox(&mut validatorkbx)?;
+                expected_fp = Some(fp);
+            }
+        }
+        let mut first_certification = true;
+        for res in msg.validate_signatures(&MultiKeybox::Owned(validatorkbx))? {
+            res.result?;
+            if res.signer != expected_fp {
+                return Err(Error::new(
+                    BitsErrorKind::InvalidData,
+                    "Signer isn't the expected fingerprint",
+                ));
+            }
+            let Some(pk) = expected_fp.clone() else {
+                return Err(Error::new(
+                    BitsErrorKind::InvalidData,
+                    "Invalid fingerprint",
+                ));
+            };
+            if first_certification {
+                let SignatureSubtype::PositiveCertification = res.sigtype else {
+                    return Err(Error::new(
+                        BitsErrorKind::InvalidData,
+                        "Sig type isn't positive certification",
+                    ));
+                };
+                first_certification = false;
+                let SignatureTarget::PublicKey(spk) = res.target else {
+                    return Err(Error::new(
+                        BitsErrorKind::InvalidData,
+                        "Target isn't a public key",
+                    ));
+                };
+                if pk != spk {
+                    return Err(Error::new(
+                        BitsErrorKind::InvalidData,
+                        "Signature isn't for expected pubkey",
+                    ));
+                }
+                if !validate_all_signatures {
+                    break;
+                }
+            }
+        }
+        // found valid self-signed key, add to keybox.
         for pkt in &msg.packets {
             if let OpenPGPPacketData::PublicKey(pk) = &pkt.data {
                 last_pubkey = Some(pk.add_to_keybox(self)?);
@@ -60,12 +127,16 @@ impl Keybox {
                 }
                 for pkt in sig.get_hashed_packets() {
                     if let SignatureSubpacket::KeyBlock(kb) = pkt {
-                        self.add_to_keybox(&kb.msg)?;
+                        self.add_to_keybox(&kb.msg, validate_all_signatures)?;
                     }
                 }
             }
         }
+
         Ok(())
+    }
+    pub fn iter(&self) -> impl Iterator<Item = &SharedPubkey> {
+        self.pubkeys.values()
     }
 }
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -127,9 +198,17 @@ impl Debug for PublicKey {
             .finish()
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct SharedPubkey {
     pubkey: Arc<Mutex<PublicKey>>,
+}
+impl Debug for SharedPubkey {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        if let Ok(pk) = self.pubkey.lock() {
+            return Debug::fmt(pk.deref(), f);
+        }
+        write!(f, "Err locking item")
+    }
 }
 impl SharedPubkey {
     pub fn new(pubkey: PublicKey) -> Self {

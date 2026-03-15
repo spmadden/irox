@@ -3,18 +3,23 @@
 //
 
 use irox_bits::{Bits, Error};
-use irox_openpgp::keybox::Fingerprint;
+use irox_openpgp::keybox::{Fingerprint, Keybox, MultiKeybox};
 use irox_openpgp::packets::{SignatureSubtype, SignatureTarget, SignatureValidationResult};
 use irox_openpgp::types::{Hash, HashAlgorithm};
 use irox_openpgp::validator::SignatureValidator;
 use irox_tools::hex;
-
+static SIGPK: &[u8] = include_bytes!("30022271.opgp.pgpg");
+fn make_validator() -> Result<SignatureValidator<'static>, Error> {
+    let kbx = Keybox::read_from(&mut SIGPK.as_ref(), true)?;
+    let validator = SignatureValidator::new_keybox(MultiKeybox::Owned(kbx));
+    Ok(validator)
+}
 #[test]
 pub fn test_ozzy_armor_detatched() -> Result<(), Error> {
     let sigfile = "tests/ozzy.txt.asc";
     let datafile = "tests/ozzy.txt";
-    let res =
-        SignatureValidator::new_empty().verify_detached_armored_signature(sigfile, datafile)?;
+    let mut validator = make_validator()?;
+    let res = validator.verify_detached_armored_signature(sigfile, datafile)?;
 
     assert_eq!(res, SignatureValidationResult {
         sigtype: SignatureSubtype::Binary,
@@ -32,7 +37,8 @@ pub fn test_ozzy_armor_detatched() -> Result<(), Error> {
 pub fn test_ozzy_detatched() -> Result<(), Error> {
     let sigfile = "tests/ozzy.txt.sig";
     let datafile = "tests/ozzy.txt";
-    let res = SignatureValidator::new_empty().verify_detached_signature(sigfile, datafile)?;
+    let mut validator = make_validator()?;
+    let res = validator.verify_detached_signature(sigfile, datafile)?;
     assert_eq!(res, SignatureValidationResult {
         sigtype: SignatureSubtype::Binary,
         target: SignatureTarget::Data(Hash {
@@ -48,7 +54,8 @@ pub fn test_ozzy_detatched() -> Result<(), Error> {
 #[test]
 pub fn test_ozzy_armored_attached() -> Result<(), Error> {
     let sigfile = "tests/ozzy.txt.casc";
-    let res = SignatureValidator::new_empty().verify_attached_armored_signature(sigfile)?;
+    let mut validator = make_validator()?;
+    let res = validator.verify_attached_armored_signature(sigfile)?;
     let mut expecteddata = Vec::new();
     let mut slice = include_bytes!("ozzy.txt").as_slice();
     while let Ok(Some(line)) = slice.read_line_str() {
