@@ -263,14 +263,44 @@ pub trait PRNG {
     }
 }
 
-#[cfg(feature = "std")]
-impl Default for Random {
-    fn default() -> Self {
-        let seed = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
-            Ok(e) => e.as_nanos() as u64,
-            Err(_) => DEFAULT_STATE,
-        };
-        Random::new_seed(seed)
+crate::cfg_feature_std! {
+    pub struct SharedRandom(alloc::sync::Arc<std::sync::Mutex<Random>>);
+    impl SharedRandom {
+        pub fn next_u32(&self) -> u32 {
+            if let Ok(mut lock) = self.0.lock() {
+                lock.next_u32()
+            } else {
+                let mut lock = Random::default();
+                lock.next_u32()
+            }
+        }
+        pub fn prng<R, T: Fn(&mut Random)->R>(&self, f: T )->R {
+            if let Ok(mut lock) = self.0.lock() {
+                f(&mut lock)
+            } else {
+                let mut lock = Random::default();
+                f(&mut lock)
+            }
+        }
+    }
+    impl From<Random> for SharedRandom {
+        fn from(value: Random) -> Self {
+            SharedRandom(alloc::sync::Arc::new(std::sync::Mutex::new(value)))
+        }
+
+    }
+    static_init!(system_random, SharedRandom, {
+        Random::default().into()
+    });
+
+    impl Default for Random {
+        fn default() -> Self {
+            let seed = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+                Ok(e) => e.as_nanos() as u64,
+                Err(_) => DEFAULT_STATE,
+            };
+            Random::new_seed(seed)
+        }
     }
 }
 #[cfg(not(feature = "std"))]
