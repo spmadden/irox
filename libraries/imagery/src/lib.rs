@@ -12,6 +12,7 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;
+extern crate core;
 
 pub use color::*;
 pub use error::*;
@@ -29,6 +30,8 @@ pub mod colormaps;
 mod error;
 mod pixel;
 mod stacked;
+pub mod x11;
+
 pub use stacked::*;
 
 cfg_feature_alloc! {
