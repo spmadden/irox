@@ -458,7 +458,7 @@ impl ToSigned for f64 {
 impl PrimitiveMath for f64 {}
 impl FloatIsh for f64 {}
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::f64::{cordic, cordic_k};
     use std::f64::consts::PI;
