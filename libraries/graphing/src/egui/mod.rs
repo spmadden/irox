@@ -33,7 +33,7 @@ pub struct FDPSimulationWidget {
 }
 impl FDPSimulationWidget {
     pub fn new(graph: Shared<Graph>) -> Self {
-        let alpha_min = 0.05f64;
+        let alpha_min = 0.2f64;
         let alpha_decay = 1. - alpha_min.powf(1. / 300.);
         let params = SimulationParams {
             alpha_min,

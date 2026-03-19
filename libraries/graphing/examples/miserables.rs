@@ -3,7 +3,7 @@
 //
 
 use irox_egui_extras::eframe;
-use irox_egui_extras::egui::{Align, CentralPanel, Context, Layout, Ui, Vec2, ViewportBuilder};
+use irox_egui_extras::egui::{Align, CentralPanel, Context, Layout, Ui, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::FDPSimulationWidget;
@@ -93,7 +93,9 @@ pub fn main() -> Result<(), String> {
     let graph: Shared<Graph> = Rc::new(RefCell::new(graph));
 
     irox_log::init_console_level(Level::Info);
-    let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 1024.));
+    let viewport = ViewportBuilder::default()
+        // .with_inner_size(Vec2::new(1024., 1024.))
+        .with_maximized(true);
 
     let native_options = eframe::NativeOptions {
         viewport,
@@ -104,12 +106,12 @@ pub fn main() -> Result<(), String> {
         "draw-panels",
         native_options,
         Box::new(|cc| {
-            cc.egui_ctx.set_pixels_per_point(1.0);
+            // cc.egui_ctx.set_pixels_per_point(1.0);
             // cc.egui_ctx.set_zoom_factor(1. / 1.25);
-            cc.egui_ctx.tessellation_options_mut(|v| {
-                v.feathering = false;
-                v.round_rects_to_pixels = false;
-            });
+            // cc.egui_ctx.tessellation_options_mut(|v| {
+            // v.feathering = false;
+            // v.round_rects_to_pixels = false;
+            // });
             Ok(Box::new(ToolFrame::new_opts(
                 cc,
                 Box::new(FDPSimulationApp::new(graph, cc)),
