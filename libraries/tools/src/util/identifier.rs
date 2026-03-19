@@ -8,9 +8,10 @@
 //!
 
 extern crate alloc;
-use crate::format;
 use crate::hash::murmur3_128;
+use crate::random::PRNG;
 use crate::uuid::UUID;
+use crate::{cfg_feature_alloc, format};
 use alloc::string::{String, ToString};
 use core::fmt::{Display, Formatter};
 
@@ -110,5 +111,49 @@ impl From<UUID> for Identifier {
 impl From<&UUID> for Identifier {
     fn from(value: &UUID) -> Self {
         Identifier::UUID(*value)
+    }
+}
+
+cfg_feature_alloc! {
+
+    impl Identifier {
+        pub fn random_int() -> Identifier {
+            let id = crate::random::system_random().prng(PRNG::next_u64);
+            Identifier::Integer(id)
+        }
+        pub fn random_string() -> Identifier {
+            let b : [u8;4]= crate::random::system_random().next_u32().to_be_bytes();
+            let mut s = String::with_capacity(19);
+            let _ = crate::hash::bytewords::write_words(&b, "-", &mut s);
+            Identifier::String(s)
+        }
+    }
+
+    #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    pub struct SharedIdentifier(alloc::sync::Arc<Identifier>);
+    impl core::ops::Deref for SharedIdentifier {
+        type Target = Identifier;
+
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+    impl From<Identifier> for SharedIdentifier {
+        fn from(value: Identifier) -> Self {
+            SharedIdentifier(alloc::sync::Arc::new(value))
+        }
+    }
+}
+
+#[cfg(all(test, feature = "alloc"))]
+mod tests {
+    use crate::identifier::Identifier;
+
+    #[test]
+    pub fn test_identifier() {
+        let i = Identifier::random_int();
+        let s = Identifier::random_string();
+        println!("{i}, {s}");
+        assert_ne!(i, s);
     }
 }
