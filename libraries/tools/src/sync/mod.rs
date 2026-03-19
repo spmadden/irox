@@ -9,6 +9,7 @@ pub use flags::*;
 pub use optional::*;
 use std::sync::MutexGuard;
 mod eventual;
+#[macro_use]
 mod once;
 pub use exchange::*;
 mod exchange;
