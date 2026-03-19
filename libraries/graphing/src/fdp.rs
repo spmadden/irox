@@ -6,14 +6,14 @@
 
 extern crate alloc;
 
-use crate::{EdgeDescriptor, NodeDescriptor, SharedEdge, SharedNode};
+use crate::{Graph, SharedNode};
+use alloc::collections::BTreeMap;
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
-use core::ops::DerefMut;
 use irox_geometry::{Point, Vector, Vector2D};
+use irox_tools::identifier::{Identifier, SharedIdentifier};
 use irox_units::units::angle::Angle;
-use std::collections::HashMap;
 
 const INITIAL_RADIUS: f64 = 10.0;
 const INITIAL_ANGLE: Angle =
@@ -76,7 +76,7 @@ impl Default for SimulationParams {
     }
 }
 pub struct SimulationWorkingNode {
-    pub node: SharedNode,
+    pub node: SharedIdentifier,
     pub num_edges: f64,
     pub current_position: Vector<f64>,
     pub current_velocity: Vector<f64>,
@@ -85,7 +85,7 @@ pub struct SimulationWorkingNode {
 impl Debug for SimulationWorkingNode {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("SimulationWorkingNode")
-            .field("node", &self.node.descriptor(|v| v.cloned()))
+            .field("node", &self.node)
             .field("num_edges", &self.num_edges)
             .field("current_position", &self.current_position)
             .field("current_velocity", &self.current_velocity)
@@ -93,86 +93,58 @@ impl Debug for SimulationWorkingNode {
             .finish()
     }
 }
+#[derive(Debug, Clone)]
 pub struct SimulationWorkingEdge {
-    pub descriptor: EdgeDescriptor,
-    pub left: Shared<SimulationWorkingNode>,
-    pub right: Shared<SimulationWorkingNode>,
+    pub id: SharedIdentifier,
+    pub left: SharedIdentifier,
+    pub right: SharedIdentifier,
+}
+pub trait InitialNodePlacer {
+    fn place_node(&mut self, node: &mut SharedNode, working: &mut SimulationWorkingNode);
+}
+#[derive(Debug, Default, Clone)]
+pub struct DefaultNodePlacement {
+    last_idx: usize,
+}
+impl InitialNodePlacer for DefaultNodePlacement {
+    fn place_node(&mut self, _node: &mut SharedNode, working: &mut SimulationWorkingNode) {
+        let idx = self.last_idx;
+        let init_radius = INITIAL_RADIUS * (0.5 + idx as f64).sqrt();
+        let init_angle = INITIAL_ANGLE * (idx as f64);
+        let current_position = Vector {
+            vx: init_radius * init_angle.cos(),
+            vy: init_radius * init_angle.sin(),
+        };
+        working.current_position = current_position;
+        self.last_idx += 1;
+    }
 }
 pub type Shared<T> = Rc<RefCell<T>>;
 pub struct Simulation {
-    pub nodes: Shared<Vec<Shared<SimulationWorkingNode>>>,
-    pub edges: Shared<Vec<Shared<SimulationWorkingEdge>>>,
+    pub graph: Shared<Graph>,
     pub forces: Vec<Force>,
 
+    pub working_nodes: BTreeMap<SharedIdentifier, SimulationWorkingNode>,
+    pub working_edges: BTreeMap<SharedIdentifier, SimulationWorkingEdge>,
+
     pub params: SimulationParams,
+    pub placement: Box<dyn InitialNodePlacer>,
 }
 
 impl Simulation {
     pub fn new(
         params: SimulationParams,
-        nodes: &[SharedNode],
-        edges: &[SharedEdge],
         forces: Vec<Force>,
+        graph: Shared<Graph>,
+        placement: Box<dyn InitialNodePlacer>,
     ) -> Self {
-        let mut working_nodes = Vec::new();
-        let mut node_index = HashMap::<NodeDescriptor, Shared<SimulationWorkingNode>>::new();
-        for (idx, n) in nodes.iter().enumerate() {
-            let init_radius = INITIAL_RADIUS * (0.5 + idx as f64).sqrt();
-            let init_angle = INITIAL_ANGLE * (idx as f64);
-            let current_position = Vector {
-                vx: init_radius * init_angle.cos(),
-                vy: init_radius * init_angle.sin(),
-            };
-            let Some(descriptor) = n.descriptor(|f| f.cloned()) else {
-                continue;
-            };
-            let node = Rc::new(RefCell::new(SimulationWorkingNode {
-                node: n.clone(),
-                num_edges: 0.0,
-                current_position,
-                current_velocity: Default::default(),
-                fixed_position: None,
-            }));
-            node_index.insert(descriptor.clone(), node.clone());
-            working_nodes.push(node);
-        }
-        let mut working_edges = Vec::new();
-        for e in edges {
-            let Some((a, b)) = e.get_sides() else {
-                continue;
-            };
-            let Some(a) = a.descriptor(|f| f.cloned()) else {
-                continue;
-            };
-            let Some(b) = b.descriptor(|f| f.cloned()) else {
-                continue;
-            };
-            let Some(left) = node_index.get(&a).cloned() else {
-                continue;
-            };
-            let Some(right) = node_index.get(&b).cloned() else {
-                continue;
-            };
-            let Some(descriptor) = e.descriptor() else {
-                continue;
-            };
-            left.borrow_mut().num_edges += 1.0;
-            right.borrow_mut().num_edges += 1.0;
-            let working_edge = Rc::new(RefCell::new(SimulationWorkingEdge {
-                descriptor,
-                left,
-                right,
-            }));
-            working_edges.push(working_edge);
-        }
-        let working_edges = Rc::new(RefCell::new(working_edges));
-        let working_nodes = Rc::new(RefCell::new(working_nodes));
-
         Self {
-            nodes: working_nodes,
-            edges: working_edges,
+            working_nodes: Default::default(),
+            working_edges: Default::default(),
+            graph,
             params,
             forces,
+            placement,
         }
     }
     pub fn is_done(&self) -> bool {
@@ -187,32 +159,122 @@ impl Simulation {
             on_step(self);
         }
     }
+    pub fn iter_edges<F: FnMut(SimulationWorkingEdge, &mut Simulation)>(&mut self, mut each: F) {
+        let iter = self
+            .graph
+            .borrow()
+            .edges
+            .iter()
+            .map(|(left, right)| (left.clone(), right.clone()))
+            .collect::<Vec<_>>();
+
+        for (id, edge) in iter {
+            let working = self
+                .working_edges
+                .entry(id.clone())
+                .or_insert_with_key(|id| {
+                    let (left, right) = edge
+                        .get_sides()
+                        .map(|(left, right)| {
+                            (
+                                left.id()
+                                    .unwrap_or_else(|| Identifier::random_string().into()),
+                                right
+                                    .id()
+                                    .unwrap_or_else(|| Identifier::random_string().into()),
+                            )
+                        })
+                        .unwrap_or_else(|| {
+                            (
+                                Identifier::random_string().into(),
+                                Identifier::random_string().into(),
+                            )
+                        });
+                    SimulationWorkingEdge {
+                        id: id.clone(),
+                        left,
+                        right,
+                    }
+                });
+            each(working.clone(), self);
+        }
+    }
+
+    pub fn iter_nodes<F: FnMut(&SharedIdentifier, &mut SharedNode, &mut SimulationWorkingNode)>(
+        &mut self,
+        mut each: F,
+    ) {
+        for (id, node) in &mut self.graph.borrow_mut().nodes {
+            let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
+            let working = self
+                .working_nodes
+                .entry(id.clone())
+                .or_insert_with_key(|id| {
+                    let mut new = SimulationWorkingNode {
+                        node: id.clone(),
+                        num_edges: num_edges as f64,
+                        current_position: Default::default(),
+                        current_velocity: Default::default(),
+                        fixed_position: None,
+                    };
+                    self.placement.place_node(node, &mut new);
+                    new
+                });
+            each(id, node, working);
+        }
+    }
+    pub fn node<F: FnMut(&SimulationWorkingNode)>(&self, id: &SharedIdentifier, mut each: F) {
+        if let Some(working) = self.working_nodes.get(id) {
+            each(working);
+        }
+    }
+    pub fn node_mut<F: FnMut(&mut SimulationWorkingNode)>(
+        &mut self,
+        id: &SharedIdentifier,
+        mut each: F,
+    ) {
+        if let Some(working) = self.working_nodes.get_mut(id) {
+            each(working);
+        } else {
+            let mut graph = self.graph.borrow_mut();
+            if let Some(node) = graph.nodes.get_mut(id) {
+                let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
+
+                let mut new = SimulationWorkingNode {
+                    node: id.clone(),
+                    num_edges: num_edges as f64,
+                    current_position: Default::default(),
+                    current_velocity: Default::default(),
+                    fixed_position: None,
+                };
+                self.placement.place_node(node, &mut new);
+                each(&mut new);
+            }
+        }
+    }
 
     pub fn tick(&mut self) {
         if self.is_done() {
             return;
         }
         let alpha = self.params.tick();
+
+        // apply forces
         for f in self.forces.clone() {
             f.clone().force(self, alpha);
         }
-        for n in self.nodes.borrow().iter() {
-            let mut node = n.borrow_mut();
-            if let Some(fp) = node.fixed_position {
-                node.current_position = fp.to_vector();
-                node.current_velocity = Vector::default();
+        let decay = self.params.velocity_decay;
+        self.iter_nodes(|_id, _node, working| {
+            // finalize node position & velocity
+            if let Some(fp) = working.fixed_position {
+                working.current_position = fp.to_vector();
+                working.current_velocity = Vector::default();
             } else {
-                node.current_velocity *= self.params.velocity_decay;
-                let v = node.current_velocity;
-                node.current_position += v;
+                working.current_velocity *= decay;
+                let v = working.current_velocity;
+                working.current_position += v;
             }
-        }
-    }
-
-    fn node_idx<F: FnMut(&mut SimulationWorkingNode)>(&self, idx: usize, mut f: F) {
-        if let Some(v) = self.nodes.borrow_mut().get(idx) {
-            f(v.borrow_mut().deref_mut())
-        }
+        });
     }
 }
 
@@ -226,10 +288,13 @@ impl Default for PosForce {
     }
 }
 impl PosForce {
-    fn force(&mut self, sim: &Simulation, alpha: f64) {
-        for node in sim.nodes.borrow_mut().iter_mut() {
-            let adj = node.borrow().current_position * alpha * self.strength * -1.0;
-            node.borrow_mut().current_velocity += adj;
+    pub fn new(strength: f64) -> Self {
+        Self { strength }
+    }
+    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        for node in sim.working_nodes.values_mut() {
+            let adj = node.current_position * alpha * self.strength * -1.0;
+            node.current_position += adj;
         }
     }
 }
@@ -264,25 +329,42 @@ impl EdgeForce {
         self.strength = strength;
         self
     }
-    fn force(&mut self, sim: &Simulation, alpha: f64) {
-        for edge in sim.edges.borrow().iter() {
+    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        sim.iter_edges(|data, sim| {
+            let SimulationWorkingEdge {
+                id: _id,
+                left,
+                right,
+            } = data;
             for _ in 0..self.iterations {
-                let edge = edge.borrow();
-                let mut left = edge.left.borrow_mut();
-                let mut right = edge.right.borrow_mut();
-                let dists = left.current_position + left.current_velocity
-                    - right.current_position
-                    - right.current_velocity;
+                let mut dists = Vector::<f64>::default();
+                let mut left_edges = 0.0;
+                sim.node_mut(&left, |n| {
+                    dists += n.current_position;
+                    dists += n.current_velocity;
+                    left_edges = n.num_edges;
+                });
+                let mut right_edges = 0.0;
+                sim.node_mut(&right, |n| {
+                    dists -= n.current_position;
+                    dists -= n.current_velocity;
+                    right_edges = n.num_edges;
+                });
                 let dist = dists.magnitude().max(1.0);
-                let strength = alpha / self.strength.unwrap_or(left.num_edges.min(right.num_edges));
+                let strength = alpha / self.strength.unwrap_or(left_edges.min(right_edges));
 
                 let adj = (dist - self.distance) / dist;
                 let adj = adj * strength;
                 let adj = dists * adj;
-                left.current_velocity -= adj;
-                right.current_velocity += adj;
+                let bias = left_edges / (left_edges + right_edges);
+                sim.node_mut(&left, |n| {
+                    n.current_velocity -= adj * (1.0 - bias);
+                });
+                sim.node_mut(&right, |n| {
+                    n.current_velocity += adj * (bias);
+                });
             }
-        }
+        });
     }
 }
 #[derive(Debug, Copy, Clone)]
@@ -300,36 +382,42 @@ impl Repulsive {
         self.strength = strength;
         self
     }
-    fn force(&mut self, sim: &Simulation, alpha: f64) {
-        let len = sim.nodes.borrow().len();
-
-        for idx1 in 0..len {
+    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        let mut nodes = Vec::new();
+        sim.iter_nodes(|id, _node, _working| {
+            nodes.push(id.clone());
+        });
+        for left in &nodes {
             let mut qpos = Vector::default();
-            sim.node_idx(idx1, |n| {
+            let mut left_edges = 1.0;
+            sim.node_mut(left, |n| {
                 qpos = n.current_position;
+                left_edges = n.num_edges;
             });
-
-            for idx2 in 0..len {
-                if idx1 == idx2 {
+            for right in &nodes {
+                if left == right {
                     continue;
                 }
+                let mut right_edges = 1.0;
                 let mut npos = Vector::default();
-                sim.node_idx(idx2, |n| {
+                sim.node_mut(right, |n| {
                     npos = n.current_position;
+                    right_edges = n.num_edges;
                 });
 
                 let delt = qpos - npos;
-                let l = delt.magnitude();
+                let l = delt.magnitude().powi(2);
                 // limit forces if really small
 
                 let w = self.strength * alpha / l;
                 let adj = delt * w;
-                sim.node_idx(idx2, |n| {
-                    n.current_velocity += adj;
+                let bias = left_edges / (left_edges + right_edges);
+                sim.node_mut(right, |n| {
+                    n.current_velocity += adj * (1.0 - bias);
                 });
-                // sim.node_idx(idx1, |n| {
-                //     n.current_velocity -= adj;
-                // })
+                sim.node_mut(left, |n| {
+                    n.current_velocity -= adj * bias;
+                })
             }
         }
     }
@@ -365,23 +453,30 @@ impl Collision {
         self.iterations = iterations;
         self
     }
-    fn force(&mut self, sim: &Simulation, _alpha: f64) {
+    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        let mut nodes = Vec::new();
+        sim.iter_nodes(|id, _node, _working| {
+            nodes.push(id.clone());
+        });
         for _ in 0..self.iterations {
-            let len = sim.nodes.borrow().len();
             let r2 = self.radius * self.radius;
-            for idx1 in 0..len {
+            for left in &nodes {
                 let mut qpos = Vector::default();
-                sim.node_idx(idx1, |n| {
+                let mut left_edges = 1.0;
+                sim.node_mut(left, |n| {
                     qpos = n.current_position + n.current_velocity;
+                    left_edges = n.num_edges;
                 });
 
-                for idx2 in 0..len {
-                    if idx1 == idx2 {
+                for right in &nodes {
+                    if left == right {
                         continue;
                     }
                     let mut npos = Vector::default();
-                    sim.node_idx(idx2, |n| {
+                    let mut right_edges = 1.0;
+                    sim.node_mut(right, |n| {
                         npos = n.current_position + n.current_velocity;
+                        right_edges = n.num_edges;
                     });
 
                     let delt = qpos - npos;
@@ -392,13 +487,14 @@ impl Collision {
                     }
                     let l = l.sqrt();
                     let l = (self.radius - l) / l * self.strength;
-                    let adj = delt * l;
+                    let adj = delt * l * alpha;
 
-                    sim.node_idx(idx1, |n| {
-                        n.current_velocity += adj;
+                    let bias = left_edges / (left_edges + right_edges);
+                    sim.node_mut(left, |n| {
+                        n.current_velocity += adj * (1. - bias);
                     });
-                    sim.node_idx(idx2, |n| {
-                        n.current_velocity -= adj;
+                    sim.node_mut(right, |n| {
+                        n.current_velocity -= adj * bias;
                     });
                 }
             }

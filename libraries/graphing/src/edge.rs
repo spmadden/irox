@@ -5,6 +5,7 @@ extern crate alloc;
 use crate::{EdgeDescriptor, SharedNode};
 use alloc::sync::Arc;
 use core::hash::{Hash, Hasher};
+use irox_tools::identifier::SharedIdentifier;
 use std::sync::RwLock;
 
 #[derive(Debug, Clone)]
@@ -22,6 +23,9 @@ pub enum Edge {
 }
 
 impl Edge {
+    pub fn id(&self) -> SharedIdentifier {
+        self.descriptor().id.clone()
+    }
     pub fn descriptor(&self) -> &EdgeDescriptor {
         match self {
             Edge::Directed { descriptor, .. } | Edge::Undirected { descriptor, .. } => descriptor,

@@ -8,12 +8,12 @@ use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
-use irox_tools::identifier::Identifier;
+use irox_tools::identifier::{Identifier, SharedIdentifier};
 use std::sync::RwLock;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Descriptor {
-    pub id: Identifier,
+    pub id: SharedIdentifier,
     pub description: Option<String>,
     pub attrs: BTreeMap<String, String>,
 }
@@ -24,6 +24,15 @@ impl Hash for Descriptor {
 }
 impl From<Identifier> for Descriptor {
     fn from(value: Identifier) -> Self {
+        Descriptor {
+            id: value.into(),
+            description: None,
+            attrs: BTreeMap::default(),
+        }
+    }
+}
+impl From<SharedIdentifier> for Descriptor {
+    fn from(value: SharedIdentifier) -> Self {
         Descriptor {
             id: value,
             description: None,

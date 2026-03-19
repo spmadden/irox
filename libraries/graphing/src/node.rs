@@ -8,6 +8,7 @@ use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
 use irox_geometry::Point;
 use irox_structs_derive::Shared;
+use irox_tools::identifier::SharedIdentifier;
 
 #[derive(Clone, Shared)]
 #[shared()]
@@ -35,6 +36,12 @@ pub struct PositionedNode {
 }
 
 impl SharedNode {
+    pub fn id(&self) -> Option<SharedIdentifier> {
+        if let Ok(lock) = self.inner.read() {
+            return Some(lock.descriptor.id.clone());
+        }
+        None
+    }
     pub fn add_navigable_edge(&self, edge: SharedEdge) {
         if let Ok(mut lock) = self.inner.write() {
             lock.all_edges.push(edge.clone());
