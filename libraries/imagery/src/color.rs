@@ -9,11 +9,47 @@ use irox_tools::cfg_feature_egui;
 #[allow(unused_imports)]
 use irox_tools::f64::FloatExt;
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct RGBColor {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
+}
+impl RGBColor {
+    pub const fn new(red: u8, green: u8, blue: u8) -> RGBColor {
+        RGBColor { red, green, blue }
+    }
+    pub const fn as_color(self) -> Color {
+        Color::RGB(self)
+    }
+    #[allow(clippy::float_cmp)]
+    pub fn to_hsv(&self) -> HSVColor {
+        let r = self.red as f64 / 255.0;
+        let g = self.green as f64 / 255.0;
+        let b = self.blue as f64 / 255.0;
+
+        let v = r.max(g.max(b));
+        let m = r.min(g.min(b));
+        let c = v - m;
+        let _l = v - c / 2.;
+
+        let h = if c == 0.0 {
+            0.0
+        } else if v == r {
+            60. * ((g - b) / c % 6.0)
+        } else if v == g {
+            60. * ((b - r) / c + 2.0)
+        } else {
+            // v = b
+            60. * ((r - g) / c + 4.0)
+        };
+        let s = if v == 0.0 { 0.0 } else { c / v };
+        HSVColor {
+            hue: h,
+            saturation: s,
+            value: v,
+        }
+    }
 }
 /// per https://www.w3.org/TR/WCAG20/#relativeluminancedef
 pub fn srgb_relative_luminance_value(value: u8) -> f64 {
@@ -32,11 +68,20 @@ pub struct ARGBColor {
     pub green: u8,
     pub blue: u8,
 }
+impl ARGBColor {
+    pub fn to_rgb(&self) -> RGBColor {
+        RGBColor {
+            red: self.red,
+            green: self.green,
+            blue: self.blue,
+        }
+    }
+}
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct HSVColor {
     /// Hue range [0,360)
-    pub hue: u32,
+    pub hue: f64,
     /// Saturation range [0,1]
     pub saturation: f64,
     /// Value range [0..1]
@@ -44,7 +89,7 @@ pub struct HSVColor {
 }
 impl HSVColor {
     #[must_use]
-    pub const fn new(hue: u32, saturation: f64, value: f64) -> Self {
+    pub const fn new(hue: f64, saturation: f64, value: f64) -> Self {
         Self {
             hue,
             saturation,
@@ -61,17 +106,17 @@ impl HSVColor {
         let saturation = saturation.clamp(0.0, 1.0);
         let value = value.clamp(0.0, 1.0);
         let c = value * saturation;
-        let adj = ((hue as f64 / 60.) % 2.) - 1.;
+        let adj = ((hue / 60.) % 2.) - 1.;
         let adj = 1. - adj.abs();
         let x = c * adj;
         let m = value - c;
         let [r, g, b] = match hue {
-            0..60 => [c, x, 0.0],
-            60..120 => [x, c, 0.0],
-            120..180 => [0.0, c, x],
-            180..240 => [0.0, x, c],
-            240..300 => [x, 0.0, c],
-            300.. => [c, 0.0, x],
+            ..60.0 => [c, x, 0.0],
+            60.0..120.0 => [x, c, 0.0],
+            120.0..180.0 => [0.0, c, x],
+            180.0..240.0 => [0.0, x, c],
+            240.0..300.0 => [x, 0.0, c],
+            _ => [c, 0.0, x],
         };
         let red = ((r + m) * 255.) as u8;
         let green = ((g + m) * 255.) as u8;
@@ -88,6 +133,15 @@ impl From<HSVColor> for RGBColor {
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct Greyscale8Bit {
     pub value: u8,
+}
+impl Greyscale8Bit {
+    pub fn to_rgb(&self) -> RGBColor {
+        RGBColor {
+            red: self.value,
+            green: self.value,
+            blue: self.value,
+        }
+    }
 }
 impl From<u8> for Greyscale8Bit {
     fn from(value: u8) -> Self {
@@ -213,6 +267,19 @@ impl Color {
         let green = 255 - g;
         let blue = 255 - b;
         Self::RGB(RGBColor { red, green, blue })
+    }
+
+    pub fn to_hsv(&self) -> HSVColor {
+        match self {
+            Color::RGB(r) => r.to_hsv(),
+            Color::ARGB(a) => a.to_rgb().to_hsv(),
+            Color::HSV(h) => *h,
+            Color::Greyscale(g) => g.to_rgb().to_hsv(),
+            Color::Raw(r) => {
+                let [_a, red, green, blue] = *r;
+                RGBColor { red, green, blue }.to_hsv()
+            }
+        }
     }
 }
 cfg_feature_egui! {
