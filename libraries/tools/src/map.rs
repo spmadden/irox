@@ -60,10 +60,14 @@ impl<K: Eq + Hash + Clone, V> OrderedHashMap<K, V> {
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         let old = self.map.remove(&k);
         if old.is_some() {
-            self.key_order.push_back(k.clone());
+            self.key_order.retain_mut(|o| *o != k);
         }
+        self.key_order.push_back(k.clone());
         self.map.insert(k, v);
         old
+    }
+    pub fn contains(&self, k: &K) -> bool {
+        self.map.contains_key(k)
     }
 }
 impl<'a, K: Eq + Hash, V> OrderedHashMap<K, V> {
