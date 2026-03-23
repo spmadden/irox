@@ -44,7 +44,9 @@ pub struct SimulationParams {
     pub alpha_decay: f64,
     pub alpha_target: f64,
     pub velocity_decay: f64,
+    pub target_iterations: u32,
     pub tick: u64,
+    pub reset_velocity_on_next_tick: bool,
 }
 impl SimulationParams {
     #[must_use]
@@ -55,16 +57,26 @@ impl SimulationParams {
             ..*self
         }
     }
+    pub fn update_target_iterations(&mut self) {
+        self.alpha_decay = 1. - self.alpha_min.powf(1. / self.target_iterations as f64);
+    }
+    pub fn is_done(&self) -> bool {
+        self.alpha < self.alpha_min
+    }
     pub(crate) fn tick(&mut self) -> f64 {
+        let is_done_pre = self.is_done();
         self.alpha += (self.alpha_target - self.alpha) * self.alpha_decay;
         self.tick += 1;
+        let is_done_post = self.is_done();
+        self.reset_velocity_on_next_tick = is_done_post && !is_done_pre;
         self.alpha
     }
 }
 impl Default for SimulationParams {
     fn default() -> Self {
         let alpha_min = 0.001f64;
-        let alpha_decay = 1. - alpha_min.powf(1. / 300.);
+        let target_iterations = 300u32;
+        let alpha_decay = 1. - alpha_min.powf(1. / target_iterations as f64);
         Self {
             alpha: 1.0,
             alpha_min,
@@ -72,6 +84,8 @@ impl Default for SimulationParams {
             alpha_target: 0.0,
             velocity_decay: 0.6,
             tick: 0,
+            target_iterations,
+            reset_velocity_on_next_tick: false,
         }
     }
 }
@@ -148,10 +162,11 @@ impl Simulation {
         }
     }
     pub fn is_done(&self) -> bool {
-        self.params.alpha < self.params.alpha_min
+        self.params.is_done()
     }
     pub fn restart(&mut self) {
         self.params.alpha = 1.0;
+        self.params.reset_velocity_on_next_tick = true;
     }
     pub fn stepping<F: FnMut(&Simulation)>(&mut self, mut on_step: F) {
         while !self.is_done() {
@@ -254,6 +269,12 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
+        if self.params.reset_velocity_on_next_tick {
+            self.params.reset_velocity_on_next_tick = false;
+            self.iter_nodes(|_id, _node, working| {
+                working.current_velocity = Vector::default();
+            });
+        }
         if self.is_done() {
             return;
         }

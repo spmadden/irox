@@ -12,7 +12,8 @@ use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode}
 use irox_egui_extras::eframe::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{
-    Align, Color32, Context, CornerRadius, FontId, Pos2, Shape, Stroke, Ui, Vec2,
+    Align, Color32, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Stroke, Ui,
+    Vec2, Widget, Window,
 };
 use irox_egui_extras::WithAlpha;
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
@@ -22,14 +23,128 @@ use std::sync::mpsc::Sender;
 const EDGE_MOUSEOVER_MAX_DISTANCE: f32 = 5.;
 const NODE_MOUSEOVER_MAX_DISTANCE: f32 = 20.;
 
+pub struct ParamsWindow<'a> {
+    pub params: &'a mut SimulationParams,
+    pub forces: &'a mut Vec<Force>,
+}
+impl ParamsWindow<'_> {
+    pub fn show(&mut self, ui: &mut Ui) {
+        Slider::new(&mut self.params.alpha, 0.0..=1.0)
+            .text("Simulation Energy (alpha)")
+            .ui(ui);
+        if Slider::new(&mut self.params.target_iterations, 100..=600)
+            .text("Target Iterations")
+            .ui(ui)
+            .changed()
+        {
+            self.params.alpha = 1.0;
+            self.params.update_target_iterations();
+        }
+        if Slider::new(&mut self.params.alpha_min, 0.1..=0.75)
+            .text("Energy Density (alpha_min)")
+            .ui(ui)
+            .changed()
+        {
+            self.params.update_target_iterations();
+            self.params.alpha = 1.0;
+        }
+        if Slider::new(&mut self.params.velocity_decay, 0.1..=0.75)
+            .text("Particule Energy (velocity decay)")
+            .ui(ui)
+            .changed()
+        {
+            self.params.alpha = 1.0;
+        }
+
+        let mut centering_force = None;
+        let mut edge_force = None;
+        let mut node_force = None;
+        let mut boundary_force = None;
+
+        for f in self.forces.iter_mut() {
+            match f {
+                Force::Position(p) => centering_force = Some(p),
+                Force::Edge(e) => edge_force = Some(e),
+                Force::Repulsive(r) => node_force = Some(r),
+                Force::Collision(c) => boundary_force = Some(c),
+            }
+        }
+        if let Some(cf) = centering_force {
+            if Slider::new(&mut cf.strength, 0.0..=1.)
+                .text("Centering Strength")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+        }
+        if let Some(ef) = edge_force {
+            if Slider::new(&mut ef.distance, 0.1..=100.)
+                .text("Desired Edge Distance")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+            if Slider::new(&mut ef.iterations, 1..=10)
+                .text("Edge Strength")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+        }
+        if let Some(nf) = node_force {
+            if Slider::new(&mut nf.strength, 0.0..=-1000.)
+                .text("Node Strength")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+        }
+        if let Some(cf) = boundary_force {
+            if Slider::new(&mut cf.strength, 0.1..=100.)
+                .text("Collision Force")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+            if Slider::new(&mut cf.iterations, 1..=10)
+                .text("Collision Strength")
+                .ui(ui)
+                .changed()
+            {
+                self.params.alpha = 1.0;
+            };
+        }
+
+        if ui.button("Defaults").clicked() {
+            *self.params = SimulationParams::default();
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum DragEvent {
+    DragStart(Pos2),
+    Dragging(Pos2),
+    DragEnd(Pos2),
+}
+
 pub struct FDPSimulationWidget {
     pub sim: Simulation,
     pub panel: DrawPanel,
     pub graph_layer: Sender<LayerCommand>,
     pub tt_layer: Sender<LayerCommand>,
+    pub drag_subject: Option<SharedIdentifier>,
+    pub dragging: Option<DragEvent>,
     pub play: bool,
     pub last_tick: f64,
     pub show_tick_controls: bool,
+
+    pub sim_params_window: bool,
 }
 impl FDPSimulationWidget {
     pub fn new(graph: Shared<Graph>) -> Self {
@@ -77,6 +192,9 @@ impl FDPSimulationWidget {
             last_tick: 0.0,
             show_tick_controls: false,
             tt_layer,
+            drag_subject: None,
+            dragging: None,
+            sim_params_window: true,
         }
     }
     pub fn tick(&mut self, ctx: &Context) {
@@ -95,7 +213,17 @@ impl FDPSimulationWidget {
             self.tick(ctx);
         }
     }
-    pub fn show(&mut self, ui: &mut Ui) {
+    pub fn show(&mut self, ctx: &Context, ui: &mut Ui) {
+        self.handle_drag(ctx);
+        if self.sim_params_window {
+            Window::new("Simulation Params").show(ctx, |ui| {
+                ParamsWindow {
+                    params: &mut self.sim.params,
+                    forces: &mut self.sim.forces,
+                }
+                .show(ui);
+            });
+        }
         self.play_tick(ui.ctx());
         if self.show_tick_controls {
             ui.label(format!("Tick: {}", self.sim.params.tick));
@@ -206,6 +334,56 @@ impl FDPSimulationWidget {
         }
         closest_node
     }
+    pub fn handle_drag(&mut self, ctx: &Context) {
+        ctx.input(|i| {
+            let ptr = &i.pointer;
+            if is_dragging(ptr) {
+                let pos = ptr.latest_pos().unwrap_or_default();
+                match &self.dragging {
+                    None => {
+                        self.dragging = Some(DragEvent::DragStart(pos));
+                    }
+                    _ => {
+                        self.dragging = Some(DragEvent::Dragging(pos));
+                    }
+                }
+            } else {
+                self.dragging = None;
+            }
+        });
+        if let Some(drag_subject) = &self.drag_subject {
+            if let Some(event) = self.dragging {
+                self.panel.suppress_drag = true;
+                match event {
+                    DragEvent::DragStart(dpos) | DragEvent::Dragging(dpos) => {
+                        let xfm = self.panel.transform;
+                        let wld = xfm.inverse() * dpos;
+                        self.sim.node_mut(drag_subject, |node| {
+                            node.fixed_position =
+                                Some(Point::new_point(wld.x as f64, wld.y as f64));
+                        });
+                        self.sim.params.alpha = 0.8;
+                        self.sim.params.tick = 0;
+                    }
+                    _ => {}
+                }
+            } else {
+                self.sim.node_mut(drag_subject, |node| {
+                    node.fixed_position = None;
+                });
+                self.drag_subject = None;
+                self.panel.suppress_drag = false;
+            }
+        }
+    }
+
+    pub fn update_drag_subject(&mut self, sub: &SharedIdentifier) {
+        if let Some(old) = self.drag_subject.replace(sub.clone()) {
+            self.sim.node_mut(&old, |node| {
+                node.fixed_position = None;
+            });
+        }
+    }
     pub fn find_hover(&mut self, ui: &mut Ui) {
         if let Some(mut pos) = ui.input(|i| i.pointer.hover_pos()) {
             let _ = self.tt_layer.send(LayerCommand::ClearShapes);
@@ -225,7 +403,17 @@ impl FDPSimulationWidget {
                 // for (k, v) in &d.attrs {
                 //     let _ = writeln!(&mut out, "{k}: {v}");
                 // }
-                let clicked = ui.ctx().input(|r| r.pointer.primary_clicked());
+                let mut clicked = false;
+                ui.ctx().input(|r| {
+                    let ptr = &r.pointer;
+                    clicked = ptr.primary_clicked();
+                    if self.drag_subject.is_none() && is_dragging(ptr) {
+                        let latest = ptr.latest_pos();
+                        self.dragging = Some(DragEvent::DragStart(latest.unwrap_or_default()));
+                        self.update_drag_subject(&d);
+                    }
+                });
+
                 if clicked {
                     // self.spawn_panel_window(d.id.to_string());
                 }
@@ -268,4 +456,10 @@ impl FDPSimulationWidget {
             }
         }
     }
+}
+
+fn is_dragging(ptr: &PointerState) -> bool {
+    let po = ptr.press_origin();
+    let pd = ptr.primary_down();
+    po.is_some() && pd
 }

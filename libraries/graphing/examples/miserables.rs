@@ -3,7 +3,7 @@
 //
 
 use irox_egui_extras::eframe;
-use irox_egui_extras::egui::{Align, CentralPanel, Context, Layout, Ui, ViewportBuilder};
+use irox_egui_extras::egui::{Align, CentralPanel, Context, Layout, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::FDPSimulationWidget;
@@ -94,8 +94,9 @@ pub fn main() -> Result<(), String> {
 
     irox_log::init_console_level(Level::Info);
     let viewport = ViewportBuilder::default()
-        // .with_inner_size(Vec2::new(1024., 1024.))
-        .with_maximized(true);
+        .with_inner_size(Vec2::new(1024., 1024.))
+        // .with_maximized(true)
+        ;
 
     let native_options = eframe::NativeOptions {
         viewport,
@@ -149,7 +150,7 @@ impl FDPSimulationApp {
 impl eframe::App for FDPSimulationApp {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         CentralPanel::default().show(ctx, |ui| {
-            self.widget.show(ui);
+            self.widget.show(ctx, ui);
         });
     }
 }
