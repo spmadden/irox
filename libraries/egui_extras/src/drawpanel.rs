@@ -150,6 +150,7 @@ pub struct DrawPanel {
     pub last_window_area: Option<Rect>,
     pub world_area: Rect,
     pub draw_cursor_crosshairs: bool,
+    pub suppress_drag: bool,
 }
 impl Default for DrawPanel {
     fn default() -> Self {
@@ -161,6 +162,7 @@ impl Default for DrawPanel {
             last_window_area: None,
             world_area: Rect::ZERO,
             draw_cursor_crosshairs: true,
+            suppress_drag: false,
         }
     }
 }
@@ -185,7 +187,9 @@ impl DrawPanel {
         };
         let size = ui.available_size();
         let (mut response, mut painter) = ui.allocate_painter(size, Sense::click_and_drag());
-        self.check_zoom(ui, &mut response);
+        if !self.suppress_drag {
+            self.check_zoom(ui, &mut response);
+        }
         let rect = response.rect;
 
         if self.last_window_area.is_none() {
