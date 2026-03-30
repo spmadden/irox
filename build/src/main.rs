@@ -198,18 +198,10 @@ fn test() -> Result<(), Error> {
 
 fn lints() -> Result<(), Error> {
     logstart("lints");
-    for feature in FEATURE_ARGS {
-        exec(
-            "cargo",
-            &[
-                "clippy",
-                "--bins",
-                "--lib",
-                "--examples",
-                feature,
-                "--color=always",
-            ],
-        )?;
+    for selector in &["--bins", "--lib", "--examples"] {
+        for feature in FEATURE_ARGS {
+            exec("cargo", &["clippy", *selector, feature, "--color=always"])?;
+        }
     }
     logend();
     Ok(())
@@ -217,20 +209,20 @@ fn lints() -> Result<(), Error> {
 
 fn lints_deny() -> Result<(), Error> {
     logstart("lints");
-    for feature in FEATURE_ARGS {
-        exec(
-            "cargo",
-            &[
-                "clippy",
-                "--bins",
-                "--lib",
-                "--examples",
-                feature,
-                "--color=always",
-                "--",
-                "-Dwarnings",
-            ],
-        )?;
+    for selector in &["--bins", "--lib", "--examples"] {
+        for feature in FEATURE_ARGS {
+            exec(
+                "cargo",
+                &[
+                    "clippy",
+                    *selector,
+                    feature,
+                    "--color=always",
+                    "--",
+                    "-Dwarnings",
+                ],
+            )?;
+        }
     }
     logend();
     Ok(())
