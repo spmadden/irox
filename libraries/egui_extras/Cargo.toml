@@ -19,7 +19,7 @@ workspace = true
 default = ["eframe", "eframe/wgpu", "wgpu"]
 serde = ["dep:serde", "egui/serde", "irox-tools/std", "dep:irox-bits"]
 plots = ["dep:irox-units", "dep:irox-stats"]
-profiling = ["dep:profiling", "dep:puffin"]
+profiling = ["dep:profiling", "dep:puffin", "dep:puffin_http"]
 dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland", "wgpu"]
 wgpu = ["dep:eframe","eframe/wgpu"]
@@ -41,6 +41,7 @@ irox-progress = {workspace = true}
 log.workspace = true
 profiling = { workspace = true, optional = true }
 puffin = { workspace = true, optional = true }
+puffin_http = { workspace = true, optional = true }
 glow = {workspace = true, optional = true}
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -49,7 +50,7 @@ wasm-bindgen-futures.workspace = true
 web-sys.workspace = true
 
 [dev-dependencies]
-eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts", "persistence"] }
+eframe = { workspace = true, default-features = false, features = ["default_fonts", "persistence"] }
 egui = { workspace = true, default-features = false, features = ["rayon", "persistence"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }

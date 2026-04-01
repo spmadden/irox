@@ -75,3 +75,19 @@ impl WithAlpha for egui::Color32 {
         egui::Color32::from_rgba_unmultiplied(r, g, b, alpha)
     }
 }
+
+pub fn start_profiling() {
+    #[cfg(feature = "profiling")]
+    {
+        let server_addr = format!("127.0.0.1:{}", puffin_http::DEFAULT_PORT);
+        let _puffin_server = puffin_http::Server::new(&server_addr);
+        // eprintln!("Run this to view profiling data:  puffin_viewer {server_addr}");
+        puffin::set_scopes_on(true);
+        let _ = std::process::Command::new("puffin_viewer")
+            .arg("--url")
+            .arg(server_addr)
+            .spawn();
+        #[allow(clippy::mem_forget)]
+        std::mem::forget(_puffin_server);
+    }
+}

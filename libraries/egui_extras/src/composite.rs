@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 //!
 //! Structures to allow the composition of various apps
@@ -25,6 +26,14 @@ impl CompositeApp {
         self.persist_egui_memory |= app.persist_egui_memory();
 
         self.apps.push(app);
+    }
+}
+impl From<Vec<Box<dyn App>>> for CompositeApp {
+    fn from(value: Vec<Box<dyn App>>) -> Self {
+        Self {
+            apps: value,
+            persist_egui_memory: false,
+        }
     }
 }
 

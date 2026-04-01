@@ -59,6 +59,7 @@ impl ToolFrame {
         child: Box<dyn ToolApp>,
         opts: ToolFrameOptions,
     ) -> Self {
+        crate::start_profiling();
         let ToolFrameOptions {
             full_speed,
             show_rendering_stats,
