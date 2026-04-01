@@ -4,6 +4,7 @@
 
 //! BCR-2020-012 Bytewords
 
+use crate::cfg_feature_alloc;
 use core::fmt::Write;
 
 pub static WORDLIST: [&str; 256] = [
@@ -31,6 +32,8 @@ pub static WORDLIST: [&str; 256] = [
     "zest", "zinc", "zone", "zoom",
 ];
 
+///
+/// Gets a single unique word from the wordlist
 pub fn get_word(data: u8) -> &'static str {
     if let Some(s) = WORDLIST.get(data as usize) {
         s
@@ -38,11 +41,15 @@ pub fn get_word(data: u8) -> &'static str {
         ""
     }
 }
+///
+/// Iterate over the matching words, calling the function for each word
 pub fn iter_words<F: FnMut(&str)>(data: &[u8], mut f: F) {
     for d in data {
         f(get_word(*d));
     }
 }
+
+/// Get the set of matching words for the provided bytes.
 pub fn get_words<const N: usize>(data: [u8; N]) -> [&'static str; N] {
     let mut out = [""; N];
     for (d, out) in data.iter().zip(&mut out) {
@@ -50,6 +57,8 @@ pub fn get_words<const N: usize>(data: [u8; N]) -> [&'static str; N] {
     }
     out
 }
+
+/// Writes the set of associated words to the output writer
 pub fn write_words<T: Write>(data: &[u8], sep: &str, out: &mut T) -> core::fmt::Result {
     let mut first = true;
     for d in data {
@@ -61,6 +70,27 @@ pub fn write_words<T: Write>(data: &[u8], sep: &str, out: &mut T) -> core::fmt::
         write!(out, "{word}")?;
     }
     Ok(())
+}
+cfg_feature_alloc! {
+    /// Creates a string based on the words for the provided data, separated with the separator
+    ///
+    /// ```
+    /// let result = words_to_string(&[0x70, 0x01, 0x02, 0xFF], "-");
+    /// assert_eq!(result, "judo-acid-also-zoom");
+    /// ```
+    pub fn words_to_string(data: &[u8], separator: &str) -> String {
+        let mut out = String::new();
+        let mut first = true;
+        for d in data {
+            let word = get_word(*d);
+            if !first {
+                out += separator;
+            }
+            first = false;
+            out += word;
+        }
+        out
+    }
 }
 
 #[cfg(test)]
@@ -79,5 +109,15 @@ mod test {
     pub fn test2() {
         assert_eq!(["able"], get_words([0x0]));
         assert_eq!(["judo", "chef"], get_words([0x70, 0x19]));
+    }
+
+    #[test]
+    #[cfg(feature = "alloc")]
+    pub fn test3() {
+        let data = [0x70, 0x01, 0x02, 0xFF];
+        let separator = "-";
+        let expected = "judo-acid-also-zoom";
+        let result = crate::hash::bytewords::words_to_string(&data, separator);
+        assert_eq!(result, expected);
     }
 }
