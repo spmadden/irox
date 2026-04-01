@@ -3,24 +3,29 @@
 //
 
 extern crate alloc;
-use egui::epaint::text::FontData;
-use egui::{Context, FontDefinitions, FontFamily};
 
-pub const UBUNTU: &[u8] = include_bytes!("../fonts/Ubuntu-R.ttf");
-pub const UBUNTU_BOLD: &[u8] = include_bytes!("../fonts/Ubuntu-B.ttf");
-pub const UBUNTU_ITALIC: &[u8] = include_bytes!("../fonts/Ubuntu-RI.ttf");
-pub const UBUNTU_BOLD_ITALIC: &[u8] = include_bytes!("../fonts/Ubuntu-BI.ttf");
-pub const UBUNTU_CONDENSED: &[u8] = include_bytes!("../fonts/Ubuntu-C.ttf");
-pub const UBUNTU_LIGHT: &[u8] = include_bytes!("../fonts/Ubuntu-L.ttf");
-pub const UBUNTU_LIGHT_ITALIC: &[u8] = include_bytes!("../fonts/Ubuntu-LI.ttf");
-pub const UBUNTU_MEDIUM: &[u8] = include_bytes!("../fonts/Ubuntu-M.ttf");
-pub const UBUNTU_MEDIUM_ITALIC: &[u8] = include_bytes!("../fonts/Ubuntu-MI.ttf");
-pub const UBUNTU_THIN: &[u8] = include_bytes!("../fonts/Ubuntu-Th.ttf");
+use eframe::epaint::text::FontPriority;
+use egui::epaint::text::{FontData, FontInsert, InsertFontFamily};
+use egui::{Context, FontFamily};
 
-pub const UBUNTU_MONOSPACE: &[u8] = include_bytes!("../fonts/UbuntuMono-R.ttf");
-pub const UBUNTU_MONOSPACE_ITALIC: &[u8] = include_bytes!("../fonts/UbuntuMono-RI.ttf");
-pub const UBUNTU_MONOSPACE_BOLD: &[u8] = include_bytes!("../fonts/UbuntuMono-B.ttf");
-pub const UBUNTU_MONOSPACE_BOLD_ITALIC: &[u8] = include_bytes!("../fonts/UbuntuMono-BI.ttf");
+pub const UBUNTU: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-R.ttf");
+pub const UBUNTU_BOLD: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-B.ttf");
+pub const UBUNTU_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-RI.ttf");
+pub const UBUNTU_BOLD_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-BI.ttf");
+pub const UBUNTU_CONDENSED: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-C.ttf");
+pub const UBUNTU_LIGHT: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-L.ttf");
+pub const UBUNTU_LIGHT_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-LI.ttf");
+pub const UBUNTU_MEDIUM: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-M.ttf");
+pub const UBUNTU_MEDIUM_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-MI.ttf");
+pub const UBUNTU_THIN: &[u8] = include_bytes!("../fonts/ubuntu/Ubuntu-Th.ttf");
+
+pub const UBUNTU_MONOSPACE: &[u8] = include_bytes!("../fonts/ubuntu/UbuntuMono-R.ttf");
+pub const UBUNTU_MONOSPACE_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/UbuntuMono-RI.ttf");
+pub const UBUNTU_MONOSPACE_BOLD: &[u8] = include_bytes!("../fonts/ubuntu/UbuntuMono-B.ttf");
+pub const UBUNTU_MONOSPACE_BOLD_ITALIC: &[u8] = include_bytes!("../fonts/ubuntu/UbuntuMono-BI.ttf");
+
+pub const NOTO_EMOJI: &[u8] = include_bytes!("../fonts/noto/NotoEmoji-Regular.ttf");
+pub const EMOJI_ICON: &[u8] = include_bytes!("../fonts/emoji-icon/emoji.ttf");
 
 pub const REGULAR: &str = "regular";
 pub const BOLD: &str = "bold";
@@ -36,6 +41,8 @@ pub const MONOSPACE: &str = "monospace";
 pub const MONOSPACE_ITALIC: &str = "monospace_italic";
 pub const MONOSPACE_BOLD: &str = "monospace_bold";
 pub const MONOSPACE_BOLD_ITALIC: &str = "monospace_bold_italic";
+pub const NOTO_EMOJI_REGULAR: &str = "noto_emoji_regular";
+pub const EMOJI_ICON_REGULAR: &str = "emoji_icon";
 
 #[derive(Debug, Default, Copy, Clone)]
 pub struct FontSet {
@@ -53,7 +60,8 @@ pub struct FontSet {
     pub ubuntu_mono_bold: bool,
     pub ubuntu_mono_italic: bool,
     pub ubuntu_mono_bold_italic: bool,
-    pub set_as_defaults: bool,
+    pub emoji_icon: bool,
+    pub noto_emoji: bool,
 }
 impl FontSet {
     pub fn all() -> Self {
@@ -72,36 +80,18 @@ impl FontSet {
             ubuntu_mono_bold: true,
             ubuntu_mono_italic: true,
             ubuntu_mono_bold_italic: true,
-            set_as_defaults: false,
-        }
-    }
-    pub fn all_as_defaults() -> Self {
-        Self {
-            ubuntu: true,
-            ubuntu_bold: true,
-            ubuntu_italic: true,
-            ubuntu_bold_italic: true,
-            ubuntu_condensed: true,
-            ubuntu_light: true,
-            ubuntu_light_italic: true,
-            ubuntu_medium: true,
-            ubuntu_medium_italic: true,
-            ubuntu_thin: true,
-            ubuntu_mono: true,
-            ubuntu_mono_bold: true,
-            ubuntu_mono_italic: true,
-            ubuntu_mono_bold_italic: true,
-            set_as_defaults: true,
+            emoji_icon: true,
+            noto_emoji: true,
         }
     }
     pub fn basics() -> Self {
         Self {
-            ubuntu: true,
+            ubuntu: false,
             ubuntu_bold: false,
             ubuntu_italic: false,
             ubuntu_bold_italic: false,
             ubuntu_condensed: false,
-            ubuntu_light: false,
+            ubuntu_light: true,
             ubuntu_light_italic: false,
             ubuntu_medium: false,
             ubuntu_medium_italic: false,
@@ -110,80 +100,78 @@ impl FontSet {
             ubuntu_mono_bold: false,
             ubuntu_mono_italic: false,
             ubuntu_mono_bold_italic: false,
-            set_as_defaults: true,
+            emoji_icon: true,
+            noto_emoji: false,
         }
     }
 }
 macro_rules! load_instance {
-    ($fonts:ident, $str:ident, $font:ident) => {
-        $fonts.font_data.insert(
-            $str.to_string(),
-            alloc::sync::Arc::new(FontData::from_static($font)),
-        );
-        $fonts
-            .families
-            .insert(FontFamily::Name($str.into()), vec![$str.into()]);
+    ($ctx:ident, $str:ident, $font:ident, $($fams:expr)*) => {
+       $ctx.add_font(FontInsert {
+            name: $str.to_string(),
+            data: FontData::from_static($font),
+            families: vec![
+                InsertFontFamily {
+                    family: FontFamily::Name($str.into()),
+                    priority: FontPriority::Lowest,
+                },
+                $(
+                InsertFontFamily {
+                    family: $fams,
+                    priority: FontPriority::Lowest,
+                }),*
+            ],
+        })
     };
 }
 
 pub fn load_fonts(set: FontSet, ctx: &Context) {
-    let mut fonts = FontDefinitions::default();
     if set.ubuntu {
-        load_instance!(fonts, REGULAR, UBUNTU);
-        if set.set_as_defaults {
-            fonts
-                .families
-                .entry(FontFamily::Proportional)
-                .or_default()
-                .push(REGULAR.into());
-        }
+        load_instance!(ctx, REGULAR, UBUNTU, FontFamily::Proportional);
     }
     if set.ubuntu_bold {
-        load_instance!(fonts, BOLD, UBUNTU_BOLD);
+        load_instance!(ctx, BOLD, UBUNTU_BOLD,);
     }
     if set.ubuntu_italic {
-        load_instance!(fonts, ITALIC, UBUNTU_ITALIC);
+        load_instance!(ctx, ITALIC, UBUNTU_ITALIC,);
     }
     if set.ubuntu_bold_italic {
-        load_instance!(fonts, BOLD_ITALIC, UBUNTU_BOLD_ITALIC);
+        load_instance!(ctx, BOLD_ITALIC, UBUNTU_BOLD_ITALIC,);
     }
     if set.ubuntu_condensed {
-        load_instance!(fonts, CONDENSED, UBUNTU_CONDENSED);
+        load_instance!(ctx, CONDENSED, UBUNTU_CONDENSED, FontFamily::Proportional);
     }
     if set.ubuntu_light {
-        load_instance!(fonts, LIGHT, UBUNTU_LIGHT);
+        load_instance!(ctx, LIGHT, UBUNTU_LIGHT, FontFamily::Proportional);
     }
     if set.ubuntu_light_italic {
-        load_instance!(fonts, LIGHT_ITALIC, UBUNTU_LIGHT_ITALIC);
+        load_instance!(ctx, LIGHT_ITALIC, UBUNTU_LIGHT_ITALIC,);
     }
     if set.ubuntu_medium {
-        load_instance!(fonts, MEDIUM, UBUNTU_MEDIUM);
+        load_instance!(ctx, MEDIUM, UBUNTU_MEDIUM, FontFamily::Proportional);
     }
     if set.ubuntu_medium_italic {
-        load_instance!(fonts, MEDIUM_ITALIC, UBUNTU_MEDIUM_ITALIC);
+        load_instance!(ctx, MEDIUM_ITALIC, UBUNTU_MEDIUM_ITALIC,);
     }
     if set.ubuntu_thin {
-        load_instance!(fonts, THIN, UBUNTU_THIN);
+        load_instance!(ctx, THIN, UBUNTU_THIN, FontFamily::Proportional);
     }
     if set.ubuntu_mono {
-        load_instance!(fonts, MONOSPACE, UBUNTU_MONOSPACE);
-        if set.set_as_defaults {
-            fonts
-                .families
-                .entry(FontFamily::Monospace)
-                .or_default()
-                .push(MONOSPACE.into());
-        }
+        load_instance!(ctx, MONOSPACE, UBUNTU_MONOSPACE, FontFamily::Monospace);
     }
     if set.ubuntu_mono_bold {
-        load_instance!(fonts, MONOSPACE_BOLD, UBUNTU_MONOSPACE_BOLD);
+        load_instance!(ctx, MONOSPACE_BOLD, UBUNTU_MONOSPACE_BOLD,);
     }
     if set.ubuntu_mono_bold_italic {
-        load_instance!(fonts, MONOSPACE_BOLD_ITALIC, UBUNTU_MONOSPACE_BOLD_ITALIC);
+        load_instance!(ctx, MONOSPACE_BOLD_ITALIC, UBUNTU_MONOSPACE_BOLD_ITALIC,);
     }
     if set.ubuntu_mono_italic {
-        load_instance!(fonts, MONOSPACE_ITALIC, UBUNTU_MONOSPACE_ITALIC);
+        load_instance!(ctx, MONOSPACE_ITALIC, UBUNTU_MONOSPACE_ITALIC,);
     }
-
-    ctx.set_fonts(fonts);
+    if set.emoji_icon {
+        load_instance!(ctx, EMOJI_ICON_REGULAR, EMOJI_ICON, FontFamily::Proportional FontFamily::Monospace);
+    }
+    if set.noto_emoji {
+        load_instance!(ctx, NOTO_EMOJI_REGULAR, NOTO_EMOJI, FontFamily::Proportional FontFamily::Monospace);
+    }
 }

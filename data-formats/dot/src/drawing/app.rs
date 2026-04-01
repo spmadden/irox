@@ -41,7 +41,7 @@ pub struct App {
 }
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>, init: InitData) -> Self {
-        irox_egui_extras::fonts::load_fonts(FontSet::all_as_defaults(), &cc.egui_ctx);
+        irox_egui_extras::fonts::load_fonts(FontSet::basics(), &cc.egui_ctx);
 
         let mut dda = DrawPanel::default();
         let main_layer = dda.add_layer("main".to_string(), LayerOpts::default());
