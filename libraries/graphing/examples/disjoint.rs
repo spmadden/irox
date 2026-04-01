@@ -2,7 +2,9 @@
 // Copyright 2025 IROX Contributors
 //
 
+use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::eframe;
+use irox_egui_extras::eframe::App;
 use irox_egui_extras::egui::{Align, CentralPanel, Context, Layout, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
@@ -10,6 +12,7 @@ use irox_graphing::egui::FDPSimulationWidget;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
 use irox_graphing::{Descriptor, Edge, EdgeDescriptor, Graph, Node, NodeDescriptor};
 use irox_log::log::{error, Level};
+use irox_tools::hash::bytewords::words_to_string;
 use irox_tools::identifier::Identifier;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
@@ -21,15 +24,20 @@ pub struct MNode {
     #[serde(default)]
     pub id: String,
     #[serde(default)]
-    pub group: u32,
+    pub group: String,
+}
+fn get_identifier(id: &str) -> Identifier {
+    let id = irox_tools::hash::murmur3_128(id.as_bytes()) as u32;
+    let out = words_to_string(&id.to_be_bytes(), "-");
+    Identifier::String(out)
 }
 impl From<MNode> for Node {
     fn from(value: MNode) -> Self {
         Node {
             descriptor: NodeDescriptor(Descriptor {
-                id: Identifier::String(value.id).into(),
+                id: get_identifier(&value.id).into(),
                 description: None,
-                attrs: BTreeMap::from_iter([("group".into(), format!("{}", value.group))]),
+                attrs: BTreeMap::from_iter([("group".into(), value.group.clone())]),
             }),
             navigable_edges: vec![],
             all_edges: vec![],
@@ -62,9 +70,21 @@ impl TryFrom<MGraph> for Graph {
             let node: Node = n.into();
             g.add_node(node.into())?;
         }
+        g.add_node(
+            Node {
+                descriptor: NodeDescriptor(Descriptor {
+                    id: Identifier::random_string().into(),
+                    description: None,
+                    attrs: BTreeMap::new(),
+                }),
+                navigable_edges: vec![],
+                all_edges: vec![],
+            }
+            .into(),
+        )?;
         for (idx, e) in value.links.drain(..).enumerate() {
-            let from = Identifier::String(e.source).into();
-            let to = Identifier::String(e.target).into();
+            let from = get_identifier(&e.source).into();
+            let to = get_identifier(&e.target).into();
 
             let Some(from) = g.nodes.get(&from).cloned() else {
                 return Err("Can't find from node".to_string());
@@ -87,7 +107,7 @@ impl TryFrom<MGraph> for Graph {
 
 pub fn main() -> Result<(), String> {
     let graph: MGraph =
-        serde_json::from_str(include_str!("miserables.json")).map_err(|e| e.to_string())?;
+        serde_json::from_str(include_str!("disjoint.json")).map_err(|e| e.to_string())?;
 
     let graph: Graph = graph.try_into()?;
     let graph: Shared<Graph> = Rc::new(RefCell::new(graph));
@@ -103,30 +123,29 @@ pub fn main() -> Result<(), String> {
         multisampling: 0,
         ..Default::default()
     };
+
     if let Err(e) = eframe::run_native(
-        "draw-panels",
+        "irox-example-graphing-disjoint",
         native_options,
         Box::new(|cc| {
-            // cc.egui_ctx.set_pixels_per_point(1.0);
-            // cc.egui_ctx.set_zoom_factor(1. / 1.25);
-            // cc.egui_ctx.tessellation_options_mut(|v| {
-            // v.feathering = false;
-            // v.round_rects_to_pixels = false;
-            // });
-            Ok(Box::new(ToolFrame::new_opts(
-                cc,
-                Box::new(FDPSimulationApp::new(graph, cc)),
-                ToolFrameOptions {
-                    show_rendering_stats: true,
-                    full_speed: false,
-                    enable_memory_ui: true,
-                    enable_texture_ui: true,
-                    enable_inspection_ui: true,
-                    enable_settings_ui: true,
+            Ok(Box::new(CompositeApp::from(Vec::from([
+                // Box::new(StylePersistingApp::new(cc)) as Box<dyn App>,
+                Box::new(ToolFrame::new_opts(
+                    cc,
+                    Box::new(FDPSimulationApp::new(graph, cc)),
+                    ToolFrameOptions {
+                        show_rendering_stats: true,
+                        full_speed: false,
+                        enable_memory_ui: true,
+                        enable_texture_ui: true,
+                        enable_inspection_ui: true,
+                        enable_settings_ui: true,
 
-                    ..Default::default()
-                },
-            )))
+                        ..Default::default()
+                    },
+                )),
+            ]
+                as [Box<dyn App>; _]))))
         }),
     ) {
         error!("{e:?}");
@@ -142,16 +161,16 @@ impl FDPSimulationApp {
         load_fonts(FontSet::basics(), &cc.egui_ctx);
 
         let mut widget = FDPSimulationWidget::new(graph);
-        widget.draw_id = true;
+        widget.draw_id = false;
         widget.sim_params_window = false;
         widget.sim.forces = vec![
             Force::Centering(Centering::new(0.01)),
-            Force::Edge(EdgeForce::default().with_distance(100.)),
             Force::Repulsive(
                 Repulsive::default()
                     .with_strength(-100.)
                     .with_edge_distance(100.),
             ),
+            Force::Edge(EdgeForce::default().with_distance(100.)),
         ];
         FDPSimulationApp { widget }
     }

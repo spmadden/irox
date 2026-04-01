@@ -3,7 +3,7 @@
 //
 
 use crate::fdp::{
-    Collision, DefaultNodePlacement, EdgeForce, Force, PosForce, Repulsive, Shared, Simulation,
+    Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
     SimulationParams,
 };
 use crate::Graph;
@@ -63,7 +63,7 @@ impl ParamsWindow<'_> {
 
         for f in self.forces.iter_mut() {
             match f {
-                Force::Position(p) => centering_force = Some(p),
+                Force::Centering(p) => centering_force = Some(p),
                 Force::Edge(e) => edge_force = Some(e),
                 Force::Repulsive(r) => node_force = Some(r),
                 Force::Collision(c) => boundary_force = Some(c),
@@ -79,7 +79,7 @@ impl ParamsWindow<'_> {
             };
         }
         if let Some(ef) = edge_force {
-            if Slider::new(&mut ef.distance, 0.1..=100.)
+            if Slider::new(&mut ef.distance, 1.0..=100.)
                 .text("Desired Edge Distance")
                 .ui(ui)
                 .changed()
@@ -95,7 +95,7 @@ impl ParamsWindow<'_> {
             };
         }
         if let Some(nf) = node_force {
-            if Slider::new(&mut nf.strength, 0.0..=-1000.)
+            if Slider::new(&mut nf.strength, 10.0..=-100.)
                 .text("Node Strength")
                 .ui(ui)
                 .changed()
@@ -143,30 +143,12 @@ pub struct FDPSimulationWidget {
     pub play: bool,
     pub last_tick: f64,
     pub show_tick_controls: bool,
+    pub draw_id: bool,
 
     pub sim_params_window: bool,
 }
 impl FDPSimulationWidget {
-    pub fn new(graph: Shared<Graph>) -> Self {
-        let alpha_min = 0.2f64;
-        let alpha_decay = 1. - alpha_min.powf(1. / 300.);
-        let params = SimulationParams {
-            alpha_min,
-            alpha_decay,
-            velocity_decay: 0.6,
-            ..Default::default()
-        };
-        let sim = Simulation::new(
-            params,
-            vec![
-                Force::Position(PosForce::new(0.1)),
-                Force::Edge(EdgeForce::default().with_distance(10.)), //.with_fixed_strength(Some(1.))),
-                Force::Repulsive(Repulsive::default().with_strength(-100.)),
-                Force::Collision(Collision::default().with_radius(1.)),
-            ],
-            graph,
-            Box::new(DefaultNodePlacement::default()),
-        );
+    pub fn with_simulation(sim: Simulation) -> Self {
         let mut panel = DrawPanel::new("graph");
         panel.draw_cursor_crosshairs = false;
         let graph_layer = panel.add_layer(
@@ -194,8 +176,30 @@ impl FDPSimulationWidget {
             tt_layer,
             drag_subject: None,
             dragging: None,
-            sim_params_window: true,
+            sim_params_window: false,
+            draw_id: true,
         }
+    }
+    pub fn new(graph: Shared<Graph>) -> Self {
+        let alpha_min = 0.2f64;
+        let alpha_decay = 1. - alpha_min.powf(1. / 300.);
+        let params = SimulationParams {
+            alpha_min,
+            alpha_decay,
+            velocity_decay: 0.6,
+            ..Default::default()
+        };
+        let sim = Simulation::new(
+            params,
+            vec![
+                Force::Centering(Centering::default()),
+                Force::Edge(EdgeForce::default()),
+                Force::Repulsive(Repulsive::default()),
+            ],
+            graph,
+            Box::new(DefaultNodePlacement::default()),
+        );
+        Self::with_simulation(sim)
     }
     pub fn tick(&mut self, ctx: &Context) {
         self.sim.tick();
@@ -275,11 +279,12 @@ impl FDPSimulationWidget {
 
             let rect = galley.rect.translate(-adj.to_vec2()).translate(p.to_vec2());
 
-            let txt = Shape::Text(TextShape::new(p, galley, fgc));
-
-            let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
-            shapes.push(Shape::Rect(rect));
-            shapes.push(txt);
+            if self.draw_id {
+                let txt = Shape::Text(TextShape::new(p, galley, fgc));
+                let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
+                shapes.push(Shape::Rect(rect));
+                shapes.push(txt);
+            }
         });
 
         let _ = self.graph_layer.send(LayerCommand::ClearSetShapes(shapes));

@@ -5,23 +5,31 @@
 #![allow(clippy::redundant_closure_for_method_calls)]
 
 extern crate alloc;
+mod centering;
+mod collision;
+mod edge;
+mod repulsive;
+pub use centering::*;
+pub use collision::*;
+pub use edge::*;
+pub use repulsive::*;
 
 use crate::{Graph, SharedNode};
 use alloc::collections::BTreeMap;
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
-use irox_geometry::{Point, Vector, Vector2D};
+use irox_geometry::{Point, Vector};
 use irox_tools::identifier::{Identifier, SharedIdentifier};
 use irox_units::units::angle::Angle;
 
-const INITIAL_RADIUS: f64 = 10.0;
+const INITIAL_RADIUS: f64 = 1.0;
 const INITIAL_ANGLE: Angle =
     Angle::new_radians(core::f64::consts::PI / 0.763_932_022_500_210_3_f64);
 
 #[derive(Debug, Copy, Clone)]
 pub enum Force {
-    Position(PosForce),
+    Centering(Centering),
     Edge(EdgeForce),
     Repulsive(Repulsive),
     Collision(Collision),
@@ -29,8 +37,7 @@ pub enum Force {
 impl Force {
     pub fn force(&self, sim: &mut Simulation, alpha: f64) {
         match self {
-            Force::Position(mut p) => p.force(sim, alpha),
-
+            Force::Centering(mut p) => p.force(sim, alpha),
             Force::Edge(mut e) => e.force(sim, alpha),
             Force::Repulsive(mut r) => r.force(sim, alpha),
             Force::Collision(mut c) => c.force(sim, alpha),
@@ -296,229 +303,5 @@ impl Simulation {
                 working.current_position += v;
             }
         });
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-pub struct PosForce {
-    pub strength: f64,
-}
-impl Default for PosForce {
-    fn default() -> Self {
-        Self { strength: 0.1 }
-    }
-}
-impl PosForce {
-    pub fn new(strength: f64) -> Self {
-        Self { strength }
-    }
-    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
-        for node in sim.working_nodes.values_mut() {
-            let adj = node.current_position * alpha * self.strength * -1.0;
-            node.current_position += adj;
-        }
-    }
-}
-#[derive(Debug, Copy, Clone)]
-pub struct EdgeForce {
-    pub distance: f64,
-    pub iterations: usize,
-    pub strength: Option<f64>,
-}
-impl Default for EdgeForce {
-    fn default() -> Self {
-        Self {
-            distance: 30.0,
-            iterations: 1,
-            strength: None,
-        }
-    }
-}
-impl EdgeForce {
-    #[must_use]
-    pub fn with_distance(mut self, distance: f64) -> Self {
-        self.distance = distance;
-        self
-    }
-    #[must_use]
-    pub fn with_iterations(mut self, iterations: usize) -> Self {
-        self.iterations = iterations;
-        self
-    }
-    #[must_use]
-    pub fn with_fixed_strength(mut self, strength: Option<f64>) -> Self {
-        self.strength = strength;
-        self
-    }
-    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
-        sim.iter_edges(|data, sim| {
-            let SimulationWorkingEdge {
-                id: _id,
-                left,
-                right,
-            } = data;
-            for _ in 0..self.iterations {
-                let mut dists = Vector::<f64>::default();
-                let mut left_edges = 0.0;
-                sim.node_mut(&left, |n| {
-                    dists += n.current_position;
-                    dists += n.current_velocity;
-                    left_edges = n.num_edges;
-                });
-                let mut right_edges = 0.0;
-                sim.node_mut(&right, |n| {
-                    dists -= n.current_position;
-                    dists -= n.current_velocity;
-                    right_edges = n.num_edges;
-                });
-                let dist = dists.magnitude().max(1.0);
-                let strength = alpha / self.strength.unwrap_or(left_edges.min(right_edges));
-
-                let adj = (dist - self.distance) / dist;
-                let adj = adj * strength;
-                let adj = dists * adj;
-                let bias = left_edges / (left_edges + right_edges);
-                sim.node_mut(&left, |n| {
-                    n.current_velocity -= adj * (1.0 - bias);
-                });
-                sim.node_mut(&right, |n| {
-                    n.current_velocity += adj * (bias);
-                });
-            }
-        });
-    }
-}
-#[derive(Debug, Copy, Clone)]
-pub struct Repulsive {
-    pub strength: f64,
-}
-impl Default for Repulsive {
-    fn default() -> Self {
-        Self { strength: -1. }
-    }
-}
-impl Repulsive {
-    #[must_use]
-    pub fn with_strength(mut self, strength: f64) -> Self {
-        self.strength = strength;
-        self
-    }
-    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
-        let mut nodes = Vec::new();
-        sim.iter_nodes(|id, _node, _working| {
-            nodes.push(id.clone());
-        });
-        for left in &nodes {
-            let mut qpos = Vector::default();
-            let mut left_edges = 1.0;
-            sim.node_mut(left, |n| {
-                qpos = n.current_position;
-                left_edges = n.num_edges;
-            });
-            for right in &nodes {
-                if left == right {
-                    continue;
-                }
-                let mut right_edges = 1.0;
-                let mut npos = Vector::default();
-                sim.node_mut(right, |n| {
-                    npos = n.current_position;
-                    right_edges = n.num_edges;
-                });
-
-                let delt = qpos - npos;
-                let l = delt.magnitude().powi(2);
-                // limit forces if really small
-
-                let w = self.strength * alpha / l;
-                let adj = delt * w;
-                let bias = left_edges / (left_edges + right_edges);
-                sim.node_mut(right, |n| {
-                    n.current_velocity += adj * (1.0 - bias);
-                });
-                sim.node_mut(left, |n| {
-                    n.current_velocity -= adj * bias;
-                })
-            }
-        }
-    }
-}
-#[derive(Debug, Copy, Clone)]
-pub struct Collision {
-    pub radius: f64,
-    pub strength: f64,
-    pub iterations: usize,
-}
-impl Default for Collision {
-    fn default() -> Self {
-        Self {
-            radius: 1.0,
-            strength: 1.0,
-            iterations: 1,
-        }
-    }
-}
-impl Collision {
-    #[must_use]
-    pub fn with_radius(mut self, radius: f64) -> Self {
-        self.radius = radius;
-        self
-    }
-    #[must_use]
-    pub fn with_strength(mut self, strength: f64) -> Self {
-        self.strength = strength;
-        self
-    }
-    #[must_use]
-    pub fn with_iterations(mut self, iterations: usize) -> Self {
-        self.iterations = iterations;
-        self
-    }
-    fn force(&mut self, sim: &mut Simulation, alpha: f64) {
-        let mut nodes = Vec::new();
-        sim.iter_nodes(|id, _node, _working| {
-            nodes.push(id.clone());
-        });
-        for _ in 0..self.iterations {
-            let r2 = self.radius * self.radius;
-            for left in &nodes {
-                let mut qpos = Vector::default();
-                let mut left_edges = 1.0;
-                sim.node_mut(left, |n| {
-                    qpos = n.current_position + n.current_velocity;
-                    left_edges = n.num_edges;
-                });
-
-                for right in &nodes {
-                    if left == right {
-                        continue;
-                    }
-                    let mut npos = Vector::default();
-                    let mut right_edges = 1.0;
-                    sim.node_mut(right, |n| {
-                        npos = n.current_position + n.current_velocity;
-                        right_edges = n.num_edges;
-                    });
-
-                    let delt = qpos - npos;
-                    let l = delt.magnitude();
-
-                    if l >= r2 {
-                        continue;
-                    }
-                    let l = l.sqrt();
-                    let l = (self.radius - l) / l * self.strength;
-                    let adj = delt * l * alpha;
-
-                    let bias = left_edges / (left_edges + right_edges);
-                    sim.node_mut(left, |n| {
-                        n.current_velocity += adj * (1. - bias);
-                    });
-                    sim.node_mut(right, |n| {
-                        n.current_velocity -= adj * bias;
-                    });
-                }
-            }
-        }
     }
 }
