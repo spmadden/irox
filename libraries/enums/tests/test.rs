@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2025 IROX Contributors
+//
 
 use irox_enums::{EnumIterItem, EnumName, EnumTryFromStr};
 
@@ -57,7 +58,7 @@ pub fn test_complex() {
     assert_eq!("First", TestEnum2::First(0, 0).name());
     assert_eq!("Second", TestEnum2::Second.name());
 
-    let mut names = TestEnum2::iter_names();
+    let names = TestEnum2::iter_names();
     let mut names = names.iter();
     assert_eq!(&"First", names.next().unwrap());
     assert_eq!(&"Second", names.next().unwrap());

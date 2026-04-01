@@ -522,7 +522,7 @@ pub static COLORS: &[(&str, Color)] = &[
     ("teal", RGBColor::new(0, 128, 128).as_color()),
 ];
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod generate {
     use crate::RGBColor;
     use core::str::FromStr;
