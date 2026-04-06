@@ -15,7 +15,7 @@ use irox_egui_extras::egui::{
     Align, Color32, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Stroke, Ui,
     Vec2, Widget, Window,
 };
-use irox_egui_extras::WithAlpha;
+use irox_egui_extras::{profile_scope, WithAlpha};
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
 use irox_tools::identifier::SharedIdentifier;
 use std::sync::mpsc::Sender;
