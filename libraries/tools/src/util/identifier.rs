@@ -9,7 +9,6 @@
 
 extern crate alloc;
 use crate::hash::murmur3_128;
-use crate::random::PRNG;
 use crate::uuid::UUID;
 use crate::{cfg_feature_alloc, format};
 use alloc::string::{String, ToString};
@@ -115,17 +114,19 @@ impl From<&UUID> for Identifier {
 }
 
 cfg_feature_alloc! {
-
-    impl Identifier {
-        pub fn random_int() -> Identifier {
-            let id = crate::random::system_random().prng(PRNG::next_u64);
-            Identifier::Integer(id)
-        }
-        pub fn random_string() -> Identifier {
-            let b : [u8;4]= crate::random::system_random().next_u32().to_be_bytes();
-            let mut s = String::with_capacity(19);
-            let _ = crate::hash::bytewords::write_words(&b, "-", &mut s);
-            Identifier::String(s)
+    crate::cfg_feature_std!{
+        use crate::random::PRNG;
+        impl Identifier {
+            pub fn random_int() -> Identifier {
+                let id = crate::random::system_random().prng(PRNG::next_u64);
+                Identifier::Integer(id)
+            }
+            pub fn random_string() -> Identifier {
+                let b : [u8;4]= crate::random::system_random().next_u32().to_be_bytes();
+                let mut s = String::with_capacity(19);
+                let _ = crate::hash::bytewords::write_words(&b, "-", &mut s);
+                Identifier::String(s)
+            }
         }
     }
 
