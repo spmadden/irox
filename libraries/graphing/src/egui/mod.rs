@@ -343,7 +343,13 @@ impl FDPSimulationWidget {
         ctx.input(|i| {
             let ptr = &i.pointer;
             if is_dragging(ptr) {
-                let pos = ptr.latest_pos().unwrap_or_default();
+                let off = self
+                    .panel
+                    .last_window_area
+                    .map(|v| v.min)
+                    .unwrap_or_default()
+                    .to_vec2();
+                let pos = ptr.latest_pos().unwrap_or_default() - off;
                 match &self.dragging {
                     None => {
                         self.dragging = Some(DragEvent::DragStart(pos));
@@ -466,5 +472,6 @@ impl FDPSimulationWidget {
 fn is_dragging(ptr: &PointerState) -> bool {
     let po = ptr.press_origin();
     let pd = ptr.primary_down();
-    po.is_some() && pd
+    let ps = ptr.latest_pos();
+    po.is_some() && pd && po != ps
 }
