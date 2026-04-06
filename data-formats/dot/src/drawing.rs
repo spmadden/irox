@@ -7,6 +7,7 @@
 irox_tools::cfg_feature_egui! {
     mod egui;
     pub use egui::*;
+    #[cfg(any(feature = "glow", feature = "wgpu"))]
     pub mod app;
 
 }

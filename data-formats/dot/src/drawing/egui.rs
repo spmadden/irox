@@ -3,7 +3,7 @@
 //
 
 use crate::drawing::{Color, Draw, Edge, Ellipse, Font, Metanode, Point2, Points, Text};
-use irox_egui_extras::eframe::epaint::{
+use irox_egui_extras::egui::epaint::{
     CubicBezierShape, EllipseShape, PathShape, RectShape, TextShape,
 };
 use irox_egui_extras::egui::{
