@@ -77,7 +77,7 @@ impl WithAlpha for egui::Color32 {
 }
 
 pub fn start_profiling() {
-    #[cfg(feature = "profiling")]
+    #[cfg(all(feature = "profiling", not(target_arch = "wasm32")))]
     {
         let server_addr = format!("127.0.0.1:{}", puffin_http::DEFAULT_PORT);
         let _puffin_server = puffin_http::Server::new(&server_addr);
