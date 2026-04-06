@@ -276,6 +276,8 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
+        #[cfg(feature = "profiling")]
+        profiling::scope!("FDP::tick");
         if self.params.reset_velocity_on_next_tick {
             self.params.reset_velocity_on_next_tick = false;
             self.iter_nodes(|_id, _node, working| {
@@ -288,20 +290,28 @@ impl Simulation {
         let alpha = self.params.tick();
 
         // apply forces
-        for f in self.forces.clone() {
-            f.clone().force(self, alpha);
-        }
-        let decay = self.params.velocity_decay;
-        self.iter_nodes(|_id, _node, working| {
-            // finalize node position & velocity
-            if let Some(fp) = working.fixed_position {
-                working.current_position = fp.to_vector();
-                working.current_velocity = Vector::default();
-            } else {
-                working.current_velocity *= decay;
-                let v = working.current_velocity;
-                working.current_position += v;
+        {
+            #[cfg(feature = "profiling")]
+            profiling::scope!("FDP::tick::apply_forces");
+            for f in self.forces.clone() {
+                f.clone().force(self, alpha);
             }
-        });
+        }
+        {
+            #[cfg(feature = "profiling")]
+            profiling::scope!("FDP::tick::update-positions");
+            let decay = self.params.velocity_decay;
+            self.iter_nodes(|_id, _node, working| {
+                // finalize node position & velocity
+                if let Some(fp) = working.fixed_position {
+                    working.current_position = fp.to_vector();
+                    working.current_velocity = Vector::default();
+                } else {
+                    working.current_velocity *= decay;
+                    let v = working.current_velocity;
+                    working.current_position += v;
+                }
+            });
+        }
     }
 }

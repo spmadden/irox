@@ -208,6 +208,7 @@ impl FDPSimulationWidget {
         }
     }
     pub fn play_tick(&mut self, ctx: &Context) {
+        profile_scope!("FDPWidget::play_tick");
         if !self.play {
             return;
         }
@@ -218,6 +219,7 @@ impl FDPSimulationWidget {
         }
     }
     pub fn show(&mut self, ctx: &Context, ui: &mut Ui) {
+        profile_scope!("FDPWidget::show");
         self.handle_drag(ctx);
         if self.sim_params_window {
             Window::new("Simulation Params").show(ctx, |ui| {
@@ -292,6 +294,7 @@ impl FDPSimulationWidget {
         self.find_hover(ui);
     }
     pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedIdentifier> {
+        profile_scope!("FDPWidget::find_closest_edge_to");
         let xfm = self.panel.transform;
         let mut closest_edge: Option<SharedIdentifier> = None;
         let mut closest_edge_dist = f32::MAX;
@@ -322,6 +325,8 @@ impl FDPSimulationWidget {
         closest_edge
     }
     pub fn find_closest_node_to(&mut self, pos: Pos2) -> Option<SharedIdentifier> {
+        profile_scope!("FDPWidget::find_closest_node_to");
+
         let xfm = self.panel.transform;
 
         let mut closest_node_dist = f32::MAX;
@@ -340,6 +345,8 @@ impl FDPSimulationWidget {
         closest_node
     }
     pub fn handle_drag(&mut self, ctx: &Context) {
+        profile_scope!("FDPWidget::handle_drag");
+
         ctx.input(|i| {
             let ptr = &i.pointer;
             if is_dragging(ptr) {
@@ -389,6 +396,8 @@ impl FDPSimulationWidget {
     }
 
     pub fn update_drag_subject(&mut self, sub: &SharedIdentifier) {
+        profile_scope!("FDPWidget::update_drag_subject");
+
         if let Some(old) = self.drag_subject.replace(sub.clone()) {
             self.sim.node_mut(&old, |node| {
                 node.fixed_position = None;
@@ -396,6 +405,7 @@ impl FDPSimulationWidget {
         }
     }
     pub fn find_hover(&mut self, ui: &mut Ui) {
+        profile_scope!("FDPWidget::find_hover");
         if let Some(mut pos) = ui.input(|i| i.pointer.hover_pos()) {
             let _ = self.tt_layer.send(LayerCommand::ClearShapes);
             if let Some(area) = self.panel.last_window_area {

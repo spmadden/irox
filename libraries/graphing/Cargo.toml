@@ -19,7 +19,7 @@ workspace = true
 [features]
 default = []
 egui = ["dep:irox-egui-extras"]
-profiling = ["irox-egui-extras/profiling"]
+profiling = ["irox-egui-extras?/profiling", "dep:profiling"]
 
 [dependencies]
 irox-tools = {workspace = true, features = ["std"]}
@@ -28,6 +28,7 @@ irox-geometry = {workspace = true}
 irox-structs_derive = {workspace = true}
 irox-log = {workspace = true, features = ["std"]}
 irox-egui-extras = {workspace = true, default-features = false, features = ["glow"], optional = true}
+profiling = {workspace = true, optional = true}
 
 [dev-dependencies]
 serde_json = {workspace = true, features = ["preserve_order"] }

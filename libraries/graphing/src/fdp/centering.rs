@@ -18,6 +18,8 @@ impl Centering {
         Self { strength }
     }
     pub(crate) fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        #[cfg(feature = "profiling")]
+        profiling::scope!("Centering::force");
         for node in sim.working_nodes.values_mut() {
             let adj = node.current_position * alpha * self.strength * -1.0;
             node.current_velocity += adj;

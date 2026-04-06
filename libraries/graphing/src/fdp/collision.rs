@@ -37,6 +37,8 @@ impl Collision {
         self
     }
     pub(crate) fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        #[cfg(feature = "profiling")]
+        profiling::scope!("Collision::force");
         let mut nodes = Vec::new();
         sim.iter_nodes(|id, _node, _working| {
             nodes.push(id.clone());

@@ -37,6 +37,8 @@ impl EdgeForce {
         self
     }
     pub(crate) fn force(&mut self, sim: &mut Simulation, alpha: f64) {
+        #[cfg(feature = "profiling")]
+        profiling::scope!("Edge::force");
         sim.iter_edges(|data, sim| {
             let SimulationWorkingEdge {
                 id: _id,

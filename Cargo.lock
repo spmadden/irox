@@ -2021,6 +2021,7 @@ dependencies = [
  "irox-structs_derive",
  "irox-tools 0.11.1",
  "irox-units",
+ "profiling",
  "serde",
  "serde_json",
 ]
