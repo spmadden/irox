@@ -72,14 +72,15 @@ pub fn write_words<T: Write>(data: &[u8], sep: &str, out: &mut T) -> core::fmt::
     Ok(())
 }
 cfg_feature_alloc! {
+    extern crate alloc;
     /// Creates a string based on the words for the provided data, separated with the separator
     ///
     /// ```
     /// let result = words_to_string(&[0x70, 0x01, 0x02, 0xFF], "-");
     /// assert_eq!(result, "judo-acid-also-zoom");
     /// ```
-    pub fn words_to_string(data: &[u8], separator: &str) -> String {
-        let mut out = String::new();
+    pub fn words_to_string(data: &[u8], separator: &str) -> alloc::string::String {
+        let mut out = alloc::string::String::new();
         let mut first = true;
         for d in data {
             let word = get_word(*d);
