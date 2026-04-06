@@ -8,15 +8,23 @@ use alloc::collections::vec_deque::Iter;
 use alloc::collections::VecDeque;
 use core::borrow::Borrow;
 use core::hash::Hash;
+use std::collections::hash_map::{Entry, ValuesMut};
 use std::collections::HashMap;
 
 ///
 /// Tracks the insertion order of key/value pairs.  Backed by a [`HashMap`] for storage
 /// and a [`VecDeque`] for key insertion order.
-#[derive(Default)]
 pub struct OrderedHashMap<K, V> {
     map: HashMap<K, V>,
     key_order: VecDeque<K>,
+}
+impl<K, V> Default for OrderedHashMap<K, V> {
+    fn default() -> Self {
+        Self {
+            map: Default::default(),
+            key_order: Default::default()
+        }
+    }
 }
 
 impl<K, V> OrderedHashMap<K, V> {
@@ -69,6 +77,18 @@ impl<K: Eq + Hash + Clone, V> OrderedHashMap<K, V> {
     pub fn contains(&self, k: &K) -> bool {
         self.map.contains_key(k)
     }
+
+    pub fn entry(&mut self, k: K) -> Entry<'_, K, V>{
+        self.map.entry(k)
+    }
+
+    pub fn get_mut(&mut self, k: &K) -> Option<&mut V>{
+        self.map.get_mut(k)
+    }
+
+    pub fn values_mut(&mut self) -> ValuesMut<'_, K, V> {
+        self.map.values_mut()
+    }
 }
 impl<'a, K: Eq + Hash, V> OrderedHashMap<K, V> {
     pub fn iter(&'a self) -> OrderedMapIter<'a, K, V> {
@@ -82,6 +102,14 @@ impl<'a, K: Eq + Hash, V> OrderedHashMap<K, V> {
             key_iter: self.key_order,
             values: self.map,
         }
+    }
+}
+impl<'a, K: Eq + Hash, V> IntoIterator for &'a OrderedHashMap<K, V> {
+    type Item = (&'a K, &'a V);
+    type IntoIter = OrderedMapIter<'a, K, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }
 

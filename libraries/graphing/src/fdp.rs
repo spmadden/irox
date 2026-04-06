@@ -15,12 +15,12 @@ pub use edge::*;
 pub use repulsive::*;
 
 use crate::{Graph, SharedNode};
-use alloc::collections::BTreeMap;
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
 use irox_geometry::{Point, Vector};
 use irox_tools::identifier::{Identifier, SharedIdentifier};
+use irox_tools::map::OrderedHashMap;
 use irox_units::units::angle::Angle;
 
 const INITIAL_RADIUS: f64 = 1.0;
@@ -123,14 +123,30 @@ pub struct SimulationWorkingEdge {
 pub trait InitialNodePlacer {
     fn place_node(&mut self, node: &mut SharedNode, working: &mut SimulationWorkingNode);
 }
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct DefaultNodePlacement {
+    initial_radius: f64,
     last_idx: usize,
+}
+impl DefaultNodePlacement {
+    #[must_use]
+    pub fn with_initial_radius(mut self, radius: f64) -> Self {
+        self.initial_radius = radius;
+        self
+    }
+}
+impl Default for DefaultNodePlacement {
+    fn default() -> Self {
+        Self {
+            last_idx: 0,
+            initial_radius: INITIAL_RADIUS,
+        }
+    }
 }
 impl InitialNodePlacer for DefaultNodePlacement {
     fn place_node(&mut self, _node: &mut SharedNode, working: &mut SimulationWorkingNode) {
         let idx = self.last_idx;
-        let init_radius = INITIAL_RADIUS * (0.5 + idx as f64).sqrt();
+        let init_radius = self.initial_radius * (0.5 + idx as f64).sqrt();
         let init_angle = INITIAL_ANGLE * (idx as f64);
         let current_position = Vector {
             vx: init_radius * init_angle.cos(),
@@ -145,8 +161,8 @@ pub struct Simulation {
     pub graph: Shared<Graph>,
     pub forces: Vec<Force>,
 
-    pub working_nodes: BTreeMap<SharedIdentifier, SimulationWorkingNode>,
-    pub working_edges: BTreeMap<SharedIdentifier, SimulationWorkingEdge>,
+    pub working_nodes: OrderedHashMap<SharedIdentifier, SimulationWorkingNode>,
+    pub working_edges: OrderedHashMap<SharedIdentifier, SimulationWorkingEdge>,
 
     pub params: SimulationParams,
     pub placement: Box<dyn InitialNodePlacer>,
