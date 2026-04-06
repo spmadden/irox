@@ -3,7 +3,8 @@
 //
 
 use crate::geometry::{Centroid, Geometry};
-use crate::{Point, Vector};
+use crate::{Point, Vector, Vector2D};
+use core::ops::{Div, Sub};
 use irox_tools::FloatIsh;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]
@@ -17,8 +18,24 @@ impl<T: FloatIsh> Rectangle<T> {
     /// Returns a vector value representing the normalized vector to the provided point.  A returned
     /// vector of [0,0] is the minimum value of the rectangle, [1,1] is the maximum value of the
     /// rectangle.
+    #[must_use]
     pub fn normalized_point(&self, pnt: &Point<T>) -> Vector<T> {
         (*pnt - self.min) / self.size
+    }
+
+    #[must_use]
+    pub fn far_point(&self) -> Point<T> {
+        self.min + self.size
+    }
+
+    #[must_use]
+    pub fn max_x(&self) -> T {
+        self.far_point().x
+    }
+
+    #[must_use]
+    pub fn max_y(&self) -> T {
+        self.far_point().y
     }
 }
 
@@ -44,5 +61,26 @@ impl<T: FloatIsh> Geometry<T> for Rectangle<T> {
 
     fn bounding_rectangle(&self) -> Rectangle<T> {
         *self
+    }
+}
+
+impl<T: FloatIsh> Div<T> for Rectangle<T> {
+    type Output = Rectangle<T>;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Self {
+            min: (self.min.to_vector() / rhs).to_point(),
+            size: self.size / rhs,
+        }
+    }
+}
+impl<T: FloatIsh> Sub<Vector<T>> for Rectangle<T> {
+    type Output = Rectangle<T>;
+
+    fn sub(self, rhs: Vector<T>) -> Self::Output {
+        Self {
+            min: (self.min - rhs.to_point()).to_point(),
+            size: self.size - rhs,
+        }
     }
 }

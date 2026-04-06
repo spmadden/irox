@@ -27,6 +27,8 @@ cfg_feature_alloc! {
 mod line;
 mod point;
 mod rectangle;
+pub mod tiles;
+pub mod transform;
 mod vector;
 
 pub use geometry::*;

@@ -113,6 +113,16 @@ impl<T: FloatIsh> Add for Vector<T> {
         }
     }
 }
+impl<T: FloatIsh> Add<T> for Vector<T> {
+    type Output = Self;
+
+    fn add(self, rhs: T) -> Self::Output {
+        Self {
+            vx: self.vx + rhs,
+            vy: self.vy + rhs,
+        }
+    }
+}
 impl<T: FloatIsh> AddAssign for Vector<T> {
     fn add_assign(&mut self, rhs: Self) {
         self.vx += rhs.vx;
@@ -145,6 +155,16 @@ impl<T: FloatIsh> Sub for Vector<T> {
         }
     }
 }
+impl<T: FloatIsh> Sub<T> for Vector<T> {
+    type Output = Self;
+
+    fn sub(self, rhs: T) -> Self::Output {
+        Self {
+            vx: self.vx - rhs,
+            vy: self.vy - rhs,
+        }
+    }
+}
 impl<T: FloatIsh> SubAssign for Vector<T> {
     fn sub_assign(&mut self, rhs: Self) {
         self.vx -= rhs.vx;
@@ -164,6 +184,17 @@ impl<T: FloatIsh> Div for Vector<T> {
         Vector {
             vx: self.vx / rhs.vx,
             vy: self.vy / rhs.vy,
+        }
+    }
+}
+
+impl<T: FloatIsh> Div<T> for Vector<T> {
+    type Output = Self;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Vector {
+            vx: self.vx / rhs,
+            vy: self.vy / rhs,
         }
     }
 }
