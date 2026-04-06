@@ -62,8 +62,10 @@ impl Repulsive {
 
                 let w = self.strength * alpha / l;
                 let adj = delt * w;
-                let bias = left_edges / (left_edges + right_edges);
-                // let bias = 0.5;
+                let mut bias = left_edges / (left_edges + right_edges);
+                if !bias.is_normal() {
+                    bias = 0.5;
+                }
                 sim.node_mut(right, |n| {
                     n.current_velocity += adj * bias;
                 });

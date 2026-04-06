@@ -20,7 +20,7 @@ impl Centering {
     pub(crate) fn force(&mut self, sim: &mut Simulation, alpha: f64) {
         for node in sim.working_nodes.values_mut() {
             let adj = node.current_position * alpha * self.strength * -1.0;
-            node.current_position += adj;
+            node.current_velocity += adj;
         }
     }
 }

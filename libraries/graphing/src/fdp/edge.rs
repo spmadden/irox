@@ -59,12 +59,17 @@ impl EdgeForce {
                 });
                 let dist = dists.magnitude().max(1.0);
 
-                let strength = self.strength.unwrap_or(left_edges.min(right_edges));
-
+                let mut strength = self.strength.unwrap_or(left_edges.min(right_edges));
+                if !strength.is_normal() {
+                    strength = 1.0;
+                }
                 let adj = (dist - self.distance) / dist;
                 let adj = adj * alpha / strength;
                 let adj = dists * adj;
-                let bias = left_edges / (left_edges + right_edges);
+                let mut bias = left_edges / (left_edges + right_edges);
+                if !bias.is_normal() {
+                    bias = 0.5;
+                }
                 sim.node_mut(&left, |n| {
                     n.current_velocity -= adj * (1.0 - bias);
                 });
