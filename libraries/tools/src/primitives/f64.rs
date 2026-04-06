@@ -46,6 +46,7 @@ pub trait FloatExt: PrimitiveMath {
     fn exp(self) -> Self::Type;
     fn ln(self) -> Self::Type;
     fn log10(self) -> Self::Type;
+    fn log2(self) -> Self::Type;
 
     fn powi(self, val: i32) -> Self::Type;
     fn powf(self, val: Self::Type) -> Self::Type;
@@ -59,6 +60,9 @@ pub trait FloatExt: PrimitiveMath {
     fn tan(self) -> Self::Type;
     fn atan(self) -> Self::Type;
     fn atan2(self, o: Self) -> Self::Type;
+
+    fn min(self, o: Self) -> Self::Type;
+    fn max(self, o: Self) -> Self::Type;
 }
 #[allow(unused)]
 fn cordic_k(n: usize) -> f64 {
@@ -274,6 +278,9 @@ impl FloatExt for f64 {
     fn log10(self) -> Self::Type {
         self.ln() / core::f64::consts::LN_10
     }
+    fn log2(self) -> Self::Type {
+        self.ln() / core::f64::consts::LN_2
+    }
 
     ///
     /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
@@ -333,6 +340,21 @@ impl FloatExt for f64 {
     fn atan2(self, _o: Self) -> Self::Type {
         todo!()
     }
+
+    fn min(self, o: Self) -> Self::Type {
+        if self < o {
+            self
+        } else {
+            o
+        }
+    }
+    fn max(self, o: Self) -> Self::Type {
+        if self > o {
+            self
+        } else {
+            o
+        }
+    }
 }
 
 #[cfg(feature = "std")]
@@ -384,6 +406,10 @@ impl FloatExt for f64 {
         f64::log10(self)
     }
 
+    fn log2(self) -> Self::Type {
+        f64::log2(self)
+    }
+
     fn powi(self, val: i32) -> Self::Type {
         f64::powi(self, val)
     }
@@ -426,6 +452,14 @@ impl FloatExt for f64 {
 
     fn atan2(self, o: Self) -> Self::Type {
         f64::atan2(self, o)
+    }
+
+    fn min(self, o: Self) -> Self::Type {
+        f64::min(self, o)
+    }
+
+    fn max(self, o: Self) -> Self::Type {
+        f64::max(self, o)
     }
 }
 

@@ -112,6 +112,10 @@ impl crate::f64::FloatExt for f32 {
         self.ln() / core::f32::consts::LN_10
     }
 
+    fn log2(self) -> Self::Type {
+        self.ln() / core::f32::consts::LN_2
+    }
+
     /// Naive implementation of integer power fn.  Will do something smarter later.
     fn powi(self, val: i32) -> Self::Type {
         let mut out = self;
@@ -183,6 +187,26 @@ impl crate::f64::FloatExt for f32 {
         } else {
             let _o = o;
             todo!()
+        }
+    }
+
+    fn min(self, o: Self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::min(self, o)
+        } else if self < o {
+            self
+        } else {
+            o
+        }
+    }
+
+    fn max(self, o: Self) -> Self::Type {
+        if cfg!(feature = "std") {
+            f32::max(self, o)
+        } else if self > o {
+            self
+        } else {
+            o
         }
     }
 }
