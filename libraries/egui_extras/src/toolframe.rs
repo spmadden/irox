@@ -158,6 +158,23 @@ impl App for ToolFrame {
                 self.child.menu(ui);
             });
         });
+        TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                if self.show_rendering_stats {
+                    self.frame_history.ui(ui);
+                }
+
+                self.child.bottom_bar(ui);
+                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                    if ctx.style().visuals.dark_mode && ui.button("\u{2600}").clicked() {
+                        ctx.set_theme(ThemePreference::Light);
+                    } else if ui.button("\u{1F318}").clicked() {
+                        ctx.set_theme(ThemePreference::Dark);
+                    }
+                });
+            });
+        });
+        self.child.update(ctx, frame);
 
         if self.style_ui {
             Window::new("style")
@@ -199,25 +216,6 @@ impl App for ToolFrame {
                     ctx.inspection_ui(ui);
                 });
         }
-
-        TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                if self.show_rendering_stats {
-                    self.frame_history.ui(ui);
-                }
-
-                self.child.bottom_bar(ui);
-                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    if ctx.style().visuals.dark_mode && ui.button("\u{2600}").clicked() {
-                        ctx.set_theme(ThemePreference::Light);
-                    } else if ui.button("\u{1F318}").clicked() {
-                        ctx.set_theme(ThemePreference::Dark);
-                    }
-                });
-            });
-        });
-
-        self.child.update(ctx, frame);
 
         if self.full_speed {
             ctx.request_repaint();
