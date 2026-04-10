@@ -81,6 +81,10 @@ required-features = ["eframe", "wgpu"]
 name = "draw_panels"
 required-features = ["eframe", "wgpu"]
 
+[[example]]
+name = "test_image"
+required-features = ["eframe", "wgpu"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
