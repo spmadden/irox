@@ -44,3 +44,7 @@ egui = { workspace = true, default-features = false, features = ["default_fonts"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "windowgraphs"
+required-features = ["irox-egui-extras/glow"]

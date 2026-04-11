@@ -331,8 +331,8 @@ impl Drop for TestApp {
 }
 
 impl App for TestApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        CentralPanel::default().show_inside(ui, |ui| {
             let num_plots = self.plots.len();
             let rem = ui.available_size();
             let each = Vec2::new(rem.x / 2., rem.y / num_plots as f32);

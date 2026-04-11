@@ -4,7 +4,7 @@
 
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Layout, Vec2, ViewportBuilder};
+use egui::{CentralPanel, Layout, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{BasicPlot, PlotPoint};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_log::log::error;
@@ -55,8 +55,8 @@ impl TestApp {
     }
 }
 impl App for TestApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        CentralPanel::default().show_inside(ui, |ui| {
             ui.with_layout(Layout::top_down(Align::Max), |ui| {
                 self.log_plot.show(ui);
             });

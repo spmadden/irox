@@ -68,13 +68,13 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0.31", default-features = false }
-eframe = { version = "^0.31", default-features = false }
-emath = { version = "^0.31", default-features = false }
-ehttp = { version = "0.6.0", default-features = false }
+egui = { version = "^0.34", default-features = false }
+eframe = { version = "^0.34", default-features = false }
+emath = { version = "^0.34", default-features = false }
+ehttp = { version = "0.7.0", default-features = false }
 profiling = { version = "^1.0", features = ["profile-with-puffin"] }
-puffin = { version = "^0.19", features = [] }
-puffin_http = { version = "^0.16", features = [] }
+puffin = { version = "^0.20", features = [] }
+puffin_http = { version = "^0.17", features = [] }
 ron = { version = "^0.8", features = ["integer128"] }
 serde = { version = "^1.0", default-features = false, features = [] }
 serde_json = { version = "^1.0", features = [] }
@@ -99,7 +99,7 @@ wasm-bindgen-futures = "0.4.54"
 criterion = "0.5"
 core_affinity = "0.8"
 toml = "0.8"
-glow = "0.16"
+glow = "0.17"
 
 irox-arch-x86-64 = { version = "0.1" }
 web-sys = {version = "0.3.81"}
@@ -261,7 +261,7 @@ single_option_map = "warn"
 str_split_at_newline = "warn"
 tests_outside_test_module = "warn"
 trivially_copy_pass_by_ref = "warn"
-unchecked_duration_subtraction = "warn"
+unchecked_time_subtraction = "warn"
 undocumented_unsafe_blocks = "warn"
 unimplemented = "warn"
 uninlined_format_args = "warn"

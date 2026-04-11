@@ -218,11 +218,11 @@ impl FDPSimulationWidget {
             self.tick(ctx);
         }
     }
-    pub fn show(&mut self, ctx: &Context, ui: &mut Ui) {
+    pub fn show(&mut self, ui: &mut Ui) {
         profile_scope!("FDPWidget::show");
-        self.handle_drag(ctx);
+        self.handle_drag(ui.ctx());
         if self.sim_params_window {
-            Window::new("Simulation Params").show(ctx, |ui| {
+            Window::new("Simulation Params").show(ui.ctx(), |ui| {
                 ParamsWindow {
                     params: &mut self.sim.params,
                     forces: &mut self.sim.forces,
@@ -269,7 +269,7 @@ impl FDPSimulationWidget {
             let p = Pos2::new(p.vx as f32, p.vy as f32);
 
             shapes.push(Shape::Circle(CircleShape::filled(p, 2., fgc)));
-            let galley = ui.ctx().fonts(|f| {
+            let galley = ui.ctx().fonts_mut(|f| {
                 let mut job =
                     LayoutJob::simple(id.clone(), FontId::monospace(14.), fgc, f32::INFINITY);
                 job.halign = Align::Center;
@@ -457,7 +457,7 @@ impl FDPSimulationWidget {
             if !contains.is_empty() {
                 let fgc = ui.visuals().widgets.active.fg_stroke.color;
                 let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
-                let galley = ui.ctx().fonts(|f| {
+                let galley = ui.ctx().fonts_mut(|f| {
                     let mut job = LayoutJob::simple(
                         contains.clone(),
                         FontId::monospace(14.),

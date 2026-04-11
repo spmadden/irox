@@ -85,6 +85,10 @@ required-features = ["eframe", "wgpu"]
 name = "test_image"
 required-features = ["eframe", "wgpu"]
 
+[[example]]
+name = "egui-progress"
+required-features = ["eframe", "wgpu", "serde"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

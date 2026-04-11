@@ -3,7 +3,7 @@
 //
 
 use egui::emath::Align;
-use egui::{Context, Id, Key, Layout, Modifiers, TextEdit, Vec2, ViewportCommand, Widget};
+use egui::{Id, Key, Layout, Modifiers, TextEdit, Ui, Vec2, ViewportCommand, Widget};
 use irox_tools::cfg_feature_eframe;
 use log::error;
 use std::sync::mpsc::Sender;
@@ -28,21 +28,24 @@ impl DialogWidget {
 
     ///
     /// Renders a message-type dialog, that displays a label
-    pub fn render_message(&mut self, ctx: &Context, ui: &mut egui::Ui) {
+    pub fn render_message(&mut self, ui: &mut egui::Ui) {
         ui.vertical_centered(|ui| {
             ui.label(self.options.prompt.as_deref().unwrap_or_default());
             ui.end_row();
-            self.check_interaction(ui, ctx);
+            self.check_interaction(ui);
         });
     }
     ///
     /// Renders a password dialog that displays an password-masked input and a
     /// prompt
-    pub fn render_password(&mut self, ctx: &Context, ui: &mut egui::Ui) {
-        if self.options.dialog_type.is_input() && ctx.cumulative_pass_nr() == 0 {
-            ctx.memory_mut(|m| {
-                m.request_focus(Id::new("pwdlg-inp"));
-            });
+    pub fn render_password(&mut self, ui: &mut egui::Ui) {
+        {
+            let ctx = ui.ctx();
+            if self.options.dialog_type.is_input() && ctx.cumulative_pass_nr() == 0 {
+                ctx.memory_mut(|m| {
+                    m.request_focus(Id::new("pwdlg-inp"));
+                });
+            }
         }
         ui.vertical_centered(|ui| {
             ui.allocate_ui_with_layout(
@@ -58,26 +61,32 @@ impl DialogWidget {
                         .desired_width(100f32)
                         .hint_text("hunter2")
                         .ui(ui);
-                    if ctx.input_mut(|v| v.consume_key(Modifiers::NONE, Key::Enter)) {
-                        self.send_result(ctx, UserResponse::OkInput(self.input.clone()));
-                    } else if ctx.input_mut(|v| v.consume_key(Modifiers::NONE, Key::Escape)) {
-                        self.send_result(ctx, UserResponse::Cancel);
+                    if ui
+                        .ctx()
+                        .input_mut(|v| v.consume_key(Modifiers::NONE, Key::Enter))
+                    {
+                        self.send_result(ui, UserResponse::OkInput(self.input.clone()));
+                    } else if ui
+                        .ctx()
+                        .input_mut(|v| v.consume_key(Modifiers::NONE, Key::Escape))
+                    {
+                        self.send_result(ui, UserResponse::Cancel);
                     }
                 },
             );
             ui.end_row();
-            self.check_interaction(ui, ctx);
+            self.check_interaction(ui);
         });
     }
 
-    fn check_interaction(&mut self, ui: &mut egui::Ui, ctx: &Context) {
+    fn check_interaction(&mut self, ui: &mut egui::Ui) {
         if let Some(resp) = self.render_interaction(ui) {
-            self.send_result(ctx, resp);
+            self.send_result(ui, resp);
         }
     }
 
-    fn send_result(&mut self, ctx: &Context, resp: UserResponse) {
-        ctx.send_viewport_cmd(ViewportCommand::Close);
+    fn send_result(&mut self, ui: &mut Ui, resp: UserResponse) {
+        ui.ctx().send_viewport_cmd(ViewportCommand::Close);
         if let Err(e) = self.sender.send(resp) {
             error!("{e:?}");
         } else {
@@ -139,13 +148,13 @@ impl DialogWidget {
         .inner
     }
 
-    pub fn ui(&mut self, ctx: &Context, ui: &mut egui::Ui) {
+    pub fn show(&mut self, ui: &mut egui::Ui) {
         match self.options.dialog_type {
             DialogType::Message => {
-                self.render_message(ctx, ui);
+                self.render_message(ui);
             }
             DialogType::Password => {
-                self.render_password(ctx, ui);
+                self.render_password(ui);
             }
             _ => {} // DialogType::Progress => {}
                     // DialogType::Error => {}
@@ -155,9 +164,9 @@ impl DialogWidget {
 }
 cfg_feature_eframe! {
     impl eframe::App for DialogWidget {
-        fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-            egui::CentralPanel::default().show(ctx, |ui| {
-                self.ui(ctx, ui);
+        fn ui(&mut self, outer: &mut Ui, _frame: &mut eframe::Frame) {
+            egui::CentralPanel::default().show_inside(outer, |ui| {
+               self.show(ui);
             });
         }
     }

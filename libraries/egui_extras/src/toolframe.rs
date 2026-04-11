@@ -9,7 +9,7 @@ use crate::frame_history::FrameHistory;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame, Storage};
 use egui::{
-    menu, Context, Id, Layout, RawInput, ThemePreference, TopBottomPanel, Ui, Visuals, Window,
+    containers::menu, Context, Id, Layout, Panel, RawInput, ThemePreference, Ui, Visuals, Window,
 };
 use std::time::Duration;
 
@@ -98,19 +98,19 @@ impl ToolFrame {
 }
 
 impl App for ToolFrame {
-    fn update(&mut self, ctx: &Context, frame: &mut Frame) {
+    fn ui(&mut self, ui: &mut Ui, frame: &mut Frame) {
         self.frame_history
-            .on_new_frame(ctx.input(|i| i.time), frame.info().cpu_usage);
+            .on_new_frame(ui.ctx().input(|i| i.time), frame.info().cpu_usage);
 
-        TopBottomPanel::top(Id::new("top_panel")).show(ctx, |ui| {
-            menu::bar(ui, |ui| {
+        Panel::top(Id::new("top_panel")).show_inside(ui, |ui| {
+            menu::MenuBar::new().ui(ui, |ui| {
                 if !self.disable_file_menu {
                     ui.menu_button("File", |ui| {
                         self.child.file_menu(ui);
 
                         #[cfg(not(target_arch = "wasm32"))]
                         if ui.button("Exit").clicked() {
-                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
                         }
                     });
                 }
@@ -122,34 +122,34 @@ impl App for ToolFrame {
 
                         if ui.button("Style").clicked() {
                             self.style_ui = true;
-                            ui.close_menu();
+                            ui.close();
                         }
                         #[allow(clippy::collapsible_if)]
                         if self.enable_settings_ui {
                             if ui.button("Settings").clicked() {
                                 self.settings_ui = true;
-                                ui.close_menu();
+                                ui.close();
                             }
                         }
                         #[allow(clippy::collapsible_if)]
                         if self.enable_inspection_ui {
                             if ui.button("Inspections").clicked() {
                                 self.inspection_ui = true;
-                                ui.close_menu();
+                                ui.close();
                             }
                         }
                         #[allow(clippy::collapsible_if)]
                         if self.enable_texture_ui {
                             if ui.button("Textures").clicked() {
                                 self.texture_ui = true;
-                                ui.close_menu();
+                                ui.close();
                             }
                         }
                         #[allow(clippy::collapsible_if)]
                         if self.enable_memory_ui {
                             if ui.button("Memory").clicked() {
                                 self.memory_ui = true;
-                                ui.close_menu();
+                                ui.close();
                             }
                         }
                     });
@@ -158,7 +158,7 @@ impl App for ToolFrame {
                 self.child.menu(ui);
             });
         });
-        TopBottomPanel::bottom(Id::new("bottom_panel")).show(ctx, |ui| {
+        Panel::bottom(Id::new("bottom_panel")).show_inside(ui, |ui| {
             ui.horizontal(|ui| {
                 if self.show_rendering_stats {
                     self.frame_history.ui(ui);
@@ -166,59 +166,62 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    if ctx.style().visuals.dark_mode && ui.button("\u{2600}").clicked() {
-                        ctx.set_theme(ThemePreference::Light);
+                    if ui.ctx().global_style().visuals.dark_mode && ui.button("\u{2600}").clicked()
+                    {
+                        ui.ctx().set_theme(ThemePreference::Light);
                     } else if ui.button("\u{1F318}").clicked() {
-                        ctx.set_theme(ThemePreference::Dark);
+                        ui.ctx().set_theme(ThemePreference::Dark);
                     }
                 });
             });
         });
-        self.child.update(ctx, frame);
+        self.child.ui(ui, frame);
 
         if self.style_ui {
             Window::new("style")
                 .open(&mut self.style_ui)
-                .show(ctx, |ui| {
-                    let mut theme = ctx.options(|o| o.theme_preference);
+                .show(ui.ctx(), |ui| {
+                    let mut theme = ui.ctx().options(|o| o.theme_preference);
                     theme.radio_buttons(ui);
-                    if theme != ctx.options(|o| o.theme_preference) {
-                        ctx.set_theme(theme);
+                    if theme != ui.ctx().options(|o| o.theme_preference) {
+                        ui.ctx().set_theme(theme);
                     }
-                    ctx.style_ui(ui, ctx.theme());
+                    let theme = ui.ctx().theme();
+                    let ctx = ui.ctx().clone();
+                    ctx.style_ui(ui, theme);
                 });
         }
         if self.memory_ui {
             Window::new("memory")
                 .open(&mut self.memory_ui)
-                .show(ctx, |ui| {
-                    ctx.memory_ui(ui);
+                .show(ui.ctx(), |ui| {
+                    ui.ctx().clone().memory_ui(ui);
                 });
         }
         if self.settings_ui {
             Window::new("settings")
                 .open(&mut self.settings_ui)
-                .show(ctx, |ui| {
-                    ctx.settings_ui(ui);
+                .show(ui.ctx(), |ui| {
+                    ui.ctx().clone().settings_ui(ui);
                 });
         }
         if self.texture_ui {
             Window::new("textures")
                 .open(&mut self.texture_ui)
-                .show(ctx, |ui| {
-                    ctx.texture_ui(ui);
+                .show(ui.ctx(), |ui| {
+                    ui.ctx().clone().texture_ui(ui);
                 });
         }
         if self.inspection_ui {
             Window::new("inspection")
                 .open(&mut self.inspection_ui)
-                .show(ctx, |ui| {
-                    ctx.inspection_ui(ui);
+                .show(ui.ctx(), |ui| {
+                    ui.ctx().clone().inspection_ui(ui);
                 });
         }
 
         if self.full_speed {
-            ctx.request_repaint();
+            ui.ctx().request_repaint();
         }
     }
     #[cfg(target_arch = "wasm32")]

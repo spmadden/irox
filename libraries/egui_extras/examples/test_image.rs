@@ -74,9 +74,9 @@ impl TestApp {
     }
 }
 impl eframe::App for TestApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        self.init(ctx);
-        CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
+        self.init(ui.ctx());
+        CentralPanel::default().show_inside(ui, |ui| {
             let (resp, painter) = ui.allocate_painter(Vec2::new(1024., 1024.), Sense::empty());
             let rect = resp.rect;
             for shp in &self.shapes {

@@ -7,7 +7,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use eframe::{self, Frame};
-use egui::{CentralPanel, Context};
+use egui::{CentralPanel, Ui};
 use log::error;
 
 use irox_egui_extras::composite::CompositeApp;
@@ -156,8 +156,8 @@ fn _generate_profile_for_start_time(start_time: i32) -> [Vec<[f64; 2]>; 2] {
 }
 
 impl eframe::App for HalflifesApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        CentralPanel::default().show_inside(ui, |ui| {
             // ui.add(egui::Slider::new(&mut self.first, 0.0..=10.0).text("first"));
             // ui.add(egui::Slider::new(&mut self.second, 0.0..=10.0).text("second"));
             self.plot.show(ui);

@@ -8,7 +8,6 @@
 use crate::fonts;
 use crate::fonts::FontSet;
 use crate::fonts::BOLD;
-use crate::profile_scope;
 use egui::epaint::TextShape;
 use egui::{
     pos2, Align, Align2, Color32, Context, CornerRadius, FontFamily, FontId, Mesh, Painter, Pos2,
@@ -584,7 +583,7 @@ impl BasicPlot {
                 )
                 .clicked()
             {
-                ui.close_menu();
+                ui.close();
             }
             if ui
                 .selectable_value(
@@ -594,7 +593,7 @@ impl BasicPlot {
                 )
                 .clicked()
             {
-                ui.close_menu();
+                ui.close();
             }
             if ui
                 .selectable_value(
@@ -604,11 +603,11 @@ impl BasicPlot {
                 )
                 .clicked()
             {
-                ui.close_menu();
+                ui.close();
             }
             if ui.button("reset zoom").clicked() {
                 self.x_axis.zoomed_range = None;
-                ui.close_menu();
+                ui.close();
             }
         });
         self.interaction.update(&mut response, &mut painter);

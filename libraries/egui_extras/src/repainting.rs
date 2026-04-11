@@ -45,8 +45,8 @@ impl RepaintManager {
                     }
                     if now - last_metrics >= Duration::from_seconds(1) {
                         // println!("{per_second}");
-                        per_second = 0;
                         measured_fps.store(per_second, Ordering::Relaxed);
+                        per_second = 0;
                         last_metrics = now;
                     }
                 }

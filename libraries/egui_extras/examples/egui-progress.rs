@@ -7,7 +7,7 @@ use std::io::{BufWriter, Error};
 use std::thread::JoinHandle;
 
 use eframe::{App, CreationContext, Frame, NativeOptions};
-use egui::{CentralPanel, Context, Window};
+use egui::{CentralPanel, Ui, Window};
 use log::error;
 
 use irox_bits::MutBits;
@@ -98,25 +98,24 @@ impl ProgressApp {
 }
 
 impl App for ProgressApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        CentralPanel::default().show(ctx, |_ui| {
-            Window::new("progress").show(ctx, |ui| {
-                if ui.button("Start one").clicked() {
-                    self.new_task();
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        Window::new("progress").show(ui.ctx(), |ui| {
+            if ui.button("Start one").clicked() {
+                self.new_task();
+            }
+            let enabled = self
+                .writes_task
+                .as_ref()
+                .map(|e| e.is_complete() || e.is_cancelled())
+                .unwrap_or(true);
+            ui.add_enabled_ui(enabled, |ui| {
+                if ui.button("random writes").clicked() {
+                    self.start_writes_task();
                 }
-                let enabled = self
-                    .writes_task
-                    .as_ref()
-                    .map(|e| e.is_complete() || e.is_cancelled())
-                    .unwrap_or(true);
-                ui.add_enabled_ui(enabled, |ui| {
-                    if ui.button("random writes").clicked() {
-                        self.start_writes_task();
-                    }
-                });
-                self.prog.ui(ui);
             });
+            self.prog.ui(ui);
         });
+        CentralPanel::default().show_inside(ui, |_ui| {});
     }
 }
 

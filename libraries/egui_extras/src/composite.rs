@@ -9,7 +9,7 @@
 use std::time::Duration;
 
 use eframe::{App, Frame, Storage};
-use egui::{Context, RawInput, Visuals};
+use egui::{Context, RawInput, Ui, Visuals};
 
 ///
 /// An implementation of `eframe::App` that allows the composition of multiple sub-apps.
@@ -38,9 +38,9 @@ impl From<Vec<Box<dyn App>>> for CompositeApp {
 }
 
 impl App for CompositeApp {
-    fn update(&mut self, ctx: &Context, frame: &mut Frame) {
+    fn ui(&mut self, ui: &mut Ui, frame: &mut Frame) {
         for app in &mut self.apps {
-            app.update(ctx, frame)
+            app.ui(ui, frame)
         }
     }
 

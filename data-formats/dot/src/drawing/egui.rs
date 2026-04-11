@@ -231,7 +231,7 @@ impl Drawable for Text {
         let text = Shape::Text(TextShape::new(
             Pos2::new(self.pt[0], -self.pt[1]) - shift,
             ctx.ctx
-                .fonts(|f| f.layout_no_wrap(self.text.clone(), font, col)),
+                .fonts_mut(|f| f.layout_no_wrap(self.text.clone(), font, col)),
             col,
         ));
         Some(text)

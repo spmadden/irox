@@ -4,7 +4,7 @@
 
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context, Layout, Pos2, Shape, Vec2, ViewportBuilder, Window};
+use egui::{CentralPanel, Layout, Pos2, Shape, Ui, Vec2, ViewportBuilder, Window};
 use irox_build_rs::BuildEnvironment;
 use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::composite::CompositeApp;
@@ -148,13 +148,13 @@ impl TestApp {
     }
 }
 impl App for TestApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
         if self.show_serde {
             Window::new("test serde")
                 .hscroll(true)
                 .vscroll(true)
                 .open(&mut self.show_serde)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     let def = BasicStruct::new();
 
                     let mut ser = EguiSerializer::new();
@@ -169,7 +169,7 @@ impl App for TestApp {
                 .constrain(true)
                 .default_width(500.)
                 .open(&mut self.show_bars)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     ProgressBar::indeterminate()
                         .text_center("I'm indeterminate!".to_string())
                         .ui(ui);
@@ -182,28 +182,28 @@ impl App for TestApp {
                 });
         }
         if self.show_visuals {
-            self.show_visuals = VisualsWindow::show_visuals_window(ctx);
+            self.show_visuals = VisualsWindow::show_visuals_window(ui.ctx());
         }
         if self.show_plot {
             Window::new("test log plot")
                 .constrain(true)
                 .default_width(500.)
                 .open(&mut self.show_plot)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     self.log_plot.show(ui);
                 });
             Window::new("test log plot 2")
                 .constrain(true)
                 .default_width(500.)
                 .open(&mut self.show_plot)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     self.log_plot2.show(ui);
                 });
             Window::new("test log plot 3")
                 .constrain(true)
                 .default_width(500.)
                 .open(&mut self.show_plot)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     self.log_plot3.show(ui);
                 });
         }
@@ -212,7 +212,7 @@ impl App for TestApp {
                 .constrain(true)
                 .default_width(500.)
                 .open(&mut self.show_about)
-                .show(ctx, |ui| {
+                .show(ui.ctx(), |ui| {
                     // AboutWindow::show_grouped(irox_egui_extras::build::get_GROUPS, ui);
                     ui.horizontal_top(|ui| {
                         ui.radio_value(&mut self.about_tabs, AboutTabs::Important, "Important");
@@ -234,7 +234,7 @@ impl App for TestApp {
                 });
         }
 
-        CentralPanel::default().show(ctx, |ui| {
+        CentralPanel::default().show_inside(ui, |ui| {
             ui.with_layout(Layout::top_down(Align::Max), |ui| {
                 ui.toggle_value(&mut self.show_bars, "Progressbars");
                 ui.toggle_value(&mut self.show_serde, "Serde UI");

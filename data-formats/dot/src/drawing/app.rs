@@ -85,7 +85,7 @@ impl App {
         };
         let mut draw = DrawContext::new(ctx);
 
-        draw.visuals = Some(ctx.style().visuals.clone());
+        draw.visuals = Some(ctx.global_style().visuals.clone());
         let mut nodes = BTreeMap::<i32, Rc<RefCell<Node>>>::new();
         let mut edges = BTreeMap::<i32, Rc<AssocEdge>>::new();
         for obj in &data.objects {
@@ -261,14 +261,14 @@ impl Node {
     }
 }
 impl eframe::App for App {
-    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        self.init(ctx);
-        CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
+        self.init(ui.ctx());
+        CentralPanel::default().show_inside(ui, |ui| {
             ui.with_layout(Layout::left_to_right(Align::TOP), |ui| {
                 ui.label("Search:");
                 if ui.text_edit_singleline(&mut self.search).changed() {
                     // if !self.search.is_empty() {
-                    self.highlight(ctx);
+                    self.highlight(ui.ctx());
                     // }
                 }
                 if !self.search.is_empty() {
