@@ -8,9 +8,9 @@
 //!
 
 extern crate alloc;
+use crate::cfg_feature_alloc;
 use crate::hash::murmur3_128;
 use crate::uuid::UUID;
-use crate::{cfg_feature_alloc, format};
 use alloc::string::{String, ToString};
 use core::fmt::{Display, Formatter};
 
@@ -44,9 +44,9 @@ impl Identifier {
     #[must_use]
     pub fn as_string(&self) -> Identifier {
         match self {
-            Identifier::Integer(i) => Identifier::String(format!("{i}")),
+            Identifier::Integer(i) => Identifier::String(crate::format!("{i}")),
             Identifier::String(s) => Identifier::String(s.clone()),
-            Identifier::UUID(u) => Identifier::String(format!("{u}")),
+            Identifier::UUID(u) => Identifier::String(crate::format!("{u}")),
         }
     }
 
