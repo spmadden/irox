@@ -19,6 +19,8 @@ mod flow;
 mod graph;
 mod node;
 mod paths;
+pub mod walk;
+
 cfg_feature_egui! {
     pub mod egui;
 

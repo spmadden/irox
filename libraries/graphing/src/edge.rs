@@ -50,6 +50,16 @@ impl From<Edge> for SharedEdge {
     }
 }
 impl SharedEdge {
+    pub fn get_mut<F: FnMut(&mut Edge)>(&self, mut f: F) {
+        if let Ok(mut lock) = self.inner.write() {
+            f(&mut lock);
+        }
+    }
+    pub fn get<F: FnMut(&Edge)>(&self, mut f: F) {
+        if let Ok(lock) = self.inner.read() {
+            f(&lock);
+        }
+    }
     pub fn get_sides(&self) -> Option<(SharedNode, SharedNode)> {
         if let Ok(lock) = self.inner.read() {
             let (a, b) = lock.get_sides();
@@ -61,6 +71,16 @@ impl SharedEdge {
     pub fn descriptor(&self) -> Option<EdgeDescriptor> {
         if let Ok(lock) = self.inner.read() {
             Some(lock.descriptor().clone())
+        } else {
+            None
+        }
+    }
+    pub fn opposite_side_of(&self, node: &SharedIdentifier) -> Option<SharedNode> {
+        let (a, b) = self.get_sides()?;
+        if a.id()? == *node {
+            Some(b.clone())
+        } else if b.id()? == *node {
+            Some(a.clone())
         } else {
             None
         }
