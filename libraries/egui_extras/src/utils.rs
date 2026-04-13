@@ -2,8 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
-use eframe::emath::Pos2;
-use eframe::epaint::{Color32, QuadraticBezierShape, Shape, Stroke};
+use egui::emath::Pos2;
+use egui::epaint::{Color32, QuadraticBezierShape, Shape, Stroke};
 use std::f32::consts::FRAC_PI_2;
 
 pub fn line_to_bezier(pts: [Pos2; 2]) -> Shape {

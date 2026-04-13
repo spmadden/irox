@@ -6,7 +6,7 @@
 
 use eframe::wasm_bindgen::{self, prelude::*};
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Context};
+use egui::{CentralPanel, Ui};
 
 type DynError = Box<dyn std::error::Error + Send + Sync>;
 pub type AppCreator<'app> =
@@ -83,8 +83,8 @@ impl TestApp {
     }
 }
 impl eframe::App for TestApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        CentralPanel::default().show(ctx, |ui| ui.label("it worked!"));
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        CentralPanel::default().show_inside(ui, |ui| ui.label("it worked!"));
     }
 }
 generate_web_handle!(TestHandle, Box::new(|cc| Ok(Box::new(TestApp::new(cc)))));

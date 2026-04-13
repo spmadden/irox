@@ -4,7 +4,7 @@
 
 extern crate alloc;
 
-use eframe::epaint::text::FontPriority;
+use egui::epaint::text::FontPriority;
 use egui::epaint::text::{FontData, FontInsert, InsertFontFamily};
 use egui::{Context, FontFamily};
 

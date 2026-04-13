@@ -24,7 +24,7 @@ dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland", "wgpu"]
 wgpu = ["dep:eframe","eframe/wgpu"]
 glow = ["dep:eframe","eframe/glow", "dep:glow"]
-eframe = ["dep:eframe"]
+eframe = []
 
 [dependencies]
 egui.workspace = true
