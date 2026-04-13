@@ -3,7 +3,6 @@
 //
 
 use crate::{Color, ColorDepth, Image, ImageError, ImageMut, ImageSpace};
-use egui::Vec2;
 use irox_tools::cfg_feature_egui;
 
 #[derive(Clone, PartialEq)]
@@ -122,7 +121,7 @@ cfg_feature_egui! {
             egui::epaint::ColorImage {
                 size: [value.width, value.height],
                 pixels: value.data.as_slice().iter().map(Into::into).collect(),
-                source_size: Vec2::new(value.width as f32, value.height as f32),
+                source_size: egui::Vec2::new(value.width as f32, value.height as f32),
 
             }
         }
