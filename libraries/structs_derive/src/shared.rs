@@ -87,6 +87,82 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
     ts.wrap_braces({
         let mut ts = TokenStream::new();
         ts.extend(write_fields(&n, &config));
+
+        ts.add_ident("pub");
+        ts.add_ident("fn");
+        ts.add_ident("get");
+        ts.add_generics("F", {
+            let mut ts = TokenStream::new();
+            ts.add_ident("FnMut");
+            ts.add_parens(TokenStream::create_ref_ident("Node"));
+            ts
+        });
+        ts.add_parens({
+            let mut ts = TokenStream::new();
+            ts.extend(TokenStream::create_ref_ident("self"));
+            ts.add_punc(',');
+            ts.add_ident("mut");
+            ts.add_ident("f");
+            ts.add_punc(':');
+            ts.add_ident("F");
+            ts
+        });
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("if");
+            ts.add_ident("let");
+            ts.add_ident("Ok");
+            ts.add_parens(TokenStream::create_ident("lock"));
+            ts.add_punc('=');
+            ts.extend(TokenStream::create_callchain(&["self", "inner", "read"]));
+            ts.extend(TokenStream::create_empty_type());
+            ts.wrap_braces({
+                let mut ts = TokenStream::new();
+                ts.add_ident("f");
+                ts.add_parens(TokenStream::create_ref_ident("lock"));
+                ts
+            });
+            ts.add_punc(';');
+            ts
+        });
+
+        ts.add_ident("pub");
+        ts.add_ident("fn");
+        ts.add_ident("get_mut");
+        ts.add_generics("F", {
+            let mut ts = TokenStream::new();
+            ts.add_ident("FnMut");
+            ts.add_parens(TokenStream::create_mut_ref_ident("Node"));
+            ts
+        });
+        ts.add_parens({
+            let mut ts = TokenStream::new();
+            ts.extend(TokenStream::create_ref_ident("self"));
+            ts.add_punc(',');
+            ts.add_ident("mut");
+            ts.add_ident("f");
+            ts.add_punc(':');
+            ts.add_ident("F");
+            ts
+        });
+        ts.wrap_braces({
+            let mut ts = TokenStream::new();
+            ts.add_ident("if");
+            ts.add_ident("let");
+            ts.add_ident("Ok");
+            ts.add_parens(TokenStream::create_mut_ident("lock"));
+            ts.add_punc('=');
+            ts.extend(TokenStream::create_callchain(&["self", "inner", "write"]));
+            ts.extend(TokenStream::create_empty_type());
+            ts.wrap_braces({
+                let mut ts = TokenStream::new();
+                ts.add_ident("f");
+                ts.add_parens(TokenStream::create_mut_ref_ident("lock"));
+                ts
+            });
+            ts.add_punc(';');
+            ts
+        });
         ts
     });
 
