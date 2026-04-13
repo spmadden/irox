@@ -18,8 +18,8 @@ workspace = true
 [features]
 drawing = ["dep:serde", "dep:serde_json"]
 egui = ["drawing", "dep:irox-egui-extras", "dep:irox-log"]
-glow = ["egui", "irox-egui-extras/eframe"]
-wgpu = ["egui", "irox-egui-extras/eframe"]
+glow = ["egui", "irox-egui-extras/eframe", "irox-egui-extras/glow"]
+wgpu = ["egui", "irox-egui-extras/eframe", "irox-egui-extras/wgpu"]
 
 [dependencies]
 irox-bits = {workspace = true, features = ["std"]}
