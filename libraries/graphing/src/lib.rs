@@ -23,8 +23,6 @@ pub mod walk;
 
 cfg_feature_egui! {
     pub mod egui;
-
-
 }
 
 pub use descriptor::*;

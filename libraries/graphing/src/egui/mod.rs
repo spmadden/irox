@@ -2,6 +2,9 @@
 // Copyright 2025 IROX Contributors
 //
 
+pub mod renderer;
+
+use crate::egui::renderer::{EdgeRendererProvider, NodeRendererProvider, DEFAULT_EDGE_RENDERER, DEFAULT_NODE_RENDERER};
 use crate::fdp::{
     Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
     SimulationParams,
@@ -12,7 +15,7 @@ use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode}
 use irox_egui_extras::eframe::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{
-    Align, Color32, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Stroke, Ui,
+    Align, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Ui,
     Vec2, Widget, Window,
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
@@ -146,6 +149,8 @@ pub struct FDPSimulationWidget {
     pub draw_id: bool,
 
     pub sim_params_window: bool,
+    pub node_renderer: NodeRendererProvider,
+    pub edge_renderer: EdgeRendererProvider,
 }
 impl FDPSimulationWidget {
     pub fn with_simulation(sim: Simulation) -> Self {
@@ -178,6 +183,8 @@ impl FDPSimulationWidget {
             dragging: None,
             sim_params_window: false,
             draw_id: true,
+            node_renderer: Box::new(|_| &DEFAULT_NODE_RENDERER),
+            edge_renderer: Box::new(|_| &DEFAULT_EDGE_RENDERER),
         }
     }
     pub fn new(graph: Shared<Graph>) -> Self {
@@ -253,15 +260,11 @@ impl FDPSimulationWidget {
             sim.node_mut(&edge.right, |n| {
                 right = n.current_position;
             });
-            let pts = [
-                Pos2::new(left.vx as f32, left.vy as f32),
-                Pos2::new(right.vx as f32, right.vy as f32),
-            ];
-            // shapes.push(line_to_bezier(pts));
-            shapes.push(Shape::LineSegment {
-                points: pts,
-                stroke: Stroke::new(1.0, Color32::BLACK),
-            })
+            sim.graph.borrow().edges.get(&edge.id).map(|edge| {
+                edge.get(|edge| {
+                    (self.edge_renderer)(edge).add_shapes_to(edge, left, right, &mut shapes);
+                });
+            });
         });
         self.sim.iter_nodes(|id, _node, working| {
             let id = id.to_string();
@@ -269,19 +272,19 @@ impl FDPSimulationWidget {
             let p = Pos2::new(p.vx as f32, p.vy as f32);
 
             shapes.push(Shape::Circle(CircleShape::filled(p, 2., fgc)));
-            let galley = ui.ctx().fonts_mut(|f| {
-                let mut job =
-                    LayoutJob::simple(id.clone(), FontId::monospace(14.), fgc, f32::INFINITY);
-                job.halign = Align::Center;
-                f.layout_job(job)
-            });
-            let ctr = galley.rect.size() / 2.;
-            let mut adj = galley.rect.left_top();
-            adj.x += ctr.x / self.panel.transform.scaling;
-
-            let rect = galley.rect.translate(-adj.to_vec2()).translate(p.to_vec2());
 
             if self.draw_id {
+                let galley = ui.ctx().fonts_mut(|f| {
+                    let mut job =
+                        LayoutJob::simple(id.clone(), FontId::monospace(14.), fgc, f32::INFINITY);
+                    job.halign = Align::Center;
+                    f.layout_job(job)
+                });
+                let ctr = galley.rect.size() / 2.;
+                let mut adj = galley.rect.left_top();
+                adj.x += ctr.x / self.panel.transform.scaling;
+
+                let rect = galley.rect.translate(-adj.to_vec2()).translate(p.to_vec2());
                 let txt = Shape::Text(TextShape::new(p, galley, fgc));
                 let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
                 shapes.push(Shape::Rect(rect));
