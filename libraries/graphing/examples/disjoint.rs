@@ -5,7 +5,7 @@
 use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::eframe;
 use irox_egui_extras::eframe::App;
-use irox_egui_extras::egui::{Align, CentralPanel, Layout, Ui, Vec2, ViewportBuilder};
+use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::FDPSimulationWidget;
@@ -194,13 +194,16 @@ impl ToolApp for FDPSimulationApp {
         } else {
             ui.label(format!("{}", self.widget.sim.params.tick as u32));
         }
-        ui.with_layout(Layout::default().with_main_align(Align::RIGHT), |ui| {
-            let xfm = self.widget.panel.transform;
-            #[cfg(debug_assertions)]
-            ui.label(format!(
-                "Position: {} // Scale: {}",
-                xfm.translation, xfm.scaling
-            ));
-        });
+        #[cfg(debug_assertions)]
+        ui.with_layout(
+            egui::Layout::default().with_main_align(egui::Align::RIGHT),
+            |ui| {
+                let xfm = self.widget.panel.transform;
+                ui.label(format!(
+                    "Position: {} // Scale: {}",
+                    xfm.translation, xfm.scaling
+                ));
+            },
+        );
     }
 }

@@ -4,7 +4,10 @@
 
 pub mod renderer;
 
-use crate::egui::renderer::{EdgeRendererProvider, NodeRendererProvider, DEFAULT_EDGE_RENDERER, DEFAULT_NODE_RENDERER};
+use crate::egui::renderer::{
+    EdgeRendererProvider, NodeRendererProvider, RenderingContext, DEFAULT_EDGE_RENDERER,
+    DEFAULT_NODE_RENDERER,
+};
 use crate::fdp::{
     Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
     SimulationParams,
@@ -12,11 +15,11 @@ use crate::fdp::{
 use crate::Graph;
 use core::fmt::Write;
 use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode};
-use irox_egui_extras::eframe::epaint::{CircleShape, RectShape, TextShape};
+use irox_egui_extras::eframe::epaint::{RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{
-    Align, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Ui,
-    Vec2, Widget, Window,
+    Align, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Ui, Vec2, Widget,
+    Window,
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
@@ -248,8 +251,15 @@ impl FDPSimulationWidget {
                 ui.checkbox(&mut self.play, text);
             });
         }
-        let fgc = ui.visuals().widgets.active.fg_stroke.color;
-        let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
+        let current_transform = self.panel.transform;
+        let current_world_area = self.panel.world_area;
+        let last_window_area = self.panel.last_window_area;
+        let rendering_context = RenderingContext {
+            current_transform,
+            current_world_area,
+            last_window_area,
+            ui,
+        };
         let mut shapes = Vec::new();
         self.sim.iter_edges(|edge, sim| {
             let mut left = Vector::<f64>::default();
@@ -260,36 +270,30 @@ impl FDPSimulationWidget {
             sim.node_mut(&edge.right, |n| {
                 right = n.current_position;
             });
-            sim.graph.borrow().edges.get(&edge.id).map(|edge| {
+            if let Some(edge) = sim.graph.borrow().edges.get(&edge.id) {
                 edge.get(|edge| {
-                    (self.edge_renderer)(edge).add_shapes_to(edge, left, right, &mut shapes);
+                    profile_scope!("Edge Renderer: {}", edge.id().to_string());
+                    (self.edge_renderer)(edge).add_shapes_to(
+                        &rendering_context,
+                        edge,
+                        left,
+                        right,
+                        &mut shapes,
+                    );
                 });
-            });
-        });
-        self.sim.iter_nodes(|id, _node, working| {
-            let id = id.to_string();
-            let p = working.current_position;
-            let p = Pos2::new(p.vx as f32, p.vy as f32);
-
-            shapes.push(Shape::Circle(CircleShape::filled(p, 2., fgc)));
-
-            if self.draw_id {
-                let galley = ui.ctx().fonts_mut(|f| {
-                    let mut job =
-                        LayoutJob::simple(id.clone(), FontId::monospace(14.), fgc, f32::INFINITY);
-                    job.halign = Align::Center;
-                    f.layout_job(job)
-                });
-                let ctr = galley.rect.size() / 2.;
-                let mut adj = galley.rect.left_top();
-                adj.x += ctr.x / self.panel.transform.scaling;
-
-                let rect = galley.rect.translate(-adj.to_vec2()).translate(p.to_vec2());
-                let txt = Shape::Text(TextShape::new(p, galley, fgc));
-                let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
-                shapes.push(Shape::Rect(rect));
-                shapes.push(txt);
             }
+        });
+        self.sim.iter_nodes(|_id, node, working| {
+            let ctr = working.current_position;
+            node.get(|node| {
+                profile_scope!("Node Renderer: {}", node.descriptor.id.to_string());
+                (self.node_renderer)(node).add_shapes_to(
+                    &rendering_context,
+                    node,
+                    ctr,
+                    &mut shapes,
+                );
+            });
         });
 
         let _ = self.graph_layer.send(LayerCommand::ClearSetShapes(shapes));
