@@ -73,8 +73,8 @@ eframe = { version = "^0.34", default-features = false }
 emath = { version = "^0.34", default-features = false }
 ehttp = { version = "0.7.0", default-features = false }
 profiling = { version = "^1.0", features = ["profile-with-puffin"] }
-puffin = { version = "^0.20", features = [] }
-puffin_http = { version = "^0.17", features = [] }
+puffin = { version = "^0.19.1", features = [] }
+puffin_http = { version = "^0.16.1", features = [] }
 ron = { version = "^0.8", features = ["integer128"] }
 serde = { version = "^1.0", default-features = false, features = [] }
 serde_json = { version = "^1.0", features = [] }
