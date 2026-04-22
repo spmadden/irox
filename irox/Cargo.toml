@@ -78,6 +78,7 @@ websockets = ["irox-networking?/websockets"]
 windows = ["irox-carto?/windows"]
 
 bits_backtrace = ["irox-bits?/bits_backtrace"]
+lock_backtrace = ["irox-tools?/lock_backtrace"]
 
 all_irox = [
     "bits",

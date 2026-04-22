@@ -4,10 +4,11 @@
 
 //! More complex synchronization primitives than in the STD.
 
+use core::fmt::{Display, Formatter};
 pub use eventual::*;
 pub use flags::*;
 pub use optional::*;
-use std::sync::MutexGuard;
+use std::sync::{MutexGuard, PoisonError};
 mod eventual;
 #[macro_use]
 mod once;
@@ -45,5 +46,34 @@ impl<'a, T> MaybeLocked<'a, T> {
             MaybeLocked::MutBorrowed(t) => func(t),
             MaybeLocked::Locked(t) => func(t),
         }
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct PoisonedError {
+    msg: String,
+}
+impl Display for PoisonedError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(f, "PoisonedError: {}", self.msg)
+    }
+}
+impl core::error::Error for PoisonedError {}
+
+impl<T> From<PoisonError<T>> for PoisonedError {
+    #[allow(clippy::print_stderr)]
+    fn from(_value: PoisonError<T>) -> Self {
+        let ty = core::any::type_name::<T>();
+        let msg = if cfg!(feature = "lock_backtrace") {
+            let bt = std::backtrace::Backtrace::capture();
+            #[cfg(all(feature = "lock_backtrace", debug_assertions))]
+            {
+                eprintln!("PoisonedError ({ty})\n{bt}");
+            }
+            format!("{ty}:\n{bt}")
+        } else {
+            ty.to_string()
+        };
+        Self { msg }
     }
 }

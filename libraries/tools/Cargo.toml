@@ -31,6 +31,8 @@ default = []
 std = ["irox-bits/std", "alloc"]
 alloc = ["irox-bits/alloc"]
 serde = ["dep:serde"]
+lock_backtrace = ["std"]
+
 
 _toobig-tests = [] # slow tests that take way too long to run normally.
 
