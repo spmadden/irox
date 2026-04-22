@@ -14,7 +14,7 @@ pub use collision::*;
 pub use edge::*;
 pub use repulsive::*;
 
-use crate::{Graph, SharedNode};
+use crate::{Graph, SharedEdgeIdentifier, SharedNode, SharedNodeIdentifier};
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
@@ -116,9 +116,9 @@ impl Debug for SimulationWorkingNode {
 }
 #[derive(Debug, Clone)]
 pub struct SimulationWorkingEdge {
-    pub id: SharedIdentifier,
-    pub left: SharedIdentifier,
-    pub right: SharedIdentifier,
+    pub id: SharedEdgeIdentifier,
+    pub left: SharedNodeIdentifier,
+    pub right: SharedNodeIdentifier,
 }
 pub trait InitialNodePlacer {
     fn place_node(&mut self, node: &mut SharedNode, working: &mut SimulationWorkingNode);
@@ -161,8 +161,8 @@ pub struct Simulation {
     pub graph: Shared<Graph>,
     pub forces: Vec<Force>,
 
-    pub working_nodes: OrderedHashMap<SharedIdentifier, SimulationWorkingNode>,
-    pub working_edges: OrderedHashMap<SharedIdentifier, SimulationWorkingEdge>,
+    pub working_nodes: OrderedHashMap<SharedNodeIdentifier, SimulationWorkingNode>,
+    pub working_edges: OrderedHashMap<SharedEdgeIdentifier, SimulationWorkingEdge>,
 
     pub params: SimulationParams,
     pub placement: Box<dyn InitialNodePlacer>,
@@ -211,23 +211,12 @@ impl Simulation {
                 .working_edges
                 .entry(id.clone())
                 .or_insert_with_key(|id| {
-                    let (left, right) = edge
-                        .get_sides()
-                        .map(|(left, right)| {
-                            (
-                                left.id()
-                                    .unwrap_or_else(|| Identifier::random_string().into()),
-                                right
-                                    .id()
-                                    .unwrap_or_else(|| Identifier::random_string().into()),
-                            )
-                        })
-                        .unwrap_or_else(|| {
-                            (
-                                Identifier::random_string().into(),
-                                Identifier::random_string().into(),
-                            )
-                        });
+                    let (left, right) = edge.get_sides().unwrap_or_else(|| {
+                        (
+                            Identifier::random_string().into(),
+                            Identifier::random_string().into(),
+                        )
+                    });
                     SimulationWorkingEdge {
                         id: id.clone(),
                         left,
@@ -238,10 +227,13 @@ impl Simulation {
         }
     }
 
-    pub fn iter_nodes<F: FnMut(&SharedIdentifier, &mut SharedNode, &mut SimulationWorkingNode)>(
+    pub fn iter_nodes<
+        F: FnMut(&SharedNodeIdentifier, &mut SharedNode, &mut SimulationWorkingNode),
+    >(
         &mut self,
         mut each: F,
     ) {
+        use core::ops::Deref;
         for (id, node) in &mut self.graph.borrow_mut().nodes {
             let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
             let working = self
@@ -249,7 +241,7 @@ impl Simulation {
                 .entry(id.clone())
                 .or_insert_with_key(|id| {
                     let mut new = SimulationWorkingNode {
-                        node: id.clone(),
+                        node: id.deref().clone(),
                         num_edges: num_edges as f64,
                         current_position: Default::default(),
                         current_velocity: Default::default(),
@@ -261,16 +253,17 @@ impl Simulation {
             each(id, node, working);
         }
     }
-    pub fn node<F: FnMut(&SimulationWorkingNode)>(&self, id: &SharedIdentifier, mut each: F) {
+    pub fn node<F: FnMut(&SimulationWorkingNode)>(&self, id: &SharedNodeIdentifier, mut each: F) {
         if let Some(working) = self.working_nodes.get(id) {
             each(working);
         }
     }
     pub fn node_mut<F: FnMut(&mut SimulationWorkingNode)>(
         &mut self,
-        id: &SharedIdentifier,
+        id: &SharedNodeIdentifier,
         mut each: F,
     ) {
+        use core::ops::Deref;
         if let Some(working) = self.working_nodes.get_mut(id) {
             each(working);
         } else {
@@ -279,7 +272,7 @@ impl Simulation {
                 let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
 
                 let mut new = SimulationWorkingNode {
-                    node: id.clone(),
+                    node: id.deref().clone(),
                     num_edges: num_edges as f64,
                     current_position: Default::default(),
                     current_velocity: Default::default(),

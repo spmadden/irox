@@ -66,12 +66,6 @@ impl TryFrom<MGraph> for Graph {
             let from = Identifier::String(e.source).into();
             let to = Identifier::String(e.target).into();
 
-            let Some(from) = g.nodes.get(&from).cloned() else {
-                return Err("Can't find from node".to_string());
-            };
-            let Some(to) = g.nodes.get(&to).cloned() else {
-                return Err("Can't find to node".to_string());
-            };
             let descriptor = EdgeDescriptor(Identifier::Integer(idx as u64).into());
             let e = Edge::Directed {
                 descriptor,

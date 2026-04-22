@@ -5,17 +5,21 @@
 extern crate alloc;
 
 use alloc::collections::BTreeMap;
-use alloc::sync::Arc;
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
-use irox_tools::identifier::{Identifier, SharedIdentifier};
-use std::sync::RwLock;
+use irox_structs_derive::Shared;
+use irox_tools::identifier::{Identifiable, Identifier, SharedIdentifier};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Shared)]
 pub struct Descriptor {
     pub id: SharedIdentifier,
     pub description: Option<String>,
     pub attrs: BTreeMap<String, String>,
+}
+impl Identifiable for Descriptor {
+    fn id(&self) -> Option<Identifier> {
+        Some(self.id.deref().clone())
+    }
 }
 impl Hash for Descriptor {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -41,8 +45,6 @@ impl From<SharedIdentifier> for Descriptor {
     }
 }
 
-pub type SharedDescriptor = Arc<RwLock<Descriptor>>;
-
 macro_rules! impl_descriptor {
     ($name:ident, $shname: ident) => {
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -59,7 +61,7 @@ macro_rules! impl_descriptor {
                 &mut self.0
             }
         }
-        pub type $shname = Arc<RwLock<$name>>;
+        pub type $shname = alloc::sync::Arc<std::sync::RwLock<$name>>;
     };
 }
 

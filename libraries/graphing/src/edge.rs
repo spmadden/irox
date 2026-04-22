@@ -2,36 +2,58 @@
 // Copyright 2025 IROX Contributors
 //
 extern crate alloc;
-use crate::{EdgeDescriptor, SharedNode};
+use crate::{EdgeDescriptor, SharedNodeIdentifier};
 use alloc::sync::Arc;
+use core::fmt::{Display, Formatter};
 use core::hash::{Hash, Hasher};
+use core::ops::{Deref, DerefMut};
 use irox_tools::identifier::SharedIdentifier;
 use std::sync::RwLock;
+
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct SharedEdgeIdentifier(SharedIdentifier);
+impl Deref for SharedEdgeIdentifier {
+    type Target = SharedIdentifier;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl From<SharedIdentifier> for SharedEdgeIdentifier {
+    fn from(value: SharedIdentifier) -> Self {
+        Self(value)
+    }
+}
+impl Display for SharedEdgeIdentifier {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        Display::fmt(self.0.deref(), f)
+    }
+}
 
 #[derive(Debug, Clone)]
 pub enum Edge {
     Directed {
         descriptor: EdgeDescriptor,
-        from: SharedNode,
-        to: SharedNode,
+        from: SharedNodeIdentifier,
+        to: SharedNodeIdentifier,
     },
     Undirected {
         descriptor: EdgeDescriptor,
-        left: SharedNode,
-        right: SharedNode,
+        left: SharedNodeIdentifier,
+        right: SharedNodeIdentifier,
     },
 }
 
 impl Edge {
-    pub fn id(&self) -> SharedIdentifier {
-        self.descriptor().id.clone()
+    pub fn id(&self) -> SharedEdgeIdentifier {
+        self.descriptor().id.clone().into()
     }
     pub fn descriptor(&self) -> &EdgeDescriptor {
         match self {
             Edge::Directed { descriptor, .. } | Edge::Undirected { descriptor, .. } => descriptor,
         }
     }
-    pub fn get_sides(&self) -> (&SharedNode, &SharedNode) {
+    pub fn get_sides(&self) -> (&SharedNodeIdentifier, &SharedNodeIdentifier) {
         match self {
             Edge::Directed { from, to, .. } => (from, to),
             Edge::Undirected { left, right, .. } => (left, right),
@@ -50,6 +72,11 @@ impl From<Edge> for SharedEdge {
     }
 }
 impl SharedEdge {
+    pub fn id<F: FnMut(SharedEdgeIdentifier)>(&self, mut f: F) {
+        if let Ok(lock) = self.inner.read() {
+            f(lock.id())
+        }
+    }
     pub fn get_mut<F: FnMut(&mut Edge)>(&self, mut f: F) {
         if let Ok(mut lock) = self.inner.write() {
             f(&mut lock);
@@ -60,7 +87,7 @@ impl SharedEdge {
             f(&lock);
         }
     }
-    pub fn get_sides(&self) -> Option<(SharedNode, SharedNode)> {
+    pub fn get_sides(&self) -> Option<(SharedNodeIdentifier, SharedNodeIdentifier)> {
         if let Ok(lock) = self.inner.read() {
             let (a, b) = lock.get_sides();
             Some((a.clone(), b.clone()))
@@ -75,12 +102,26 @@ impl SharedEdge {
             None
         }
     }
-    pub fn opposite_side_of(&self, node: &SharedIdentifier) -> Option<SharedNode> {
+    pub fn opposite_side_of(&self, node: &SharedNodeIdentifier) -> Option<SharedNodeIdentifier> {
         let (a, b) = self.get_sides()?;
-        if a.id()? == *node {
+        if &a == node {
             Some(b.clone())
-        } else if b.id()? == *node {
+        } else if &b == node {
             Some(a.clone())
+        } else {
+            None
+        }
+    }
+    pub fn read<R, T: FnMut(&Edge) -> R>(&self, mut f: T) -> Option<R> {
+        if let Ok(lock) = self.inner.read() {
+            Some(f(lock.deref()))
+        } else {
+            None
+        }
+    }
+    pub fn write<R, T: FnMut(&mut Edge) -> R>(&self, mut f: T) -> Option<R> {
+        if let Ok(mut lock) = self.inner.write() {
+            Some(f(lock.deref_mut()))
         } else {
             None
         }

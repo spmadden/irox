@@ -4,16 +4,14 @@
 
 #![allow(clippy::redundant_closure_for_method_calls)]
 
-use crate::{Edge, SharedEdge, SharedNode};
+use crate::{Edge, SharedEdge, SharedEdgeIdentifier, SharedNode, SharedNodeIdentifier};
 use core::ops::Deref;
-use irox_tools::identifier::SharedIdentifier;
-use irox_tools::options::MaybeMap;
 use std::collections::HashMap;
 
 #[derive(Debug, Default, Clone)]
 pub struct Graph {
-    pub nodes: HashMap<SharedIdentifier, SharedNode>,
-    pub edges: HashMap<SharedIdentifier, SharedEdge>,
+    pub nodes: HashMap<SharedNodeIdentifier, SharedNode>,
+    pub edges: HashMap<SharedEdgeIdentifier, SharedEdge>,
 }
 
 impl Graph {
@@ -21,7 +19,7 @@ impl Graph {
         let Some(d) = node.descriptor(|v| v.cloned()) else {
             return Err(format!("Can't retrieve descriptor from {node:?}"));
         };
-        self.nodes.insert(d.id.clone(), node);
+        self.nodes.insert(d.id.clone().into(), node);
         Ok(())
     }
     #[allow(clippy::needless_pass_by_value)]
@@ -29,38 +27,24 @@ impl Graph {
         let Some(d) = edge.descriptor() else {
             return Err(format!("Can't retrieve descriptor from {edge:?}"));
         };
-        self.edges.insert(d.id.clone(), edge.clone());
+        self.edges.insert(d.id.clone().into(), edge.clone());
         let Ok(lock) = edge.inner.read() else {
             return Err(format!("Can't get edge info for {d:?}"));
         };
         match lock.deref() {
             Edge::Directed { from, to, .. } => {
-                if let Some(node) = from
-                    .descriptor(|v| v.cloned())
-                    .maybe_map(|v| self.nodes.get(&v.id))
-                {
-                    node.add_navigable_edge(edge.clone());
-                }
-                if let Some(node) = to
-                    .descriptor(|v| v.cloned())
-                    .maybe_map(|v| self.nodes.get(&v.id))
-                {
-                    node.add_edge(edge.clone());
-                }
+                self.nodes
+                    .get(from)
+                    .and_then(|v| v.add_navigable_edge(&edge).err());
+                self.nodes.get(to).and_then(|v| v.add_edge(&edge).err());
             }
             Edge::Undirected { left, right, .. } => {
-                left.descriptor(|v| {
-                    v.cloned().inspect(|v| {
-                        let node = self.nodes.entry(v.id.clone()).or_insert(left.clone());
-                        node.add_navigable_edge(edge.clone());
-                    });
-                });
-                right.descriptor(|v| {
-                    v.cloned().inspect(|v| {
-                        let node = self.nodes.entry(v.id.clone()).or_insert(right.clone());
-                        node.add_navigable_edge(edge.clone());
-                    });
-                });
+                self.nodes
+                    .get(left)
+                    .and_then(|v| v.add_navigable_edge(&edge).err());
+                self.nodes
+                    .get(right)
+                    .and_then(|v| v.add_navigable_edge(&edge).err());
             }
         }
         Ok(())

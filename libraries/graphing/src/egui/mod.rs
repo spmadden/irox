@@ -12,7 +12,7 @@ use crate::fdp::{
     Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
     SimulationParams,
 };
-use crate::Graph;
+use crate::{Graph, SharedEdgeIdentifier, SharedNodeIdentifier};
 use core::fmt::Write;
 use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode};
 use irox_egui_extras::eframe::epaint::{RectShape, TextShape};
@@ -23,7 +23,6 @@ use irox_egui_extras::egui::{
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
-use irox_tools::identifier::SharedIdentifier;
 use std::sync::mpsc::Sender;
 
 const EDGE_MOUSEOVER_MAX_DISTANCE: f32 = 5.;
@@ -144,7 +143,7 @@ pub struct FDPSimulationWidget {
     pub panel: DrawPanel,
     pub graph_layer: Sender<LayerCommand>,
     pub tt_layer: Sender<LayerCommand>,
-    pub drag_subject: Option<SharedIdentifier>,
+    pub drag_subject: Option<SharedNodeIdentifier>,
     pub dragging: Option<DragEvent>,
     pub play: bool,
     pub last_tick: f64,
@@ -300,10 +299,10 @@ impl FDPSimulationWidget {
         self.panel.show(ui);
         self.find_hover(ui);
     }
-    pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedIdentifier> {
+    pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedEdgeIdentifier> {
         profile_scope!("FDPWidget::find_closest_edge_to");
         let xfm = self.panel.transform;
-        let mut closest_edge: Option<SharedIdentifier> = None;
+        let mut closest_edge: Option<SharedEdgeIdentifier> = None;
         let mut closest_edge_dist = f32::MAX;
         let translate = Vector::new(xfm.translation.x as f64, xfm.translation.y as f64);
         let mouse = Point::new_point(pos.x as f64, pos.y as f64);
@@ -331,13 +330,13 @@ impl FDPSimulationWidget {
         }
         closest_edge
     }
-    pub fn find_closest_node_to(&mut self, pos: Pos2) -> Option<SharedIdentifier> {
+    pub fn find_closest_node_to(&mut self, pos: Pos2) -> Option<SharedNodeIdentifier> {
         profile_scope!("FDPWidget::find_closest_node_to");
 
         let xfm = self.panel.transform;
 
         let mut closest_node_dist = f32::MAX;
-        let mut closest_node: Option<SharedIdentifier> = None;
+        let mut closest_node: Option<SharedNodeIdentifier> = None;
         for (id, n) in &self.sim.working_nodes {
             let np = n.current_position;
             let np = Pos2::new(np.vx as f32, np.vy as f32);
@@ -402,7 +401,7 @@ impl FDPSimulationWidget {
         }
     }
 
-    pub fn update_drag_subject(&mut self, sub: &SharedIdentifier) {
+    pub fn update_drag_subject(&mut self, sub: &SharedNodeIdentifier) {
         profile_scope!("FDPWidget::update_drag_subject");
 
         if let Some(old) = self.drag_subject.replace(sub.clone()) {
@@ -423,7 +422,7 @@ impl FDPSimulationWidget {
 
             let contains = if let Some(d) = closest_node {
                 let mut out = String::new();
-                let _ = writeln!(&mut out, "id: {}", *d);
+                let _ = writeln!(&mut out, "id: {d}");
 
                 // if let Some(desc) = &d.description {
                 //     let _ = writeln!(&mut out, "desc: {}", desc);
@@ -449,7 +448,7 @@ impl FDPSimulationWidget {
                 out.trim().to_string()
             } else if let Some(d) = closest_edge {
                 let mut out = String::new();
-                let _ = writeln!(&mut out, "id: {}", *d);
+                let _ = writeln!(&mut out, "id: {d}");
 
                 // if let Some(desc) = &d.description {
                 //     let _ = writeln!(&mut out, "desc: {}", desc);
