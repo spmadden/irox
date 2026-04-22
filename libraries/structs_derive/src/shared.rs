@@ -8,13 +8,17 @@ use quote::ToTokens;
 use syn::{parenthesized, parse_macro_input, Data, DeriveInput, Fields, FieldsNamed, LitStr};
 
 struct Config {
-    name: String,
+    shared_name: String,
+    original_name: String,
 }
 
 pub fn shared_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = format!("Shared{}", input.ident);
-    let mut config = Config { name };
+    let mut config = Config {
+        shared_name: name,
+        original_name: format!("{}", input.ident),
+    };
     let struct_name = &input.ident;
     for attr in &input.attrs {
         let Ok(ident) = attr.meta.path().require_ident() else {
@@ -29,7 +33,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
                     let content;
                     parenthesized!(content in m.input);
                     let n: LitStr = content.parse()?;
-                    config.name = n.value();
+                    config.shared_name = n.value();
                     return Ok(());
                 }
                 let ident = m
@@ -54,7 +58,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
     });
     ts.add_ident("pub");
     ts.add_ident("struct");
-    ts.add_ident(&config.name);
+    ts.add_ident(&config.shared_name);
     ts.wrap_braces({
         let mut ts = TokenStream::new();
         ts.add_ident("inner");
@@ -82,7 +86,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
 
     ts.add_ident("impl");
     ts.wrap_generics(TokenStream::from(generics.clone()));
-    ts.add_ident(&config.name);
+    ts.add_ident(&config.shared_name);
     ts.extend(TokenStream::from(generics.clone()));
     ts.wrap_braces({
         let mut ts = TokenStream::new();
@@ -94,7 +98,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
         ts.add_generics("F", {
             let mut ts = TokenStream::new();
             ts.add_ident("FnMut");
-            ts.add_parens(TokenStream::create_ref_ident("Node"));
+            ts.add_parens(TokenStream::create_ref_ident(&config.original_name));
             ts
         });
         ts.add_parens({
@@ -132,7 +136,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
         ts.add_generics("F", {
             let mut ts = TokenStream::new();
             ts.add_ident("FnMut");
-            ts.add_parens(TokenStream::create_mut_ref_ident("Node"));
+            ts.add_parens(TokenStream::create_mut_ref_ident(&config.original_name));
             ts
         });
         ts.add_parens({
@@ -169,7 +173,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
     ts.add_ident("impl");
     ts.add_path(&["core", "clone", "Clone"]);
     ts.add_ident("for");
-    ts.add_ident(&config.name);
+    ts.add_ident(&config.shared_name);
     ts.wrap_braces({
         let mut ts = TokenStream::new();
         ts.add_ident("fn");
@@ -202,7 +206,7 @@ pub fn shared_derive(input: TokenStream) -> TokenStream {
         ts
     });
     ts.add_ident("for");
-    ts.add_ident(&config.name);
+    ts.add_ident(&config.shared_name);
     ts.wrap_braces({
         let mut ts = TokenStream::new();
         ts.add_ident("fn");
