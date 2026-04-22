@@ -144,6 +144,27 @@ cfg_feature_alloc! {
             SharedIdentifier(alloc::sync::Arc::new(value))
         }
     }
+    impl <T> Identifiable for alloc::sync::Arc<T> where T: Identifiable {
+        fn id(&self) -> Option<Identifier> {
+            use core::ops::Deref;
+            self.deref().id()
+        }
+    }
+    crate::cfg_feature_std! {
+        impl<T> Identifiable for alloc::sync::Arc<std::sync::RwLock<T>> where T: Identifiable {
+            fn id(&self) -> Option<Identifier> {
+                if let Ok(r) = self.read() {
+                    r.id()
+                } else {
+                    None
+                }
+            }
+        }
+    }
+}
+
+pub trait Identifiable {
+    fn id(&self) -> Option<Identifier>;
 }
 
 #[cfg(all(test, feature = "alloc"))]
