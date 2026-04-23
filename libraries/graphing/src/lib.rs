@@ -12,8 +12,10 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+pub mod algorithms;
 mod descriptor;
 mod edge;
+pub mod error;
 pub mod fdp;
 mod flow;
 mod graph;
