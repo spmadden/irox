@@ -6,6 +6,7 @@ use crate::geometry::{Centroid, Geometry};
 use crate::rectangle::Rectangle;
 use crate::{Point, Point2D, Vector, Vector2D};
 use irox_tools::FloatIsh;
+use irox_units::units::angle::Angle;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]
 pub struct LineSegment<T: FloatIsh> {
@@ -27,6 +28,12 @@ impl<T: FloatIsh> LineSegment<T> {
             return self.start.x;
         };
         self.start.y - slope * self.start.x
+    }
+
+    pub fn angle(&self) -> Angle {
+        let vec = self.end - self.start;
+        let ang = vec.vy.atan2(vec.vx).to_f64();
+        Angle::new_radians(ang)
     }
 
     pub fn intersect(&self, other: &Self) -> Option<Point<T>> {
