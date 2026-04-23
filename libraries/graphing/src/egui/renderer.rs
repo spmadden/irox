@@ -4,13 +4,15 @@
 
 use crate::{Edge, Node};
 use egui::emath::TSTransform;
+use egui::epaint::PathShape;
 use egui::Rect;
 use irox_egui_extras::egui;
 use irox_egui_extras::egui::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{Align, Color32, CornerRadius, FontId, Pos2, Shape, Stroke, Ui};
 use irox_egui_extras::WithAlpha;
-use irox_geometry::Vector;
+use irox_geometry::{LineSegment, Vector, Vector2D};
+use irox_units::units::angle::Angle;
 
 pub struct RenderingContext<'a> {
     pub current_transform: TSTransform,
@@ -99,7 +101,7 @@ impl EdgeRenderer for DefaultEdgeRenderer {
     fn add_shapes_to(
         &self,
         _context: &RenderingContext,
-        _edge: &Edge,
+        edge: &Edge,
         left: Vector<f64>,
         right: Vector<f64>,
         shapes: &mut Vec<Shape>,
@@ -113,6 +115,36 @@ impl EdgeRenderer for DefaultEdgeRenderer {
             points: pts,
             stroke: Stroke::new(1.0, Color32::BLACK),
         });
+
+        if edge.is_directed() {
+            let bgc = _context.ui.visuals().widgets.active.bg_fill.with_alpha(160);
+
+            let angle = LineSegment {
+                start: left.to_point(),
+                end: right.to_point(),
+            }
+            .angle();
+            let stroke = Stroke::new(1.0, Color32::BLACK);
+            let left = Vector::new(-1.0, 0.0)
+                .rotate_clockwise(Angle::new_degrees(30.))
+                .rotate(angle)
+                * 10.
+                / _context.current_transform.scaling;
+            let right = Vector::new(-1.0, 0.0)
+                .rotate(Angle::new_degrees(30.))
+                .rotate(angle)
+                * 10.
+                / _context.current_transform.scaling;
+            let pos = pts[1].to_vec2();
+            let tri = vec![
+                Pos2::new(0.0, 0.0) + pos,
+                Pos2::new(left.vx, left.vy) + pos,
+                Pos2::new(right.vx, right.vy) + pos,
+                Pos2::new(0.0, 0.0) + pos,
+            ];
+            let shp = Shape::Path(PathShape::convex_polygon(tri, bgc, stroke));
+            shapes.push(shp);
+        }
     }
 }
 
