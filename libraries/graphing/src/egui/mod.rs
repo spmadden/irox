@@ -3,6 +3,7 @@
 //
 
 pub mod renderer;
+pub mod treelist;
 
 use crate::egui::renderer::{
     EdgeRendererProvider, NodeRendererProvider, RenderingContext, DEFAULT_EDGE_RENDERER,
