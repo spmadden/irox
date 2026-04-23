@@ -43,7 +43,17 @@ impl<T: FloatIsh> Vector<T> {
         Self::new(v, v)
     }
     pub fn to_matrix(&self) -> Matrix<2, 1, f64> {
-        Matrix::new([[self.vy.to_f64()], [self.vy.to_f64()]])
+        Matrix::new([[self.vx.to_f64()], [self.vy.to_f64()]])
+    }
+    #[must_use]
+    pub fn rotate_clockwise(&self, angle: Angle) -> Self {
+        let Matrix {
+            values: [[vx], [vy]],
+        } = Matrix::<2, 2, _>::rotation_clockwise(angle.as_radians().value()).mul(self.to_matrix());
+        Self {
+            vx: T::from_f64(vx),
+            vy: T::from_f64(vy),
+        }
     }
 }
 
