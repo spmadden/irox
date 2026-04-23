@@ -16,6 +16,7 @@ mod fixed_u8;
 pub use round_u8::*;
 mod array;
 mod round_u8;
+
 pub use array::*;
 
 use crate::cfg_feature_alloc;
@@ -24,6 +25,8 @@ cfg_feature_alloc! {
 
     pub use unlimited::*;
     mod unlimited;
+    pub use linear::*;
+    mod linear;
 }
 
 ///
