@@ -3,7 +3,7 @@
 //
 
 extern crate alloc;
-use crate::{Descriptor, NodeDescriptor, SharedEdge, SharedEdgeIdentifier};
+use crate::{Descriptor, NodeDescriptor, SharedEdgeIdentifier};
 use core::fmt::Display;
 use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
@@ -12,6 +12,7 @@ use irox_geometry::Point;
 use irox_structs_derive::Shared;
 use irox_tools::identifier::{Identifier, SharedIdentifier};
 use irox_tools::sync::PoisonedError;
+use std::sync::{LockResult, RwLockReadGuard};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct SharedNodeIdentifier(SharedIdentifier);
@@ -79,17 +80,24 @@ impl SharedNode {
         }
         None
     }
-    pub fn add_navigable_edge(&self, edge: &SharedEdge) -> Result<(), PoisonedError> {
+    pub fn read_lock(&self) -> LockResult<RwLockReadGuard<'_, Node>> {
+        self.inner.read()
+    }
+    pub fn add_navigable_edge(&self, id: &SharedEdgeIdentifier) -> Result<(), PoisonedError> {
         let mut lock = self.inner.write()?;
-        let id = edge.inner.read()?.id();
-        lock.all_edges.push(id.clone());
-        lock.navigable_edges.push(id);
+        if !lock.all_edges.contains(id) {
+            lock.all_edges.push(id.clone());
+        }
+        if !lock.navigable_edges.contains(id) {
+            lock.navigable_edges.push(id.clone());
+        }
         Ok(())
     }
-    pub fn add_edge(&self, edge: &SharedEdge) -> Result<(), PoisonedError> {
+    pub fn add_edge(&self, id: &SharedEdgeIdentifier) -> Result<(), PoisonedError> {
         let mut lock = self.inner.write()?;
-        let id = edge.inner.read()?.id();
-        lock.all_edges.push(id);
+        if !lock.all_edges.contains(id) {
+            lock.all_edges.push(id.clone());
+        }
         Ok(())
     }
 }

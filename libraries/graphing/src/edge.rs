@@ -59,6 +59,9 @@ impl Edge {
             Edge::Undirected { left, right, .. } => (left, right),
         }
     }
+    pub fn is_directed(&self) -> bool {
+        matches!(self, Edge::Directed { .. })
+    }
 }
 #[derive(Debug, Clone)]
 pub struct SharedEdge {
@@ -71,10 +74,24 @@ impl From<Edge> for SharedEdge {
         }
     }
 }
+impl From<&Edge> for SharedEdge {
+    fn from(value: &Edge) -> Self {
+        Self {
+            inner: Arc::new(RwLock::new(value.clone())),
+        }
+    }
+}
 impl SharedEdge {
     pub fn id<F: FnMut(SharedEdgeIdentifier)>(&self, mut f: F) {
         if let Ok(lock) = self.inner.read() {
             f(lock.id())
+        }
+    }
+    pub fn is_directed(&self) -> bool {
+        if let Ok(lock) = self.inner.read() {
+            lock.is_directed()
+        } else {
+            false
         }
     }
     pub fn get_mut<F: FnMut(&mut Edge)>(&self, mut f: F) {
