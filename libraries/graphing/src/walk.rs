@@ -9,14 +9,14 @@ use alloc::collections::VecDeque;
 use std::collections::HashMap;
 
 pub trait Walker {
-    fn previsit_node(&mut self, node: &Node, current_path: &Path);
-    fn walk_edge(&mut self, edge: &Edge, current_path: &Path);
-    fn postvisit_node(&mut self, node: &Node, current_path: &Path);
+    fn previsit_node(&mut self, _node: &Node, _current_path: &Path) {}
+    fn walk_edge(&mut self, _edge: &Edge, _current_path: &Path) {}
+    fn postvisit_node(&mut self, _node: &Node, _current_path: &Path) {}
 }
 pub trait WalkerMut {
-    fn previsit_node(&mut self, node: &mut Node, current_path: &Path);
-    fn walk_edge(&mut self, edge: &mut Edge, current_path: &Path);
-    fn postvisit_node(&mut self, node: &mut Node, current_path: &Path);
+    fn previsit_node(&mut self, _node: &mut Node, _current_path: &Path) {}
+    fn walk_edge(&mut self, _edge: &mut Edge, _current_path: &Path) {}
+    fn postvisit_node(&mut self, _node: &mut Node, _current_path: &Path) {}
 }
 pub trait GraphWalk {
     fn walk<T: Walker>(&mut self, walker: &mut T);
@@ -109,6 +109,45 @@ impl<'a> DepthWalk<'a> {
 }
 impl GraphWalk for DepthWalk<'_> {
     fn walk<T: Walker>(&mut self, _walker: &mut T) {
+        while let Some(start_node) = self.next_nodes.pop_front() {
+            let mut stack = Vec::<SharedEdgeIdentifier>::new();
+            let mut path = Path::from_start(start_node.clone());
+
+            // first iteration at the root
+            let Some(node) = self.graph.nodes.get(&start_node).cloned() else {
+                continue;
+            };
+            node.get(|node| {
+                for edge in &node.navigable_edges {
+                    stack.push(edge.clone());
+                }
+                _walker.previsit_node(node, &path);
+            });
+
+            while let Some(current_edge) = stack.pop() {
+                let Some(edge) = self.graph.edges.get(&current_edge) else {
+                    continue;
+                };
+                let Some((_left, right)) = edge.get_sides() else {
+                    continue;
+                };
+                path.steps.push(PathItem::Edge(current_edge.clone()));
+                edge.get(|edge| {
+                    _walker.walk_edge(edge, &path);
+                });
+                path.steps.push(PathItem::Node(right.clone()));
+
+                let Some(node) = self.graph.nodes.get(&start_node).cloned() else {
+                    continue;
+                };
+                node.get(|node| {
+                    for edge in &node.navigable_edges {
+                        stack.push(edge.clone());
+                    }
+                    _walker.previsit_node(node, &path);
+                });
+            }
+        }
         todo!()
     }
 }
@@ -132,6 +171,22 @@ impl Walker for WalkerPrinting {
             "postvisit_node: {}, path: {current_path}",
             *node.descriptor.id
         )
+    }
+}
+
+pub struct PrevisitNodeWalker<T: FnMut(&Node, &Path)> {
+    func: Box<T>,
+}
+impl<T: FnMut(&Node, &Path)> PrevisitNodeWalker<T> {
+    pub fn new(func: T) -> Self {
+        Self {
+            func: Box::new(func),
+        }
+    }
+}
+impl<T: FnMut(&Node, &Path)> Walker for PrevisitNodeWalker<T> {
+    fn previsit_node(&mut self, node: &Node, current_path: &Path) {
+        (self.func)(node, current_path)
     }
 }
 
