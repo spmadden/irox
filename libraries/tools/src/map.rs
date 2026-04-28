@@ -22,7 +22,7 @@ impl<K, V> Default for OrderedHashMap<K, V> {
     fn default() -> Self {
         Self {
             map: Default::default(),
-            key_order: Default::default()
+            key_order: Default::default(),
         }
     }
 }
@@ -78,11 +78,14 @@ impl<K: Eq + Hash + Clone, V> OrderedHashMap<K, V> {
         self.map.contains_key(k)
     }
 
-    pub fn entry(&mut self, k: K) -> Entry<'_, K, V>{
+    pub fn entry(&mut self, k: K) -> Entry<'_, K, V> {
+        if !self.map.contains_key(&k) {
+            self.key_order.push_back(k.clone());
+        }
         self.map.entry(k)
     }
 
-    pub fn get_mut(&mut self, k: &K) -> Option<&mut V>{
+    pub fn get_mut(&mut self, k: &K) -> Option<&mut V> {
         self.map.get_mut(k)
     }
 
