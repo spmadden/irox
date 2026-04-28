@@ -165,6 +165,52 @@ impl Angle {
     pub const fn min_value() -> Self {
         Angle::new_degrees(0.0)
     }
+
+    #[must_use]
+    pub const fn abs(&self) -> Self {
+        Self {
+            value: self.value.abs(),
+            units: self.units,
+        }
+    }
+
+    pub fn normalize(&self) -> Self {
+        let mut out = *self;
+        while out < Angle::min_value() {
+            out += Angle::new_degrees(360.);
+        }
+        while out > Angle::new_degrees(360.) {
+            out -= Angle::new_degrees(360.);
+        }
+        out
+    }
+
+    pub fn angle_between(&self, other: Angle) -> Self {
+        let min = self.min(&other);
+        let max = self.max(&other);
+        let a = other - self;
+        let b = (min + Angle::new_degrees(360.)) - max;
+        if a.abs() < b.abs() {
+            a
+        } else {
+            b
+        }
+    }
+
+    pub fn min(&self, other: &Self) -> Self {
+        if self < other {
+            *self
+        } else {
+            *other
+        }
+    }
+    pub fn max(&self, other: &Self) -> Self {
+        if self > other {
+            *self
+        } else {
+            *other
+        }
+    }
 }
 
 impl Display for Angle {
@@ -192,3 +238,40 @@ pub const DEG_2_SEC: f64 = DEG_2_MIN * MIN_2_SEC;
 /// Degrees to Mils factor
 pub const DEG_2_MIL: f64 = MIL_2_REV / REV_2_DEG;
 pub const RAD_2_MIL: f64 = MIL_2_REV / REV_2_RAD;
+
+#[cfg(test)]
+mod tests {
+    use crate::units::angle::Angle;
+
+    #[test]
+    pub fn test_angle_between() {
+        assert_eq!(
+            Angle::new_degrees(15.0),
+            Angle::new_degrees(0.0).angle_between(Angle::new_degrees(15.0))
+        );
+        assert_eq!(
+            Angle::new_degrees(15.0),
+            Angle::new_degrees(0.0).angle_between(Angle::new_degrees(345.))
+        );
+        assert_eq!(
+            Angle::new_degrees(30.0),
+            Angle::new_degrees(345.).angle_between(Angle::new_degrees(15.0))
+        );
+        assert_eq!(
+            Angle::new_degrees(180.0),
+            Angle::new_degrees(90.).angle_between(Angle::new_degrees(270.0))
+        );
+        assert_eq!(
+            Angle::new_degrees(180.0),
+            Angle::new_degrees(270.).angle_between(Angle::new_degrees(90.0))
+        );
+        assert_eq!(
+            Angle::new_degrees(-90.0),
+            Angle::new_degrees(180.).angle_between(Angle::new_degrees(90.0))
+        );
+        assert_eq!(
+            Angle::new_degrees(90.0),
+            Angle::new_degrees(90.).angle_between(Angle::new_degrees(180.0))
+        );
+    }
+}
