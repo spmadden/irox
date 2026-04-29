@@ -2,6 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
+use egui::Window;
 use irox_egui_extras::eframe;
 use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
@@ -153,6 +154,12 @@ impl FDPSimulationApp {
 
 impl eframe::App for FDPSimulationApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
+        Window::new("Test Window")
+            .resizable(true)
+            .show(ui.ctx(), |ui| {
+                ui.label("Test window!");
+                ui.take_available_space();
+            });
         CentralPanel::default().show_inside(ui, |ui| {
             self.widget.show(ui);
         });
