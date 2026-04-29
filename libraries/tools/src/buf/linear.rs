@@ -2,6 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 extern crate alloc;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Linear2DArray<T> {
