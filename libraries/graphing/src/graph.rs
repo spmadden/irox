@@ -108,4 +108,13 @@ impl Graph {
         }
         outgraph
     }
+    pub fn merge_from(&mut self, other: &Graph) {
+        for id in other.nodes.keys() {
+            let node = Node::from_id(id.deref().deref().clone());
+            let _ = self.add_node(node.into());
+        }
+        for edge in other.edges.values() {
+            let _ = self.add_edge(edge.clone());
+        }
+    }
 }
