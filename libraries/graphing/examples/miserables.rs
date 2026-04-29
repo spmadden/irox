@@ -7,6 +7,7 @@ use irox_egui_extras::eframe;
 use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
+use irox_graphing::algorithms::updown::Updown;
 use irox_graphing::egui::FDPSimulationWidget;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
 use irox_graphing::{Descriptor, Edge, EdgeDescriptor, Graph, Node, NodeDescriptor};
@@ -15,6 +16,7 @@ use irox_tools::identifier::Identifier;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::ops::Deref;
 use std::rc::Rc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -131,10 +133,28 @@ pub fn main() -> Result<(), String> {
 
 pub struct FDPSimulationApp {
     widget: FDPSimulationWidget,
+    myriel: FDPSimulationWidget,
 }
 impl FDPSimulationApp {
     pub fn new(graph: Shared<Graph>, cc: &eframe::CreationContext) -> Self {
         load_fonts(FontSet::basics(), &cc.egui_ctx);
+
+        let myriel = Updown::run(
+            graph.borrow().deref(),
+            &[Identifier::String("Myriel".to_string()).into()],
+        );
+
+        let mut myriel = FDPSimulationWidget::new(Rc::new(RefCell::new(myriel)));
+        myriel.draw_id = true;
+        myriel.sim.forces = vec![
+            Force::Centering(Centering::new(0.01)),
+            Force::Edge(EdgeForce::default().with_distance(100.)),
+            Force::Repulsive(
+                Repulsive::default()
+                    .with_strength(-100.)
+                    .with_edge_distance(100.),
+            ),
+        ];
 
         let mut widget = FDPSimulationWidget::new(graph);
         widget.draw_id = true;
@@ -148,7 +168,7 @@ impl FDPSimulationApp {
                     .with_edge_distance(100.),
             ),
         ];
-        FDPSimulationApp { widget }
+        FDPSimulationApp { widget, myriel }
     }
 }
 
@@ -157,7 +177,7 @@ impl eframe::App for FDPSimulationApp {
         Window::new("Test Window")
             .resizable(true)
             .show(ui.ctx(), |ui| {
-                ui.label("Test window!");
+                self.myriel.show(ui);
                 ui.take_available_space();
             });
         CentralPanel::default().show_inside(ui, |ui| {
