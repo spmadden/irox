@@ -140,6 +140,8 @@ impl Layer {
     }
 }
 
+pub type Interaction = Box<dyn FnMut(&Response)>;
+
 #[derive()]
 pub struct DrawPanel {
     pub name: String,
@@ -148,6 +150,7 @@ pub struct DrawPanel {
     pub initial_transform: TSTransform,
 
     pub last_window_area: Option<Rect>,
+    pub interactions: Vec<Interaction>,
     pub world_area: Rect,
     pub draw_cursor_crosshairs: bool,
     pub suppress_drag: bool,
@@ -160,6 +163,7 @@ impl Default for DrawPanel {
             transform: Default::default(),
             initial_transform: Default::default(),
             last_window_area: None,
+            interactions: vec![],
             world_area: Rect::ZERO,
             draw_cursor_crosshairs: true,
             suppress_drag: false,
@@ -206,17 +210,23 @@ impl DrawPanel {
         if self.draw_cursor_crosshairs {
             self.draw_cursor(ui, &mut response, &mut painter, None, &rect);
         }
+
+        for interaction in &mut self.interactions {
+            interaction(&response);
+        }
     }
     fn check_zoom(&mut self, ui: &mut Ui, response: &mut Response) {
         profile_scope!("check_zoom", self.name.as_str());
         self.transform.translation += response.drag_delta();
-        let (zd, mousepos) = ui.input(|i| {
+
+        let zd = ui.input(|i| {
             let mut zd = i.zoom_delta();
             if (zd - 1.0).abs() < 1e-9 {
                 zd = i.smooth_scroll_delta.y / 100. + 1.0;
             }
-            (zd, i.pointer.latest_pos())
+            zd
         });
+        let mousepos = response.hover_pos();
         if (zd - 1.0).abs() != 0.0 {
             let Some(mousepos) = mousepos else {
                 return;
