@@ -2,6 +2,8 @@
 // Copyright 2025 IROX Contributors
 //
 
+extern crate alloc;
+
 pub mod renderer;
 pub mod treelist;
 
@@ -14,13 +16,14 @@ use crate::fdp::{
     SimulationParams,
 };
 use crate::{Graph, SharedEdgeIdentifier, SharedNodeIdentifier};
+use alloc::rc::Rc;
+use core::cell::RefCell;
 use core::fmt::Write;
 use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode};
 use irox_egui_extras::eframe::epaint::{RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{
-    Align, Context, CornerRadius, FontId, PointerState, Pos2, Shape, Slider, Ui, Vec2, Widget,
-    Window,
+    Align, Context, CornerRadius, FontId, Pos2, Response, Shape, Slider, Ui, Vec2, Widget, Window,
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
@@ -132,26 +135,19 @@ impl ParamsWindow<'_> {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum DragEvent {
-    DragStart(Pos2),
-    Dragging(Pos2),
-    DragEnd(Pos2),
-}
-
 pub struct FDPSimulationWidget {
     pub sim: Simulation,
     pub panel: DrawPanel,
     pub graph_layer: Sender<LayerCommand>,
     pub tt_layer: Sender<LayerCommand>,
     pub drag_subject: Option<SharedNodeIdentifier>,
-    pub dragging: Option<DragEvent>,
     pub play: bool,
     pub last_tick: f64,
     pub show_tick_controls: bool,
     pub draw_id: bool,
 
     pub sim_params_window: bool,
+    pub response: Shared<Option<Response>>,
     pub node_renderer: NodeRendererProvider,
     pub edge_renderer: EdgeRendererProvider,
 }
@@ -173,6 +169,11 @@ impl FDPSimulationWidget {
                 scale_mode: ScaleMode::ScaleOnlyPosition,
             },
         );
+        let response: Rc<RefCell<Option<Response>>> = Rc::new(RefCell::new(None));
+        let r2 = response.clone();
+        panel.interactions.push(Box::new(move |resp| {
+            r2.replace(Some(resp.clone()));
+        }));
 
         FDPSimulationWidget {
             sim,
@@ -183,9 +184,9 @@ impl FDPSimulationWidget {
             show_tick_controls: false,
             tt_layer,
             drag_subject: None,
-            dragging: None,
             sim_params_window: false,
             draw_id: true,
+            response,
             node_renderer: Box::new(|_| &DEFAULT_NODE_RENDERER),
             edge_renderer: Box::new(|_| &DEFAULT_EDGE_RENDERER),
         }
@@ -230,7 +231,6 @@ impl FDPSimulationWidget {
     }
     pub fn show(&mut self, ui: &mut Ui) {
         profile_scope!("FDPWidget::show");
-        self.handle_drag(ui.ctx());
         if self.sim_params_window {
             Window::new("Simulation Params").show(ui.ctx(), |ui| {
                 ParamsWindow {
@@ -297,8 +297,8 @@ impl FDPSimulationWidget {
         });
 
         let _ = self.graph_layer.send(LayerCommand::ClearSetShapes(shapes));
-        self.panel.show(ui);
         self.find_hover(ui);
+        self.panel.show(ui);
     }
     pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedEdgeIdentifier> {
         profile_scope!("FDPWidget::find_closest_edge_to");
@@ -307,13 +307,14 @@ impl FDPSimulationWidget {
         let mut closest_edge_dist = f32::MAX;
         let translate = Vector::new(xfm.translation.x as f64, xfm.translation.y as f64);
         let mouse = Point::new_point(pos.x as f64, pos.y as f64);
-        for (id, e) in &self.sim.working_edges {
+        self.sim.iter_edges(|e, sim| {
+            let id = e.id.clone();
             let mut p1 = Vector::<f64>::default();
-            self.sim.node(&e.left, |v| {
+            sim.node(&e.left, |v| {
                 p1 = v.current_position;
             });
             let mut p2 = Vector::<f64>::default();
-            self.sim.node(&e.right, |v| {
+            sim.node(&e.right, |v| {
                 p2 = v.current_position;
             });
             let p1 = p1 * xfm.scaling as f64 + translate;
@@ -325,10 +326,10 @@ impl FDPSimulationWidget {
             let distance = line.distance_to(&mouse) as f32;
 
             if distance < EDGE_MOUSEOVER_MAX_DISTANCE && distance <= closest_edge_dist {
-                closest_edge = Some(id.clone());
+                closest_edge = Some(id);
                 closest_edge_dist = distance;
             }
-        }
+        });
         closest_edge
     }
     pub fn find_closest_node_to(&mut self, pos: Pos2) -> Option<SharedNodeIdentifier> {
@@ -338,8 +339,8 @@ impl FDPSimulationWidget {
 
         let mut closest_node_dist = f32::MAX;
         let mut closest_node: Option<SharedNodeIdentifier> = None;
-        for (id, n) in &self.sim.working_nodes {
-            let np = n.current_position;
+        self.sim.iter_nodes(|id, _node, sim| {
+            let np = sim.current_position;
             let np = Pos2::new(np.vx as f32, np.vy as f32);
             let npw = xfm * np;
             let dp = pos - npw;
@@ -348,147 +349,75 @@ impl FDPSimulationWidget {
                 closest_node = Some(id.clone());
                 closest_node_dist = distance;
             }
-        }
+        });
         closest_node
     }
-    pub fn handle_drag(&mut self, ctx: &Context) {
-        profile_scope!("FDPWidget::handle_drag");
 
-        ctx.input(|i| {
-            let ptr = &i.pointer;
-            if is_dragging(ptr) {
-                let off = self
-                    .panel
-                    .last_window_area
-                    .map(|v| v.min)
-                    .unwrap_or_default()
-                    .to_vec2();
-                let pos = ptr.latest_pos().unwrap_or_default() - off;
-                match &self.dragging {
-                    None => {
-                        self.dragging = Some(DragEvent::DragStart(pos));
-                    }
-                    _ => {
-                        self.dragging = Some(DragEvent::Dragging(pos));
-                    }
-                }
-            } else {
-                self.dragging = None;
-            }
-        });
-        if let Some(drag_subject) = &self.drag_subject {
-            if let Some(event) = self.dragging {
-                self.panel.suppress_drag = true;
-                match event {
-                    DragEvent::DragStart(dpos) | DragEvent::Dragging(dpos) => {
-                        let xfm = self.panel.transform;
-                        let wld = xfm.inverse() * dpos;
-                        self.sim.node_mut(drag_subject, |node| {
-                            node.fixed_position =
-                                Some(Point::new_point(wld.x as f64, wld.y as f64));
-                        });
-                        self.sim.params.alpha = 0.8;
-                        self.sim.params.tick = 0;
-                    }
-                    _ => {}
-                }
-            } else {
-                self.sim.node_mut(drag_subject, |node| {
-                    node.fixed_position = None;
-                });
-                self.drag_subject = None;
-                self.panel.suppress_drag = false;
-            }
-        }
-    }
-
-    pub fn update_drag_subject(&mut self, sub: &SharedNodeIdentifier) {
-        profile_scope!("FDPWidget::update_drag_subject");
-
-        if let Some(old) = self.drag_subject.replace(sub.clone()) {
-            self.sim.node_mut(&old, |node| {
-                node.fixed_position = None;
-            });
-        }
-    }
     pub fn find_hover(&mut self, ui: &mut Ui) {
         profile_scope!("FDPWidget::find_hover");
-        if let Some(mut pos) = ui.input(|i| i.pointer.hover_pos()) {
-            let _ = self.tt_layer.send(LayerCommand::ClearShapes);
-            if let Some(area) = self.panel.last_window_area {
-                pos -= area.min.to_vec2();
-            }
-            let closest_node = self.find_closest_node_to(pos);
-            let closest_edge = self.find_closest_edge_to(pos);
-
-            let contains = if let Some(d) = closest_node {
-                let mut out = String::new();
-                let _ = writeln!(&mut out, "id: {d}");
-
-                // if let Some(desc) = &d.description {
-                //     let _ = writeln!(&mut out, "desc: {}", desc);
-                // }
-                // for (k, v) in &d.attrs {
-                //     let _ = writeln!(&mut out, "{k}: {v}");
-                // }
-                let mut clicked = false;
-                ui.ctx().input(|r| {
-                    let ptr = &r.pointer;
-                    clicked = ptr.primary_clicked();
-                    if self.drag_subject.is_none() && is_dragging(ptr) {
-                        let latest = ptr.latest_pos();
-                        self.dragging = Some(DragEvent::DragStart(latest.unwrap_or_default()));
-                        self.update_drag_subject(&d);
-                    }
-                });
-
-                if clicked {
-                    // self.spawn_panel_window(d.id.to_string());
+        let response = self.response.borrow().clone();
+        if let Some(response) = &response {
+            if let Some(mut pos) = response.hover_pos() {
+                let _ = self.tt_layer.send(LayerCommand::ClearShapes);
+                if let Some(area) = self.panel.last_window_area {
+                    pos -= area.min.to_vec2();
                 }
+                let closest_node = self.find_closest_node_to(pos);
+                let closest_edge = self.find_closest_edge_to(pos);
 
-                out.trim().to_string()
-            } else if let Some(d) = closest_edge {
-                let mut out = String::new();
-                let _ = writeln!(&mut out, "id: {d}");
+                let contains = if let Some(d) = closest_node {
+                    let mut out = String::new();
+                    let _ = writeln!(&mut out, "id: {d}");
 
-                // if let Some(desc) = &d.description {
-                //     let _ = writeln!(&mut out, "desc: {}", desc);
-                // }
-                // for (k, v) in &d.attrs {
-                //     let _ = writeln!(&mut out, "{k}: {v}");
-                // }
-                out.trim().to_string()
-            } else {
-                String::default()
-            };
-            if !contains.is_empty() {
-                let fgc = ui.visuals().widgets.active.fg_stroke.color;
-                let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
-                let galley = ui.ctx().fonts_mut(|f| {
-                    let mut job = LayoutJob::simple(
-                        contains.clone(),
-                        FontId::monospace(14.),
-                        fgc,
-                        f32::INFINITY,
-                    );
-                    job.halign = Align::LEFT;
-                    f.layout_job(job)
-                });
-                let pos = self.panel.transform.inverse() * (pos + Vec2::new(20., 5.));
-                let rect = galley.rect.translate(pos.to_vec2());
-                let txt = Shape::Text(TextShape::new(pos, galley, fgc));
-                let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
-                let _ = self
-                    .tt_layer
-                    .send(LayerCommand::ClearSetShapes(vec![Shape::Rect(rect), txt]));
+                    // if let Some(desc) = &d.description {
+                    //     let _ = writeln!(&mut out, "desc: {}", desc);
+                    // }
+                    // for (k, v) in &d.attrs {
+                    //     let _ = writeln!(&mut out, "{k}: {v}");
+                    // }
+                    let clicked = response.clicked();
+
+                    if clicked {
+                        // self.spawn_panel_window(d.id.to_string());
+                    }
+
+                    out.trim().to_string()
+                } else if let Some(d) = closest_edge {
+                    let mut out = String::new();
+                    let _ = writeln!(&mut out, "id: {d}");
+
+                    // if let Some(desc) = &d.description {
+                    //     let _ = writeln!(&mut out, "desc: {}", desc);
+                    // }
+                    // for (k, v) in &d.attrs {
+                    //     let _ = writeln!(&mut out, "{k}: {v}");
+                    // }
+                    out.trim().to_string()
+                } else {
+                    String::default()
+                };
+                if !contains.is_empty() {
+                    let fgc = ui.visuals().widgets.active.fg_stroke.color;
+                    let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
+                    let galley = ui.ctx().fonts_mut(|f| {
+                        let mut job = LayoutJob::simple(
+                            contains.clone(),
+                            FontId::monospace(14.),
+                            fgc,
+                            f32::INFINITY,
+                        );
+                        job.halign = Align::LEFT;
+                        f.layout_job(job)
+                    });
+                    let pos = self.panel.transform.inverse() * (pos + Vec2::new(20., 5.));
+                    let rect = galley.rect.translate(pos.to_vec2());
+                    let txt = Shape::Text(TextShape::new(pos, galley, fgc));
+                    let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
+                    let _ = self
+                        .tt_layer
+                        .send(LayerCommand::ClearSetShapes(vec![Shape::Rect(rect), txt]));
+                }
             }
         }
     }
-}
-
-fn is_dragging(ptr: &PointerState) -> bool {
-    let po = ptr.press_origin();
-    let pd = ptr.primary_down();
-    let ps = ptr.latest_pos();
-    po.is_some() && pd && po != ps
 }
