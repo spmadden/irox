@@ -190,6 +190,43 @@ impl<T: FnMut(&Node, &Path)> Walker for PrevisitNodeWalker<T> {
     }
 }
 
+#[derive(Debug, Default, Clone)]
+pub struct WalkerCreating {
+    graph: Graph,
+}
+impl WalkerCreating {
+    pub fn finish(self) -> Graph {
+        self.graph
+    }
+}
+impl Walker for WalkerCreating {
+    fn previsit_node(&mut self, node: &Node, _current_path: &Path) {
+        let _ = self.graph.add_node(node.clone().into());
+    }
+
+    fn walk_edge(&mut self, edge: &Edge, _current_path: &Path) {
+        let _ = self.graph.add_edge(edge.into());
+    }
+}
+#[derive(Debug)]
+pub struct WalkerAdding<'a> {
+    graph: &'a mut Graph,
+}
+impl<'a> WalkerAdding<'a> {
+    pub fn new(graph: &'a mut Graph) -> Self {
+        Self { graph }
+    }
+}
+impl Walker for WalkerAdding<'_> {
+    fn previsit_node(&mut self, node: &Node, _current_path: &Path) {
+        let _ = self.graph.add_node(node.clone().into());
+    }
+
+    fn walk_edge(&mut self, edge: &Edge, _current_path: &Path) {
+        let _ = self.graph.add_edge(edge.into());
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::walk::{BreadthWalk, GraphWalk, WalkerPrinting};
