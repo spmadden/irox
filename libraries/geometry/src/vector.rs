@@ -55,6 +55,16 @@ impl<T: FloatIsh> Vector<T> {
             vy: T::from_f64(vy),
         }
     }
+
+    pub fn direction(&self) -> Angle {
+        let arad = self.vy.atan2(self.vx);
+        Angle::new_radians(arad.to_f64())
+    }
+
+    #[must_use]
+    pub fn anti_perpendicular(&self) -> Self {
+        self.rotate(Angle::new_degrees(-90.))
+    }
 }
 
 impl<T: FloatIsh> Vector2D<T> for Vector<T> {
