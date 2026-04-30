@@ -44,6 +44,7 @@ impl EdgeForce {
                 id: _id,
                 left,
                 right,
+                directed: _directed,
             } = data;
             for _ in 0..self.iterations {
                 let mut dists = Vector::<f64>::default();

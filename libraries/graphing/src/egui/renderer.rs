@@ -2,17 +2,17 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::fdp::SimulationWorkingNode;
 use crate::{Edge, Node};
 use egui::emath::TSTransform;
-use egui::epaint::PathShape;
-use egui::Rect;
+use egui::{Rect, Vec2};
+use irox_egui_extras::arrows::Arrow;
 use irox_egui_extras::egui;
 use irox_egui_extras::egui::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{Align, Color32, CornerRadius, FontId, Pos2, Shape, Stroke, Ui};
 use irox_egui_extras::WithAlpha;
 use irox_geometry::{LineSegment, Vector, Vector2D};
-use irox_units::units::angle::Angle;
 
 pub struct RenderingContext<'a> {
     pub current_transform: TSTransform,
@@ -27,16 +27,18 @@ pub trait NodeRenderer {
         &self,
         context: &RenderingContext,
         node: &Node,
+        sim_node: &SimulationWorkingNode,
         center: Vector<f64>,
     ) -> Vec<Shape> {
         let mut out = Vec::new();
-        self.add_shapes_to(context, node, center, &mut out);
+        self.add_shapes_to(context, node, sim_node, center, &mut out);
         out
     }
     fn add_shapes_to(
         &self,
         context: &RenderingContext,
         node: &Node,
+        sim_node: &SimulationWorkingNode,
         center: Vector<f64>,
         shapes: &mut Vec<Shape>,
     );
@@ -56,6 +58,7 @@ impl NodeRenderer for DefaultNodeRenderer {
         &self,
         context: &RenderingContext,
         node: &Node,
+        _sim_node: &SimulationWorkingNode,
         center: Vector<f64>,
         shapes: &mut Vec<Shape>,
     ) {
@@ -69,6 +72,60 @@ impl NodeRenderer for DefaultNodeRenderer {
         if self.draw_id {
             TextBoxRenderer::add_shapes_to(&id, context, fgc, bgc, p, shapes);
         }
+    }
+}
+
+pub struct CompositeNodeRenderer {
+    pub renderers: Vec<Box<dyn NodeRenderer + Send + Sync>>,
+}
+impl NodeRenderer for CompositeNodeRenderer {
+    fn add_shapes_to(
+        &self,
+        context: &RenderingContext,
+        node: &Node,
+        sim_node: &SimulationWorkingNode,
+        center: Vector<f64>,
+        shapes: &mut Vec<Shape>,
+    ) {
+        for renderer in &self.renderers {
+            renderer.add_shapes_to(context, node, sim_node, center, shapes);
+        }
+    }
+}
+pub struct DebugForceNodeRenderer;
+impl NodeRenderer for DebugForceNodeRenderer {
+    fn add_shapes_to(
+        &self,
+        _context: &RenderingContext,
+        _node: &Node,
+        sim_node: &SimulationWorkingNode,
+        center: Vector<f64>,
+        shapes: &mut Vec<Shape>,
+    ) {
+        let cvel = sim_node.current_velocity;
+        let start = center.to_point();
+        let end = start + cvel;
+        let stroke = Stroke::new(1.5, Color32::RED);
+        shapes.push(Shape::line_segment(
+            [
+                Pos2::new(start.x as f32, start.y as f32),
+                Pos2::new(end.x as f32, end.y as f32),
+            ],
+            stroke,
+        ));
+        let line = LineSegment { start, end };
+        let angle = line.angle();
+        let mut shp = Arrow {
+            fill_color: None,
+            point_angle: angle,
+            head_angle: None,
+            head_length: 10.0,
+            stroke,
+        }
+        .to_shape();
+        let end = Vec2::new(end.x as f32, end.y as f32);
+        shp.transform(TSTransform::new(end, 1.));
+        shapes.push(shp);
     }
 }
 
@@ -100,7 +157,7 @@ pub struct DefaultEdgeRenderer;
 impl EdgeRenderer for DefaultEdgeRenderer {
     fn add_shapes_to(
         &self,
-        _context: &RenderingContext,
+        context: &RenderingContext,
         edge: &Edge,
         left: Vector<f64>,
         right: Vector<f64>,
@@ -111,38 +168,32 @@ impl EdgeRenderer for DefaultEdgeRenderer {
             Pos2::new(right.vx as f32, right.vy as f32),
         ];
         // shapes.push(line_to_bezier(pts));
+        let stroke = context.ui.visuals().widgets.active.fg_stroke;
         shapes.push(Shape::LineSegment {
             points: pts,
-            stroke: Stroke::new(1.0, Color32::BLACK),
+            stroke,
         });
 
         if edge.is_directed() {
-            let bgc = _context.ui.visuals().widgets.active.bg_fill.with_alpha(160);
+            let bgc = context.ui.visuals().widgets.active.bg_fill.with_alpha(160);
 
             let angle = LineSegment {
                 start: left.to_point(),
                 end: right.to_point(),
             }
             .angle();
-            let stroke = Stroke::new(1.0, Color32::BLACK);
-            let left = Vector::new(-1.0, 0.0)
-                .rotate_clockwise(Angle::new_degrees(30.))
-                .rotate(angle)
-                * 10.
-                / _context.current_transform.scaling;
-            let right = Vector::new(-1.0, 0.0)
-                .rotate(Angle::new_degrees(30.))
-                .rotate(angle)
-                * 10.
-                / _context.current_transform.scaling;
-            let pos = pts[1].to_vec2();
-            let tri = vec![
-                Pos2::new(0.0, 0.0) + pos,
-                Pos2::new(left.vx, left.vy) + pos,
-                Pos2::new(right.vx, right.vy) + pos,
-                Pos2::new(0.0, 0.0) + pos,
-            ];
-            let shp = Shape::Path(PathShape::convex_polygon(tri, bgc, stroke));
+            let mut shp = Arrow {
+                fill_color: Some(bgc),
+                point_angle: angle,
+                head_angle: None,
+                head_length: 10.0,
+                stroke,
+            }
+            .to_shape();
+            shp.transform(TSTransform::new(
+                pts[1].to_vec2(),
+                1. / context.current_transform.scaling,
+            ));
             shapes.push(shp);
         }
     }

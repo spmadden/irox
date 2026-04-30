@@ -9,11 +9,13 @@ use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::FDPSimulationWidget;
+use irox_graphing::fdp::magnetic::Magnetic;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
 use irox_graphing::{Descriptor, Edge, EdgeDescriptor, Graph, Node, NodeDescriptor};
 use irox_log::log::{error, Level};
 use irox_tools::hash::bytewords::words_to_string;
 use irox_tools::identifier::Identifier;
+use irox_units::units::angle::Angle;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -165,6 +167,19 @@ impl FDPSimulationApp {
                     .with_edge_distance(100.),
             ),
             Force::Edge(EdgeForce::default().with_distance(100.)),
+            Force::Magnetic(Magnetic {
+                iterations: 1,
+                strength: 10.,
+                field_angles: vec![
+                    Angle::new_degrees(30.0),
+                    Angle::new_degrees(45.0),
+                    Angle::new_degrees(60.0),
+                    Angle::new_degrees(90.0),
+                    Angle::new_degrees(105.0),
+                    Angle::new_degrees(135.0),
+                    Angle::new_degrees(150.0),
+                ],
+            }),
         ];
         FDPSimulationApp { widget }
     }

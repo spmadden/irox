@@ -8,17 +8,20 @@ extern crate alloc;
 mod centering;
 mod collision;
 mod edge;
+pub mod magnetic;
 mod repulsive;
+
 pub use centering::*;
 pub use collision::*;
 pub use edge::*;
 pub use repulsive::*;
 
+use crate::fdp::magnetic::Magnetic;
 use crate::{Graph, SharedEdgeIdentifier, SharedNode, SharedNodeIdentifier};
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
-use irox_geometry::{Point, Vector};
+use irox_geometry::{Point, Vector, Vector2D};
 use irox_tools::identifier::{Identifier, SharedIdentifier};
 use irox_tools::map::OrderedHashMap;
 use irox_units::units::angle::Angle;
@@ -27,20 +30,22 @@ const INITIAL_RADIUS: f64 = 1.0;
 const INITIAL_ANGLE: Angle =
     Angle::new_radians(core::f64::consts::PI / 0.763_932_022_500_210_3_f64);
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub enum Force {
     Centering(Centering),
     Edge(EdgeForce),
     Repulsive(Repulsive),
     Collision(Collision),
+    Magnetic(Magnetic),
 }
 impl Force {
     pub fn force(&self, sim: &mut Simulation, alpha: f64) {
-        match self {
+        match &self {
             Force::Centering(mut p) => p.force(sim, alpha),
             Force::Edge(mut e) => e.force(sim, alpha),
             Force::Repulsive(mut r) => r.force(sim, alpha),
             Force::Collision(mut c) => c.force(sim, alpha),
+            Force::Magnetic(m) => m.force(sim, alpha),
         }
     }
 }
@@ -54,6 +59,8 @@ pub struct SimulationParams {
     pub target_iterations: u32,
     pub tick: u64,
     pub reset_velocity_on_next_tick: bool,
+    pub average_energy: f64,
+    pub halt_on_energy: bool,
 }
 impl SimulationParams {
     #[must_use]
@@ -68,11 +75,16 @@ impl SimulationParams {
         self.alpha_decay = 1. - self.alpha_min.powf(1. / self.target_iterations as f64);
     }
     pub fn is_done(&self) -> bool {
-        self.alpha < self.alpha_min
+        if self.halt_on_energy {
+            self.average_energy < 0.1
+        } else {
+            self.alpha < self.alpha_min
+        }
     }
     pub(crate) fn tick(&mut self) -> f64 {
         let is_done_pre = self.is_done();
         self.alpha += (self.alpha_target - self.alpha) * self.alpha_decay;
+        // self.alpha = self.alpha.max(self.alpha_min);
         self.tick += 1;
         let is_done_post = self.is_done();
         self.reset_velocity_on_next_tick = is_done_post && !is_done_pre;
@@ -93,6 +105,8 @@ impl Default for SimulationParams {
             tick: 0,
             target_iterations,
             reset_velocity_on_next_tick: false,
+            average_energy: f64::INFINITY,
+            halt_on_energy: false,
         }
     }
 }
@@ -119,6 +133,21 @@ pub struct SimulationWorkingEdge {
     pub id: SharedEdgeIdentifier,
     pub left: SharedNodeIdentifier,
     pub right: SharedNodeIdentifier,
+    pub directed: bool,
+}
+impl SimulationWorkingEdge {
+    pub fn get_edge_vector(&self, sim: &Simulation) -> Vector<f64> {
+        let mut pt1 = Vector::<f64>::default();
+        sim.node(&self.left, |n| {
+            pt1 += n.current_position;
+        });
+        let mut pt2 = Vector::<f64>::default();
+        sim.node(&self.right, |n| {
+            pt2 += n.current_position;
+        });
+
+        pt2 - pt1
+    }
 }
 pub trait InitialNodePlacer {
     fn place_node(&mut self, node: &mut SharedNode, working: &mut SimulationWorkingNode);
@@ -190,6 +219,7 @@ impl Simulation {
     pub fn restart(&mut self) {
         self.params.alpha = 1.0;
         self.params.reset_velocity_on_next_tick = true;
+        self.params.average_energy = f64::INFINITY;
     }
     pub fn stepping<F: FnMut(&Simulation)>(&mut self, mut on_step: F) {
         while !self.is_done() {
@@ -207,6 +237,7 @@ impl Simulation {
             .collect::<Vec<_>>();
 
         for (id, edge) in iter {
+            let directed = edge.is_directed();
             let working = self
                 .working_edges
                 .entry(id.clone())
@@ -221,6 +252,7 @@ impl Simulation {
                         id: id.clone(),
                         left,
                         right,
+                        directed,
                     }
                 });
             each(working.clone(), self);
@@ -310,6 +342,7 @@ impl Simulation {
             #[cfg(feature = "profiling")]
             profiling::scope!("FDP::tick::update-positions");
             let decay = self.params.velocity_decay;
+            let mut energy = 0.0f64;
             self.iter_nodes(|_id, _node, working| {
                 // finalize node position & velocity
                 if let Some(fp) = working.fixed_position {
@@ -320,7 +353,10 @@ impl Simulation {
                     let v = working.current_velocity;
                     working.current_position += v;
                 }
+                energy += working.current_velocity.magnitude();
             });
+            energy /= self.working_nodes.len() as f64;
+            self.params.average_energy = energy;
         }
     }
 }

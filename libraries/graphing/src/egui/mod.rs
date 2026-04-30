@@ -76,6 +76,7 @@ impl ParamsWindow<'_> {
                 Force::Edge(e) => edge_force = Some(e),
                 Force::Repulsive(r) => node_force = Some(r),
                 Force::Collision(c) => boundary_force = Some(c),
+                _ => {}
             }
         }
         if let Some(cf) = centering_force {
@@ -290,6 +291,7 @@ impl FDPSimulationWidget {
                 (self.node_renderer)(node).add_shapes_to(
                     &rendering_context,
                     node,
+                    working,
                     ctr,
                     &mut shapes,
                 );

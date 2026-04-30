@@ -11,12 +11,18 @@ use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::algorithms::roots::Roots;
+use irox_graphing::egui::renderer::{
+    CompositeNodeRenderer, DebugForceNodeRenderer, DEFAULT_NODE_RENDERER,
+};
 use irox_graphing::egui::treelist::TreeListWidget;
 use irox_graphing::egui::FDPSimulationWidget;
+use irox_graphing::fdp::magnetic::Magnetic;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
 use irox_graphing::{Edge, EdgeDescriptor, Graph, Node};
 use irox_log::log::{error, Level};
 use irox_tools::identifier::Identifier;
+use irox_tools::static_init;
+use irox_units::units::angle::Angle;
 use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
@@ -94,18 +100,66 @@ pub fn main() -> Result<(), String> {
     Ok(())
 }
 
+static_init!(renderer, CompositeNodeRenderer, {
+    CompositeNodeRenderer {
+        renderers: vec![
+            Box::new(DEFAULT_NODE_RENDERER),
+            Box::new(DebugForceNodeRenderer),
+        ],
+    }
+});
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum State {
+    InitialNoMag,
+    RunningMag,
+    Done,
+}
+impl State {
+    #[must_use]
+    pub fn next(&self, app: &mut FDPSimulationApp) -> Self {
+        match self {
+            State::InitialNoMag => {
+                app.set_forces_mag();
+                app.widget.sim.restart();
+                State::RunningMag
+            }
+            State::RunningMag => State::Done,
+            State::Done => *self,
+        }
+    }
+}
 pub struct FDPSimulationApp {
     widget: FDPSimulationWidget,
     is_expanded: bool,
+    state: State,
 }
 impl FDPSimulationApp {
-    pub fn new(graph: Shared<Graph>, cc: &eframe::CreationContext) -> Self {
-        load_fonts(FontSet::basics(), &cc.egui_ctx);
-
-        let mut widget = FDPSimulationWidget::new(graph);
-        widget.draw_id = false;
-        widget.sim_params_window = false;
-        widget.sim.forces = vec![
+    pub fn set_forces_mag(&mut self) {
+        self.widget.sim.forces = vec![
+            Force::Centering(Centering::new(0.01)),
+            Force::Repulsive(
+                Repulsive::default()
+                    .with_strength(-100.)
+                    .with_edge_distance(100.),
+            ),
+            Force::Edge(EdgeForce::default().with_distance(100.)),
+            Force::Magnetic(Magnetic {
+                iterations: 1,
+                strength: 1.,
+                field_angles: vec![
+                    Angle::new_degrees(30.0),
+                    Angle::new_degrees(45.0),
+                    Angle::new_degrees(60.0),
+                    Angle::new_degrees(90.0),
+                    Angle::new_degrees(105.0),
+                    Angle::new_degrees(135.0),
+                    Angle::new_degrees(150.0),
+                ],
+            }),
+        ];
+    }
+    pub fn set_forces_nomag(&mut self) {
+        self.widget.sim.forces = vec![
             Force::Centering(Centering::new(0.01)),
             Force::Repulsive(
                 Repulsive::default()
@@ -114,10 +168,24 @@ impl FDPSimulationApp {
             ),
             Force::Edge(EdgeForce::default().with_distance(100.)),
         ];
-        FDPSimulationApp {
+    }
+    pub fn new(graph: Shared<Graph>, cc: &eframe::CreationContext) -> Self {
+        load_fonts(FontSet::basics(), &cc.egui_ctx);
+        let mut widget = FDPSimulationWidget::new(graph);
+        widget.draw_id = false;
+        widget.sim_params_window = false;
+        widget.node_renderer = Box::new(|_| renderer());
+        widget.play = false;
+        widget.show_tick_controls = true;
+        widget.sim.params.halt_on_energy = true;
+
+        let mut app = FDPSimulationApp {
             widget,
             is_expanded: true,
-        }
+            state: State::InitialNoMag,
+        };
+        app.set_forces_nomag();
+        app
     }
 }
 
@@ -138,8 +206,14 @@ impl eframe::App for FDPSimulationApp {
 impl ToolApp for FDPSimulationApp {
     fn bottom_bar(&mut self, ui: &mut Ui) {
         if self.widget.sim.is_done() {
+            let current = self.state;
+            let next = current.next(self);
+            self.state = next;
+
             if ui.button("\u{21BA}").clicked() {
                 self.widget.sim.params.tick = 0;
+                // self.state = State::RunningMag;
+                // self.set_forces_nomag();
                 self.widget.sim.restart();
             }
         } else {
@@ -151,8 +225,11 @@ impl ToolApp for FDPSimulationApp {
             |ui| {
                 let xfm = self.widget.panel.transform;
                 ui.label(format!(
-                    "Position: {} // Scale: {}",
-                    xfm.translation, xfm.scaling
+                    "Position: {} // Scale: {} // Energy: {:0.03} // Alpha: {:0.03}",
+                    xfm.translation,
+                    xfm.scaling,
+                    self.widget.sim.params.average_energy,
+                    self.widget.sim.params.alpha
                 ));
             },
         );
