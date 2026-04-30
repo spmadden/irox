@@ -43,6 +43,7 @@ pub mod progressbar;
 /// A popup progress widget
 pub mod progresswindow;
 
+pub mod arrows;
 pub mod drawpanel;
 pub mod fontmesh;
 pub mod fonts;
@@ -63,6 +64,7 @@ pub mod visuals;
     any(feature = "glow", feature = "wgpu")
 ))]
 pub mod wasm;
+
 pub use utils::*;
 
 pub trait WithAlpha {

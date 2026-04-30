@@ -18,7 +18,7 @@ workspace = true
 [features]
 default = []
 serde = ["dep:serde", "egui/serde", "irox-tools/std", "dep:irox-bits"]
-plots = ["dep:irox-units", "dep:irox-stats"]
+plots = ["dep:irox-stats"]
 profiling = ["dep:profiling", "dep:puffin", "dep:puffin_http"]
 dump_csv = []
 docsrs = ["eframe/x11", "eframe/wayland", "wgpu"]
@@ -33,8 +33,9 @@ ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
 irox-tools = { workspace = true }
+irox-geometry = { workspace = true }
 irox-time = { workspace = true, features = ["std"] }
-irox-units = { workspace = true, optional = true, features = ["std"] }
+irox-units = { workspace = true, features = ["std"] }
 irox-imagery = { workspace = true, features = ["egui"] }
 irox-stats = { workspace = true, optional = true, features = ["emath", "std"] }
 irox-progress = {workspace = true}

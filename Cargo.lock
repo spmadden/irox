@@ -1921,6 +1921,7 @@ dependencies = [
  "irox-bits 0.5.0",
  "irox-build-rs",
  "irox-csv",
+ "irox-geometry",
  "irox-imagery",
  "irox-log",
  "irox-progress",
