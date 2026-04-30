@@ -174,6 +174,7 @@ impl Angle {
         }
     }
 
+    #[must_use]
     pub fn normalize(&self) -> Self {
         let mut out = *self;
         while out < Angle::min_value() {
@@ -185,6 +186,7 @@ impl Angle {
         out
     }
 
+    #[must_use]
     pub fn angle_between(&self, other: Angle) -> Self {
         let min = self.min(&other);
         let max = self.max(&other);
@@ -197,6 +199,7 @@ impl Angle {
         }
     }
 
+    #[must_use]
     pub fn min(&self, other: &Self) -> Self {
         if self < other {
             *self
@@ -204,6 +207,8 @@ impl Angle {
             *other
         }
     }
+
+    #[must_use]
     pub fn max(&self, other: &Self) -> Self {
         if self > other {
             *self
