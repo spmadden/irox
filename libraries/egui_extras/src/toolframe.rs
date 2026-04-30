@@ -9,7 +9,8 @@ use crate::frame_history::FrameHistory;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame, Storage};
 use egui::{
-    containers::menu, Context, Id, Layout, Panel, RawInput, ThemePreference, Ui, Visuals, Window,
+    containers::menu, Context, Id, Layout, Panel, RawInput, Theme, ThemePreference, Ui, Visuals,
+    Window,
 };
 use std::time::Duration;
 
@@ -166,9 +167,11 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    if ui.ctx().global_style().visuals.dark_mode && ui.button("\u{2600}").clicked()
-                    {
-                        ui.ctx().set_theme(ThemePreference::Light);
+                    let theme = ui.ctx().theme();
+                    if let Theme::Dark = theme {
+                        if ui.button("\u{2600}").clicked() {
+                            ui.ctx().set_theme(ThemePreference::Light);
+                        }
                     } else if ui.button("\u{1F318}").clicked() {
                         ui.ctx().set_theme(ThemePreference::Dark);
                     }
