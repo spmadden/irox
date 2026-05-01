@@ -8,6 +8,9 @@ use irox_egui_extras::eframe::App;
 use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
+use irox_graphing::egui::renderer::{
+    CompositeNodeRenderer, DebugForceNodeRenderer, DEFAULT_NODE_RENDERER,
+};
 use irox_graphing::egui::FDPSimulationWidget;
 use irox_graphing::fdp::magnetic::Magnetic;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
@@ -15,6 +18,7 @@ use irox_graphing::{Descriptor, Edge, EdgeDescriptor, Graph, Node, NodeDescripto
 use irox_log::log::{error, Level};
 use irox_tools::hash::bytewords::words_to_string;
 use irox_tools::identifier::Identifier;
+use irox_tools::static_init;
 use irox_units::units::angle::Angle;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
@@ -152,6 +156,14 @@ pub fn main() -> Result<(), String> {
 pub struct FDPSimulationApp {
     widget: FDPSimulationWidget,
 }
+static_init!(renderer, CompositeNodeRenderer, {
+    CompositeNodeRenderer {
+        renderers: vec![
+            Box::new(DEFAULT_NODE_RENDERER),
+            Box::new(DebugForceNodeRenderer),
+        ],
+    }
+});
 impl FDPSimulationApp {
     pub fn new(graph: Shared<Graph>, cc: &eframe::CreationContext) -> Self {
         load_fonts(FontSet::basics(), &cc.egui_ctx);
@@ -159,6 +171,8 @@ impl FDPSimulationApp {
         let mut widget = FDPSimulationWidget::new(graph);
         widget.draw_id = false;
         widget.sim_params_window = false;
+        // widget.node_renderer = Box::new(|_| renderer());
+        widget.sim.params.velocity_decay = 0.75;
         widget.sim.forces = vec![
             Force::Centering(Centering::new(0.01)),
             Force::Repulsive(

@@ -35,7 +35,7 @@ impl Magnetic {
         });
     }
     pub fn get_force_for_vector(&self, v: Vector<f64>) -> Vector<f64> {
-        let ang = v.direction();
+        let ang = v.direction().normalize();
         let mut best_angle = None;
         let mut ang_diff = Angle::new_degrees(360.);
         for angle in &self.field_angles {
@@ -57,7 +57,7 @@ impl Magnetic {
             return Default::default();
         };
         let dang = ang.angle_between(angle);
-        let factor = (dang / 2.0).sin();
+        let factor = (dang / 2.).sin();
         if dang.abs() < Angle::new_degrees(1.0) {
             return Default::default();
         }
@@ -66,5 +66,37 @@ impl Magnetic {
         Vector::new(1.0, 0.0).rotate(ang + Angle::new_degrees(90. * m))
             * factor.abs()
             * self.strength
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::fdp::magnetic::Magnetic;
+    use irox_geometry::{Vector, Vector2D};
+    use irox_units::units::angle::Angle;
+
+    #[test]
+    pub fn test() {
+        let mag = Magnetic {
+            iterations: 1,
+            strength: 1.0,
+            field_angles: vec![
+                Angle::new_degrees(30.0),
+                Angle::new_degrees(45.0),
+                Angle::new_degrees(60.0),
+                Angle::new_degrees(90.0),
+                Angle::new_degrees(105.0),
+                Angle::new_degrees(135.0),
+                Angle::new_degrees(150.0),
+            ],
+        };
+
+        for i in 180..=210 {
+            let v = Vector::new(1.0, 0.0).rotate(Angle::new_degrees(i as f64));
+            let v = mag.get_force_for_vector(v);
+            let a = v.direction();
+            let m = v.magnitude();
+            println!("{i}:: {v:?}\n\t{a}\n\t{m}");
+        }
     }
 }

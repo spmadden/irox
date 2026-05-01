@@ -102,7 +102,7 @@ impl NodeRenderer for DebugForceNodeRenderer {
         center: Vector<f64>,
         shapes: &mut Vec<Shape>,
     ) {
-        let cvel = sim_node.current_velocity;
+        let cvel = sim_node.current_velocity * 100.;
         let start = center.to_point();
         let end = start + cvel;
         let stroke = Stroke::new(1.5, Color32::RED);

@@ -145,7 +145,7 @@ impl FDPSimulationApp {
             Force::Edge(EdgeForce::default().with_distance(100.)),
             Force::Magnetic(Magnetic {
                 iterations: 1,
-                strength: 1.,
+                strength: 10.,
                 field_angles: vec![
                     Angle::new_degrees(30.0),
                     Angle::new_degrees(45.0),
@@ -177,7 +177,7 @@ impl FDPSimulationApp {
         widget.node_renderer = Box::new(|_| renderer());
         widget.play = false;
         widget.show_tick_controls = true;
-        widget.sim.params.halt_on_energy = true;
+        // widget.sim.params.halt_on_energy = true;
 
         let mut app = FDPSimulationApp {
             widget,
