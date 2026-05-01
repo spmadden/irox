@@ -278,5 +278,9 @@ mod tests {
             Angle::new_degrees(90.0),
             Angle::new_degrees(90.).angle_between(Angle::new_degrees(180.0))
         );
+        assert_eq!(
+            Angle::new_degrees(-31.0),
+            Angle::new_degrees(181.).angle_between(Angle::new_degrees(150.0))
+        );
     }
 }
