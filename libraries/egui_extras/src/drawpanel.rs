@@ -95,7 +95,7 @@ impl Layer {
         }
     }
 
-    fn scale_position(shape: &mut Shape, transform: TSTransform) {
+    pub fn scale_position(shape: &mut Shape, transform: TSTransform) {
         match shape {
             Shape::Text(txt) => {
                 txt.pos = transform.mul_pos(txt.pos);
