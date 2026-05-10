@@ -4,9 +4,11 @@
 
 use crate::fdp::SimulationWorkingNode;
 use crate::{Edge, Node};
+use core::fmt::Write;
 use egui::emath::TSTransform;
-use egui::{Rect, Vec2};
+use egui::{Rect, Response, Vec2};
 use irox_egui_extras::arrows::Arrow;
+use irox_egui_extras::drawpanel::Layer;
 use irox_egui_extras::egui;
 use irox_egui_extras::egui::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
@@ -42,6 +44,14 @@ pub trait NodeRenderer {
         center: Vector<f64>,
         shapes: &mut Vec<Shape>,
     );
+    fn on_response(
+        &self,
+        _context: &RenderingContext,
+        _node: &Node,
+        _response: &Response,
+        _shapes: &mut Vec<Shape>,
+    ) {
+    }
 }
 pub static DEFAULT_NODE_RENDERER: DefaultNodeRenderer = DefaultNodeRenderer { draw_id: true };
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -68,9 +78,60 @@ impl NodeRenderer for DefaultNodeRenderer {
         let fgc = ui.visuals().widgets.active.fg_stroke.color;
         let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
 
-        shapes.push(Shape::Circle(CircleShape::filled(p, 2., fgc)));
+        let mut circle = Shape::Circle(CircleShape::filled(p, 2., fgc));
+        circle.transform(context.current_transform);
+        shapes.push(circle);
         if self.draw_id {
-            TextBoxRenderer::add_shapes_to(&id, context, fgc, bgc, p, shapes);
+            let mut shps = Vec::new();
+            TextBoxRenderer::add_shapes_to(&id, context, fgc, bgc, p, &mut shps);
+            for mut shp in shps.drain(..) {
+                // Layer::scale_position(&mut shp, context.current_transform);
+                shp.transform(context.current_transform);
+                shapes.push(shp);
+            }
+        }
+    }
+
+    fn on_response(
+        &self,
+        context: &RenderingContext,
+        node: &Node,
+        response: &Response,
+        shapes: &mut Vec<Shape>,
+    ) {
+        if response.hovered() {
+            let Some(p) = response.hover_pos() else {
+                return;
+            };
+            // let p = context.current_transform.inverse().mul_pos(p);
+            let mut out = String::new();
+            let d = &node.descriptor.id.to_string();
+            let _ = writeln!(&mut out, "id: {d}");
+
+            if let Some(desc) = &node.descriptor.description {
+                let _ = writeln!(&mut out, "desc: {desc}");
+            }
+            for (k, v) in &node.descriptor.attrs {
+                let _ = writeln!(&mut out, "{k}: {v}");
+            }
+            let ui = context.ui;
+            let fgc = ui.visuals().widgets.active.fg_stroke.color;
+            let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
+
+            let galley = ui.ctx().fonts_mut(|f| {
+                let mut job =
+                    LayoutJob::simple(out.clone(), FontId::monospace(14.), fgc, f32::INFINITY);
+                job.halign = Align::LEFT;
+                f.layout_job(job)
+            });
+            let pos = context.current_transform.inverse() * (p + Vec2::new(20., 5.));
+            let rect = galley.rect.translate(pos.to_vec2());
+            let mut txt = Shape::Text(TextShape::new(pos, galley, fgc));
+            Layer::scale_position(&mut txt, context.current_transform);
+            let mut rect = Shape::Rect(RectShape::filled(rect, CornerRadius::default(), bgc));
+            Layer::scale_position(&mut rect, context.current_transform);
+            shapes.push(txt);
+            shapes.push(rect);
         }
     }
 }
@@ -217,7 +278,7 @@ impl TextBoxRenderer {
         });
         let ctr = galley.rect.size() / 2.;
         let mut adj = galley.rect.left_top();
-        adj.x += ctr.x / context.current_transform.scaling;
+        adj.x += ctr.x;
 
         let rect = galley
             .rect

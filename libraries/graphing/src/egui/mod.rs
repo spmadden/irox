@@ -23,7 +23,8 @@ use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode}
 use irox_egui_extras::eframe::epaint::{RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{
-    Align, Context, CornerRadius, FontId, Pos2, Response, Shape, Slider, Ui, Vec2, Widget, Window,
+    Align, Color32, Context, CornerRadius, FontId, Id, Pos2, Rect, Response, Sense, Shape, Slider,
+    Stroke, StrokeKind, Ui, Vec2, Widget, Window,
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
@@ -241,6 +242,7 @@ impl FDPSimulationWidget {
                 .show(ui);
             });
         }
+        self.panel.show(ui);
         self.play_tick(ui.ctx());
         if self.show_tick_controls {
             ui.label(format!("Tick: {}", self.sim.params.tick));
@@ -274,33 +276,66 @@ impl FDPSimulationWidget {
             if let Some(edge) = sim.graph.borrow().edges.get(&edge.id) {
                 edge.get(|edge| {
                     profile_scope!("Edge Renderer: {}", edge.id().to_string());
+                    let mut eshapes = Vec::new();
                     (self.edge_renderer)(edge).add_shapes_to(
                         &rendering_context,
                         edge,
                         left,
                         right,
-                        &mut shapes,
+                        &mut eshapes,
                     );
+                    let painter = ui.painter();
+                    let mut bbox = Rect::NOTHING;
+                    for mut shp in eshapes {
+                        bbox |= shp.visual_bounding_rect();
+                        shp.transform(current_transform);
+                        painter.add(shp);
+                    }
                 });
             }
         });
-        self.sim.iter_nodes(|_id, node, working| {
+        self.sim.iter_nodes(|id, node, working| {
             let ctr = working.current_position;
             node.get(|node| {
                 profile_scope!("Node Renderer: {}", node.descriptor.id.to_string());
+                let mut eshapes = Vec::new();
                 (self.node_renderer)(node).add_shapes_to(
                     &rendering_context,
                     node,
                     working,
                     ctr,
+                    &mut eshapes,
+                );
+                let mut bbox = Rect::NOTHING;
+                for shp in &mut eshapes {
+                    bbox |= shp.visual_bounding_rect();
+                }
+                if cfg!(debug_assertions) {
+                    eshapes.push(Shape::Rect(RectShape::new(
+                        bbox,
+                        CornerRadius::default(),
+                        Color32::TRANSPARENT,
+                        Stroke::new(1.0, Color32::RED),
+                        StrokeKind::Middle,
+                    )));
+                }
+                let painter = ui.painter();
+                eshapes.drain(..).for_each(|shp| {
+                    painter.add(shp);
+                });
+                let resp = ui.interact(bbox, Id::new(id.to_string()), Sense::hover());
+                (self.node_renderer)(node).on_response(
+                    &rendering_context,
+                    node,
+                    &resp,
                     &mut shapes,
                 );
             });
         });
-
-        let _ = self.graph_layer.send(LayerCommand::ClearSetShapes(shapes));
-        self.find_hover(ui);
-        self.panel.show(ui);
+        let painter = ui.painter();
+        shapes.drain(..).for_each(|shp| {
+            painter.add(shp);
+        });
     }
     pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedEdgeIdentifier> {
         profile_scope!("FDPWidget::find_closest_edge_to");

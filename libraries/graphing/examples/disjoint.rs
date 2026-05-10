@@ -31,19 +31,39 @@ pub struct MNode {
     pub id: String,
     #[serde(default)]
     pub group: String,
+    #[serde(default)]
+    pub radius: u32,
+    #[serde(default)]
+    pub citing_patents_count: u32,
 }
 fn get_identifier(id: &str) -> Identifier {
     let id = irox_tools::hash::murmur3_128(id.as_bytes()) as u32;
     let out = words_to_string(&id.to_be_bytes(), "-");
     Identifier::String(out)
 }
+fn clip(s: &str, max_len: usize) -> String {
+    let ellipses = max_len.saturating_sub(3);
+    if s.len() > ellipses {
+        let s = s.split_at(ellipses).0;
+        format!("{s}...")
+    } else {
+        s.to_string()
+    }
+}
 impl From<MNode> for Node {
     fn from(value: MNode) -> Self {
         Node {
             descriptor: NodeDescriptor(Descriptor {
                 id: get_identifier(&value.id).into(),
-                description: None,
-                attrs: BTreeMap::from_iter([("group".into(), value.group.clone())]),
+                description: Some(clip(&value.id, 20)),
+                attrs: BTreeMap::from_iter([
+                    ("group".into(), clip(&value.group, 20)),
+                    ("radius".into(), value.radius.to_string()),
+                    (
+                        "citing patents".into(),
+                        value.citing_patents_count.to_string(),
+                    ),
+                ]),
             }),
             navigable_edges: vec![],
             all_edges: vec![],
