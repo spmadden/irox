@@ -18,13 +18,15 @@ const FEATURE_ARGS: &[&str] = &[
     "-Fdefault",
     "--all-features",
 ];
-const EXTRA_TARGETS: &[&str] = &["wasm32-unknown-unknown"];
+const EXTRA_TARGETS: &[&str] = &["wasm32-unknown-unknown", "aarch64-apple-darwin"];
 
 #[derive(Debug, Clone, Default, Subcommand)]
 enum Commands {
     #[default]
     /// Runs: Updates, Build, Test, Format, Lints, Upgrade
     Default,
+    /// Bootstraps the ecosystem
+    Bootstrap,
     /// Runs: Updates, Deny, Build, Test, Format-Check, Lints-Deny, About, Doc, Upgrade
     CI,
     /// Updates Rust with `rustup upadate` and then updates the 'Cargo.toml'
@@ -96,6 +98,7 @@ fn main() -> Result<(), Error> {
 
     match args.commands.unwrap_or_default() {
         Commands::Default => default()?,
+        Commands::Bootstrap => bootstrap()?,
         Commands::CI => ci()?,
         Commands::Updates => updates()?,
         Commands::Build => build()?,
@@ -492,5 +495,10 @@ fn bloat(args: &[&str]) -> Result<(), Error> {
     let args = (&[&["bloat", "--release"], args]).concat();
 
     exec_env("cargo", &args, [("RUSTFLAGS", rustc_args)])?;
+    Ok(())
+}
+
+fn bootstrap() -> Result<(), Error> {
+    install_update("just");
     Ok(())
 }
