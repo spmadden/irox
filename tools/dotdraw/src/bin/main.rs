@@ -18,8 +18,8 @@ pub fn main() {
         extern crate alloc;
         use alloc::boxed::Box;
         use egui::{Vec2, ViewportBuilder};
-        use irox_egui_extras::egui;
         use irox_egui_extras::toolframe::ToolFrame;
+        use irox_egui_extras::{eframe, egui};
         use irox_log::log::error;
 
         let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));

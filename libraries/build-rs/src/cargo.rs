@@ -4,7 +4,6 @@
 
 #![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
 use crate::{BuildEnvironment, BuildVariable, Error, VariableSource};
-use std::io::{BufRead, BufReader};
 
 pub static CARGO_ENV_VARIABLES: [&str; 26] = [
     "CARGO_PKG_VERSION",
