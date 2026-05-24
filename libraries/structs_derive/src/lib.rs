@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 mod shared;
@@ -7,7 +7,7 @@ mod shared;
 use proc_macro::{Literal, TokenStream};
 
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, Data, DeriveInput, Fields, FieldsNamed};
+use syn::{parse_macro_input, Data, DeriveInput, Fields, FieldsNamed, Meta};
 
 use irox_types::{PrimitiveType, Primitives, VariableType};
 
@@ -18,6 +18,7 @@ const TYPES_STRICT_SIZING_INCOMPATIBLE: [Primitives; 1] = [Primitives::null];
 struct Config {
     strict_sizing: bool,
     big_endian: bool,
+    include_offsets: bool,
 }
 
 fn get_endian_method_for_prim(ty: Primitives, read: bool, big_endian: bool) -> String {
@@ -61,6 +62,19 @@ fn create_write_to_fn(n: &FieldsNamed, config: &Config, sizing: &mut StructSizin
         let Some(ident) = &x.ident else {
             return irox_derive_helpers::compile_error(&x, "No ident");
         };
+        let is_offset = x.attrs.iter().find(|attr| {
+            if let Meta::Path(p) = &attr.meta {
+                if let Some(id) = p.get_ident() {
+                    if *id == "offsets" {
+                        return true;
+                    }
+                }
+            }
+            false
+        });
+        if is_offset.is_some() {
+            continue;
+        }
         match PrimitiveType::try_from(x) {
             Ok(field) => {
                 if let Some(size) = field.bytes_length() {
@@ -192,12 +206,41 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
         fn parse_from<T: irox_structs::Bits>(input: &mut T) -> Result<Self::ImplType, irox_structs::Error>
     ).into());
 
+    let mut prelim = TokenStream::new();
     let mut inits = TokenStream::new();
 
+    let mut names = Vec::<(String, String)>::new();
     for x in &n.named {
         let Some(ident) = &x.ident else {
             return irox_derive_helpers::compile_error(&x, "No ident");
         };
+        let is_offset = x.attrs.iter().find(|attr| {
+            if let Meta::Path(p) = &attr.meta {
+                if let Some(id) = p.get_ident() {
+                    if *id == "offsets" {
+                        return true;
+                    }
+                }
+            }
+            false
+        });
+        if is_offset.is_some() {
+            inits.add_ident(ident.to_string().as_str());
+            inits.add_punc(':');
+            inits.extend::<TokenStream>(x.ty.to_token_stream().into());
+            inits.wrap_braces({
+                let mut ts = TokenStream::new();
+                for (n, v) in &names {
+                    ts.add_ident(n);
+                    ts.add_punc(':');
+                    ts.add_ident(v);
+                    ts.add_punc(',');
+                }
+                ts
+            });
+            inits.add_punc(',');
+            continue;
+        }
 
         match PrimitiveType::try_from(x) {
             Ok(field) => match field {
@@ -208,13 +251,42 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
                             "Type is not compatible with strict sizing",
                         );
                     };
+
+                    let offident = format!("{ident}__offset_");
+                    names.push((ident.to_string(), offident.clone()));
+                    prelim.add_ident("let");
+                    prelim.add_ident(&offident);
+                    prelim.add_punc(':');
+                    prelim.add_ident("u64");
+                    prelim.add_punc('=');
+                    prelim.add_ident("input");
+                    prelim.add_punc('.');
+                    prelim.add_ident("position");
+                    prelim.add_parens(TokenStream::new());
+                    prelim.add_punc('.');
+                    prelim.add_ident("unwrap_or_default");
+                    prelim.add_parens(TokenStream::new());
+                    prelim.add_punc(';');
+
+                    prelim.add_ident("let");
+                    prelim.add_ident(&ident.to_string());
+                    prelim.add_punc(':');
+                    prelim.extend::<TokenStream>(x.ty.to_token_stream().into());
+                    prelim.add_punc('=');
+                    prelim.add_ident("input");
+                    prelim.add_punc('.');
+                    prelim.add_ident(&get_endian_method_for_prim(input, true, config.big_endian));
+                    prelim.add_parens(TokenStream::new());
+                    prelim.add_punc('?');
+                    prelim.add_punc(';');
+
                     inits.add_ident(&ident.to_string());
-                    inits.add_punc(':');
-                    inits.add_ident("input");
-                    inits.add_punc('.');
-                    inits.add_ident(&get_endian_method_for_prim(input, true, config.big_endian));
-                    inits.add_parens(TokenStream::new());
-                    inits.add_punc('?');
+                    // inits.add_punc(':');
+                    // inits.add_ident("input");
+                    // inits.add_punc('.');
+                    // inits.add_ident(&get_endian_method_for_prim(input, true, config.big_endian));
+                    // inits.add_parens(TokenStream::new());
+                    // inits.add_punc('?');
                     inits.add_punc(',');
                 }
                 PrimitiveType::Array(input, len) => {
@@ -224,9 +296,11 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
                             "Type is not compatible with strict sizing",
                         );
                     };
-                    inits.add_ident(&ident.to_string());
-                    inits.add_punc(':');
-                    inits.wrap_brackets({
+
+                    prelim.add_ident("let");
+                    prelim.add_ident(&ident.to_string());
+                    prelim.add_punc('=');
+                    prelim.wrap_brackets({
                         let mut ts = TokenStream::new();
                         for _ in 0..len {
                             ts.add_ident("input");
@@ -242,9 +316,12 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
                         }
                         ts
                     });
-                    inits.add_punc('.');
-                    inits.add_ident("into");
-                    inits.add_parens(TokenStream::new());
+                    prelim.add_punc('.');
+                    prelim.add_ident("into");
+                    prelim.add_parens(TokenStream::new());
+                    prelim.add_punc(';');
+
+                    inits.add_ident(&ident.to_string());
                     inits.add_punc(',');
                 }
                 PrimitiveType::DynamicallySized(ds) => {
@@ -267,20 +344,52 @@ fn create_parse_from_fn(n: &FieldsNamed, config: &Config) -> TokenStream {
             },
             Err(_e) => {
                 // <ty as irox_structs::Struct>::parse_from(input)?;
+                let offident = format!("{ident}__offset_");
+                names.push((ident.to_string(), offident.clone()));
+                prelim.add_ident("let");
+                prelim.add_ident(&offident);
+                prelim.add_punc(':');
+                prelim.add_ident("u64");
+                prelim.add_punc('=');
+                prelim.add_ident("input");
+                prelim.add_punc('.');
+                prelim.add_ident("position");
+                prelim.add_parens(TokenStream::new());
+                prelim.add_punc('.');
+                prelim.add_ident("unwrap_or_default");
+                prelim.add_parens(TokenStream::new());
+                prelim.add_punc(';');
+
+                prelim.add_ident("let");
+                prelim.add_ident(&ident.to_string());
+                prelim.add_punc('=');
                 let ty = x.ty.to_token_stream();
+                prelim.wrap_generics({
+                    let mut ts = TokenStream::new();
+                    ts.extend::<TokenStream>(ty.to_token_stream().into());
+                    ts
+                });
+                prelim.add_punc2(':', ':');
+                prelim.add_ident("parse_from");
+                prelim.add_parens(TokenStream::create_ident("input"));
+                prelim.add_punc('?');
+                prelim.add_punc(';');
+
                 inits.add_ident(&ident.to_string());
-                inits.add_punc(':');
-                inits.extend::<TokenStream>(
-                    quote! {
-                        <#ty as irox_structs::Struct>::parse_from(input)?,
-                    }
-                    .into(),
-                );
+                inits.add_punc(',');
+                // inits.add_punc(':');
+                // inits.extend::<TokenStream>(
+                //     quote! {
+                //         <#ty as irox_structs::Struct>::parse_from(input)?;
+                //     }
+                //     .into(),
+                // );
             }
         }
     }
 
     let mut method = TokenStream::new();
+    method.extend(prelim);
     method.add_ident("Ok");
     method.add_parens({
         let mut ts = TokenStream::new();
@@ -297,20 +406,21 @@ struct StructSizing {
     size: usize,
 }
 
-#[proc_macro_derive(Struct, attributes(little_endian, big_endian, strict_sizing))]
+#[proc_macro_derive(
+    Struct,
+    attributes(little_endian, big_endian, strict_sizing, offsets, include_offsets)
+)]
 pub fn struct_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let mut config = Config {
         big_endian: true,
         strict_sizing: false,
+        include_offsets: false,
     };
 
     for attr in &input.attrs {
         let Ok(ident) = attr.meta.path().require_ident() else {
-            return irox_derive_helpers::compile_error(
-                &attr,
-                "This attribute is unnamed.".to_string(),
-            );
+            continue;
         };
         if ident.eq("little_endian") {
             config.big_endian = false;
@@ -318,6 +428,8 @@ pub fn struct_derive(input: TokenStream) -> TokenStream {
             config.big_endian = true;
         } else if ident.eq("strict_sizing") {
             config.strict_sizing = true;
+        } else if ident.eq("include_offsets") {
+            config.include_offsets = true;
         }
     }
 

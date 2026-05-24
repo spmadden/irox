@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -91,7 +91,7 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-pub use irox_bits::{Bits, Error, MutBits};
+pub use irox_bits::{Bits, Error, MutBits, Seek};
 pub use irox_structs_derive::*;
 
 /// Enables feature-specific code.
