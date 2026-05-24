@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -26,6 +26,7 @@ pub mod md5;
 pub mod murmur3;
 pub mod sha1;
 pub mod sha2;
+pub mod sha2wordlist;
 pub mod sixwords;
 pub mod viz;
 
