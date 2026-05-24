@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -17,6 +17,7 @@ use alloc::vec::Vec;
 mod chunks;
 mod join;
 pub mod looping_forever;
+pub mod permuted;
 mod streaming;
 mod zip;
 
