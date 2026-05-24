@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2025 IROX Contributors
 //
 use crate::Error;
 
@@ -29,6 +29,7 @@ cfg_feature_std! {
 /// There's no reason this trait should have been in std and not core.  
 pub trait Seek {
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error>;
+    fn position(&mut self) -> Result<u64, Error>;
 }
 
 ///

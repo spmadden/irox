@@ -684,6 +684,11 @@ pub trait Bits {
     fn remaining(&self) -> Option<usize> {
         None
     }
+
+    /// Some implementations may be able to return the current position in the buffer
+    fn position(&mut self) -> Option<u64> {
+        None
+    }
 }
 
 #[allow(unused_macros)]

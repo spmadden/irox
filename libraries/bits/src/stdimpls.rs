@@ -16,6 +16,20 @@ impl Bits for std::fs::File {
         }
         Ok(None)
     }
+
+    fn read_exact_vec(&mut self, size: usize) -> Result<Vec<u8>, Error> {
+        let mut buf = vec![0u8; size];
+        std::io::Read::read_exact(self, &mut buf)?;
+        Ok(buf)
+    }
+
+    fn remaining(&self) -> Option<usize> {
+        None
+    }
+
+    fn position(&mut self) -> Option<u64> {
+        std::io::Seek::stream_position(self).ok()
+    }
 }
 
 impl MutBits for std::fs::File {
@@ -31,6 +45,9 @@ impl MutBits for std::fs::File {
 impl Seek for std::fs::File {
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error> {
         std::io::Seek::seek(self, pos.into())?;
+        Ok(std::io::Seek::stream_position(self)?)
+    }
+    fn position(&mut self) -> Result<u64, Error> {
         Ok(std::io::Seek::stream_position(self)?)
     }
 }
