@@ -28,6 +28,13 @@ p384 = {workspace = true, optional = true, features = ["ecdsa"]}
 ecdsa = {workspace = true, optional = true}
 rsa = {workspace = true, optional = true, features = ["sha2", "std"]}
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = {version = "^0", features = ["js"]}
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[test]]
+name = "winpe_test"
+required-features = ["authenticode"]
