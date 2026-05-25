@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -13,21 +13,43 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-extern crate alloc;
-use irox_tools::cfg_feature_std;
+use irox_tools::{cfg_feature_alloc, cfg_feature_std};
 pub use log;
+
+cfg_feature_alloc! {
+    mod records;
+    pub use records::*;
+
+}
 
 cfg_feature_std! {
     use core::str::FromStr;
     use log::Level;
     pub mod console;
+    mod appenders;
+    pub use appenders::*;
 
     macro_rules! set_con_logger {
         ($name:ident) => {
-            if let Err(e) = log::set_logger(&console::$name) {
+            if USING_MULTI_LOGGER.load(core::sync::atomic::Ordering::SeqCst) {
+                get_system_logger().add_static(&console::$name);
+            } else if let Err(e) = log::set_logger(&console::$name) {
                 eprintln!("Error setting logger: {e:?}");
             };
         };
+    }
+
+    pub static USING_MULTI_LOGGER: core::sync::atomic::AtomicBool = core::sync::atomic::AtomicBool::new(false);
+    ///
+    /// Initialize the multi-appender backend
+    #[allow(clippy::print_stderr)]
+    pub fn init_multi_logger() {
+        let logger = get_system_logger();
+        if let Err(e) = log::set_logger(logger) {
+            eprintln!("Error setting logger: {e:?}");
+        } else {
+            USING_MULTI_LOGGER.store(true, core::sync::atomic::Ordering::SeqCst);
+        }
     }
 
     ///
