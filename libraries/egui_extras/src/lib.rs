@@ -64,6 +64,7 @@ pub mod visuals;
     any(feature = "glow", feature = "wgpu")
 ))]
 pub mod wasm;
+pub mod widgets;
 
 pub use utils::*;
 

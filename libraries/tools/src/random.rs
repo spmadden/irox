@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -260,6 +260,13 @@ pub trait PRNG {
             v = self.next_u64();
         }
         v % max
+    }
+
+    #[allow(clippy::needless_lifetimes)]
+    #[allow(clippy::indexing_slicing)]
+    fn choice<'a, T>(&mut self, choices: &'a [T]) -> &'a T {
+        let idx = self.unbiased_next_u32(choices.len() as u32) as usize;
+        &choices[idx]
     }
 }
 

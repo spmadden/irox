@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame};
-use egui::{CentralPanel, Layout, Pos2, Shape, Ui, Vec2, ViewportBuilder, Window};
+use egui::{Align2, CentralPanel, Layout, Pos2, Shape, Ui, Vec2, ViewportBuilder, Window};
 use irox_build_rs::BuildEnvironment;
 use irox_egui_extras::about::AboutWindow;
 use irox_egui_extras::composite::CompositeApp;
@@ -14,7 +14,9 @@ use irox_egui_extras::serde::EguiSerializer;
 use irox_egui_extras::styles::StylePersistingApp;
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_egui_extras::visuals::VisualsWindow;
+use irox_egui_extras::widgets::logger::LoggerWidget;
 use irox_imagery::Color;
+use irox_tools::random::PRNG;
 use irox_tools::static_init;
 use log::{error, Level};
 use serde::Serialize;
@@ -28,6 +30,7 @@ static_init!(get_env, BuildEnvironment, {
 });
 
 pub fn main() {
+    irox_log::init_multi_logger();
     irox_log::init_console_level(Level::Info);
     let viewport = ViewportBuilder::default().with_inner_size(Vec2::new(1024., 800.));
 
@@ -65,9 +68,11 @@ pub struct TestApp {
     show_plot: bool,
     show_about: bool,
     about_tabs: AboutTabs,
+    logger_widget: LoggerWidget,
 }
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
+        let logger_widget = LoggerWidget::new("irox_egui_gallery_logger", Level::Info);
         let mut t;
         let mut pts = Vec::with_capacity(1000);
         let mut pts2 = Vec::with_capacity(1000);
@@ -133,7 +138,26 @@ impl TestApp {
                 line.name = Arc::new("line".to_string());
             })
             .replace_data(Arc::from(pts3));
+        std::thread::spawn(|| -> ! {
+            let mut rand = irox_tools::random::PcgMcgXslRr::new_seed(0);
 
+            loop {
+                let sleep_ms = rand.next_in_range(100., 2500.) as u64;
+                std::thread::sleep(std::time::Duration::from_millis(sleep_ms));
+                let level = match rand.next_in_range(0., 100.) {
+                    x if x < 20. => Level::Error,
+                    x if x < 40. => Level::Warn,
+                    x if x < 60. => Level::Info,
+                    x if x < 80. => Level::Debug,
+                    _ => Level::Trace,
+                };
+                log::log!(
+                    level,
+                    "{}",
+                    irox_app_helpers::commit_messages::get_message()
+                );
+            }
+        });
         TestApp {
             log_plot,
             log_plot2,
@@ -144,6 +168,7 @@ impl TestApp {
             show_visuals: false,
             show_plot: true,
             about_tabs: Default::default(),
+            logger_widget,
         }
     }
 }
@@ -233,6 +258,19 @@ impl App for TestApp {
                     }
                 });
         }
+
+        Window::new("logger")
+            .resizable([true, false])
+            .max_height(150.)
+            .min_width(800.)
+            .resizable(true)
+            .anchor(
+                Align2::CENTER_BOTTOM,
+                [0., -ui.text_style_height(&egui::TextStyle::Body) * 1.25],
+            )
+            .show(ui.ctx(), |ui| {
+                self.logger_widget.show(ui);
+            });
 
         CentralPanel::default().show_inside(ui, |ui| {
             ui.with_layout(Layout::top_down(Align::Max), |ui| {

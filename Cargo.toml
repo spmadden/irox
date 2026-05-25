@@ -23,6 +23,7 @@ members = [
     "data-formats/raymarine-sonar",
     "data-formats/sirf",
     "data-formats/ubx",
+    "data-formats/winpe",
     "data-formats/zip",
     "eieio/api",
     "eieio/nmea0183",
@@ -69,6 +70,7 @@ members = [
 
 [workspace.dependencies]
 egui = { version = "^0.34", default-features = false }
+egui_extras = { version = "^0.34", default-features = false }
 eframe = { version = "^0.34", default-features = false }
 emath = { version = "^0.34", default-features = false }
 ehttp = { version = "0.7.0", default-features = false }
@@ -100,6 +102,11 @@ criterion = "0.5"
 core_affinity = "0.8"
 toml = "0.8"
 glow = "0.17"
+cms = { version = "0.2.3", default-features = false, features = [] }
+ecdsa = {version = "0.16.9", default-features = false, features = []}
+p384 = {version = "0.13.1", default-features = false, features = []}
+rsa = {version = "0.9.10", default-features = false, features = []}
+
 
 irox-arch-x86-64 = { version = "0.1" }
 web-sys = {version = "0.3.81"}
@@ -150,6 +157,7 @@ irox-time = { version = "^0", path = "libraries/time" }
 irox-tools = { version = "^0", path = "libraries/tools" }
 irox-types = { version = "^0", path = "libraries/types" }
 irox-units = { version = "^0", path = "libraries/units" }
+irox-winpe = { version = "^0", path = "data-formats/winpe" }
 
 [profile.test]
 #opt-level = 1
