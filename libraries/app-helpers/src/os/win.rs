@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
+
+pub mod env;
+// pub mod proc;
+pub mod osgeo4w;
 
 use crate::ShellFolder;
 use irox_tools::irox_bits::Error;

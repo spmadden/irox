@@ -16,6 +16,8 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+irox-log = {workspace = true, features = ["std"]}
+irox-bits = {workspace = true, features = ["std"]}
 irox-tools = {workspace = true, features = ["std"]}
 irox-types = {workspace = true, features = ["bits"]}
 irox-openpgp = {workspace = true, features = []}

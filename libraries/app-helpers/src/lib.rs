@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -16,8 +16,11 @@ mod manifest;
 mod pgp;
 mod updater;
 
+pub mod commit_messages;
+mod error;
 mod os;
 
 pub use args::*;
+pub use error::*;
 pub use manifest::*;
 pub use os::*;
