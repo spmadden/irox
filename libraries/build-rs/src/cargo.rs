@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
 //
 
 #![cfg_attr(target_arch = "wasm32", allow(unused_imports))]
@@ -99,7 +99,8 @@ pub fn load_windows_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
         ("BUILD_HOST_OSVER", "OS Version"),
     ];
     fn parse_output(env: &mut BuildEnvironment, output: Vec<u8>) -> Result<(), Error> {
-        let output = BufReader::new(output.as_slice());
+        use std::io::BufRead;
+        let output = std::io::BufReader::new(output.as_slice());
         for line in output.lines() {
             let line = line?;
             let line = line.trim();
