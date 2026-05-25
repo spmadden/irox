@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
-use eframe::emath::Pos2;
-use eframe::epaint::PathShape;
+use egui::emath::Pos2;
+use egui::epaint::PathShape;
 use egui::{Color32, Shape, Stroke};
 use irox_geometry::{Vector, Vector2D};
 use irox_units::units::angle::Angle;
