@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -27,6 +27,7 @@ mod tiff;
 pub mod bitpacked;
 mod color;
 pub mod colormaps;
+pub mod colortheme;
 mod error;
 mod pixel;
 mod stacked;

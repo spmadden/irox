@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use irox_bits::{BitStreamDecoder, Bits, BitsError};
@@ -188,6 +188,11 @@ impl Color {
     pub const fn argb_array(arr: &[u8; 4]) -> Self {
         let [alpha, red, green, blue] = *arr;
         Self::argb_parts(alpha, red, green, blue)
+    }
+    #[must_use]
+    pub const fn rgb_array(arr: &[u8; 3]) -> Self {
+        let [red, green, blue] = *arr;
+        Self::rgb_parts(red, green, blue)
     }
     #[must_use]
     pub const fn rgb_hex(hex: u32) -> Self {
