@@ -13,14 +13,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-use irox_tools::{cfg_feature_alloc, cfg_feature_std};
+use irox_tools::cfg_feature_std;
 pub use log;
-
-cfg_feature_alloc! {
-    mod records;
-    pub use records::*;
-
-}
 
 cfg_feature_std! {
     use core::str::FromStr;
@@ -28,6 +22,9 @@ cfg_feature_std! {
     pub mod console;
     mod appenders;
     pub use appenders::*;
+
+    mod records;
+    pub use records::*;
 
     macro_rules! set_con_logger {
         ($name:ident) => {

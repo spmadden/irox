@@ -3,7 +3,7 @@
 //
 
 extern crate alloc;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use core::ops::Deref;
 use irox_time::datetime::UTCDateTime;
 use log::{Level, Record};
