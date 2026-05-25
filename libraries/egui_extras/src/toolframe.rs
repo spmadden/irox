@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -9,8 +9,7 @@ use crate::frame_history::FrameHistory;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame, Storage};
 use egui::{
-    containers::menu, Context, Id, Layout, Panel, RawInput, Theme, ThemePreference, Ui, Visuals,
-    Window,
+    containers::menu, Context, Id, Layout, Panel, RawInput, ThemePreference, Ui, Visuals, Window,
 };
 use std::time::Duration;
 
@@ -167,8 +166,7 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    let theme = ui.ctx().theme();
-                    if let Theme::Dark = theme {
+                    if ui.visuals().dark_mode {
                         if ui.button("\u{2600}").clicked() {
                             ui.ctx().set_theme(ThemePreference::Light);
                         }
