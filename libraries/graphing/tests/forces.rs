@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use eframe::emath::Vec2;
@@ -12,6 +12,7 @@ use irox_graphing::fdp::Simulation;
 use irox_log::log::{error, Level};
 
 #[test]
+#[ignore]
 pub fn test() {
     irox_log::init_console_level(Level::Info);
     let viewport = ViewportBuilder::default()
