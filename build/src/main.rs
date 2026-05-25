@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 mod error;
@@ -18,7 +18,25 @@ const FEATURE_ARGS: &[&str] = &[
     "-Fdefault",
     "--all-features",
 ];
-const EXTRA_TARGETS: &[&str] = &["wasm32-unknown-unknown", "aarch64-apple-darwin"];
+const EXTRA_TARGETS: &[&str] = &["wasm32-unknown-unknown"];
+const SUPPORTED_TARGETS: &[&str] = &[
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-gnu",
+    "x86_64-pc-windows-msvc",
+    "x86_64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "wasm32-unknown-unknown",
+];
+const COMPONENTS: &[&str] = &[
+    "rustfmt",
+    "clippy",
+    "rust-std-x86_64-pc-windows-msvc",
+    "rust-std-x86_64-pc-windows-gnu",
+    "rust-std-x86_64-unknown-linux-gnu",
+    "rust-std-x86_64-unknown-linux-musl",
+    "rust-std-wasm32-unknown-unknown",
+    "rust-std-aarch64-apple-darwin",
+];
 
 #[derive(Debug, Clone, Default, Subcommand)]
 enum Commands {
@@ -499,6 +517,12 @@ fn bloat(args: &[&str]) -> Result<(), Error> {
 }
 
 fn bootstrap() -> Result<(), Error> {
+    for target in SUPPORTED_TARGETS {
+        exec_passthru("rustup", &["target", "add", target])?;
+    }
+    for component in COMPONENTS {
+        exec_passthru("rustup", &["component", "add", component])?;
+    }
     install_update("just");
     Ok(())
 }
