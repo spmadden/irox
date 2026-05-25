@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::mutbits::MutBits;
@@ -112,6 +112,21 @@ impl MutBits for &mut std::net::TcpStream {
     fn flush(&mut self) -> Result<(), Error> {
         std::io::Write::flush(self)?;
         Ok(())
+    }
+}
+
+#[cfg(not(any(windows, unix)))]
+impl crate::SeekRead for std::fs::File {
+    fn seek_read(&mut self, out: &mut [u8], offset: u64) -> Result<usize, Error> {
+        std::io::Seek::seek(self, std::io::SeekFrom::Start(offset))?;
+        Ok(std::io::Read::read(self, out)?)
+    }
+}
+#[cfg(not(any(windows, unix)))]
+impl crate::SeekWrite for std::fs::File {
+    fn seek_write(&mut self, input: &[u8], offset: u64) -> Result<usize, Error> {
+        std::io::Seek::seek(self, std::io::SeekFrom::Start(offset))?;
+        Ok(std::io::Write::write(self, input)?)
     }
 }
 
