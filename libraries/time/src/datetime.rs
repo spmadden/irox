@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
+//
 
 //!
 //! Contains [`UTCDateTime`] and associated elements to represent a [`Date`] and [`Time`] in UTC
@@ -21,7 +22,7 @@ use irox_units::units::duration::Duration;
 
 ///
 /// Represents a Gregorian Date and Time in UTC
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct UTCDateTime {
     pub(crate) date: Date,
     pub(crate) time: Time,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -54,7 +54,7 @@ pub mod julian;
 /// Represents a time of the day, an offset into the day from midnight.
 ///
 /// Corresponds to a `UTC of day` in section 5.3.3 of ISO8601
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Time {
     second_of_day: u32,
     nanoseconds: u32,
