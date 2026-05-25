@@ -1,0 +1,33 @@
+[package]
+name = "irox-winpe"
+description = "PE File Format"
+keywords = ["irox"]
+categories = ["parser-implementations"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[features]
+default = []
+authenticode = ["dep:cms", "dep:p384", "dep:ecdsa", "dep:rsa"]
+
+[dependencies]
+irox-bits = {workspace = true, features = ["std"]}
+irox-tools = {workspace = true, features = ["std"]}
+irox-structs = {workspace = true, features = ["alloc"]}
+cms = {workspace = true, optional = true, features = ["std"]}
+p384 = {workspace = true, optional = true, features = ["ecdsa"]}
+ecdsa = {workspace = true, optional = true}
+rsa = {workspace = true, optional = true, features = ["sha2", "std"]}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
