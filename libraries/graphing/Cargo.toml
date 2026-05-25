@@ -48,6 +48,10 @@ required-features = ["egui", "irox-egui-extras/serde"]
 name = "multitree"
 required-features = ["egui"]
 
+[[test]]
+name = "forces"
+required-features = ["egui"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
