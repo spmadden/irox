@@ -4,7 +4,6 @@
 
 use criterion::measurement::{Measurement, ValueFormatter};
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
-use irox_arch_x86_64::cpu::rdtsc;
 use std::time::Duration;
 
 pub struct Timer;
@@ -60,16 +59,17 @@ impl ValueFormatter for Timer {
         "cycles"
     }
 }
+#[cfg(target_arch = "x86_64")]
 impl Measurement for Timer {
     type Intermediate = u64;
     type Value = u64;
 
     fn start(&self) -> Self::Intermediate {
-        rdtsc()
+        irox_arch_x86_64::cpu::rdtsc()
     }
 
     fn end(&self, i: Self::Intermediate) -> Self::Value {
-        rdtsc() - i
+        irox_arch_x86_64::cpu::rdtsc() - i
     }
 
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
@@ -88,10 +88,14 @@ impl Measurement for Timer {
         self
     }
 }
+#[cfg(target_arch = "x86_64")]
 fn timer() -> Criterion<Timer> {
     Criterion::default()
         .with_measurement(Timer::default())
         .sample_size(500)
+}
+fn timer() -> Criterion<criterion::measurement::WallTime> {
+    Criterion::default().sample_size(500)
 }
 
 pub struct Bencher {
@@ -114,7 +118,7 @@ impl Bencher {
     }
 }
 
-pub fn criterion_benchmark(c: &mut Criterion<Timer>) {
+pub fn criterion_benchmark<T: Measurement>(c: &mut Criterion<T>) {
     core_affinity::set_for_current(core_affinity::CoreId { id: 2 });
     let mut grp = c.benchmark_group("x25519");
     grp.warm_up_time(Duration::from_millis(100));
@@ -126,6 +130,13 @@ pub fn criterion_benchmark(c: &mut Criterion<Timer>) {
     grp.finish();
 }
 
+#[cfg(target_arch = "x86_64")]
+criterion_group! {
+    name = benches;
+    config = timer();
+    targets = criterion_benchmark
+}
+#[cfg(not(target_arch = "x86_64"))]
 criterion_group! {
     name = benches;
     config = timer();

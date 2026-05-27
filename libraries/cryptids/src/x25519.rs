@@ -557,7 +557,7 @@ pub static BLOCKLIST: [&[u8; 32]; 24] = [
 #[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::ed25519::Ed25519Error;
-    use crate::x25519::{scalarmult, BASE};
+    use crate::x25519::scalarmult;
     use crate::x25519::{Curve25519PublicKey, SecretKey, SharedCurve25519Secret};
     use irox_tools::{assert_eq_hex_slice, hex};
 
@@ -620,13 +620,14 @@ mod tests {
         Ok(())
     }
 
+    #[cfg(target_arch = "x86_64")]
     macro_rules! impl_iter_vectors {
         ($name:ident, $iter:literal, $exp:literal) => {
             #[test]
             pub fn $name() -> Result<(), Ed25519Error> {
                 core_affinity::set_for_current(core_affinity::CoreId { id: 0 });
-                let mut k = *BASE;
-                let mut u = *BASE;
+                let mut k = *crate::x25519::BASE;
+                let mut u = *crate::x25519::BASE;
                 let start = std::time::Instant::now();
                 let mut start_ctr = irox_arch_x86_64::cpu::rdtsc();
 
@@ -658,11 +659,13 @@ mod tests {
             }
         };
     }
+    #[cfg(target_arch = "x86_64")]
     impl_iter_vectors!(
         iter_test_vectors1,
         1,
         "422c8e7a6227d7bca1350b3e2bb7279f7897b87bb6854b783c60e80311ae3079"
     );
+    #[cfg(target_arch = "x86_64")]
     impl_iter_vectors!(
         iter_test_vectors_1k,
         1000,
