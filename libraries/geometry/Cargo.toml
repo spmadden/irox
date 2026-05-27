@@ -19,10 +19,12 @@ workspace = true
 default = []
 alloc = ["irox-tools/alloc", "irox-units/alloc"]
 std = ["irox-tools/std", "irox-units/std"]
+egui = ["dep:egui"]
 
 [dependencies]
 irox-tools = {workspace = true}
 irox-units = {workspace = true}
+egui = {workspace = true, default-features = false, optional = true}
 
 [package.metadata.docs.rs]
 all-features = true

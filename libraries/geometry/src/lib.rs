@@ -13,7 +13,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use irox_tools::cfg_feature_alloc;
+use irox_tools::{cfg_feature_alloc, cfg_feature_egui};
 
 mod geometry;
 cfg_feature_alloc! {
@@ -30,6 +30,9 @@ mod rectangle;
 pub mod tiles;
 pub mod transform;
 mod vector;
+cfg_feature_egui! {
+    mod egui;
+}
 
 pub use geometry::*;
 pub use line::*;

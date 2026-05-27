@@ -2223,6 +2223,7 @@ dependencies = [
 name = "irox-geometry"
 version = "0.1.0"
 dependencies = [
+ "egui",
  "irox-tools 0.11.1",
  "irox-units",
 ]

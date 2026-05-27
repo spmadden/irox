@@ -123,6 +123,15 @@ impl<T: FloatIsh> Vector2D<T> for Vector<T> {
     }
 }
 
+impl From<Vector<f32>> for Vector<f64> {
+    fn from(value: Vector<f32>) -> Self {
+        Self {
+            vx: value.vx as f64,
+            vy: value.vy as f64,
+        }
+    }
+}
+
 impl<T: FloatIsh> Add for Vector<T> {
     type Output = Self;
 

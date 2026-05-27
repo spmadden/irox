@@ -174,3 +174,14 @@ impl<T: FloatIsh> Geometry<T> for Point<T> {
         }
     }
 }
+
+impl From<Point<f32>> for Point<f64> {
+    fn from(value: Point<f32>) -> Self {
+        Self {
+            x: value.x as f64,
+            y: value.y as f64,
+            z: value.z.map(|x| x as f64),
+            m: value.m.map(|x| x as f64),
+        }
+    }
+}
