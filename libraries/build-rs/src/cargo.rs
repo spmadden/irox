@@ -131,6 +131,7 @@ pub fn load_windows_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
 }
 #[cfg(target_os = "linux")]
 pub fn load_linux_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
+    use std::io::BufRead;
     let kernel_ver = run_command(&["uname", "-r"])?;
     env.variables.insert(
         "BUILD_HOST_KERNELVER".to_string(),
@@ -146,7 +147,7 @@ pub fn load_linux_sysinfo(env: &mut BuildEnvironment) -> Result<(), Error> {
         BuildVariable::new_str("BUILD_HOST_HOSTNAME", &hostname, VariableSource::BuildHost),
     );
     let mut found_prettyname = false;
-    let reader = BufReader::new(
+    let reader = std::io::BufReader::new(
         std::fs::OpenOptions::new()
             .read(true)
             .open("/etc/os-release")?,
