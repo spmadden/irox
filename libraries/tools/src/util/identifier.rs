@@ -20,6 +20,7 @@ use core::fmt::{Display, Formatter};
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Identifier {
     Integer(u64),
+    Str(&'static str),
     String(String),
     UUID(UUID),
 }
@@ -31,6 +32,10 @@ impl Identifier {
         match self {
             Identifier::Integer(i) => Identifier::Integer(*i),
             Identifier::String(s) => {
+                let hash = murmur3_128(s.as_bytes());
+                Identifier::Integer(hash as u64)
+            }
+            Identifier::Str(s) => {
                 let hash = murmur3_128(s.as_bytes());
                 Identifier::Integer(hash as u64)
             }
@@ -47,6 +52,7 @@ impl Identifier {
         match self {
             Identifier::Integer(i) => Identifier::String(crate::format!("{i}")),
             Identifier::String(s) => Identifier::String(s.clone()),
+            Identifier::Str(s) => Identifier::String(s.to_string()),
             Identifier::UUID(u) => Identifier::String(crate::format!("{u}")),
         }
     }
@@ -63,6 +69,10 @@ impl Identifier {
                 let inner: u128 = murmur3_128(s);
                 Identifier::UUID(inner.into())
             }
+            Identifier::Str(s) => {
+                let inner: u128 = murmur3_128(s);
+                Identifier::UUID(inner.into())
+            }
             Identifier::UUID(u) => Identifier::UUID(*u),
         }
     }
@@ -73,6 +83,7 @@ impl Display for Identifier {
         match self {
             Identifier::Integer(i) => f.write_fmt(format_args!("{i}")),
             Identifier::String(s) => f.write_fmt(format_args!("{s}")),
+            Identifier::Str(s) => f.write_fmt(format_args!("{s}")),
             Identifier::UUID(u) => f.write_fmt(format_args!("{u}")),
         }
     }
