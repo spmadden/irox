@@ -15,6 +15,7 @@ use super::FromUnits;
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::integer_division)]
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DataSizeUnits {
     /// Eight Bits
     #[default]

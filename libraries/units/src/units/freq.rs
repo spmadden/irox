@@ -6,6 +6,7 @@ use crate::units::{FromUnits, Unit};
 use core::fmt::{Display, Formatter};
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum FrequencyUnit {
     #[default]
     Hertz,

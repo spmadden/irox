@@ -9,6 +9,7 @@ use crate::units::{FromUnits, Unit};
 ///
 /// Represents a specific temperature unit - SI or otherwise
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum TemperatureUnits {
     /// Referenced `0` is Absolute Zero and counts up at the same rate as [`TemperatureUnits::Celsius`].  0 Kelvin is

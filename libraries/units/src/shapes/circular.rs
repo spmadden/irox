@@ -17,6 +17,7 @@ use crate::units::Unit;
 /// A way to describe a measurement of a Circle [`CircularAspect::Radius`] or
 /// [`CircularAspect::Diameter`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum CircularAspect {
     #[default]
     Radius,
@@ -26,6 +27,7 @@ pub enum CircularAspect {
 ///
 /// A discrete measurement of a Circle with a [`CircularAspect`] and a [`Length`]
 #[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CircularDimension {
     dimension_type: CircularAspect,
     dimension: Length,

@@ -13,6 +13,7 @@ cfg_feature_alloc! {
 use irox_tools::f64::FloatExt;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Units {
     Gram,
     Meter,

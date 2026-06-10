@@ -240,7 +240,7 @@ macro_rules! from_units_duration {
     };
 }
 
-basic_unit!(Duration, DurationUnit, Second);
+basic_unit_no_serde!(Duration, DurationUnit, Second);
 from_units_duration!(u32);
 from_units_duration!(i32);
 from_units_duration!(u64);

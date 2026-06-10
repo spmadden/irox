@@ -15,6 +15,7 @@ use crate::units::FromUnits;
 ///
 /// The direction that a compass needle moves for "positive" increases
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum RotationDirection {
     /// Positive-Clockwise is the standard direction a compass needle moves, positive in a
     /// clockwise direction, towards the right, usually with the zero point at 'North'
@@ -46,6 +47,7 @@ impl FromUnits<Angle> for RotationDirection {
 ///
 /// The "zero" reference point for a compass needle
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum CompassReference {
     /// 0 is True North - the geometric north pole (axis of rotation)
     #[default]
@@ -82,6 +84,7 @@ pub type Heading = Compass<HeadingType>;
 
 /// `HeadingType` is used as a compile-time check for [`Heading`] = [`Compass<HeadingType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct HeadingType;
 
 /// Represents a track - the compass direction that the entity is travelling
@@ -89,6 +92,7 @@ pub type Track = Compass<TrackType>;
 
 /// `TrackType` is used as a compile-time check for [`Track`] = [`Compass<TrackType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TrackType;
 
 /// Represents a bearing - the compass direction of your desired destination
@@ -96,6 +100,7 @@ pub type Bearing = Compass<BearingType>;
 
 /// `BearingType` is used as a compile-time check for [`Bearing`] = [`Compass<BearingType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BearingType;
 
 /// Represents a course - the compass direction of your desired track
@@ -103,6 +108,7 @@ pub type Course = Compass<CourseType>;
 
 /// `CourseType` is used as a compile-time check for [`Course`] = [`Compass<CourseType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CourseType;
 
 /// Represents a azimuth - the compass direction of a generic pointing angle
@@ -110,14 +116,17 @@ pub type Azimuth = Compass<AzimuthType>;
 
 /// `AzimuthType` is used as a compile-time check for [`Azimuth`] = [`Compass<AzimuthType>`]
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AzimuthType;
 
 /// Represents a compass needle and the direction that it's pointing
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Compass<T> {
     angle: Angle,
     direction: RotationDirection,
     reference: CompassReference,
+    #[cfg_attr(feature = "serde", serde(skip))]
     _ign: PhantomData<T>,
 }
 
@@ -249,10 +258,12 @@ impl<T> Compass<T> {
 /// North or East.  Used for "relative bearings" and the like where the angle is referenced to the
 /// heading of an entity (like, 10 degrees to the right)
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CompassOffset<T, B> {
     compass: Compass<T>,
     offset: Angle,
     direction: RotationDirection,
+    #[cfg_attr(feature = "serde", serde(skip))]
     _ign: PhantomData<B>,
 }
 
@@ -294,6 +305,7 @@ impl Compass<HeadingType> {
 /// Represents a generic compass direction, any one of [`Heading`], [`Track`], [`Bearing`],
 /// [`Course`] or [`Azimuth`]
 #[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum CompassDirection {
     Heading(Heading),
     Track(Track),

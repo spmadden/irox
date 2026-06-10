@@ -10,6 +10,7 @@ use crate::units::{FromUnits, Unit};
 ///
 /// Represents a specific speed unit - SI or otherwise
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum SpeedUnits {
     /// SI Base Unit for Speed - MetersPerSecond

@@ -177,11 +177,27 @@ macro_rules! impl_mutop {
 macro_rules! basic_unit {
     ($struct_type:ident, $units_type: ident, $default_units: ident) => {
         #[derive(Debug, Clone, Copy, Default)]
+        #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         pub struct $struct_type {
             value: f64,
             units: $units_type,
         }
-
+        basic_unit_impl!($struct_type, $units_type, $default_units);
+    };
+}
+#[macro_export]
+macro_rules! basic_unit_no_serde {
+    ($struct_type:ident, $units_type: ident, $default_units: ident) => {
+        #[derive(Debug, Clone, Copy, Default)]
+        pub struct $struct_type {
+            value: f64,
+            units: $units_type,
+        }
+        basic_unit_impl!($struct_type, $units_type, $default_units);
+    };
+}
+macro_rules! basic_unit_impl {
+    ($struct_type:ident, $units_type: ident, $default_units: ident) => {
         impl $struct_type {
             #[must_use]
             pub const fn new(value: f64, units: $units_type) -> Self {

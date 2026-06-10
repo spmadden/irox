@@ -11,6 +11,7 @@ use crate::units::{FromUnits, Unit};
 ///
 /// Represents a specific length unit - SI or otherwise
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum LengthUnits {
     /// SI Base Unit for Length - Meters

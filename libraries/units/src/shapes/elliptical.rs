@@ -17,6 +17,7 @@ use crate::units::compass::CompassDirection;
 /// The `Ellipse::first_axis` orientation is indicated by `Ellipse::orientation`
 /// and the `Ellipse::second_axis` is oriented orthogonally to the first.
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Ellipse {
     first_axis: CircularDimension,
     second_axis: CircularDimension,
