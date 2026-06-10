@@ -17,6 +17,7 @@ use core::fmt::{Display, Formatter};
 ///
 /// Represents a way to uniquely identify an item.
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Identifier {
     Integer(u64),
     String(String),
