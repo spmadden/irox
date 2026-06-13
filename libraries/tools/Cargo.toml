@@ -30,7 +30,7 @@ serde_json.workspace = true
 default = []
 std = ["irox-bits/std", "alloc"]
 alloc = ["irox-bits/alloc"]
-serde = ["dep:serde"]
+serde = ["dep:serde", "serde/derive", "serde/alloc", "alloc"]
 lock_backtrace = ["std"]
 
 
