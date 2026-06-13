@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use criterion::measurement::{Measurement, ValueFormatter};
@@ -94,6 +94,7 @@ fn timer() -> Criterion<Timer> {
         .with_measurement(Timer::default())
         .sample_size(500)
 }
+#[cfg(not(target_arch = "x86_64"))]
 fn timer() -> Criterion<criterion::measurement::WallTime> {
     Criterion::default().sample_size(500)
 }
