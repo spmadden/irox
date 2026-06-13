@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -12,6 +12,7 @@
 #![warn(clippy::std_instead_of_core)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(not(feature = "std"), no_std)]
+extern crate alloc;
 
 use irox_tools::{cfg_feature_alloc, cfg_feature_egui};
 

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::geometry::{Centroid, Geometry};
 use crate::rectangle::Rectangle;
 use crate::{Vector, Vector2D};
-use core::ops::Add;
-use core::ops::Sub;
+use core::ops::{Add, Mul};
 use core::ops::{AddAssign, SubAssign};
-use irox_tools::FloatIsh;
+use core::ops::{MulAssign, Sub};
+use irox_tools::{cfg_feature_egui, FloatIsh};
 
 pub trait Point2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
     fn x(&self) -> T;
@@ -146,6 +146,36 @@ impl<T: FloatIsh> AddAssign<Vector<T>> for Point<T> {
         self.y += rhs.vy;
     }
 }
+impl<T: FloatIsh> Mul<T> for &Point<T> {
+    type Output = Point<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Point {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z,
+            m: self.m,
+        }
+    }
+}
+impl<T: FloatIsh> Mul<T> for Point<T> {
+    type Output = Point<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Point {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z,
+            m: self.m,
+        }
+    }
+}
+impl<T: FloatIsh> MulAssign<T> for Point<T> {
+    fn mul_assign(&mut self, rhs: T) {
+        self.x *= rhs;
+        self.y *= rhs;
+    }
+}
 
 impl<T: FloatIsh> Centroid<T> for Point<T> {
     fn centroid(&self) -> Point<T> {
@@ -182,6 +212,17 @@ impl From<Point<f32>> for Point<f64> {
             y: value.y as f64,
             z: value.z.map(|x| x as f64),
             m: value.m.map(|x| x as f64),
+        }
+    }
+}
+
+cfg_feature_egui! {
+    impl From<Point<f64>> for egui::Pos2 {
+        fn from(value: Point<f64>) -> Self {
+            Self {
+                x: value.x as f32,
+                y: value.y as f32,
+            }
         }
     }
 }

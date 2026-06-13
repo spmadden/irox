@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::{Point, Point2D};
 use core::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 use core::ops::{Div, DivAssign};
 use irox_tools::math::Matrix;
-use irox_tools::FloatIsh;
+use irox_tools::{cfg_feature_egui, FloatIsh};
 use irox_units::units::angle::Angle;
 
 pub trait Vector2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
@@ -224,6 +224,14 @@ impl<T: FloatIsh> Div<T> for Vector<T> {
         Vector {
             vx: self.vx / rhs,
             vy: self.vy / rhs,
+        }
+    }
+}
+
+cfg_feature_egui! {
+    impl From<egui::Vec2> for Vector<f64> {
+        fn from(vec: egui::Vec2) -> Self {
+            Self::new(vec.x as f64, vec.y as f64)
         }
     }
 }
