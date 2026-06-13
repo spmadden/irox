@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 extern crate alloc;
@@ -27,6 +27,7 @@ use irox_egui_extras::egui::{
     Stroke, StrokeKind, Ui, Vec2, Widget, Window,
 };
 use irox_egui_extras::{profile_scope, WithAlpha};
+use irox_geometry::transform::LinearTransform;
 use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
 use std::sync::mpsc::Sender;
 
@@ -294,8 +295,9 @@ impl FDPSimulationWidget {
                 });
             }
         });
+        let xfm = LinearTransform::<f64>::from(current_transform);
         self.sim.iter_nodes(|id, node, working| {
-            let ctr = working.current_position;
+            let ctr = xfm.new_model_point(&working.current_position.to_point());
             node.get(|node| {
                 profile_scope!("Node Renderer: {}", node.descriptor.id.to_string());
                 let mut eshapes = Vec::new();

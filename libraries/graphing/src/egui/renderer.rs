@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::fdp::SimulationWorkingNode;
 use crate::{Edge, Node};
 use core::fmt::Write;
+use core::ops::Deref;
 use egui::emath::TSTransform;
 use egui::{Rect, Response, Vec2};
 use irox_egui_extras::arrows::Arrow;
@@ -14,6 +15,7 @@ use irox_egui_extras::egui::epaint::{CircleShape, RectShape, TextShape};
 use irox_egui_extras::egui::text::LayoutJob;
 use irox_egui_extras::egui::{Align, Color32, CornerRadius, FontId, Pos2, Shape, Stroke, Ui};
 use irox_egui_extras::WithAlpha;
+use irox_geometry::transform::ModelPoint;
 use irox_geometry::{LineSegment, Vector, Vector2D};
 
 pub struct RenderingContext<'a> {
@@ -30,7 +32,7 @@ pub trait NodeRenderer {
         context: &RenderingContext,
         node: &Node,
         sim_node: &SimulationWorkingNode,
-        center: Vector<f64>,
+        center: ModelPoint,
     ) -> Vec<Shape> {
         let mut out = Vec::new();
         self.add_shapes_to(context, node, sim_node, center, &mut out);
@@ -41,7 +43,7 @@ pub trait NodeRenderer {
         context: &RenderingContext,
         node: &Node,
         sim_node: &SimulationWorkingNode,
-        center: Vector<f64>,
+        center: ModelPoint,
         shapes: &mut Vec<Shape>,
     );
     fn on_response(
@@ -69,11 +71,11 @@ impl NodeRenderer for DefaultNodeRenderer {
         context: &RenderingContext,
         node: &Node,
         _sim_node: &SimulationWorkingNode,
-        center: Vector<f64>,
+        center: ModelPoint,
         shapes: &mut Vec<Shape>,
     ) {
         let id = node.descriptor.id.to_string();
-        let p = Pos2::new(center.vx as f32, center.vy as f32);
+        let p : Pos2 = (*center.deref()).into();
         let ui = context.ui;
         let fgc = ui.visuals().widgets.active.fg_stroke.color;
         let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
@@ -145,7 +147,7 @@ impl NodeRenderer for CompositeNodeRenderer {
         context: &RenderingContext,
         node: &Node,
         sim_node: &SimulationWorkingNode,
-        center: Vector<f64>,
+        center: ModelPoint,
         shapes: &mut Vec<Shape>,
     ) {
         for renderer in &self.renderers {
@@ -160,12 +162,11 @@ impl NodeRenderer for DebugForceNodeRenderer {
         _context: &RenderingContext,
         _node: &Node,
         sim_node: &SimulationWorkingNode,
-        center: Vector<f64>,
+        start: ModelPoint,
         shapes: &mut Vec<Shape>,
     ) {
         let cvel = sim_node.current_velocity * 100.;
-        let start = center.to_point();
-        let end = start + cvel;
+        let end = *start.deref() + cvel;
         let stroke = Stroke::new(1.5, Color32::RED);
         shapes.push(Shape::line_segment(
             [
@@ -174,7 +175,7 @@ impl NodeRenderer for DebugForceNodeRenderer {
             ],
             stroke,
         ));
-        let line = LineSegment { start, end };
+        let line = LineSegment { start: *start.deref(), end };
         let angle = line.angle();
         let mut shp = Arrow {
             fill_color: None,
