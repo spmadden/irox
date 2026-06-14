@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use egui::epaint::RectShape;
@@ -27,7 +27,7 @@ pub fn get_img(ctx: &Context, num: usize) -> Option<TextureId> {
             let img = irox_imagery::bitpacked::nums::INFO
                 .get_glyph(v)
                 .unwrap_or_default();
-            let img = ImageData::Color(Arc::new(img.into()));
+            let img = ImageData::Color(Arc::new((&img).into()));
             let name = idx.to_string();
             idx += 1;
             ctx.load_texture(name, img, TextureOptions::NEAREST)

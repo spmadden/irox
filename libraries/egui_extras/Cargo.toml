@@ -37,7 +37,7 @@ irox-tools = { workspace = true }
 irox-geometry = { workspace = true }
 irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, features = ["std"] }
-irox-imagery = { workspace = true, features = ["egui"] }
+irox-imagery = { workspace = true, features = ["egui", "std"] }
 irox-stats = { workspace = true, optional = true, features = ["emath", "std"] }
 irox-progress = {workspace = true}
 log.workspace = true
@@ -90,6 +90,10 @@ required-features = ["eframe", "wgpu"]
 
 [[example]]
 name = "test_image"
+required-features = ["eframe", "wgpu"]
+
+[[example]]
+name = "png_test"
 required-features = ["eframe", "wgpu"]
 
 [[example]]
