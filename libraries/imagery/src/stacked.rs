@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::{Color, ColorDepth, Image, ImageError, ImageMut, ImageSpace};
@@ -116,8 +116,8 @@ impl<const N: usize> ImageMut for LinearStackedImage<N> {
     }
 }
 cfg_feature_egui! {
-    impl<const N: usize> From<LinearStackedImage<N>> for egui::epaint::ColorImage {
-        fn from(value: LinearStackedImage<N>) -> Self {
+    impl<const N: usize> From<&LinearStackedImage<N>> for egui::epaint::ColorImage {
+        fn from(value: &LinearStackedImage<N>) -> Self {
             egui::epaint::ColorImage {
                 size: [value.width, value.height],
                 pixels: value.data.as_slice().iter().map(Into::into).collect(),

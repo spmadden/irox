@@ -15,6 +15,7 @@ extern crate alloc;
 extern crate core;
 
 pub use color::*;
+use core::any::Any;
 pub use error::*;
 use irox_tools::{cfg_feature_alloc, cfg_feature_std};
 pub use pixel::*;
@@ -38,6 +39,8 @@ pub use stacked::*;
 cfg_feature_alloc! {
     mod allocimpls;
     pub use allocimpls::*;
+
+    pub mod png;
 }
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
@@ -56,7 +59,7 @@ pub struct ImageDimensions<T> {
     pub height: T,
 }
 
-pub trait Image {
+pub trait Image: Any {
     type DimType;
 
     fn get_dimensions(&self, space: ImageSpace) -> Self::DimType;

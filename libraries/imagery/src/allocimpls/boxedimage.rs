@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::{Color, Image, ImageError, ImageMut, ImageSpace};
 use alloc::boxed::Box;
 use alloc::vec::Vec;
+use irox_tools::cfg_feature_egui;
+
 pub struct BoxedImage {
     data: Box<[Box<[Color]>]>,
     width: usize,
@@ -59,5 +61,24 @@ impl ImageMut for BoxedImage {
         };
         *row = color;
         Ok(())
+    }
+}
+cfg_feature_egui! {
+    impl From<&BoxedImage> for egui::epaint::ColorImage {
+        fn from(value: &BoxedImage) -> Self {
+            let mut pixels = Vec::new();
+            for col in &value.data {
+                for row in col {
+                    pixels.push((*row).into());
+                }
+            }
+            egui::epaint::ColorImage {
+                size: [value.width, value.height],
+                pixels,
+                source_size: egui::Vec2::new(value.width as f32, value.height as f32),
+
+            }
+        }
+
     }
 }

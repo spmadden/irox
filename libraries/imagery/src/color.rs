@@ -364,4 +364,15 @@ impl ColorDepth {
             blue: self.next_byte_stretched_color(inp)?,
         })
     }
+    pub fn next_rgba_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<ARGBColor, BitsError> {
+        Ok(ARGBColor {
+            red: self.next_byte_stretched_color(inp)?,
+            green: self.next_byte_stretched_color(inp)?,
+            blue: self.next_byte_stretched_color(inp)?,
+            alpha: self.next_byte_stretched_color(inp)?,
+        })
+    }
 }

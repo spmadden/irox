@@ -22,6 +22,8 @@ egui = ["dep:egui"]
 workspace = true
 
 [dependencies]
+irox-structs = { workspace = true}
+irox-compression = {workspace = true}
 irox-log = { workspace = true }
 irox-bits = { workspace = true }
 irox-tools = { workspace = true }
