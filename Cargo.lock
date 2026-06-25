@@ -2487,7 +2487,8 @@ dependencies = [
 name = "irox-sqlite3"
 version = "0.1.0"
 dependencies = [
- "irox-tools",
+ "irox-bits 0.5.0",
+ "irox-tools 0.11.1",
 ]
 
 [[package]]

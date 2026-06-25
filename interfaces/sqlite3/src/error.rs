@@ -1,5 +1,6 @@
 use core::fmt::Display;
 use core::fmt::Formatter;
+use irox_bits::BitsError;
 
 #[derive(Debug, Clone)]
 pub struct Error {
@@ -20,8 +21,15 @@ impl Display for Error {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for Error {}
+impl From<BitsError> for Error {
+    fn from(value: BitsError) -> Self {
+        Error {
+            msg: format!("BitsError: {value}"),
+        }
+    }
+}
+
+impl core::error::Error for Error {}
 
 #[cfg(feature = "std")]
 impl From<std::io::Error> for Error {

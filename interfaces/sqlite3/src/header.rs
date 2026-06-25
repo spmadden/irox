@@ -1,4 +1,4 @@
-use irox_tools::bits::{Bits, Seek};
+use irox_bits::{Bits, Seek};
 
 use crate::error::Error;
 

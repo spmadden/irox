@@ -2,7 +2,7 @@
 // Copyright 2023 IROX Contributors
 
 //!
-//!
+//! Pure Rust implementation of the SQLITE3 file format
 //!
 
 #![forbid(unsafe_code)]

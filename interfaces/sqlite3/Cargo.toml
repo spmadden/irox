@@ -13,8 +13,13 @@ repository.workspace = true
 readme = "README.md"
 
 [dependencies]
+irox-bits = {workspace = true}
 irox-tools = {workspace = true}
 
 [features]
-std = ["irox-tools/std"]
-default = ["std"]
+std = ["irox-tools/std", "irox-bits/std"]
+default = []
+
+[[test]]
+name = "header"
+required-features = ["std"]

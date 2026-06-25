@@ -1,5 +1,4 @@
-
-use irox_tools::bits::{Bits, BitsSeek, Seek, SeekFrom};
+use irox_bits::{Bits, Seek, SeekFrom};
 
 use crate::{error::Error, header::Header};
 
@@ -73,7 +72,7 @@ pub enum PageType {
     LeafTableBTree(LeafTable),
 }
 
-pub fn read_page<T: BitsSeek>(
+pub fn read_page<T: Bits + Seek>(
     buffer: &mut T,
     page_id: u32,
     db_header: &Header,

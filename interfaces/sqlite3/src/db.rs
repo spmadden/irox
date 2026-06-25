@@ -1,6 +1,5 @@
-use std::{fs::File, path::Path};
-use std::fmt::{Debug, Formatter};
-use irox_tools::bits::{Bits, BitsSeek, BitsWrapper, Seek};
+use core::fmt::{Debug, Formatter};
+use irox_bits::{Bits, BitsWrapper, Seek};
 
 use crate::{
     error::Error,
@@ -8,40 +7,47 @@ use crate::{
     page::{self, PageType},
 };
 
-
-pub struct Database<'a> {
+pub struct Database<'a, T: Bits + Seek> {
     pub header: Header,
-    pub file: BitsWrapper<'a, dyn BitsSeek>,
+    pub file: BitsWrapper<'a, T>,
 }
-impl<'a> Debug for Database<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+impl<'a, T: Bits + Seek> Debug for Database<'a, T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("Database")
             .field("header", &self.header)
             .finish_non_exhaustive()
     }
 }
-
-impl<'a> Database<'a> {
+#[cfg(feature = "std")]
+impl<'a> Database<'a, std::fs::File> {
+    pub fn open_db_path<R: AsRef<std::path::Path>>(
+        path: &'_ R,
+    ) -> Result<Database<'_, std::fs::File>, Error> {
+        open_db(path)
+    }
+}
+impl<'a, T: Bits + Seek> Database<'a, T>
+where
+    BitsWrapper<'a, T>: Bits,
+{
     pub fn read_page(&mut self, page_id: u32) -> Result<PageType, Error> {
         page::read_page(&mut self.file, page_id, &self.header)
     }
 
-    #[cfg(feature = "std")]
-    pub fn open_db_path(path: &impl AsRef<Path>) -> Result<Database, Error> {
-        open_db(path)
-    }
-
-    pub fn open_db_bits(bits: BitsWrapper<dyn BitsSeek>) -> Result<Database, Error> {
+    pub fn open_db_bits(mut bits: BitsWrapper<'a, T>) -> Result<Database<'a, T>, Error> {
         Ok(Database {
-            header: Header::read_from(bits.as_mut())?,
-            file: bits
+            header: Header::read_from(&mut bits)?,
+            file: bits,
         })
     }
 }
 
 #[cfg(feature = "std")]
-pub fn open_db(path: &impl AsRef<Path>) -> Result<Database, Error> {
-    let mut file = File::open(path)?;
+pub fn open_db<R: AsRef<std::path::Path>>(
+    path: &'_ R,
+) -> Result<Database<'_, std::fs::File>, Error> {
+    let file = std::fs::File::open(path)?;
+    let mut file = BitsWrapper::Owned(file);
     let header = Header::read_from(&mut file)?;
 
     Ok(Database { header, file })
