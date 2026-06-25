@@ -2,6 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
+use crate::{Error, Seek, SeekFrom};
 use core::ops::{Deref, DerefMut};
 
 ///
@@ -28,7 +29,21 @@ impl<B> DerefMut for BitsWrapper<'_, B> {
         }
     }
 }
+impl<B: Seek> Seek for BitsWrapper<'_, B> {
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error> {
+        match self {
+            BitsWrapper::Borrowed(v) => v.seek(pos),
+            BitsWrapper::Owned(v) => v.seek(pos),
+        }
+    }
 
+    fn position(&mut self) -> Result<u64, Error> {
+        match self {
+            BitsWrapper::Borrowed(v) => v.position(),
+            BitsWrapper::Owned(v) => v.position(),
+        }
+    }
+}
 #[cfg(feature = "std")]
 mod stds {
     use crate::{Bits, BitsWrapper, Error, MutBits};

@@ -30,6 +30,24 @@ cfg_feature_std! {
 pub trait Seek {
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, Error>;
     fn position(&mut self) -> Result<u64, Error>;
+
+    fn rewind(&mut self) -> Result<(), Error> {
+        self.seek(SeekFrom::Start(0))?;
+        Ok(())
+    }
+    fn stream_len(&mut self) -> Result<u64, Error> {
+        let old_pos = self.stream_position()?;
+        let len = self.seek(SeekFrom::End(0))?;
+        if old_pos != len {
+            self.seek(SeekFrom::Start(old_pos))?;
+        }
+
+        Ok(len)
+    }
+
+    fn stream_position(&mut self) -> Result<u64, Error> {
+        self.seek(SeekFrom::Current(0))
+    }
 }
 
 ///
