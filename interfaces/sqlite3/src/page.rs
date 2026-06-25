@@ -1,67 +1,67 @@
-use std::io::{Read, Seek};
+
+use irox_tools::bits::{Bits, BitsSeek, Seek, SeekFrom};
 
 use crate::{error::Error, header::Header};
-use irox_tools::bits::Bits;
 
 #[derive(Debug)]
 pub struct PageHeader {
     /// the integer identifier of this page
-    page_id: u32,
+    pub page_id: u32,
 
     /// the length in bytes of this page
-    page_size: u32,
+    pub page_size: u32,
 
     /// the offset in bytes from the start of the file
-    page_offset: u64,
+    pub page_offset: u64,
 
     /// The one-byte flag at offset 0 indicating the b-tree page type.
-    page_type: u8,
+    pub page_type: u8,
 
     /// The two-byte integer at offset 1 gives the start of the first
     /// freeblock on the page, or is zero if there are no freeblocks.
-    first_freeblock: u16,
+    pub first_freeblock: u16,
 
     /// The two-byte integer at offset 3 gives the number of cells on the page.
-    num_cells: u16,
+    pub num_cells: u16,
 
     /// The two-byte integer at offset 5 designates the start of the cell
     /// content area. A zero value for this integer is interpreted as 65536.
-    first_cell: u16,
+    pub first_cell: u16,
 
     /// The one-byte integer at offset 7 gives the number of fragmented free
     /// bytes within the cell content area.
-    num_fragmented_free_bytes: u8,
+    pub num_fragmented_free_bytes: u8,
 
     /// The four-byte page number at offset 8 is the right-most pointer. This
     /// value appears in the header of interior b-tree pages only and is
     /// omitted from all other pages.
-    rightmost_pointer: u32,
+    pub rightmost_pointer: u32,
 }
 
 #[derive(Debug)]
 pub struct InteriorIndex {
-    page_header: PageHeader,
-    rightmost_pointer: u32,
+    pub page_header: PageHeader,
+    pub rightmost_pointer: u32,
 }
 
 #[derive(Debug)]
 pub struct InteriorTable {
-    page_header: PageHeader,
-    rightmost_pointer: u32,
+    pub page_header: PageHeader,
+    pub rightmost_pointer: u32,
 }
 
 #[derive(Debug)]
 pub struct LeafIndex {
-    page_header: PageHeader,
+    pub page_header: PageHeader,
 }
 
 #[derive(Debug)]
 pub struct LeafTable {
-    page_header: PageHeader,
+    pub page_header: PageHeader,
 }
 
 pub struct DataExtension {
-    data: [u8],
+    pub data: [u8],
 }
 
 #[derive(Debug)]
@@ -73,7 +73,7 @@ pub enum PageType {
     LeafTableBTree(LeafTable),
 }
 
-pub fn read_page<T: Bits + Seek>(
+pub fn read_page<T: BitsSeek>(
     buffer: &mut T,
     page_id: u32,
     db_header: &Header,
@@ -91,7 +91,7 @@ pub fn read_page<T: Bits + Seek>(
         page_offset = 100; // from the 100 byte header
     }
 
-    buffer.seek(std::io::SeekFrom::Start(page_offset))?;
+    buffer.seek(SeekFrom::Start(page_offset))?;
 
     // read header
     let page_type: u8 = buffer.read_u8()?;

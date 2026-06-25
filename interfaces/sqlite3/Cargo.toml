@@ -1,8 +1,8 @@
 [package]
 name = "irox-sqlite3"
-description = ""
-keywords = ["irox"]
-categories = []
+description = "Pure Rust implementation of the SQLITE3 file format"
+keywords = ["irox", "sqlite3"]
+categories = ["data-structures", "encoding", "database-implementations", "no-std"]
 version= "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -14,3 +14,7 @@ readme = "README.md"
 
 [dependencies]
 irox-tools = {workspace = true}
+
+[features]
+std = ["irox-tools/std"]
+default = ["std"]

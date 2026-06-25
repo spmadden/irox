@@ -1,7 +1,6 @@
-use std::io::{Read, Seek};
+use irox_tools::bits::{Bits, Seek};
 
 use crate::error::Error;
-use irox_tools::bits::Bits;
 
 #[derive(Debug, Clone, Default)]
 pub struct Header {
@@ -76,12 +75,12 @@ pub struct Header {
 impl Header {
     pub fn read_from<T>(reader: &mut T) -> Result<Header, Error>
     where
-        T: Read + Seek,
+        T: Bits + Seek,
     {
         let mut hdr: [u8; 100] = [0; 100];
 
         reader.rewind()?;
-        reader.read_exact(&mut hdr)?;
+        reader.read_exact_into(100, &mut hdr.as_mut_slice())?;
 
         let mut buf = hdr.as_slice();
 
