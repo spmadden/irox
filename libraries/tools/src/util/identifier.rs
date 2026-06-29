@@ -8,9 +8,11 @@
 //!
 
 extern crate alloc;
+
 use crate::cfg_feature_alloc;
 use crate::hash::murmur3_128;
 use crate::uuid::UUID;
+use alloc::borrow::Cow;
 use alloc::string::{String, ToString};
 use core::fmt::{Display, Formatter};
 
@@ -18,9 +20,10 @@ use core::fmt::{Display, Formatter};
 /// Represents a way to uniquely identify an item.
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+// #[cfg_attr(feature = "serde", serde(bound(deserialize = "'de: 'static")))]
 pub enum Identifier {
     Integer(u64),
-    Str(&'static str),
+    Str(Cow<'static, str>),
     String(String),
     UUID(UUID),
 }
@@ -70,7 +73,7 @@ impl Identifier {
                 Identifier::UUID(inner.into())
             }
             Identifier::Str(s) => {
-                let inner: u128 = murmur3_128(s);
+                let inner: u128 = murmur3_128(s.as_bytes());
                 Identifier::UUID(inner.into())
             }
             Identifier::UUID(u) => Identifier::UUID(*u),
@@ -189,5 +192,12 @@ mod tests {
         let s = Identifier::random_string();
         println!("{i}, {s}");
         assert_ne!(i, s);
+    }
+
+    #[test]
+    #[cfg(feature = "serde")]
+    pub fn test_serde() {
+        let s = serde_json::to_string(&Identifier::Integer(42)).unwrap();
+        println!("{s}");
     }
 }
