@@ -267,11 +267,11 @@ impl Simulation {
     ) {
         use core::ops::Deref;
         for (id, node) in &mut self.graph.borrow_mut().nodes {
-            let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
             let working = self
                 .working_nodes
                 .entry(id.clone())
                 .or_insert_with_key(|id| {
+                    let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
                     let mut new = SimulationWorkingNode {
                         node: id.deref().clone(),
                         num_edges: num_edges as f64,
@@ -312,6 +312,7 @@ impl Simulation {
                 };
                 self.placement.place_node(node, &mut new);
                 each(&mut new);
+                self.working_nodes.insert(id.clone(), new);
             }
         }
     }

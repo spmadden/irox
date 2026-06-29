@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2025 IROX Contributors
 //
-
+extern crate alloc;
 use crate::fdp::Simulation;
+use alloc::collections::VecDeque;
 use irox_geometry::{Vector, Vector2D};
 
 #[derive(Debug, Copy, Clone)]
@@ -32,11 +33,12 @@ impl Repulsive {
     pub(crate) fn force(&mut self, sim: &mut Simulation, alpha: f64) {
         #[cfg(feature = "profiling")]
         profiling::scope!("Repulsive::force");
-        let mut nodes = Vec::new();
+        let mut nodes = VecDeque::with_capacity(sim.graph.borrow().nodes.len());
         sim.iter_nodes(|id, _node, _working| {
-            nodes.push(id.clone());
+            nodes.push_back(id.clone());
         });
-        for left in &nodes {
+        while let Some(left) = nodes.pop_front() {
+            let left = &left;
             let mut qpos = Vector::default();
             let mut left_edges = 1.0;
             sim.node_mut(left, |n| {
