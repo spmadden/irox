@@ -36,6 +36,7 @@ impl From<MNode> for Node {
             }),
             navigable_edges: vec![],
             all_edges: vec![],
+            memory: Default::default(),
         }
     }
 }

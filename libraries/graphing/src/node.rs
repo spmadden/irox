@@ -4,12 +4,14 @@
 
 extern crate alloc;
 use crate::{Descriptor, NodeDescriptor, SharedEdgeIdentifier};
+use alloc::rc::Rc;
 use core::fmt::Display;
 use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
 use core::ops::Deref;
 use irox_geometry::Point;
 use irox_structs_derive::Shared;
+use irox_tools::buf::AnyHashMap;
 use irox_tools::identifier::{Identifier, SharedIdentifier};
 use irox_tools::sync::PoisonedError;
 use std::sync::{LockResult, RwLockReadGuard};
@@ -45,6 +47,8 @@ pub struct Node {
     pub descriptor: NodeDescriptor,
     pub navigable_edges: Vec<SharedEdgeIdentifier>,
     pub all_edges: Vec<SharedEdgeIdentifier>,
+
+    pub memory: Rc<AnyHashMap>,
 }
 impl Node {
     pub fn from_id(id: Identifier) -> Self {
@@ -52,6 +56,7 @@ impl Node {
             descriptor: NodeDescriptor(Descriptor::from(id)),
             navigable_edges: vec![],
             all_edges: vec![],
+            memory: Default::default(),
         }
     }
 }

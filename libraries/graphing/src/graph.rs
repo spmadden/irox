@@ -79,6 +79,7 @@ impl Graph {
                         descriptor: node.descriptor.clone(),
                         navigable_edges: vec![],
                         all_edges: vec![],
+                        memory: Default::default(),
                     }
                     .into(),
                 );
