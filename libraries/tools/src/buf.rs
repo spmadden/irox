@@ -28,6 +28,11 @@ cfg_feature_alloc! {
     pub use linear::*;
     mod linear;
 }
+crate::cfg_feature_std! {
+    mod any;
+    pub use any::*;
+
+}
 
 ///
 /// Standard buffer functions
