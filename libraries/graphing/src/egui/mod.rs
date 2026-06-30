@@ -5,6 +5,7 @@
 extern crate alloc;
 
 pub mod renderer;
+pub mod search;
 pub mod treelist;
 
 use crate::egui::renderer::{
@@ -15,24 +16,19 @@ use crate::fdp::{
     Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
     SimulationParams,
 };
-use crate::{Graph, SharedEdgeIdentifier, SharedNodeIdentifier};
+use crate::{Graph, SharedNodeIdentifier};
 use alloc::rc::Rc;
 use core::cell::RefCell;
-use core::fmt::Write;
 use irox_egui_extras::drawpanel::{DrawPanel, LayerCommand, LayerOpts, ScaleMode};
-use irox_egui_extras::eframe::epaint::{RectShape, TextShape};
-use irox_egui_extras::egui::text::LayoutJob;
+use irox_egui_extras::eframe::epaint::RectShape;
 use irox_egui_extras::egui::{
-    Align, Color32, Context, CornerRadius, FontId, Id, Pos2, Rect, Response, Sense, Shape, Slider,
-    Stroke, StrokeKind, Ui, Vec2, Widget, Window,
+    Color32, Context, CornerRadius, Id, Rect, Response, Sense, Shape, Slider, Stroke, StrokeKind,
+    Ui, Widget, Window,
 };
-use irox_egui_extras::{profile_scope, WithAlpha};
+use irox_egui_extras::{profile_scope};
 use irox_geometry::transform::LinearTransform;
-use irox_geometry::{LineSegment, Point, Point2D, Vector, Vector2D};
+use irox_geometry::{Vector, Vector2D};
 use std::sync::mpsc::Sender;
-
-const EDGE_MOUSEOVER_MAX_DISTANCE: f32 = 5.;
-const NODE_MOUSEOVER_MAX_DISTANCE: f32 = 20.;
 
 pub struct ParamsWindow<'a> {
     pub params: &'a mut SimulationParams,
@@ -338,125 +334,5 @@ impl FDPSimulationWidget {
         shapes.drain(..).for_each(|shp| {
             painter.add(shp);
         });
-    }
-    pub fn find_closest_edge_to(&mut self, pos: Pos2) -> Option<SharedEdgeIdentifier> {
-        profile_scope!("FDPWidget::find_closest_edge_to");
-        let xfm = self.panel.transform;
-        let mut closest_edge: Option<SharedEdgeIdentifier> = None;
-        let mut closest_edge_dist = f32::MAX;
-        let translate = Vector::new(xfm.translation.x as f64, xfm.translation.y as f64);
-        let mouse = Point::new_point(pos.x as f64, pos.y as f64);
-        self.sim.iter_edges(|e, sim| {
-            let id = e.id.clone();
-            let mut p1 = Vector::<f64>::default();
-            sim.node(&e.left, |v| {
-                p1 = v.current_position;
-            });
-            let mut p2 = Vector::<f64>::default();
-            sim.node(&e.right, |v| {
-                p2 = v.current_position;
-            });
-            let p1 = p1 * xfm.scaling as f64 + translate;
-            let p2 = p2 * xfm.scaling as f64 + translate;
-            let line = LineSegment {
-                start: p1.to_point(),
-                end: p2.to_point(),
-            };
-            let distance = line.distance_to(&mouse) as f32;
-
-            if distance < EDGE_MOUSEOVER_MAX_DISTANCE && distance <= closest_edge_dist {
-                closest_edge = Some(id);
-                closest_edge_dist = distance;
-            }
-        });
-        closest_edge
-    }
-    pub fn find_closest_node_to(&mut self, pos: Pos2) -> Option<SharedNodeIdentifier> {
-        profile_scope!("FDPWidget::find_closest_node_to");
-
-        let xfm = self.panel.transform;
-
-        let mut closest_node_dist = f32::MAX;
-        let mut closest_node: Option<SharedNodeIdentifier> = None;
-        self.sim.iter_nodes(|id, _node, sim| {
-            let np = sim.current_position;
-            let np = Pos2::new(np.vx as f32, np.vy as f32);
-            let npw = xfm * np;
-            let dp = pos - npw;
-            let distance = dp.length();
-            if distance < NODE_MOUSEOVER_MAX_DISTANCE && distance <= closest_node_dist {
-                closest_node = Some(id.clone());
-                closest_node_dist = distance;
-            }
-        });
-        closest_node
-    }
-
-    pub fn find_hover(&mut self, ui: &mut Ui) {
-        profile_scope!("FDPWidget::find_hover");
-        let response = self.response.borrow().clone();
-        if let Some(response) = &response {
-            if let Some(mut pos) = response.hover_pos() {
-                let _ = self.tt_layer.send(LayerCommand::ClearShapes);
-                if let Some(area) = self.panel.last_window_area {
-                    pos -= area.min.to_vec2();
-                }
-                let closest_node = self.find_closest_node_to(pos);
-                let closest_edge = self.find_closest_edge_to(pos);
-
-                let contains = if let Some(d) = closest_node {
-                    let mut out = String::new();
-                    let _ = writeln!(&mut out, "id: {d}");
-
-                    // if let Some(desc) = &d.description {
-                    //     let _ = writeln!(&mut out, "desc: {}", desc);
-                    // }
-                    // for (k, v) in &d.attrs {
-                    //     let _ = writeln!(&mut out, "{k}: {v}");
-                    // }
-                    let clicked = response.clicked();
-
-                    if clicked {
-                        // self.spawn_panel_window(d.id.to_string());
-                    }
-
-                    out.trim().to_string()
-                } else if let Some(d) = closest_edge {
-                    let mut out = String::new();
-                    let _ = writeln!(&mut out, "id: {d}");
-
-                    // if let Some(desc) = &d.description {
-                    //     let _ = writeln!(&mut out, "desc: {}", desc);
-                    // }
-                    // for (k, v) in &d.attrs {
-                    //     let _ = writeln!(&mut out, "{k}: {v}");
-                    // }
-                    out.trim().to_string()
-                } else {
-                    String::default()
-                };
-                if !contains.is_empty() {
-                    let fgc = ui.visuals().widgets.active.fg_stroke.color;
-                    let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
-                    let galley = ui.ctx().fonts_mut(|f| {
-                        let mut job = LayoutJob::simple(
-                            contains.clone(),
-                            FontId::monospace(14.),
-                            fgc,
-                            f32::INFINITY,
-                        );
-                        job.halign = Align::LEFT;
-                        f.layout_job(job)
-                    });
-                    let pos = self.panel.transform.inverse() * (pos + Vec2::new(20., 5.));
-                    let rect = galley.rect.translate(pos.to_vec2());
-                    let txt = Shape::Text(TextShape::new(pos, galley, fgc));
-                    let rect = RectShape::filled(rect, CornerRadius::default(), bgc);
-                    let _ = self
-                        .tt_layer
-                        .send(LayerCommand::ClearSetShapes(vec![Shape::Rect(rect), txt]));
-                }
-            }
-        }
     }
 }

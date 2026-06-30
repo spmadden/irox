@@ -11,6 +11,7 @@ use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::renderer::{
     CompositeNodeRenderer, DebugForceNodeRenderer, DEFAULT_NODE_RENDERER,
 };
+use irox_graphing::egui::search::SearchWidget;
 use irox_graphing::egui::FDPSimulationWidget;
 use irox_graphing::fdp::magnetic::Magnetic;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
@@ -67,6 +68,7 @@ impl From<MNode> for Node {
             }),
             navigable_edges: vec![],
             all_edges: vec![],
+            memory: Rc::new(Default::default()),
         }
     }
 }
@@ -105,6 +107,7 @@ impl TryFrom<MGraph> for Graph {
                 }),
                 navigable_edges: vec![],
                 all_edges: vec![],
+                memory: Rc::new(Default::default()),
             }
             .into(),
         )?;
@@ -175,6 +178,7 @@ pub fn main() -> Result<(), String> {
 
 pub struct FDPSimulationApp {
     widget: FDPSimulationWidget,
+    search_widget: SearchWidget,
 }
 static_init!(renderer, CompositeNodeRenderer, {
     CompositeNodeRenderer {
@@ -215,13 +219,17 @@ impl FDPSimulationApp {
                 ],
             }),
         ];
-        FDPSimulationApp { widget }
+        FDPSimulationApp {
+            widget,
+            search_widget: SearchWidget::new(),
+        }
     }
 }
 
 impl eframe::App for FDPSimulationApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
         CentralPanel::default().show_inside(ui, |ui| {
+            self.search_widget.show(ui);
             self.widget.show(ui);
         });
     }

@@ -7,7 +7,7 @@ use crate::{Edge, Node};
 use core::fmt::Write;
 use core::ops::Deref;
 use egui::emath::TSTransform;
-use egui::{Rect, Response, Vec2};
+use egui::{Rect, Response, StrokeKind, Vec2};
 use irox_egui_extras::arrows::Arrow;
 use irox_egui_extras::drawpanel::Layer;
 use irox_egui_extras::egui;
@@ -17,6 +17,11 @@ use irox_egui_extras::egui::{Align, Color32, CornerRadius, FontId, Pos2, Shape, 
 use irox_egui_extras::WithAlpha;
 use irox_geometry::transform::ModelPoint;
 use irox_geometry::{LineSegment, Vector, Vector2D};
+
+#[derive(Debug, Clone)]
+pub struct NodeRenderingState {
+    pub highlighted: bool,
+}
 
 pub struct RenderingContext<'a> {
     pub current_transform: TSTransform,
@@ -90,6 +95,24 @@ impl NodeRenderer for DefaultNodeRenderer {
                 // Layer::scale_position(&mut shp, context.current_transform);
                 shp.transform(context.current_transform);
                 shapes.push(shp);
+            }
+        }
+        if let Some(ctx) = node
+            .memory
+            .get::<_, NodeRenderingState>("NodeRenderingState")
+        {
+            if ctx.highlighted {
+                let mut bbox = Rect::NOTHING;
+                for shp in shapes.iter() {
+                    bbox |= shp.visual_bounding_rect();
+                }
+                let r = Shape::Rect(RectShape::stroke(
+                    bbox,
+                    CornerRadius::ZERO,
+                    Stroke::new(1.0, Color32::YELLOW),
+                    StrokeKind::Middle,
+                ));
+                shapes.push(r);
             }
         }
     }
