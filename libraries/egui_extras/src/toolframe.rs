@@ -8,9 +8,7 @@
 use crate::frame_history::FrameHistory;
 use eframe::emath::Align;
 use eframe::{App, CreationContext, Frame, Storage};
-use egui::{
-    containers::menu, Context, Id, Layout, Panel, RawInput, ThemePreference, Ui, Visuals, Window,
-};
+use egui::{containers::menu, Context, Id, Layout, Panel, RawInput, Ui, Visuals, Window};
 use std::time::Duration;
 
 ///
@@ -166,13 +164,7 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    if ui.visuals().dark_mode {
-                        if ui.button("\u{2600}").clicked() {
-                            ui.ctx().set_theme(ThemePreference::Light);
-                        }
-                    } else if ui.button("\u{1F318}").clicked() {
-                        ui.ctx().set_theme(ThemePreference::Dark);
-                    }
+                    egui::widgets::global_theme_preference_switch(ui);
                 });
             });
         });
