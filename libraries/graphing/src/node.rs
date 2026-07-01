@@ -5,7 +5,6 @@
 extern crate alloc;
 use crate::{Descriptor, NodeDescriptor, SharedEdgeIdentifier};
 use alloc::rc::Rc;
-use core::cell::RefCell;
 use core::fmt::Display;
 use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
@@ -49,7 +48,7 @@ pub struct Node {
     pub navigable_edges: Vec<SharedEdgeIdentifier>,
     pub all_edges: Vec<SharedEdgeIdentifier>,
 
-    pub memory: Rc<RefCell<AnyHashMap>>,
+    pub memory: Rc<AnyHashMap>,
 }
 impl Node {
     pub fn from_id(id: Identifier) -> Self {
@@ -85,11 +84,6 @@ impl SharedNode {
             return Some(lock.descriptor.id.clone());
         }
         None
-    }
-    pub fn num_edges(&self) -> usize {
-        self.read_lock()
-            .map(|n| n.all_edges.len())
-            .unwrap_or_default()
     }
     pub fn read_lock(&self) -> LockResult<RwLockReadGuard<'_, Node>> {
         self.inner.read()

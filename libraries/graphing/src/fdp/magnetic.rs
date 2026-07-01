@@ -20,19 +20,16 @@ impl Magnetic {
         #[cfg(feature = "profiling")]
         profiling::scope!("Edge::force");
         sim.iter_edges(|data, sim| {
-            let Some((left, right)) = data.get_sides() else {
-                return;
-            };
             for _ in 0..self.iterations {
-                let dists = crate::fdp::get_edge_vector(&data, sim);
+                let dists = data.get_edge_vector(sim);
                 let perp = self.get_force_for_vector(dists) * (alpha);
                 // if !directed {
-                sim.node_mut(&left, |_node, working| {
-                    working.current_velocity -= perp;
+                sim.node_mut(&data.left, |n| {
+                    n.current_velocity -= perp;
                 });
                 // }
-                sim.node_mut(&right, |_node, working| {
-                    working.current_velocity += perp;
+                sim.node_mut(&data.right, |n| {
+                    n.current_velocity += perp;
                 });
             }
         });

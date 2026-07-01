@@ -41,9 +41,9 @@ impl Repulsive {
             let left = &left;
             let mut qpos = Vector::default();
             let mut left_edges = 1.0;
-            sim.node_mut(left, |node, working| {
-                qpos = working.current_position;
-                left_edges = node.num_edges() as f64;
+            sim.node_mut(left, |n| {
+                qpos = n.current_position;
+                left_edges = n.num_edges;
             });
             for right in &nodes {
                 if left == right {
@@ -52,9 +52,9 @@ impl Repulsive {
 
                 let mut right_edges = 1.0;
                 let mut npos = Vector::default();
-                sim.node_mut(right, |node, working| {
-                    npos = working.current_position;
-                    right_edges = node.num_edges() as f64;
+                sim.node_mut(right, |n| {
+                    npos = n.current_position;
+                    right_edges = n.num_edges;
                 });
 
                 let delt = qpos - npos;
@@ -70,11 +70,11 @@ impl Repulsive {
                 if !bias.is_normal() {
                     bias = 0.5;
                 }
-                sim.node_mut(right, |_node, working| {
-                    working.current_velocity += adj * bias;
+                sim.node_mut(right, |n| {
+                    n.current_velocity += adj * bias;
                 });
-                sim.node_mut(left, |_node, working| {
-                    working.current_velocity -= adj * (1.0 - bias);
+                sim.node_mut(left, |n| {
+                    n.current_velocity -= adj * (1.0 - bias);
                 })
             }
         }

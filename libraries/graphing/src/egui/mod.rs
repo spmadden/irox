@@ -25,7 +25,7 @@ use irox_egui_extras::egui::{
     Color32, Context, CornerRadius, Id, Rect, Response, Sense, Shape, Slider, Stroke, StrokeKind,
     Ui, Widget, Window,
 };
-use irox_egui_extras::profile_scope;
+use irox_egui_extras::{profile_scope};
 use irox_geometry::transform::LinearTransform;
 use irox_geometry::{Vector, Vector2D};
 use std::sync::mpsc::Sender;
@@ -262,35 +262,34 @@ impl FDPSimulationWidget {
         };
         let mut shapes = Vec::new();
         self.sim.iter_edges(|edge, sim| {
-            let Some((leftedge, rightedge)) = edge.get_sides() else {
-                return;
-            };
             let mut left = Vector::<f64>::default();
             let mut right = Vector::<f64>::default();
-            sim.node_mut(&leftedge, |_node, working| {
-                left = working.current_position;
+            sim.node_mut(&edge.left, |n| {
+                left = n.current_position;
             });
-            sim.node_mut(&rightedge, |_node, working| {
-                right = working.current_position;
+            sim.node_mut(&edge.right, |n| {
+                right = n.current_position;
             });
-            edge.get(|edge| {
-                profile_scope!("Edge Renderer: {}", edge.id().to_string());
-                let mut eshapes = Vec::new();
-                (self.edge_renderer)(edge).add_shapes_to(
-                    &rendering_context,
-                    edge,
-                    left,
-                    right,
-                    &mut eshapes,
-                );
-                let painter = ui.painter();
-                let mut bbox = Rect::NOTHING;
-                for mut shp in eshapes {
-                    bbox |= shp.visual_bounding_rect();
-                    shp.transform(current_transform);
-                    painter.add(shp);
-                }
-            });
+            if let Some(edge) = sim.graph.borrow().edges.get(&edge.id) {
+                edge.get(|edge| {
+                    profile_scope!("Edge Renderer: {}", edge.id().to_string());
+                    let mut eshapes = Vec::new();
+                    (self.edge_renderer)(edge).add_shapes_to(
+                        &rendering_context,
+                        edge,
+                        left,
+                        right,
+                        &mut eshapes,
+                    );
+                    let painter = ui.painter();
+                    let mut bbox = Rect::NOTHING;
+                    for mut shp in eshapes {
+                        bbox |= shp.visual_bounding_rect();
+                        shp.transform(current_transform);
+                        painter.add(shp);
+                    }
+                });
+            }
         });
         let xfm = LinearTransform::<f64>::from(current_transform);
         self.sim.iter_nodes(|id, node, working| {
