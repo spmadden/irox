@@ -22,7 +22,7 @@ use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
 use irox_geometry::{Point, Vector, Vector2D};
-use irox_tools::identifier::{Identifier, SharedIdentifier};
+use irox_tools::identifier::Identifier;
 use irox_tools::map::OrderedHashMap;
 use irox_units::units::angle::Angle;
 
@@ -111,7 +111,7 @@ impl Default for SimulationParams {
     }
 }
 pub struct SimulationWorkingNode {
-    pub node: SharedIdentifier,
+    pub node: SharedNodeIdentifier,
     pub num_edges: f64,
     pub current_position: Vector<f64>,
     pub current_velocity: Vector<f64>,
@@ -265,7 +265,6 @@ impl Simulation {
         &mut self,
         mut each: F,
     ) {
-        use core::ops::Deref;
         for (id, node) in &mut self.graph.borrow_mut().nodes {
             let working = self
                 .working_nodes
@@ -273,7 +272,7 @@ impl Simulation {
                 .or_insert_with_key(|id| {
                     let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
                     let mut new = SimulationWorkingNode {
-                        node: id.deref().clone(),
+                        node: id.clone(),
                         num_edges: num_edges as f64,
                         current_position: Default::default(),
                         current_velocity: Default::default(),
@@ -295,7 +294,6 @@ impl Simulation {
         id: &SharedNodeIdentifier,
         mut each: F,
     ) {
-        use core::ops::Deref;
         if let Some(working) = self.working_nodes.get_mut(id) {
             each(working);
         } else {
@@ -304,7 +302,7 @@ impl Simulation {
                 let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
 
                 let mut new = SimulationWorkingNode {
-                    node: id.deref().clone(),
+                    node: id.clone(),
                     num_edges: num_edges as f64,
                     current_position: Default::default(),
                     current_velocity: Default::default(),
@@ -331,6 +329,13 @@ impl Simulation {
         }
         let alpha = self.params.tick();
 
+        for working in self.working_nodes.values_mut() {
+            if let Some(node) = self.graph.borrow_mut().nodes.get_mut(&working.node) {
+                let _ = node.read_lock().map(|node| {
+                    working.num_edges = node.all_edges.len() as f64;
+                });
+            }
+        }
         // apply forces
         {
             #[cfg(feature = "profiling")]
