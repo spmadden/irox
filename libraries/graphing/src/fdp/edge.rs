@@ -2,7 +2,7 @@
 // Copyright 2025 IROX Contributors
 //
 
-use crate::fdp::{Simulation, SimulationWorkingEdge};
+use crate::fdp::Simulation;
 use irox_geometry::{Vector, Vector2D};
 
 #[derive(Debug, Copy, Clone)]
@@ -40,25 +40,22 @@ impl EdgeForce {
         #[cfg(feature = "profiling")]
         profiling::scope!("Edge::force");
         sim.iter_edges(|data, sim| {
-            let SimulationWorkingEdge {
-                id: _id,
-                left,
-                right,
-                directed: _directed,
-            } = data;
+            let Some((left, right)) = data.get_sides() else {
+                return;
+            };
             for _ in 0..self.iterations {
                 let mut dists = Vector::<f64>::default();
                 let mut left_edges = 1.0;
-                sim.node_mut(&left, |n| {
-                    dists += n.current_position;
-                    dists += n.current_velocity;
-                    left_edges = n.num_edges;
+                sim.node_mut(&left, |node, working| {
+                    dists += working.current_position;
+                    dists += working.current_velocity;
+                    left_edges = node.num_edges() as f64;
                 });
                 let mut right_edges = 1.0;
-                sim.node_mut(&right, |n| {
-                    dists -= n.current_position;
-                    dists -= n.current_velocity;
-                    right_edges = n.num_edges;
+                sim.node_mut(&right, |node, working| {
+                    dists -= working.current_position;
+                    dists -= working.current_velocity;
+                    right_edges = node.num_edges() as f64;
                 });
                 let dist = dists.magnitude().max(1.0);
 
@@ -73,11 +70,11 @@ impl EdgeForce {
                 if !bias.is_normal() {
                     bias = 0.5;
                 }
-                sim.node_mut(&left, |n| {
-                    n.current_velocity -= adj * (1.0 - bias);
+                sim.node_mut(&left, |_node, working| {
+                    working.current_velocity -= adj * (1.0 - bias);
                 });
-                sim.node_mut(&right, |n| {
-                    n.current_velocity += adj * (bias);
+                sim.node_mut(&right, |_node, working| {
+                    working.current_velocity += adj * (bias);
                 });
             }
         });

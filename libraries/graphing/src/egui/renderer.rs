@@ -80,7 +80,7 @@ impl NodeRenderer for DefaultNodeRenderer {
         shapes: &mut Vec<Shape>,
     ) {
         let id = node.descriptor.id.to_string();
-        let p : Pos2 = (*center.deref()).into();
+        let p: Pos2 = (*center.deref()).into();
         let ui = context.ui;
         let fgc = ui.visuals().widgets.active.fg_stroke.color;
         let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
@@ -99,6 +99,7 @@ impl NodeRenderer for DefaultNodeRenderer {
         }
         if let Some(ctx) = node
             .memory
+            .borrow()
             .get::<_, NodeRenderingState>("NodeRenderingState")
         {
             if ctx.highlighted {
@@ -198,7 +199,10 @@ impl NodeRenderer for DebugForceNodeRenderer {
             ],
             stroke,
         ));
-        let line = LineSegment { start: *start.deref(), end };
+        let line = LineSegment {
+            start: *start.deref(),
+            end,
+        };
         let angle = line.angle();
         let mut shp = Arrow {
             fill_color: None,

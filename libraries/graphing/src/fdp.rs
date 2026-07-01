@@ -17,13 +17,12 @@ pub use edge::*;
 pub use repulsive::*;
 
 use crate::fdp::magnetic::Magnetic;
-use crate::{Graph, SharedEdgeIdentifier, SharedNode, SharedNodeIdentifier};
+use crate::{Graph, SharedEdge, SharedNode, SharedNodeIdentifier};
 use alloc::rc::Rc;
 use core::cell::RefCell;
 use core::fmt::{Debug, Formatter};
+use core::ops::DerefMut;
 use irox_geometry::{Point, Vector, Vector2D};
-use irox_tools::identifier::{Identifier, SharedIdentifier};
-use irox_tools::map::OrderedHashMap;
 use irox_units::units::angle::Angle;
 
 const INITIAL_RADIUS: f64 = 1.0;
@@ -110,9 +109,8 @@ impl Default for SimulationParams {
         }
     }
 }
+#[derive(Default)]
 pub struct SimulationWorkingNode {
-    pub node: SharedIdentifier,
-    pub num_edges: f64,
     pub current_position: Vector<f64>,
     pub current_velocity: Vector<f64>,
     pub fixed_position: Option<Point<f64>>,
@@ -120,34 +118,25 @@ pub struct SimulationWorkingNode {
 impl Debug for SimulationWorkingNode {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("SimulationWorkingNode")
-            .field("node", &self.node)
-            .field("num_edges", &self.num_edges)
             .field("current_position", &self.current_position)
             .field("current_velocity", &self.current_velocity)
             .field("fixed_position", &self.fixed_position)
             .finish()
     }
 }
-#[derive(Debug, Clone)]
-pub struct SimulationWorkingEdge {
-    pub id: SharedEdgeIdentifier,
-    pub left: SharedNodeIdentifier,
-    pub right: SharedNodeIdentifier,
-    pub directed: bool,
-}
-impl SimulationWorkingEdge {
-    pub fn get_edge_vector(&self, sim: &Simulation) -> Vector<f64> {
-        let mut pt1 = Vector::<f64>::default();
-        sim.node(&self.left, |n| {
+pub(crate) fn get_edge_vector(edge: &SharedEdge, sim: &mut Simulation) -> Vector<f64> {
+    let mut pt1 = Vector::<f64>::default();
+    let mut pt2 = Vector::<f64>::default();
+    if let Some((left, right)) = edge.get_sides() {
+        sim.node(&left, |n| {
             pt1 += n.current_position;
         });
-        let mut pt2 = Vector::<f64>::default();
-        sim.node(&self.right, |n| {
+        sim.node(&right, |n| {
             pt2 += n.current_position;
         });
-
-        pt2 - pt1
     }
+
+    pt2 - pt1
 }
 pub trait InitialNodePlacer {
     fn place_node(&mut self, node: &mut SharedNode, working: &mut SimulationWorkingNode);
@@ -190,9 +179,6 @@ pub struct Simulation {
     pub graph: Shared<Graph>,
     pub forces: Vec<Force>,
 
-    pub working_nodes: OrderedHashMap<SharedNodeIdentifier, SimulationWorkingNode>,
-    pub working_edges: OrderedHashMap<SharedEdgeIdentifier, SimulationWorkingEdge>,
-
     pub params: SimulationParams,
     pub placement: Box<dyn InitialNodePlacer>,
 }
@@ -205,8 +191,6 @@ impl Simulation {
         placement: Box<dyn InitialNodePlacer>,
     ) -> Self {
         Self {
-            working_nodes: Default::default(),
-            working_edges: Default::default(),
             graph,
             params,
             forces,
@@ -227,92 +211,75 @@ impl Simulation {
             on_step(self);
         }
     }
-    pub fn iter_edges<F: FnMut(SimulationWorkingEdge, &mut Simulation)>(&mut self, mut each: F) {
+    pub fn iter_edges<F: FnMut(SharedEdge, &mut Simulation)>(&mut self, mut each: F) {
         let iter = self
             .graph
             .borrow()
             .edges
-            .iter()
-            .map(|(left, right)| (left.clone(), right.clone()))
+            .values()
+            .cloned()
             .collect::<Vec<_>>();
 
-        for (id, edge) in iter {
-            let directed = edge.is_directed();
-            let working = self
-                .working_edges
-                .entry(id.clone())
-                .or_insert_with_key(|id| {
-                    let (left, right) = edge.get_sides().unwrap_or_else(|| {
-                        (
-                            Identifier::random_string().into(),
-                            Identifier::random_string().into(),
-                        )
-                    });
-                    SimulationWorkingEdge {
-                        id: id.clone(),
-                        left,
-                        right,
-                        directed,
-                    }
-                });
-            each(working.clone(), self);
+        for edge in iter {
+            each(edge, self);
         }
     }
 
+    fn init_working_mem(
+        node: &mut SharedNode,
+        placement: &mut dyn InitialNodePlacer,
+    ) -> Option<Shared<SimulationWorkingNode>> {
+        let mut node2 = node.clone();
+        let working = node.memory_mut(|mem| {
+            let mem = mem?;
+            let mut mem = mem.borrow_mut();
+            let v = mem.get_mut_or_create::<_, Shared<SimulationWorkingNode>, _>(
+                "SimulationWorkingNode",
+                || {
+                    let mut working = SimulationWorkingNode::default();
+                    placement.place_node(&mut node2, &mut working);
+                    Rc::new(RefCell::new(working))
+                },
+            );
+            v.cloned()
+        });
+        working
+    }
     pub fn iter_nodes<
         F: FnMut(&SharedNodeIdentifier, &mut SharedNode, &mut SimulationWorkingNode),
     >(
         &mut self,
         mut each: F,
     ) {
-        use core::ops::Deref;
         for (id, node) in &mut self.graph.borrow_mut().nodes {
-            let working = self
-                .working_nodes
-                .entry(id.clone())
-                .or_insert_with_key(|id| {
-                    let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
-                    let mut new = SimulationWorkingNode {
-                        node: id.deref().clone(),
-                        num_edges: num_edges as f64,
-                        current_position: Default::default(),
-                        current_velocity: Default::default(),
-                        fixed_position: None,
-                    };
-                    self.placement.place_node(node, &mut new);
-                    new
-                });
-            each(id, node, working);
+            let working = Self::init_working_mem(node, self.placement.as_mut());
+            if let Some(working) = working {
+                each(id, node, working.borrow_mut().deref_mut());
+            }
         }
     }
-    pub fn node<F: FnMut(&SimulationWorkingNode)>(&self, id: &SharedNodeIdentifier, mut each: F) {
-        if let Some(working) = self.working_nodes.get(id) {
-            each(working);
-        }
-    }
-    pub fn node_mut<F: FnMut(&mut SimulationWorkingNode)>(
+    pub fn node<F: FnMut(&SimulationWorkingNode)>(
         &mut self,
         id: &SharedNodeIdentifier,
         mut each: F,
     ) {
         use core::ops::Deref;
-        if let Some(working) = self.working_nodes.get_mut(id) {
-            each(working);
-        } else {
-            let mut graph = self.graph.borrow_mut();
-            if let Some(node) = graph.nodes.get_mut(id) {
-                let num_edges = node.all_edges(|v| v.map(|v| v.len())).unwrap_or_default();
-
-                let mut new = SimulationWorkingNode {
-                    node: id.deref().clone(),
-                    num_edges: num_edges as f64,
-                    current_position: Default::default(),
-                    current_velocity: Default::default(),
-                    fixed_position: None,
-                };
-                self.placement.place_node(node, &mut new);
-                each(&mut new);
-                self.working_nodes.insert(id.clone(), new);
+        if let Some(node) = self.graph.borrow_mut().nodes.get_mut(id) {
+            let working = Self::init_working_mem(node, self.placement.as_mut());
+            if let Some(working) = working {
+                each(working.borrow().deref());
+            }
+        }
+    }
+    pub fn node_mut<F: FnMut(&SharedNode, &mut SimulationWorkingNode)>(
+        &mut self,
+        id: &SharedNodeIdentifier,
+        mut each: F,
+    ) {
+        if let Some(node) = self.graph.borrow_mut().nodes.get_mut(id) {
+            let working = Self::init_working_mem(node, self.placement.as_mut());
+            if let Some(working) = working {
+                each(node, working.borrow_mut().deref_mut());
             }
         }
     }
@@ -356,7 +323,8 @@ impl Simulation {
                 }
                 energy += working.current_velocity.magnitude();
             });
-            energy /= self.working_nodes.len() as f64;
+            let num_nodes = self.graph.borrow().nodes.len();
+            energy /= num_nodes as f64;
             self.params.average_energy = energy;
         }
     }

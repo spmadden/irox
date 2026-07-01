@@ -48,9 +48,9 @@ impl Collision {
             for left in &nodes {
                 let mut qpos = Vector::default();
                 let mut left_edges = 1.0;
-                sim.node_mut(left, |n| {
-                    qpos = n.current_position + n.current_velocity;
-                    left_edges = n.num_edges;
+                sim.node_mut(left, |node, working| {
+                    qpos = working.current_position + working.current_velocity;
+                    left_edges = node.num_edges() as f64;
                 });
 
                 for right in &nodes {
@@ -59,9 +59,9 @@ impl Collision {
                     }
                     let mut npos = Vector::default();
                     let mut right_edges = 1.0;
-                    sim.node_mut(right, |n| {
-                        npos = n.current_position + n.current_velocity;
-                        right_edges = n.num_edges;
+                    sim.node_mut(right, |node, working| {
+                        npos = working.current_position + working.current_velocity;
+                        right_edges = node.num_edges() as f64;
                     });
 
                     let delt = qpos - npos;
@@ -77,11 +77,11 @@ impl Collision {
                     // let bias = left_edges / (left_edges + right_edges);
                     let bias = 0.5;
 
-                    sim.node_mut(left, |n| {
-                        n.current_velocity += adj * (1. - bias);
+                    sim.node_mut(left, |_node, working| {
+                        working.current_velocity += adj * (1. - bias);
                     });
-                    sim.node_mut(right, |n| {
-                        n.current_velocity -= adj * bias;
+                    sim.node_mut(right, |_node, working| {
+                        working.current_velocity -= adj * bias;
                     });
                 }
             }
