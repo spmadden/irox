@@ -37,6 +37,16 @@ impl AnyHashMap {
             .or_insert_with(|| Box::new(V::default()))
             .downcast_ref()
     }
+    pub fn get_or_create<K: AsRef<str>, V: Any + 'static, F: FnOnce() -> V>(
+        &mut self,
+        key: K,
+        provider: F,
+    ) -> Option<&V> {
+        self.inner
+            .entry(key.as_ref().to_string())
+            .or_insert_with(|| Box::new(provider()))
+            .downcast_ref()
+    }
     pub fn get_mut_or_default<K: AsRef<str>, V: Any + Default + 'static>(
         &mut self,
         key: K,
@@ -44,6 +54,16 @@ impl AnyHashMap {
         self.inner
             .entry(key.as_ref().to_string())
             .or_insert_with(|| Box::new(V::default()))
+            .downcast_mut()
+    }
+    pub fn get_mut_or_create<K: AsRef<str>, V: Any + 'static, F: FnOnce() -> V>(
+        &mut self,
+        key: K,
+        provider: F,
+    ) -> Option<&mut V> {
+        self.inner
+            .entry(key.as_ref().to_string())
+            .or_insert_with(|| Box::new(provider()))
             .downcast_mut()
     }
     pub fn take<K: AsRef<str>, V: Any + 'static>(&mut self, key: K) -> Option<V> {
