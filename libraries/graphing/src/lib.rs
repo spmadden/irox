@@ -21,6 +21,7 @@ mod flow;
 mod graph;
 mod node;
 mod paths;
+pub mod placers;
 pub mod walk;
 
 cfg_feature_egui! {
