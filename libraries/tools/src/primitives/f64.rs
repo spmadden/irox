@@ -63,6 +63,8 @@ pub trait FloatExt: PrimitiveMath {
 
     fn min(self, o: Self) -> Self::Type;
     fn max(self, o: Self) -> Self::Type;
+
+    fn is_finite(&self) -> bool;
 }
 #[allow(unused)]
 fn cordic_k(n: usize) -> f64 {
@@ -355,6 +357,10 @@ impl FloatExt for f64 {
             o
         }
     }
+
+    fn is_finite(&self) -> bool {
+        f64::is_finite(*self)
+    }
 }
 
 #[cfg(feature = "std")]
@@ -460,6 +466,10 @@ impl FloatExt for f64 {
 
     fn max(self, o: Self) -> Self::Type {
         f64::max(self, o)
+    }
+
+    fn is_finite(&self) -> bool {
+        f64::is_finite(*self)
     }
 }
 

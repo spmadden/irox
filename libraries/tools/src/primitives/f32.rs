@@ -209,6 +209,10 @@ impl crate::f64::FloatExt for f32 {
             o
         }
     }
+
+    fn is_finite(&self) -> bool {
+        f32::is_finite(*self)
+    }
 }
 
 impl ToF64 for f32 {

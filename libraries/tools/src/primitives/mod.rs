@@ -239,6 +239,13 @@ pub trait Zero {
     const ZERO: Self;
 }
 
+pub trait MaxValue {
+    const MAX_VALUE: Self;
+}
+pub trait MinValue {
+    const MIN_VALUE: Self;
+}
+
 macro_rules! impl_onezero_f {
     ($typ:ty) => {
         impl One for $typ {
@@ -246,6 +253,12 @@ macro_rules! impl_onezero_f {
         }
         impl Zero for $typ {
             const ZERO: Self = 0.0;
+        }
+        impl MaxValue for $typ {
+            const MAX_VALUE: Self = <$typ>::MAX;
+        }
+        impl MinValue for $typ {
+            const MIN_VALUE: Self = <$typ>::MIN;
         }
     };
 }
@@ -259,6 +272,12 @@ macro_rules! impl_onezero_i {
         }
         impl Zero for $typ {
             const ZERO: Self = 0;
+        }
+        impl MaxValue for $typ {
+            const MAX_VALUE: Self = <$typ>::MAX;
+        }
+        impl MinValue for $typ {
+            const MIN_VALUE: Self = <$typ>::MIN;
         }
     };
 }
@@ -289,6 +308,8 @@ pub trait PrimitiveMath:
 pub trait FloatIsh:
     One
     + Zero
+    + MaxValue
+    + MinValue
     + ToF64
     + FromF64
     + FromStr

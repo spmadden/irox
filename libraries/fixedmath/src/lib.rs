@@ -362,12 +362,22 @@ macro_rules! impl_unsigned_flops {
                     o
                 }
             }
+            fn is_finite(&self) -> bool {
+                true
+            }
         }
         impl irox_tools::One for $typ {
             const ONE: Self = Self::from_parts(1, 0);
         }
         impl irox_tools::Zero for $typ {
             const ZERO: Self = Self::from_parts(0, 0);
+        }
+        impl irox_tools::MinValue for $typ {
+            const MIN_VALUE: Self =
+                Self::from_parts(<$lower_prim>::MIN, <$lower_prim as irox_tools::Zero>::ZERO);
+        }
+        impl irox_tools::MaxValue for $typ {
+            const MAX_VALUE: Self = Self::from_parts(<$lower_prim>::MAX, <$lower_prim>::MAX);
         }
         impl irox_tools::ToF64 for $typ {
             fn to_f64(&self) -> f64 {
@@ -426,6 +436,13 @@ macro_rules! impl_signed_flops {
         }
         impl irox_tools::Zero for $typ {
             const ZERO: Self = Self::from_parts(0, 0);
+        }
+        impl irox_tools::MinValue for $typ {
+            const MIN_VALUE: Self =
+                Self::from_parts(<$lower_prim>::MIN, <$lower_prim as irox_tools::Zero>::ZERO);
+        }
+        impl irox_tools::MaxValue for $typ {
+            const MAX_VALUE: Self = Self::from_parts(<$lower_prim>::MAX, <$lower_prim>::MAX);
         }
         impl irox_tools::ToF64 for $typ {
             fn to_f64(&self) -> f64 {
@@ -600,6 +617,10 @@ macro_rules! impl_signed_flops {
                 } else {
                     o
                 }
+            }
+
+            fn is_finite(&self) -> bool {
+                true
             }
         }
     };
@@ -927,6 +948,8 @@ impl FixedI128 {
     pub const RESOLUTION: FixedI128 = FixedI128::from_parts(0, 1);
     pub const LN10: FixedI128 = FixedI128::from_parts(2, 5_581_709_770_980_770_000);
     pub const LN2: FixedI128 = FixedI128::from_parts(0, 6_393_154_322_601_330_000);
+    pub const MAX: FixedI128 = FixedI128::from_parts(i64::MAX, i64::MAX);
+    pub const MIN: FixedI128 = FixedI128::from_parts(i64::MIN, 0);
 }
 impl_base!(FixedI128, i128, i64, i128, I128_SHIFT, I128_VAL, I128_MASK);
 impl_signed_flops!(FixedI128, i128, i64, I128_SHIFT, I128_VAL, I128_MASK);
