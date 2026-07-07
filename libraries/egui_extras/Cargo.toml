@@ -34,7 +34,7 @@ ron.workspace = true
 serde = { workspace = true, optional = true }
 irox-bits = { workspace = true, optional = true, features = ["alloc"] }
 irox-tools = { workspace = true }
-irox-geometry = { workspace = true }
+irox-geometry = { workspace = true, features = ["egui", "std"] }
 irox-time = { workspace = true, features = ["std"] }
 irox-units = { workspace = true, features = ["std"] }
 irox-imagery = { workspace = true, features = ["egui", "std"] }
@@ -94,6 +94,10 @@ required-features = ["eframe", "wgpu"]
 
 [[example]]
 name = "png_test"
+required-features = ["eframe", "wgpu"]
+
+[[example]]
+name = "arcwedge"
 required-features = ["eframe", "wgpu"]
 
 [[example]]
