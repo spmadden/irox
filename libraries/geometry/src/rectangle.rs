@@ -4,13 +4,27 @@
 
 use crate::geometry::{Centroid, Geometry};
 use crate::{Point, Vector, Vector2D};
+use core::cmp::Ordering;
 use core::ops::{Div, Sub};
-use irox_tools::FloatIsh;
+use irox_tools::{FloatIsh, MaxValue, Zero};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]
 pub struct Rectangle<T: FloatIsh> {
     pub min: Point<T>,
     pub size: Vector<T>,
+}
+
+impl<T: FloatIsh> Rectangle<T> {
+    pub const EMPTY: Rectangle<T> = Rectangle {
+        min: Point::MAX_VALUE,
+        size: Vector::splat(T::MIN_VALUE),
+    };
+}
+impl<T: FloatIsh> Zero for Rectangle<T> {
+    const ZERO: Self = Rectangle {
+        min: Point::ZERO,
+        size: Vector::ZERO,
+    };
 }
 
 impl<T: FloatIsh> Rectangle<T> {
@@ -29,6 +43,16 @@ impl<T: FloatIsh> Rectangle<T> {
     }
 
     #[must_use]
+    pub fn far_x(&self) -> Point<T> {
+        self.min + Vector::new(self.size.vx, T::ZERO)
+    }
+
+    #[must_use]
+    pub fn far_y(&self) -> Point<T> {
+        self.min + Vector::new(T::ZERO, self.size.vy)
+    }
+
+    #[must_use]
     pub fn max_x(&self) -> T {
         self.far_point().x
     }
@@ -36,6 +60,35 @@ impl<T: FloatIsh> Rectangle<T> {
     #[must_use]
     pub fn max_y(&self) -> T {
         self.far_point().y
+    }
+    pub fn add_point(&mut self, point: Point<T>) {
+        let xc = self.min.x.partial_cmp(&point.x).unwrap_or(Ordering::Equal);
+        let yc = self.min.y.partial_cmp(&point.y).unwrap_or(Ordering::Equal);
+        if matches!(xc, Ordering::Greater) || matches!(yc, Ordering::Greater) {
+            let oldfar = self.far_point();
+            self.min = point;
+            self.size = oldfar - self.min;
+        }
+        let farpoint = self.far_point();
+        let xc = farpoint.x.partial_cmp(&point.x).unwrap_or(Ordering::Equal);
+        if matches!(xc, Ordering::Less) {
+            self.size.vx += point.x - farpoint.x;
+        }
+        let yc = farpoint.y.partial_cmp(&point.y).unwrap_or(Ordering::Equal);
+        if matches!(yc, Ordering::Less) {
+            self.size.vy += point.y - farpoint.y;
+        }
+    }
+
+    #[cfg(feature = "alloc")]
+    #[must_use]
+    pub fn to_polygon(&self) -> crate::Polygon<T> {
+        let mut out = crate::Polygon::empty();
+        out.add_point(self.min);
+        out.add_point(self.far_x());
+        out.add_point(self.far_point());
+        out.add_point(self.far_y());
+        out
     }
 }
 

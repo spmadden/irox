@@ -18,7 +18,7 @@ workspace = true
 [features]
 default = []
 alloc = ["irox-tools/alloc", "irox-units/alloc"]
-std = ["irox-tools/std", "irox-units/std"]
+std = ["irox-tools/std", "irox-units/std", "alloc"]
 egui = ["dep:egui"]
 
 [dependencies]

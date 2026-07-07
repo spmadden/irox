@@ -8,7 +8,7 @@ use crate::{Vector, Vector2D};
 use core::ops::{Add, Mul};
 use core::ops::{AddAssign, SubAssign};
 use core::ops::{MulAssign, Sub};
-use irox_tools::{cfg_feature_egui, FloatIsh};
+use irox_tools::{cfg_feature_egui, FloatIsh, MaxValue, MinValue, Zero};
 
 pub trait Point2D<T: FloatIsh>: Default + Copy + Clone + PartialEq + PartialOrd {
     fn x(&self) -> T;
@@ -36,6 +36,30 @@ pub struct Point<T: FloatIsh> {
     pub y: T,
     pub z: Option<T>,
     pub m: Option<T>,
+}
+impl<T: FloatIsh> Zero for Point<T> {
+    const ZERO: Self = Point {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: None,
+        m: None,
+    };
+}
+impl<T: FloatIsh> MinValue for Point<T> {
+    const MIN_VALUE: Self = Point {
+        x: T::MIN_VALUE,
+        y: T::MIN_VALUE,
+        z: None,
+        m: None,
+    };
+}
+impl<T: FloatIsh> MaxValue for Point<T> {
+    const MAX_VALUE: Self = Point {
+        x: T::MAX_VALUE,
+        y: T::MAX_VALUE,
+        z: None,
+        m: None,
+    };
 }
 impl<T: FloatIsh> Point<T> {
     pub fn to_vector(&self) -> Vector<T> {

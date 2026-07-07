@@ -234,4 +234,9 @@ cfg_feature_egui! {
             Self::new(vec.x as f64, vec.y as f64)
         }
     }
+    impl From<Vector<f64>> for egui::Vec2 {
+        fn from(vec: Vector<f64>) -> Self {
+            Self::new(vec.vx as f32, vec.vy as f32)
+        }
+    }
 }

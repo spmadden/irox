@@ -37,28 +37,27 @@ impl<T: FloatIsh> LineSegment<T> {
     }
 
     pub fn intersect(&self, other: &Self) -> Option<Point<T>> {
-        let m1 = self.slope();
-        let m2 = other.slope();
-        let b1 = self.intercept();
-        let b2 = other.intercept();
+        let x1 = self.start.x;
+        let x2 = self.end.x;
+        let y1 = self.start.y;
+        let y2 = self.end.y;
+        let x3 = other.start.x;
+        let x4 = other.end.x;
+        let y3 = other.start.y;
+        let y4 = other.end.y;
 
-        match (m1, m2) {
-            (Some(m1), Some(m2)) => {
-                let x = (b2 - b1) / (m2 - m1);
-                let y = m1 * x + b1;
-                Some(Point::new_point(x, y))
-            }
-            (Some(m1), None) => {
-                let x = other.start.x;
-                let y = m1 * x + b1;
-                Some(Point::new_point(x, y))
-            }
-            (None, Some(m2)) => {
-                let x = self.start.x;
-                let y = m2 * x + b1;
-                Some(Point::new_point(x, y))
-            }
-            (None, None) => None,
+        let a = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
+        let b = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        let t = a / b;
+
+        let a = (x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3);
+        let b = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        let u = T::ZERO - a / b;
+
+        if t < T::ZERO || t > T::ONE || u < T::ZERO || u > T::ONE {
+            None
+        } else {
+            Some(Point::new_point(x1 + t * (x2 - x1), y1 + t * (y2 - y1)))
         }
     }
 
@@ -89,6 +88,9 @@ impl<T: FloatIsh> LineSegment<T> {
         let px = point.x - self.start.x;
         let py = point.y - self.start.y;
         let len = self.length();
+        if len == T::ZERO {
+            return T::ZERO;
+        }
         let pct = ((px * dx) + (py * dy)) / (len * len);
         let pct = pct.clamp(T::ZERO, T::ONE);
         let point_on_segment = self.point_along_length(pct);
@@ -178,5 +180,36 @@ mod tests {
         assert_eq_eps!(10f64, d, 1e-13);
         let d = line.distance_to(&Point::new_point(20., 0.));
         assert_eq_eps!(10f64, d, 1e-13);
+    }
+
+    #[test]
+    pub fn test_intersection1() {
+        let line1 = LineSegment {
+            start: Point::new_point(2.0, 1.0),
+            end: Point::new_point(2.0, 3.0),
+        };
+        let line2 = LineSegment {
+            start: Point::new_point(1.0, 2.0),
+            end: Point::new_point(3.0, 2.0),
+        };
+        let intersection = line1.intersect(&line2);
+        assert!(intersection.is_some());
+        let intersection = intersection.unwrap();
+        assert_eq!(intersection, Point::new_point(2.0, 2.0));
+    }
+    #[test]
+    pub fn test_intersection2() {
+        let line1 = LineSegment {
+            start: Point::new_point(2.0, 1.0),
+            end: Point::new_point(2.0, 3.0),
+        };
+        let line2 = LineSegment {
+            end: Point::new_point(1.0, 2.0),
+            start: Point::new_point(3.0, 2.0),
+        };
+        let intersection = line1.intersect(&line2);
+        assert!(intersection.is_some());
+        let intersection = intersection.unwrap();
+        assert_eq!(intersection, Point::new_point(2.0, 2.0));
     }
 }

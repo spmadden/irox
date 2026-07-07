@@ -74,12 +74,11 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::tiles::Tileizer;
 
     #[test]
     #[cfg(feature = "std")]
     pub fn test() {
-        let tm = Tileizer::<f64>::default();
+        let tm = crate::tiles::Tileizer::<f64>::default();
         tm.get_tiles(|tile| {
             println!("Tile: {:?}", tile);
         });
@@ -88,7 +87,7 @@ mod tests {
     #[test]
     #[cfg(feature = "std")]
     pub fn test2() {
-        let mut tm = Tileizer::<f64>::default();
+        let tm = crate::tiles::Tileizer::<f64>::default();
 
         tm.get_tiles(|tile| {
             println!("Tile: {:?}", tile);
