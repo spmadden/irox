@@ -28,7 +28,7 @@ impl<'a> Database<'a, std::fs::File> {
 }
 impl<'a, T: Bits + Seek> Database<'a, T>
 where
-    BitsWrapper<'a, T>: Bits,
+    BitsWrapper<'a, T>: Bits + Seek,
 {
     pub fn read_page(&mut self, page_id: u32) -> Result<PageType, Error> {
         page::read_page(&mut self.file, page_id, &self.header)
