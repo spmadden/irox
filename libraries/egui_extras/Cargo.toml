@@ -98,7 +98,11 @@ required-features = ["eframe", "wgpu"]
 
 [[example]]
 name = "arcwedge"
-required-features = ["eframe", "wgpu"]
+required-features = ["eframe", "glow"]
+
+[[example]]
+name = "colors"
+required-features = ["eframe", "glow"]
 
 [[example]]
 name = "egui-progress"

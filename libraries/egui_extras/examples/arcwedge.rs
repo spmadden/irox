@@ -11,7 +11,8 @@ use egui::{
 };
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_geometry::{Geometry, Point, Polygon, Vector, Vector2D};
-use irox_imagery::colormaps::CLASSIC_20;
+use irox_imagery::colormaps::DIVERGENT_19;
+use irox_tools::iterators::Itertools;
 use irox_units::units::angle::Angle;
 use log::{error, Level};
 use std::sync::Arc;
@@ -92,7 +93,7 @@ impl ArcWedge {
                 let pos = ctr + Vector::new(0.0, outer_length).rotate(angle).into();
                 mesh.vertices.push(Vertex::untextured(pos, fill_color));
                 polygon_intersection.add_point(pos.into());
-                angle += Angle::new_degrees(1.);
+                angle += Angle::new_degrees(0.5);
 
                 mesh.add_triangle(idx, idx + 1, idx + 3);
                 mesh.add_triangle(idx + 3, idx + 2, idx);
@@ -217,12 +218,27 @@ impl App for TestApp {
             };
             let width = self.end_angle - self.start_angle;
             let count = (360. / width).floor() as usize;
-            for i in 0..count {
-                let start = self.start_angle + width * i as f32;
+            let set = irox_imagery::colormaps::flat::FLAT;
+            let bold = 5;
+            let light = 1;
+            for (i, idx) in DIVERGENT_19
+                .iter()
+                .looping_forever()
+                .take(count)
+                .enumerate()
+            {
+                let start = self.start_angle + width * (i as f32);
                 let end = self.start_angle + width * (i as f32 + 1.);
-                let color_idx = i % 10;
-                let light = CLASSIC_20.get(color_idx + 10).cloned().unwrap_or_default();
-                let bold = CLASSIC_20.get(color_idx).cloned().unwrap_or_default();
+                let light = set
+                    .get(*idx)
+                    .and_then(|v| v.get(light))
+                    .copied()
+                    .unwrap_or_default();
+                let bold = set
+                    .get(*idx)
+                    .and_then(|v| v.get(bold))
+                    .copied()
+                    .unwrap_or_default();
                 let wedge = ArcWedge {
                     identifier: Id::new(format!("wedge1_{i}")),
                     start_angle: Angle::new_degrees(start as f64),
