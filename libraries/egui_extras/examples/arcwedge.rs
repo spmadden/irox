@@ -4,14 +4,14 @@
 
 use eframe::emath::Vec2;
 use eframe::{App, CreationContext, Frame};
-use egui::epaint::{PathShape, RectShape, TextShape, Vertex};
+use egui::epaint::{PathShape, Vertex};
 use egui::{
-    CentralPanel, Color32, CornerRadius, FontFamily, FontId, Grid, Id, Mesh, Pos2, Rect, Sense,
-    Shape, Slider, Stroke, StrokeKind, Ui, ViewportBuilder, Widget,
+    CentralPanel, Color32, Grid, Id, Mesh, Painter, Pos2, Sense, Shape, Slider, Stroke, Ui,
+    ViewportBuilder, Widget,
 };
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
 use irox_geometry::{Geometry, Point, Polygon, Vector, Vector2D};
-use irox_imagery::colormaps::TABLEAU_10;
+use irox_imagery::colormaps::CLASSIC_20;
 use irox_units::units::angle::Angle;
 use log::{error, Level};
 use std::sync::Arc;
@@ -28,6 +28,21 @@ impl Response {
         self.clicked
     }
 }
+pub struct ArcWedgeSet {
+    pub identifier: Id,
+    pub size: f32,
+    pub wedges: Vec<ArcWedge>,
+}
+impl ArcWedgeSet {
+    pub fn show(&self, ui: &mut Ui) {
+        let (id, rect) = ui.allocate_space(Vec2::splat(self.size));
+        let response = ui.interact(rect, id, Sense::click());
+        let painter = ui.painter_at(rect);
+        for wedge in &self.wedges {
+            wedge.show(ui, &painter, &response);
+        }
+    }
+}
 pub struct ArcWedge {
     pub identifier: Id,
     pub start_angle: Angle,
@@ -36,28 +51,16 @@ pub struct ArcWedge {
     pub inner_length: f32,
     pub outer_length: f32,
     pub pad_length: f32,
-    pub size: f32,
+    pub stroke_color: Color32,
     pub fill_color: Color32,
     pub hovered_fill_color: Color32,
 }
 impl ArcWedge {
-    pub fn show(&self, ui: &mut Ui) -> Response {
-        let hovered: bool = ui.memory(|mem| mem.data.get_temp(self.identifier).unwrap_or_default());
-        let (id, rect) = ui.allocate_space(Vec2::splat(self.size));
-        let response = ui.interact(rect, id, Sense::click());
-        let painter = ui.painter_at(rect);
+    pub fn show(&self, ui: &mut Ui, painter: &Painter, response: &egui::Response) -> Response {
         let painter_space = response.rect;
+        let hovered: bool = ui.memory(|mem| mem.data.get_temp(self.identifier).unwrap_or_default());
         let ctr = painter_space.center();
-        #[cfg(debug_assertions)]
-        {
-            painter.add(Shape::rect_stroke(
-                rect,
-                CornerRadius::default(),
-                Stroke::new(2.0, Color32::RED),
-                StrokeKind::Middle,
-            ));
-            painter.add(Shape::circle_filled(rect.center(), 2.0, Color32::RED));
-        }
+
         let mut polygon_intersection = Polygon::<f32>::empty();
         let mut mesh = Mesh::default();
         let fill_color = if hovered {
@@ -65,30 +68,28 @@ impl ArcWedge {
         } else {
             self.fill_color
         };
+        let inner_length = self.inner_length + 0.5 * self.pad_length;
+        let outer_length = self.outer_length - 0.5 * self.pad_length;
+        let start_angle = self.start_angle + Angle::new_degrees(180.) + self.pad_angle / 2.;
+        let end_angle = self.end_angle + Angle::new_degrees(180.) - self.pad_angle / 2.;
         {
             // start line
-            let pos = ctr
-                + Vector::new(0.0, self.inner_length)
-                    .rotate(self.start_angle + Angle::new_degrees(180.))
-                    .into();
+            let pos = ctr + Vector::new(0.0, inner_length).rotate(start_angle).into();
             mesh.vertices.push(Vertex::untextured(pos, fill_color));
             polygon_intersection.add_point(pos.into());
-            let pos = ctr
-                + Vector::new(0.0, self.outer_length)
-                    .rotate(self.start_angle + Angle::new_degrees(180.))
-                    .into();
+            let pos = ctr + Vector::new(0.0, outer_length).rotate(start_angle).into();
             mesh.vertices.push(Vertex::untextured(pos, fill_color));
             polygon_intersection.add_point(pos.into());
         }
         let mut remaining_points = Vec::new();
         let mut idx = 0;
         {
-            let mut angle = self.start_angle + Angle::new_degrees(180.);
-            while angle < self.end_angle + Angle::new_degrees(180.) {
-                let pos = ctr + Vector::new(0.0, self.inner_length).rotate(angle).into();
+            let mut angle = start_angle;
+            while angle <= end_angle {
+                let pos = ctr + Vector::new(0.0, inner_length).rotate(angle).into();
                 mesh.vertices.push(Vertex::untextured(pos, fill_color));
                 remaining_points.push(pos);
-                let pos = ctr + Vector::new(0.0, self.outer_length).rotate(angle).into();
+                let pos = ctr + Vector::new(0.0, outer_length).rotate(angle).into();
                 mesh.vertices.push(Vertex::untextured(pos, fill_color));
                 polygon_intersection.add_point(pos.into());
                 angle += Angle::new_degrees(1.);
@@ -102,45 +103,20 @@ impl ArcWedge {
             polygon_intersection.add_point(pos.into());
         }
 
-        #[cfg(debug_assertions)]
-        {
-            let mut points = Vec::<Pos2>::new();
-            for pnt in polygon_intersection.iter_points() {
-                points.push((*pnt).into());
-            }
-            let shp = Shape::Path(PathShape::closed_line(
-                points,
-                Stroke::new(1.0, Color32::RED),
-            ));
-            painter.add(shp);
-            let bbox = polygon_intersection.bounding_rectangle();
-            let rect = Rect::from_min_max(bbox.min.into(), bbox.far_point().into());
-            let shp = Shape::Rect(RectShape::stroke(
-                rect,
-                CornerRadius::default(),
-                Stroke::new(1.0, Color32::RED),
-                StrokeKind::Middle,
-            ));
-            painter.add(shp);
+        let mut points = Vec::<Pos2>::new();
+        for pnt in polygon_intersection.iter_points() {
+            points.push((*pnt).into());
         }
+        let shp = Shape::Path(PathShape::closed_line(
+            points,
+            Stroke::new(4.0, self.stroke_color),
+        ));
+        painter.add(shp);
 
         let shp = Shape::Mesh(Arc::new(mesh));
         painter.add(shp);
         let hovered = if let Some(hover_pos) = response.hover_pos() {
             if response.hovered() {
-                #[cfg(debug_assertions)]
-                {
-                    let gallery = ui.fonts_mut(|font| {
-                        font.layout(
-                            hover_pos.to_string(),
-                            FontId::new(10., FontFamily::default()),
-                            Color32::RED,
-                            100.0,
-                        )
-                    });
-                    let shp = Shape::Text(TextShape::new(hover_pos, gallery, Color32::RED));
-                    painter.add(shp);
-                }
                 let hover_pos: Point<f32> = hover_pos.into();
                 polygon_intersection.contains(&hover_pos)
             } else {
@@ -234,22 +210,34 @@ impl App for TestApp {
                     .ui(ui);
                 ui.end_row();
             });
-            let wedge = ArcWedge {
+            let mut wedgeset = ArcWedgeSet {
                 identifier: Id::new("wedge1"),
-                start_angle: Angle::new_degrees(self.start_angle as f64),
-                end_angle: Angle::new_degrees(self.end_angle as f64),
-                pad_angle: Angle::new_degrees(self.pad_angle as f64),
-                inner_length: self.inner_length,
-                outer_length: self.outer_length,
-                pad_length: self.pad_length,
                 size: self.size,
-                fill_color: TABLEAU_10[0].into(),
-                hovered_fill_color: TABLEAU_10[1].into(),
+                wedges: vec![],
             };
-            let resp = wedge.show(ui);
-            if resp.hovered() {
-                //todo
+            let width = self.end_angle - self.start_angle;
+            let count = (360. / width).floor() as usize;
+            for i in 0..count {
+                let start = self.start_angle + width * i as f32;
+                let end = self.start_angle + width * (i as f32 + 1.);
+                let color_idx = i % 10;
+                let light = CLASSIC_20.get(color_idx + 10).cloned().unwrap_or_default();
+                let bold = CLASSIC_20.get(color_idx).cloned().unwrap_or_default();
+                let wedge = ArcWedge {
+                    identifier: Id::new(format!("wedge1_{i}")),
+                    start_angle: Angle::new_degrees(start as f64),
+                    end_angle: Angle::new_degrees(end as f64),
+                    pad_angle: Angle::new_degrees(self.pad_angle as f64),
+                    inner_length: self.inner_length,
+                    outer_length: self.outer_length,
+                    pad_length: self.pad_length,
+                    fill_color: light.into(),
+                    hovered_fill_color: bold.into(),
+                    stroke_color: bold.into(),
+                };
+                wedgeset.wedges.push(wedge)
             }
+            wedgeset.show(ui);
         });
     }
 }
