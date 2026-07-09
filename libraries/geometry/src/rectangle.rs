@@ -63,11 +63,14 @@ impl<T: FloatIsh> Rectangle<T> {
     }
     pub fn add_point(&mut self, point: Point<T>) {
         let xc = self.min.x.partial_cmp(&point.x).unwrap_or(Ordering::Equal);
+        if matches!(xc, Ordering::Greater) {
+            self.size.vx += self.min.x - point.x;
+            self.min.x = point.x;
+        }
         let yc = self.min.y.partial_cmp(&point.y).unwrap_or(Ordering::Equal);
-        if matches!(xc, Ordering::Greater) || matches!(yc, Ordering::Greater) {
-            let oldfar = self.far_point();
-            self.min = point;
-            self.size = oldfar - self.min;
+        if matches!(yc, Ordering::Greater) {
+            self.size.vy += self.min.y - point.y;
+            self.min.y = point.y;
         }
         let farpoint = self.far_point();
         let xc = farpoint.x.partial_cmp(&point.x).unwrap_or(Ordering::Equal);
