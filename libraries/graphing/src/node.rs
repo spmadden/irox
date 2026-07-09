@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 extern crate alloc;
 use crate::{Descriptor, NodeDescriptor, SharedEdgeIdentifier};
 use alloc::rc::Rc;
+use core::cell::RefCell;
 use core::fmt::Display;
 use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
@@ -48,7 +49,7 @@ pub struct Node {
     pub navigable_edges: Vec<SharedEdgeIdentifier>,
     pub all_edges: Vec<SharedEdgeIdentifier>,
 
-    pub memory: Rc<AnyHashMap>,
+    pub memory: Rc<RefCell<AnyHashMap>>,
 }
 impl Node {
     pub fn from_id(id: Identifier) -> Self {

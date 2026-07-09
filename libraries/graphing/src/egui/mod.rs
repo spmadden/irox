@@ -9,8 +9,8 @@ pub mod search;
 pub mod treelist;
 
 use crate::egui::renderer::{
-    EdgeRendererProvider, NodeRendererProvider, RenderingContext, DEFAULT_EDGE_RENDERER,
-    DEFAULT_NODE_RENDERER,
+    EdgeRendererProvider, NodeRendererProvider, NodeRenderingState, RenderingContext,
+    DEFAULT_EDGE_RENDERER, DEFAULT_NODE_RENDERER,
 };
 use crate::fdp::{
     Centering, DefaultNodePlacement, EdgeForce, Force, Repulsive, Shared, Simulation,
@@ -25,7 +25,7 @@ use irox_egui_extras::egui::{
     Color32, Context, CornerRadius, Id, Rect, Response, Sense, Shape, Slider, Stroke, StrokeKind,
     Ui, Widget, Window,
 };
-use irox_egui_extras::{profile_scope};
+use irox_egui_extras::profile_scope;
 use irox_geometry::transform::LinearTransform;
 use irox_geometry::{Vector, Vector2D};
 use std::sync::mpsc::Sender;
@@ -239,7 +239,6 @@ impl FDPSimulationWidget {
                 .show(ui);
             });
         }
-        self.panel.show(ui);
         self.play_tick(ui.ctx());
         if self.show_tick_controls {
             ui.label(format!("Tick: {}", self.sim.params.tick));
@@ -251,6 +250,7 @@ impl FDPSimulationWidget {
                 ui.checkbox(&mut self.play, text);
             });
         }
+        self.panel.show(ui);
         let current_transform = self.panel.transform;
         let current_world_area = self.panel.world_area;
         let last_window_area = self.panel.last_window_area;
@@ -291,6 +291,7 @@ impl FDPSimulationWidget {
                 });
             }
         });
+        let inverse_transform = current_transform.inverse();
         let xfm = LinearTransform::<f64>::from(current_transform);
         self.sim.iter_nodes(|id, node, working| {
             let ctr = xfm.new_model_point(&working.current_position.to_point());
@@ -308,14 +309,23 @@ impl FDPSimulationWidget {
                 for shp in &mut eshapes {
                     bbox |= shp.visual_bounding_rect();
                 }
+                if let Some(state) = node
+                    .memory
+                    .borrow_mut()
+                    .get_mut_or_default::<_, NodeRenderingState>("NodeRenderingState")
+                {
+                    state.last_render_box_world = bbox;
+                    state.last_render_box_model = inverse_transform.mul_rect(bbox);
+                }
                 if cfg!(debug_assertions) {
-                    eshapes.push(Shape::Rect(RectShape::new(
+                    let rect = Shape::Rect(RectShape::new(
                         bbox,
                         CornerRadius::default(),
                         Color32::TRANSPARENT,
                         Stroke::new(1.0, Color32::RED),
                         StrokeKind::Middle,
-                    )));
+                    ));
+                    eshapes.push(rect);
                 }
                 let painter = ui.painter();
                 eshapes.drain(..).for_each(|shp| {

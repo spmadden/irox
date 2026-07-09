@@ -21,6 +21,17 @@ use irox_geometry::{LineSegment, Vector, Vector2D};
 #[derive(Debug, Clone)]
 pub struct NodeRenderingState {
     pub highlighted: bool,
+    pub last_render_box_model: Rect,
+    pub last_render_box_world: Rect,
+}
+impl Default for NodeRenderingState {
+    fn default() -> Self {
+        Self {
+            highlighted: false,
+            last_render_box_model: Rect::NOTHING,
+            last_render_box_world: Rect::NOTHING,
+        }
+    }
 }
 
 pub struct RenderingContext<'a> {
@@ -80,7 +91,7 @@ impl NodeRenderer for DefaultNodeRenderer {
         shapes: &mut Vec<Shape>,
     ) {
         let id = node.descriptor.id.to_string();
-        let p : Pos2 = (*center.deref()).into();
+        let p: Pos2 = (*center.deref()).into();
         let ui = context.ui;
         let fgc = ui.visuals().widgets.active.fg_stroke.color;
         let bgc = ui.visuals().widgets.active.bg_fill.with_alpha(160);
@@ -99,6 +110,7 @@ impl NodeRenderer for DefaultNodeRenderer {
         }
         if let Some(ctx) = node
             .memory
+            .borrow()
             .get::<_, NodeRenderingState>("NodeRenderingState")
         {
             if ctx.highlighted {
@@ -182,7 +194,7 @@ pub struct DebugForceNodeRenderer;
 impl NodeRenderer for DebugForceNodeRenderer {
     fn add_shapes_to(
         &self,
-        _context: &RenderingContext,
+        context: &RenderingContext,
         _node: &Node,
         sim_node: &SimulationWorkingNode,
         start: ModelPoint,
@@ -191,14 +203,19 @@ impl NodeRenderer for DebugForceNodeRenderer {
         let cvel = sim_node.current_velocity * 100.;
         let end = *start.deref() + cvel;
         let stroke = Stroke::new(1.5, Color32::RED);
-        shapes.push(Shape::line_segment(
+        let mut shp = Shape::line_segment(
             [
                 Pos2::new(start.x as f32, start.y as f32),
                 Pos2::new(end.x as f32, end.y as f32),
             ],
             stroke,
-        ));
-        let line = LineSegment { start: *start.deref(), end };
+        );
+        shp.transform(context.current_transform);
+        shapes.push(shp);
+        let line = LineSegment {
+            start: *start.deref(),
+            end,
+        };
         let angle = line.angle();
         let mut shp = Arrow {
             fill_color: None,
@@ -210,6 +227,7 @@ impl NodeRenderer for DebugForceNodeRenderer {
         .to_shape();
         let end = Vec2::new(end.x as f32, end.y as f32);
         shp.transform(TSTransform::new(end, 1.));
+        shp.transform(context.current_transform);
         shapes.push(shp);
     }
 }

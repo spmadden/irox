@@ -2,7 +2,8 @@
 // Copyright 2026 IROX Contributors
 //
 
-use crate::SharedNodeIdentifier;
+use crate::egui::renderer::NodeRenderingState;
+use crate::{Graph, SharedNode, SharedNodeIdentifier};
 use irox_egui_extras::egui;
 
 #[derive(Debug, Clone)]
@@ -30,6 +31,67 @@ impl SearchWidget {
             results: Vec::new(),
             operation_result: Vec::new(),
         }
+    }
+    fn mark_node_highlighted(node: &mut SharedNode, highlighted: bool) {
+        node.memory_mut(|mem| {
+            let Some(mem) = mem else {
+                return;
+            };
+            let mut mem = mem.borrow_mut();
+            let state = mem.get_mut_or_default::<_, NodeRenderingState>("NodeRenderingState");
+            let Some(state) = state else {
+                return;
+            };
+            state.highlighted = highlighted;
+        });
+    }
+    fn mark_highlighted(node: &SharedNodeIdentifier, graph: &mut Graph, highlighted: bool) {
+        if let Some(node) = graph.nodes.get_mut(node) {
+            Self::mark_node_highlighted(node, highlighted);
+        }
+    }
+    pub fn process(&mut self, graph: &mut Graph) {
+        self.operation_result.retain(|op| {
+            if let SearchResult::QueryChanged(query) = op {
+                for res in self.results.drain(..) {
+                    Self::mark_highlighted(&res, graph, false);
+                }
+                self.results.clear();
+                self.selected_index = None;
+                if query.is_empty() {
+                    return false;
+                }
+                for node in graph.nodes.values_mut() {
+                    let Some(id) = node.id() else {
+                        continue;
+                    };
+                    let matched = node.descriptor(|d| {
+                        let Some(d) = d else {
+                            return false;
+                        };
+                        if d.id.to_string().to_lowercase().contains(query) {
+                            self.results.push(id.clone().into());
+                            return true;
+                        }
+                        if let Some(desc) = &d.description {
+                            if desc.to_lowercase().contains(query) {
+                                self.results.push(id.clone().into());
+                                return true;
+                            }
+                        }
+                        for val in d.attrs.values() {
+                            if val.to_lowercase().contains(query) {
+                                self.results.push(id.clone().into());
+                                return true;
+                            }
+                        }
+                        false
+                    });
+                    Self::mark_node_highlighted(node, matched);
+                }
+            }
+            matches!(op, SearchResult::SelectedNode(_))
+        });
     }
     pub fn show(&mut self, ui: &mut egui::Ui) {
         if ui.text_edit_singleline(&mut self.query).changed() {

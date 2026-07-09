@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
+use egui::emath::TSTransform;
 use irox_egui_extras::composite::CompositeApp;
 use irox_egui_extras::eframe;
 use irox_egui_extras::eframe::App;
@@ -9,9 +10,9 @@ use irox_egui_extras::egui::{CentralPanel, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::fonts::{load_fonts, FontSet};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame, ToolFrameOptions};
 use irox_graphing::egui::renderer::{
-    CompositeNodeRenderer, DebugForceNodeRenderer, DEFAULT_NODE_RENDERER,
+    CompositeNodeRenderer, DebugForceNodeRenderer, NodeRenderingState, DEFAULT_NODE_RENDERER,
 };
-use irox_graphing::egui::search::SearchWidget;
+use irox_graphing::egui::search::{SearchResult, SearchWidget};
 use irox_graphing::egui::FDPSimulationWidget;
 use irox_graphing::fdp::magnetic::Magnetic;
 use irox_graphing::fdp::{Centering, EdgeForce, Force, Repulsive, Shared};
@@ -24,6 +25,7 @@ use irox_units::units::angle::Angle;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::ops::DerefMut;
 use std::rc::Rc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -230,6 +232,29 @@ impl eframe::App for FDPSimulationApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
         CentralPanel::default().show_inside(ui, |ui| {
             self.search_widget.show(ui);
+            self.search_widget
+                .process(self.widget.sim.graph.borrow_mut().deref_mut());
+            for action in self.search_widget.operation_result.drain(..) {
+                let SearchResult::SelectedNode(node) = action else {
+                    continue;
+                };
+                let graph = self.widget.sim.graph.borrow();
+                let Some(node) = graph.nodes.get(&node) else {
+                    continue;
+                };
+                if let Some(pos) = node.memory(|mem| {
+                    let mem = mem?;
+                    mem.borrow()
+                        .get::<_, NodeRenderingState>("NodeRenderingState")
+                        .map(|state| state.last_render_box_model.center())
+                }) {
+                    let pos = self.widget.panel.transform.mul_pos(pos);
+                    // if let Some(area) = self.widget.panel.last_window_area {
+                    //     pos += area.center() - area.min;
+                    // }
+                    self.widget.panel.transform = TSTransform::new(pos.to_vec2(), 4.);
+                }
+            }
             self.widget.show(ui);
         });
     }
