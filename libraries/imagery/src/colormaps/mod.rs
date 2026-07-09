@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2024-2026 IROX Contributors
 //
 
 mod classic;
+pub mod flat;
+pub mod material;
 mod tableau;
 mod turbo;
 
@@ -74,3 +76,8 @@ const fn interp_part(first: u8, second: u8, offset: f64) -> u8 {
     let scaled = (second - first) * offset;
     (first + scaled) as u8
 }
+
+pub const DIVERGENT_19: &[usize] = &[
+    5, 1, 9, 13, 17, 2, 7, 15, 11, 0, 4, 8, 16, 3, 10, 14, 18, 6, 12,
+];
+pub const DIVERGENT_10: &[usize] = &[0, 4, 8, 1, 5, 9, 2, 6, 3, 7];
