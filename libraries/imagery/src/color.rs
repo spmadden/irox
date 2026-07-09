@@ -2,6 +2,7 @@
 // Copyright 2025-2026 IROX Contributors
 //
 
+use core::fmt::Formatter;
 use irox_bits::{BitStreamDecoder, Bits, BitsError};
 use irox_tools::cfg_feature_egui;
 
@@ -106,7 +107,8 @@ impl HSVColor {
         let saturation = saturation.clamp(0.0, 1.0);
         let value = value.clamp(0.0, 1.0);
         let c = value * saturation;
-        let adj = ((hue / 60.) % 2.) - 1.;
+        let hprime = hue / 60.;
+        let adj = (hprime % 2.) - 1.;
         let adj = 1. - adj.abs();
         let x = c * adj;
         let m = value - c;
@@ -118,9 +120,9 @@ impl HSVColor {
             240.0..300.0 => [x, 0.0, c],
             _ => [c, 0.0, x],
         };
-        let red = ((r + m) * 255.) as u8;
-        let green = ((g + m) * 255.) as u8;
-        let blue = ((b + m) * 255.) as u8;
+        let red = ((r + m) * 255.).round() as u8;
+        let green = ((g + m) * 255.).round() as u8;
+        let blue = ((b + m) * 255.).round() as u8;
         RGBColor { red, green, blue }
     }
 }
@@ -204,6 +206,32 @@ impl Color {
         let [alpha, red, green, blue] = hex.to_be_bytes();
         Self::argb_parts(alpha, red, green, blue)
     }
+    #[must_use]
+    pub const fn hsv(hue: u16, sat: u8, value: u8) -> Self {
+        Self::HSV(HSVColor {
+            hue: hue as f64,
+            saturation: sat as f64 / 255.0,
+            value: value as f64 / 255.0,
+        })
+    }
+    ///
+    /// Hue => [0..360]
+    /// Sat => [0..1]
+    /// Lum => [0..1]
+    #[must_use]
+    pub const fn hsl(hue: u16, sat: f64, lum: f64) -> Self {
+        let value = lum + sat * lum.min(1.0 - lum);
+        let sat = if value.abs() < 0.001 {
+            0.0
+        } else {
+            2.0 * (1.0 - lum / value)
+        };
+        Self::HSV(HSVColor {
+            hue: hue as f64,
+            saturation: sat,
+            value,
+        })
+    }
 
     #[must_use]
     pub const fn to_rgb(&self) -> Self {
@@ -273,6 +301,16 @@ impl Color {
         let blue = 255 - b;
         Self::RGB(RGBColor { red, green, blue })
     }
+    #[must_use]
+    pub fn invert_black_white(&self) -> Self {
+        let lum = self.luminance();
+        // golden ratio gamma corrected (1.0 - phi) ^ 2.2
+        if lum > 0.3469 {
+            Color::rgb_hex(0x000000)
+        } else {
+            Color::rgb_hex(0xffffff)
+        }
+    }
 
     pub fn to_hsv(&self) -> HSVColor {
         match self {
@@ -299,6 +337,13 @@ cfg_feature_egui! {
             let [a, r,g,b] = value.argb_values();
             egui::ecolor::Color32::from_rgba_unmultiplied(r,g,b,a)
         }
+    }
+}
+impl core::fmt::Display for Color {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        let vals = self.rgb_values();
+        let st = irox_tools::hex::to_hex_str_upper(&vals);
+        write!(f, "{st}")
     }
 }
 
