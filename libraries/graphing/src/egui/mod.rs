@@ -331,7 +331,7 @@ impl FDPSimulationWidget {
                 eshapes.drain(..).for_each(|shp| {
                     painter.add(shp);
                 });
-                let resp = ui.interact(bbox, Id::new(id.to_string()), Sense::hover());
+                let resp = ui.interact(bbox, Id::new(id.to_string()), Sense::all());
                 (self.node_renderer)(node).on_response(
                     &rendering_context,
                     node,
