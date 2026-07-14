@@ -189,6 +189,18 @@ impl NodeRenderer for CompositeNodeRenderer {
             renderer.add_shapes_to(context, node, sim_node, center, shapes);
         }
     }
+
+    fn on_response(
+        &self,
+        context: &RenderingContext,
+        node: &Node,
+        response: &Response,
+        shapes: &mut Vec<Shape>,
+    ) {
+        for renderer in &self.renderers {
+            renderer.on_response(context, node, response, shapes);
+        }
+    }
 }
 pub struct DebugForceNodeRenderer;
 impl NodeRenderer for DebugForceNodeRenderer {
