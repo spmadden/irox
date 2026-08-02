@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
@@ -340,7 +340,7 @@ impl Matrix<2, 2, f64> {
 impl<
         T: Copy
             + Default
-            + FloatExt<Type = T>
+            + FloatExt
             + One
             + Zero
             + Neg<Output = T>
@@ -382,7 +382,7 @@ impl<
 impl<
         T: Copy
             + Default
-            + FloatExt<Type = T>
+            + FloatExt
             + One
             + Zero
             + Neg<Output = T>

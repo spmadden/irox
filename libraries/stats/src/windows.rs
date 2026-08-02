@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2024-2026 IROX Contributors
 //
 
 extern crate alloc;
@@ -457,7 +457,7 @@ impl<
             + Add<T, Output = T>
             + Mul<f64, Output = T>
             + Mul<T, Output = T>
-            + FloatExt<Type = T>,
+            + FloatExt,
         I,
         R,
     > WindowBin<T, I, R>

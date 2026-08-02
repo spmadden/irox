@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -370,7 +370,7 @@ where
         + Add<T, Output = T>
         + Mul<f64, Output = T>
         + Mul<T, Output = T>
-        + FloatExt<Type = T>,
+        + FloatExt,
 {
     type Type = T;
 
@@ -429,7 +429,7 @@ where
         + Add<T, Output = T>
         + Mul<f64, Output = T>
         + Mul<T, Output = T>
-        + FloatExt<Type = T>,
+        + FloatExt,
 {
     type Type = T;
 
@@ -490,7 +490,7 @@ where
         + Add<T, Output = T>
         + Mul<f64, Output = T>
         + Mul<T, Output = T>
-        + FloatExt<Type = T>,
+        + FloatExt,
 {
     pub fn add_sample(&mut self, value: T) {
         self.min.add_sample(value);
@@ -547,7 +547,7 @@ pub trait SummarizingIterator<'a, T: 'a>: Iterator<Item = &'a T> + Sized {
             + Add<T, Output = T>
             + Mul<f64, Output = T>
             + Mul<T, Output = T>
-            + FloatExt<Type = T>,
+            + FloatExt,
     {
         let mut summary = Summary::default();
         for v in self {

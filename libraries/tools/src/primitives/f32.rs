@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -9,7 +9,6 @@
 use crate::{FloatIsh, FromF64, PrimitiveMath, ToF64, ToSigned};
 
 impl crate::f64::FloatExt for f32 {
-    type Type = f32;
     type Size = u32;
 
     fn trunc(self) -> f32 {
@@ -24,7 +23,7 @@ impl crate::f64::FloatExt for f32 {
         f32::from_bits(self.to_bits() & 0x7FFF_FFFF)
     }
     fn round(self) -> f32 {
-        (self + 0.5 * self.signum()).trunc()
+        crate::f64::round(self)
     }
 
     fn floor(self) -> f32 {
@@ -51,18 +50,9 @@ impl crate::f64::FloatExt for f32 {
         1.0
     }
 
-    fn clamp(self, min: Self, max: Self) -> Self::Type {
-        if self < min {
-            return min;
-        } else if self > max {
-            return max;
-        }
-        self
-    }
-
     ///
     /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
-    fn exp(self) -> Self::Type {
+    fn exp(self) -> Self {
         let mut out = 1.0;
         let i = self;
         let mut z = self;
@@ -77,7 +67,7 @@ impl crate::f64::FloatExt for f32 {
             if z.is_infinite() {
                 break;
             }
-            exp *= idx as Self::Type;
+            exp *= idx as Self;
             if exp.is_infinite() {
                 break;
             }
@@ -92,7 +82,7 @@ impl crate::f64::FloatExt for f32 {
 
     ///
     /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
-    fn ln(self) -> Self::Type {
+    fn ln(self) -> Self {
         let z = self as f64;
         let iter = (z - 1.) / (z + 1.);
         let mut out = 0.0f64;
@@ -108,16 +98,16 @@ impl crate::f64::FloatExt for f32 {
         (out * 2.0) as f32
     }
 
-    fn log10(self) -> Self::Type {
+    fn log10(self) -> Self {
         self.ln() / core::f32::consts::LN_10
     }
 
-    fn log2(self) -> Self::Type {
+    fn log2(self) -> Self {
         self.ln() / core::f32::consts::LN_2
     }
 
     /// Naive implementation of integer power fn.  Will do something smarter later.
-    fn powi(self, val: i32) -> Self::Type {
+    fn powi(self, val: i32) -> Self {
         let mut out = self;
         let i = self;
         for _ in 0..val.abs() {
@@ -128,13 +118,13 @@ impl crate::f64::FloatExt for f32 {
 
     ///
     /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
-    fn powf(self, a: Self::Type) -> Self::Type {
+    fn powf(self, a: Self) -> Self {
         let z = self;
 
         (a * z.ln()).exp()
     }
 
-    fn sqrt(self) -> Self::Type {
+    fn sqrt(self) -> Self {
         self.powf(0.5)
     }
 
@@ -150,7 +140,7 @@ impl crate::f64::FloatExt for f32 {
         self.to_bits() & 0x7FFFFF
     }
 
-    fn sin(self) -> Self::Type {
+    fn sin(self) -> Self {
         if cfg!(feature = "std") {
             f32::sin(self)
         } else {
@@ -158,14 +148,14 @@ impl crate::f64::FloatExt for f32 {
         }
     }
 
-    fn cos(self) -> Self::Type {
+    fn cos(self) -> Self {
         if cfg!(feature = "std") {
             f32::cos(self)
         } else {
             todo!()
         }
     }
-    fn tan(self) -> Self::Type {
+    fn tan(self) -> Self {
         if cfg!(feature = "std") {
             f32::tan(self)
         } else {
@@ -173,7 +163,7 @@ impl crate::f64::FloatExt for f32 {
         }
     }
 
-    fn atan(self) -> Self::Type {
+    fn atan(self) -> Self {
         if cfg!(feature = "std") {
             f32::atan(self)
         } else {
@@ -181,7 +171,7 @@ impl crate::f64::FloatExt for f32 {
         }
     }
 
-    fn atan2(self, o: Self) -> Self::Type {
+    fn atan2(self, o: Self) -> Self {
         if cfg!(feature = "std") {
             f32::atan2(self, o)
         } else {
@@ -190,7 +180,7 @@ impl crate::f64::FloatExt for f32 {
         }
     }
 
-    fn min(self, o: Self) -> Self::Type {
+    fn min(self, o: Self) -> Self {
         if cfg!(feature = "std") {
             f32::min(self, o)
         } else if self < o {
@@ -200,7 +190,7 @@ impl crate::f64::FloatExt for f32 {
         }
     }
 
-    fn max(self, o: Self) -> Self::Type {
+    fn max(self, o: Self) -> Self {
         if cfg!(feature = "std") {
             f32::max(self, o)
         } else if self > o {
@@ -212,6 +202,18 @@ impl crate::f64::FloatExt for f32 {
 
     fn is_finite(&self) -> bool {
         f32::is_finite(*self)
+    }
+
+    fn is_sign_negative(&self) -> bool {
+        f32::is_sign_negative(*self)
+    }
+
+    fn is_sign_positive(&self) -> bool {
+        f32::is_sign_positive(*self)
+    }
+
+    fn is_even(&self) -> bool {
+        self.significand().is_multiple_of(2)
     }
 }
 

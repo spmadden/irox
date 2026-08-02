@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -207,45 +207,44 @@ macro_rules! impl_unsigned_flops {
             }
         }
         impl irox_tools::f64::FloatExt for $typ {
-            type Type = Self;
             type Size = $prim;
 
-            fn trunc(self) -> Self::Type {
+            fn trunc(self) -> Self {
                 // just mask out the fractional bits leaving the whole bits.
                 Self::from_raw_value(self.data & ($mask << $shift))
             }
 
-            fn fract(self) -> Self::Type {
+            fn fract(self) -> Self {
                 // just mask out the whole bits leaving the fractional bits.
                 Self::from_raw_value(self.data & $mask)
             }
 
-            fn abs(self) -> Self::Type {
+            fn abs(self) -> Self {
                 // no change for unsigned flops.
                 self
             }
 
-            fn round(self) -> Self::Type {
-                (self + Self::Type::ONE_HALF).trunc()
+            fn round(self) -> Self {
+                (self + Self::ONE_HALF).trunc()
             }
 
-            fn floor(self) -> Self::Type {
+            fn floor(self) -> Self {
                 // same as trunc for unsigned
                 self.trunc()
             }
 
-            fn ceil(self) -> Self::Type {
-                if Self::Type::fract(&self) == 0 {
+            fn ceil(self) -> Self {
+                if Self::fract(&self) == 0 {
                     return self;
                 }
-                Self::Type::from_parts(self.whole() + 1, 0)
+                Self::from_parts(self.whole() + 1, 0)
             }
 
-            fn signum(self) -> Self::Type {
+            fn signum(self) -> Self {
                 1.into()
             }
 
-            fn clamp(self, min: Self, max: Self) -> Self::Type {
+            fn clamp(self, min: Self, max: Self) -> Self {
                 if self < min {
                     return min;
                 } else if self > max {
@@ -256,7 +255,7 @@ macro_rules! impl_unsigned_flops {
 
             ///
             /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
-            fn exp(self) -> Self::Type {
+            fn exp(self) -> Self {
                 let mut out = Self::from_parts(1, 0);
                 let i = self;
                 let mut idx = 1u16;
@@ -273,13 +272,13 @@ macro_rules! impl_unsigned_flops {
 
             ///
             /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
-            fn ln(self) -> Self::Type {
+            fn ln(self) -> Self {
                 let z = self;
                 if z == 0. {
-                    return Self::Type::from_parts(1, 0);
+                    return Self::from_parts(1, 0);
                 }
                 let iter = (z - 1u8) / (z + 1u8);
-                let mut out = Self::Type::default();
+                let mut out = Self::default();
                 let mut next = iter * 2u8;
                 let mut idx = 1 as $lower_prim;
                 let mut base = iter;
@@ -292,15 +291,15 @@ macro_rules! impl_unsigned_flops {
                 out
             }
 
-            fn log10(self) -> Self::Type {
+            fn log10(self) -> Self {
                 self.ln() / Self::LN10
             }
 
-            fn log2(self) -> Self::Type {
+            fn log2(self) -> Self {
                 self.ln() / Self::LN2
             }
 
-            fn powi(self, val: i32) -> Self::Type {
+            fn powi(self, val: i32) -> Self {
                 let mut out = self;
                 let i = self;
                 for _ in 0..val.abs() {
@@ -311,13 +310,13 @@ macro_rules! impl_unsigned_flops {
 
             ///
             /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
-            fn powf(self, a: Self::Type) -> Self::Type {
+            fn powf(self, a: Self) -> Self {
                 let z = self;
 
                 (a * z.ln()).exp()
             }
 
-            fn sqrt(self) -> Self::Type {
+            fn sqrt(self) -> Self {
                 self.powf(0.5.into())
             }
             fn to_bits(self) -> Self::Size {
@@ -332,30 +331,30 @@ macro_rules! impl_unsigned_flops {
                 irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
             }
 
-            fn sin(self) -> Self::Type {
+            fn sin(self) -> Self {
                 cordic(self).0
             }
 
-            fn cos(self) -> Self::Type {
+            fn cos(self) -> Self {
                 cordic(self).1
             }
-            fn tan(self) -> Self::Type {
+            fn tan(self) -> Self {
                 self.sin() / self.cos()
             }
-            fn atan(self) -> Self::Type {
+            fn atan(self) -> Self {
                 todo!()
             }
-            fn atan2(self, _o: Self) -> Self::Type {
+            fn atan2(self, _o: Self) -> Self {
                 todo!()
             }
-            fn min(self, o: Self) -> Self::Type {
+            fn min(self, o: Self) -> Self {
                 if self < o {
                     self
                 } else {
                     o
                 }
             }
-            fn max(self, o: Self) -> Self::Type {
+            fn max(self, o: Self) -> Self {
                 if self > o {
                     self
                 } else {
@@ -364,6 +363,15 @@ macro_rules! impl_unsigned_flops {
             }
             fn is_finite(&self) -> bool {
                 true
+            }
+            fn is_sign_negative(&self) -> bool {
+                false
+            }
+            fn is_sign_positive(&self) -> bool {
+                true
+            }
+            fn is_even(&self) -> bool {
+                self.significand() % 2 == 0
             }
         }
         impl irox_tools::One for $typ {
@@ -466,45 +474,44 @@ macro_rules! impl_signed_flops {
         impl irox_tools::PrimitiveMath for $typ {}
         impl irox_tools::FloatIsh for $typ {}
         impl irox_tools::f64::FloatExt for $typ {
-            type Type = Self;
             type Size = $prim;
 
-            fn trunc(self) -> Self::Type {
+            fn trunc(self) -> Self {
                 // just mask out the fractional bits leaving the whole bits.
                 Self::from_raw_value(self.data & ($mask << $shift))
             }
 
-            fn fract(self) -> Self::Type {
+            fn fract(self) -> Self {
                 // just mask out the whole bits leaving the fractional bits.
                 Self::from_raw_value(self.data & $mask)
             }
 
-            fn abs(self) -> Self::Type {
+            fn abs(self) -> Self {
                 let bm = $mask | ($mask << $shift);
 
                 Self::from_raw_value(self.data & bm)
             }
 
-            fn round(self) -> Self::Type {
-                (self + Self::Type::ONE_HALF).trunc()
+            fn round(self) -> Self {
+                (self + Self::ONE_HALF).trunc()
             }
 
-            fn floor(self) -> Self::Type {
-                todo!()
+            fn floor(self) -> Self {
+                self.trunc()
             }
 
-            fn ceil(self) -> Self::Type {
-                if Self::Type::fract(&self) == 0 {
+            fn ceil(self) -> Self {
+                if Self::fract(&self) == 0 {
                     return self;
                 }
-                Self::Type::from_parts(self.whole() + 1, 0)
+                Self::from_parts(self.whole() + 1, 0)
             }
 
-            fn signum(self) -> Self::Type {
+            fn signum(self) -> Self {
                 1.into()
             }
 
-            fn clamp(self, min: Self, max: Self) -> Self::Type {
+            fn clamp(self, min: Self, max: Self) -> Self {
                 if self < min {
                     return min;
                 } else if self > max {
@@ -515,7 +522,7 @@ macro_rules! impl_signed_flops {
 
             ///
             /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
-            fn exp(self) -> Self::Type {
+            fn exp(self) -> Self {
                 let mut out = Self::from_parts(1, 0);
                 let i = self;
                 let mut idx = 1u16;
@@ -532,13 +539,13 @@ macro_rules! impl_signed_flops {
 
             ///
             /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
-            fn ln(self) -> Self::Type {
+            fn ln(self) -> Self {
                 let z = self;
                 if z == 0. {
-                    return Self::Type::from_parts(1, 0);
+                    return Self::from_parts(1, 0);
                 }
                 let iter = (z - 1u8) / (z + 1u8);
-                let mut out = Self::Type::default();
+                let mut out = Self::default();
                 let mut next = iter * 2u8;
                 let mut idx = 1 as $lower_prim;
                 let mut base = iter;
@@ -550,13 +557,13 @@ macro_rules! impl_signed_flops {
                 }
                 out
             }
-            fn log10(self) -> Self::Type {
+            fn log10(self) -> Self {
                 self.ln() / Self::LN10
             }
-            fn log2(self) -> Self::Type {
+            fn log2(self) -> Self {
                 self.ln() / Self::LN2
             }
-            fn powi(self, val: i32) -> Self::Type {
+            fn powi(self, val: i32) -> Self {
                 let mut out = self;
                 let i = self;
                 for _ in 0..val.abs() {
@@ -567,13 +574,13 @@ macro_rules! impl_signed_flops {
 
             ///
             /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
-            fn powf(self, a: Self::Type) -> Self::Type {
+            fn powf(self, a: Self) -> Self {
                 let z = self;
 
                 (a * z.ln()).exp()
             }
 
-            fn sqrt(self) -> Self::Type {
+            fn sqrt(self) -> Self {
                 self.powf(0.5.into())
             }
             fn to_bits(self) -> Self::Size {
@@ -588,30 +595,30 @@ macro_rules! impl_signed_flops {
                 irox_tools::f64::FloatExt::significand(self.as_f64()) as $prim
             }
 
-            fn sin(self) -> Self::Type {
+            fn sin(self) -> Self {
                 cordic(self).0
             }
 
-            fn cos(self) -> Self::Type {
+            fn cos(self) -> Self {
                 cordic(self).1
             }
-            fn tan(self) -> Self::Type {
+            fn tan(self) -> Self {
                 self.sin() / self.cos()
             }
-            fn atan(self) -> Self::Type {
+            fn atan(self) -> Self {
                 todo!()
             }
-            fn atan2(self, _o: Self) -> Self::Type {
+            fn atan2(self, _o: Self) -> Self {
                 todo!()
             }
-            fn min(self, o: Self) -> Self::Type {
+            fn min(self, o: Self) -> Self {
                 if self < o {
                     self
                 } else {
                     o
                 }
             }
-            fn max(self, o: Self) -> Self::Type {
+            fn max(self, o: Self) -> Self {
                 if self > o {
                     self
                 } else {
@@ -621,6 +628,17 @@ macro_rules! impl_signed_flops {
 
             fn is_finite(&self) -> bool {
                 true
+            }
+
+            fn is_sign_positive(&self) -> bool {
+                *self >= 0
+            }
+            fn is_sign_negative(&self) -> bool {
+                *self <= -0
+            }
+
+            fn is_even(&self) -> bool {
+                self.significand() % 2 == 0
             }
         }
     };

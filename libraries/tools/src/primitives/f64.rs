@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
 //! A collection of utilities for the f64 built-in
 //!
 
+use crate::IntegerIsh;
 use crate::{FloatIsh, FromF64, One, PrimitiveMath, ToF64, ToSigned, WrappingSub, Zero};
+use core::ops::Sub;
 
 ///
 /// Finds the minimum and maximum value in the provided iterator.
@@ -31,40 +33,88 @@ pub fn min_max(iter: &[f64]) -> (f64, f64) {
     (min, max)
 }
 
-pub trait FloatExt: PrimitiveMath {
-    type Type;
-    type Size;
-    fn trunc(self) -> Self::Type;
-    fn fract(self) -> Self::Type;
-    fn abs(self) -> Self::Type;
-    fn round(self) -> Self::Type;
-    fn floor(self) -> Self::Type;
-    fn ceil(self) -> Self::Type;
-    fn signum(self) -> Self::Type;
-    fn clamp(self, min: Self, max: Self) -> Self::Type;
+pub trait FloatExt: PrimitiveMath + One + Zero + PartialOrd {
+    type Size: IntegerIsh;
+    #[must_use]
+    fn trunc(self) -> Self;
+    #[must_use]
+    fn fract(self) -> Self;
+    #[must_use]
+    fn abs(self) -> Self;
+    #[must_use]
+    fn round(self) -> Self;
+    #[must_use]
+    fn floor(self) -> Self {
+        if self.is_sign_negative() {
+            return (self - Self::ONE).trunc();
+        }
+        self.trunc()
+    }
+    #[must_use]
+    fn ceil(self) -> Self {
+        if self.is_sign_positive() {
+            return (self + Self::ONE).trunc();
+        }
+        self.trunc()
+    }
+    #[must_use]
+    fn signum(self) -> Self;
+    #[must_use]
+    fn clamp(self, min: Self, max: Self) -> Self {
+        if self < min {
+            return min;
+        } else if self > max {
+            return max;
+        }
+        self
+    }
 
-    fn exp(self) -> Self::Type;
-    fn ln(self) -> Self::Type;
-    fn log10(self) -> Self::Type;
-    fn log2(self) -> Self::Type;
+    #[must_use]
+    fn exp(self) -> Self;
+    #[must_use]
+    fn ln(self) -> Self;
+    #[must_use]
+    fn log10(self) -> Self;
+    #[must_use]
+    fn log2(self) -> Self;
 
-    fn powi(self, val: i32) -> Self::Type;
-    fn powf(self, val: Self::Type) -> Self::Type;
+    #[must_use]
+    fn powi(self, val: i32) -> Self;
+    #[must_use]
+    fn powf(self, val: Self) -> Self;
 
-    fn sqrt(self) -> Self::Type;
+    #[must_use]
+    fn sqrt(self) -> Self;
+    #[must_use]
     fn to_bits(self) -> Self::Size;
+    #[must_use]
     fn exponent(self) -> u16;
+    #[must_use]
     fn significand(self) -> Self::Size;
-    fn sin(self) -> Self::Type;
-    fn cos(self) -> Self::Type;
-    fn tan(self) -> Self::Type;
-    fn atan(self) -> Self::Type;
-    fn atan2(self, o: Self) -> Self::Type;
+    #[must_use]
+    fn sin(self) -> Self;
+    #[must_use]
+    fn cos(self) -> Self;
+    #[must_use]
+    fn tan(self) -> Self;
+    #[must_use]
+    fn atan(self) -> Self;
+    #[must_use]
+    fn atan2(self, o: Self) -> Self;
 
-    fn min(self, o: Self) -> Self::Type;
-    fn max(self, o: Self) -> Self::Type;
+    #[must_use]
+    fn min(self, o: Self) -> Self;
+    #[must_use]
+    fn max(self, o: Self) -> Self;
 
+    #[must_use]
     fn is_finite(&self) -> bool;
+    #[must_use]
+    fn is_sign_negative(&self) -> bool;
+    #[must_use]
+    fn is_sign_positive(&self) -> bool;
+    #[must_use]
+    fn is_even(&self) -> bool;
 }
 #[allow(unused)]
 fn cordic_k(n: usize) -> f64 {
@@ -174,7 +224,6 @@ pub fn cordic<T: PrimitiveMath + One + Zero + FromF64 + PartialOrd + Copy>(alpha
 }
 #[cfg(not(feature = "std"))]
 impl FloatExt for f64 {
-    type Type = f64;
     type Size = u64;
 
     ///
@@ -195,21 +244,7 @@ impl FloatExt for f64 {
     }
 
     fn round(self) -> f64 {
-        (self + 0.5 * self.signum()).trunc()
-    }
-
-    fn floor(self) -> f64 {
-        if self.is_sign_negative() {
-            return (self - 1.0).trunc();
-        }
-        self.trunc()
-    }
-
-    fn ceil(self) -> f64 {
-        if self.is_sign_positive() {
-            return (self + 1.0).trunc();
-        }
-        self.trunc()
+        crate::f64::round(self)
     }
 
     fn signum(self) -> f64 {
@@ -217,35 +252,26 @@ impl FloatExt for f64 {
             return f64::NAN;
         }
         if self.is_sign_negative() {
-            return -1.0;
+            return -Self::ONE;
         }
-        1.0
-    }
-
-    fn clamp(self, min: Self, max: Self) -> Self::Type {
-        if self < min {
-            return min;
-        } else if self > max {
-            return max;
-        }
-        self
+        Self::ONE
     }
 
     ///
     /// Implementation of Exponential Function from NIST DTMF eq 4.2.19: `<https://dlmf.nist.gov/4.2.E19>`
-    fn exp(self) -> Self::Type {
+    fn exp(self) -> Self {
         if self.is_nan() || self.is_infinite() {
             return self;
         }
-        let mut out = 1.0;
+        let mut out = Self::ONE;
         let i = self;
         let mut idx = 1;
         let mut next = self;
 
-        while next.abs() != 0.0 {
+        while next.abs() != Self::ZERO {
             out += next;
             idx += 1;
-            next *= i / idx as Self::Type;
+            next *= i / idx as Self;
         }
 
         out
@@ -253,7 +279,7 @@ impl FloatExt for f64 {
 
     ///
     /// Implementation of Natural Logarithm using NIST DLMF eq 4.6.4: `<https://dlmf.nist.gov/4.6.E4>`
-    fn ln(self) -> Self::Type {
+    fn ln(self) -> Self {
         if !self.is_normal() {
             return self;
         }
@@ -277,16 +303,16 @@ impl FloatExt for f64 {
         out
     }
 
-    fn log10(self) -> Self::Type {
+    fn log10(self) -> Self {
         self.ln() / core::f64::consts::LN_10
     }
-    fn log2(self) -> Self::Type {
+    fn log2(self) -> Self {
         self.ln() / core::f64::consts::LN_2
     }
 
     ///
     /// Implementation of general power function using NIST DLMF eq 4.2.26: `<https://dlmf.nist.gov/4.2.E26>`
-    fn powf(self, a: Self::Type) -> Self::Type {
+    fn powf(self, a: Self) -> Self {
         if !self.is_normal() {
             return self;
         }
@@ -296,7 +322,7 @@ impl FloatExt for f64 {
     }
 
     /// Naive implementation of integer power fn.  Will do something smarter later.
-    fn powi(self, val: i32) -> Self::Type {
+    fn powi(self, val: i32) -> Self {
         if !self.is_normal() {
             return self;
         }
@@ -308,7 +334,7 @@ impl FloatExt for f64 {
         out
     }
 
-    fn sqrt(self) -> Self::Type {
+    fn sqrt(self) -> Self {
         self.powf(0.5)
     }
 
@@ -324,33 +350,33 @@ impl FloatExt for f64 {
         self.to_bits() & 0xF_FFFF_FFFF_FFFF
     }
 
-    fn sin(self) -> Self::Type {
+    fn sin(self) -> Self {
         cordic(self).0
     }
-    fn cos(self) -> Self::Type {
+    fn cos(self) -> Self {
         cordic(self).1
     }
 
-    fn tan(self) -> Self::Type {
+    fn tan(self) -> Self {
         self.sin() / self.cos()
     }
 
-    fn atan(self) -> Self::Type {
+    fn atan(self) -> Self {
         todo!()
     }
 
-    fn atan2(self, _o: Self) -> Self::Type {
+    fn atan2(self, _o: Self) -> Self {
         todo!()
     }
 
-    fn min(self, o: Self) -> Self::Type {
+    fn min(self, o: Self) -> Self {
         if self < o {
             self
         } else {
             o
         }
     }
-    fn max(self, o: Self) -> Self::Type {
+    fn max(self, o: Self) -> Self {
         if self > o {
             self
         } else {
@@ -361,70 +387,81 @@ impl FloatExt for f64 {
     fn is_finite(&self) -> bool {
         f64::is_finite(*self)
     }
+
+    fn is_sign_negative(&self) -> bool {
+        f64::is_sign_negative(*self)
+    }
+
+    fn is_sign_positive(&self) -> bool {
+        f64::is_sign_positive(*self)
+    }
+
+    fn is_even(&self) -> bool {
+        self.significand().is_multiple_of(2)
+    }
 }
 
 #[cfg(feature = "std")]
 impl FloatExt for f64 {
-    type Type = f64;
     type Size = u64;
 
-    fn trunc(self) -> Self::Type {
+    fn trunc(self) -> Self {
         f64::trunc(self)
     }
 
-    fn fract(self) -> Self::Type {
+    fn fract(self) -> Self {
         f64::fract(self)
     }
 
-    fn abs(self) -> Self::Type {
+    fn abs(self) -> Self {
         f64::abs(self)
     }
 
-    fn round(self) -> Self::Type {
+    fn round(self) -> Self {
         f64::round(self)
     }
 
-    fn floor(self) -> Self::Type {
+    fn floor(self) -> Self {
         f64::floor(self)
     }
 
-    fn ceil(self) -> Self::Type {
+    fn ceil(self) -> Self {
         f64::ceil(self)
     }
 
-    fn signum(self) -> Self::Type {
+    fn signum(self) -> Self {
         f64::signum(self)
     }
 
-    fn clamp(self, min: Self, max: Self) -> Self::Type {
+    fn clamp(self, min: Self, max: Self) -> Self {
         f64::clamp(self, min, max)
     }
 
-    fn exp(self) -> Self::Type {
+    fn exp(self) -> Self {
         f64::exp(self)
     }
 
-    fn ln(self) -> Self::Type {
+    fn ln(self) -> Self {
         f64::ln(self)
     }
 
-    fn log10(self) -> Self::Type {
+    fn log10(self) -> Self {
         f64::log10(self)
     }
 
-    fn log2(self) -> Self::Type {
+    fn log2(self) -> Self {
         f64::log2(self)
     }
 
-    fn powi(self, val: i32) -> Self::Type {
+    fn powi(self, val: i32) -> Self {
         f64::powi(self, val)
     }
 
-    fn powf(self, val: Self::Type) -> Self::Type {
+    fn powf(self, val: Self) -> Self {
         f64::powf(self, val)
     }
 
-    fn sqrt(self) -> Self::Type {
+    fn sqrt(self) -> Self {
         f64::sqrt(self)
     }
 
@@ -440,36 +477,48 @@ impl FloatExt for f64 {
         self.to_bits() & 0xF_FFFF_FFFF_FFFF
     }
 
-    fn sin(self) -> Self::Type {
+    fn sin(self) -> Self {
         f64::sin(self)
     }
 
-    fn cos(self) -> Self::Type {
+    fn cos(self) -> Self {
         f64::cos(self)
     }
 
-    fn tan(self) -> Self::Type {
+    fn tan(self) -> Self {
         f64::tan(self)
     }
 
-    fn atan(self) -> Self::Type {
+    fn atan(self) -> Self {
         f64::atan(self)
     }
 
-    fn atan2(self, o: Self) -> Self::Type {
+    fn atan2(self, o: Self) -> Self {
         f64::atan2(self, o)
     }
 
-    fn min(self, o: Self) -> Self::Type {
+    fn min(self, o: Self) -> Self {
         f64::min(self, o)
     }
 
-    fn max(self, o: Self) -> Self::Type {
+    fn max(self, o: Self) -> Self {
         f64::max(self, o)
     }
 
     fn is_finite(&self) -> bool {
         f64::is_finite(*self)
+    }
+
+    fn is_sign_negative(&self) -> bool {
+        f64::is_sign_negative(*self)
+    }
+
+    fn is_sign_positive(&self) -> bool {
+        f64::is_sign_positive(*self)
+    }
+
+    fn is_even(&self) -> bool {
+        self.significand().is_multiple_of(2)
     }
 }
 
@@ -501,6 +550,23 @@ impl ToSigned for f64 {
 
 impl PrimitiveMath for f64 {}
 impl FloatIsh for f64 {}
+
+pub fn round<T: FloatIsh + Sub>(fi: T) -> T {
+    let lower = fi.floor();
+    let upper = fi.ceil();
+
+    let dist_lower = fi - lower;
+    let dist_upper = upper - fi;
+    if dist_lower < dist_upper {
+        lower
+    } else if dist_upper < dist_lower {
+        upper
+    } else if lower.is_even() {
+        lower
+    } else {
+        upper
+    }
+}
 
 #[cfg(all(test, feature = "std"))]
 mod tests {

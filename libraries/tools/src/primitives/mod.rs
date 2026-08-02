@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 pub mod f32;
@@ -13,6 +13,7 @@ mod wrapping;
 
 use crate::f64::FloatExt;
 use core::fmt::{Debug, Display};
+use core::ops::Rem;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use core::str::FromStr;
 use irox_bits::{Error, MutBits, WriteToBEBits};
@@ -314,7 +315,7 @@ pub trait FloatIsh:
     + FromF64
     + FromStr
     + ToSigned
-    + FloatExt<Type = Self>
+    + FloatExt
     + Sized
     + Copy
     + Clone
@@ -326,6 +327,33 @@ pub trait FloatIsh:
     + Display
 {
 }
+
+pub trait IntegerIsh:
+    ToU64
+    + One
+    + Zero
+    + Rem
+    + Copy
+    + Clone
+    + PartialEq
+    + PartialOrd
+    + Default
+    + PrimitiveMath
+    + Debug
+    + Display
+{
+}
+
+macro_rules! impl_unsignedmath {
+    ($($src:ty)*) => {
+        $(
+            impl PrimitiveMath for $src {}
+            impl IntegerIsh for $src {}
+        )*
+    };
+}
+impl_unsignedmath!(u8 u16 u32 u64 u128);
+impl_unsignedmath!(i8 i16 i32 i64 i128);
 
 pub trait Cast<Output = Self> {
     fn cast(self) -> Output;
