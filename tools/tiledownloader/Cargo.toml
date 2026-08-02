@@ -29,5 +29,5 @@ clap = { workspace = true, features = [
     "wrap_help",
     "error-context",
 ] }
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "deflate", "brotli", "gzip"] }
+reqwest = { version = "0.13", default-features = false, features = ["rustls"] }
 bytes = { version = "1" }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![allow(clippy::print_stderr)]
@@ -23,9 +23,6 @@ use tokio::task::{self};
 #[cfg(not(target_arch = "wasm32"))]
 pub fn builder() -> ClientBuilder {
     ClientBuilder::new()
-        .brotli(true)
-        .deflate(true)
-        .gzip(true)
         .referer(false)
         .user_agent("TileDownloader v0.1.0")
 }
