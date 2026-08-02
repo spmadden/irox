@@ -12,5 +12,6 @@ pub mod arcwedge;
 pub mod image;
 pub mod logger;
 mod path;
+pub mod toast;
 
 pub use path::*;

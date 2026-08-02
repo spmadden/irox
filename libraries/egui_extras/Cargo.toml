@@ -70,7 +70,7 @@ eframe = { workspace = true, default-features = false, features = ["wayland"] }
 
 [[example]]
 name = "irox_egui_gallery"
-required-features = ["eframe", "wgpu", "serde", "plots"]
+required-features = ["eframe", "glow"]
 
 [[example]]
 name = "editors"
