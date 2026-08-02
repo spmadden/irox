@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -11,7 +11,7 @@ crate::cfg_feature_alloc! {
 use crate::buf::{FixedU8Buf, StrBuf};
 use crate::cfg_feature_alloc;
 use crate::iterators::BChunks;
-use core::fmt::Write;
+use core::fmt::{Formatter, Write};
 use irox_bits::{Bits, BitsError, BitsErrorKind, Error, ErrorKind, FormatBits, MutBits};
 
 /// 0-9, A-F
@@ -214,9 +214,7 @@ crate::cfg_feature_alloc! {
 
         out
     }
-}
 
-crate::cfg_feature_alloc! {
     ///
     /// Prints the value to a lowercase hex string
     pub fn to_hex_str_lower(val: &[u8]) -> alloc::string::String {
@@ -258,6 +256,13 @@ pub fn to_hex_strbuf_upper<const N: usize>(val: &[u8], buf: &mut StrBuf<N>) -> R
         write!(buf, "{v:02X}")?;
     }
 
+    Ok(())
+}
+
+pub fn to_hex_fmt(val: &[u8], fmt: &mut Formatter) -> core::fmt::Result {
+    for v in val {
+        write!(fmt, "{v:02X}")?;
+    }
     Ok(())
 }
 

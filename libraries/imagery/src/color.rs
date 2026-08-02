@@ -126,6 +126,7 @@ impl HSVColor {
         RGBColor { red, green, blue }
     }
 }
+
 impl Eq for HSVColor {}
 impl From<HSVColor> for RGBColor {
     fn from(value: HSVColor) -> Self {
@@ -342,8 +343,7 @@ cfg_feature_egui! {
 impl core::fmt::Display for Color {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let vals = self.rgb_values();
-        let st = irox_tools::hex::to_hex_str_upper(&vals);
-        write!(f, "{st}")
+        irox_tools::hex::to_hex_fmt(&vals, f)
     }
 }
 
