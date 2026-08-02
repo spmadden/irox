@@ -1,0 +1,40 @@
+name: Rust Perf
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-linux:
+    runs-on:
+      - ubuntu-latest
+    container:
+      image: ghcr.io/spmadden/irox-dev:latest
+    steps:
+    - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+    - name: Build Perf
+      run: just run build-perf
+  build-windows:
+    runs-on:
+      - windows-latest
+    steps:
+      - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+      - name: Build Perf
+        run: |
+          cargo install just
+          just run build-perf
+  build-osx:
+    runs-on:
+      - macos-latest
+    steps:
+      - uses: spmadden/actions-checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+      - name: Build Perf
+        run: |
+          cargo install just
+          just run build-perf
