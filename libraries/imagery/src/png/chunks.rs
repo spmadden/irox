@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2026 IROX Contributors
 //
-
+use alloc::vec::Vec;
 use irox_structs::Struct;
 
 #[derive(Debug, Clone, PartialEq, Struct)]

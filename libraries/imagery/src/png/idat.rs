@@ -3,6 +3,7 @@
 //
 
 use alloc::collections::VecDeque;
+use alloc::vec::Vec;
 use irox_bits::{Bits, Error};
 
 pub struct IDATStream {
