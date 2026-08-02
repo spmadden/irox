@@ -8,6 +8,7 @@ pub use editor::*;
 mod daterange;
 pub use daterange::*;
 
+pub mod arcwedge;
 pub mod image;
 pub mod logger;
 mod path;
