@@ -120,9 +120,9 @@ impl HSVColor {
             240.0..300.0 => [x, 0.0, c],
             _ => [c, 0.0, x],
         };
-        let red = ((r + m) * 255.).round() as u8;
-        let green = ((g + m) * 255.).round() as u8;
-        let blue = ((b + m) * 255.).round() as u8;
+        let red = ((r + m) * 255.) as u8;
+        let green = ((g + m) * 255.) as u8;
+        let blue = ((b + m) * 255.) as u8;
         RGBColor { red, green, blue }
     }
 }
