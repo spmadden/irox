@@ -15,7 +15,7 @@ accepted = [
     "CC0-1.0",
     "CDLA-Permissive-2.0"
 ]
-no-clearly-defined = true
+#no-clearly-defined = true
 workarounds = ["ring", "unicode-ident"]
 
 [epaint_default_fonts.clarify]

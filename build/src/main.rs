@@ -261,7 +261,14 @@ fn about() -> Result<(), Error> {
     logstart("about");
     exec(
         "cargo",
-        &["install", "--locked", "cargo-about", "--color=always"],
+        &[
+            "install",
+            "--locked",
+            "cargo-about",
+            "--color=always",
+            "--features=cli",
+            "--version=0.9.1",
+        ],
     )?;
     exec_passthru(
         "cargo",
