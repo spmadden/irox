@@ -266,7 +266,7 @@ impl UnixTimestamp {
     #[cfg(all(feature = "std", target_arch = "wasm32"))]
     pub fn now() -> UnixTimestamp {
         let date = web_sys::js_sys::Date::now();
-        UnixTimestamp::from_offset(date.into())
+        UnixTimestamp::from_offset(Duration::from_seconds_f64(date / 1000.))
     }
 
     ///
