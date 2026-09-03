@@ -4,8 +4,7 @@
 
 use crate::identifier::Identifier;
 use crate::widgets::arcwedge::{ArcWedge, ArcWedgeSet};
-use eframe::emath::Align;
-use egui::{Align2, Context, Id, Label, Layout, Order, Ui, Vec2, Window};
+use egui::{Align, Align2, Context, Id, Label, Layout, Order, Ui, Vec2, Window};
 use irox_time::epoch::UnixTimestamp;
 use irox_tools::static_init;
 use irox_units::units::angle::Angle;
