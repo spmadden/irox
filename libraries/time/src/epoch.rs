@@ -251,7 +251,7 @@ impl UnixTimestamp {
     ///
     /// Returns the local system clock equivalent of the unix timestamp
     #[must_use]
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "std", not(target_arch = "wasm32")))]
     pub fn now() -> UnixTimestamp {
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(t) => UnixTimestamp::from_offset(t.into()),
@@ -259,6 +259,14 @@ impl UnixTimestamp {
                 UnixTimestamp::from_offset(Duration::new_seconds(-t.duration().as_secs_f64()))
             }
         }
+    }
+    ///
+    /// Returns the local system clock equivalent of the unix timestamp
+    #[must_use]
+    #[cfg(all(feature = "std", target_arch = "wasm32"))]
+    pub fn now() -> UnixTimestamp {
+        let date = web_sys::js_sys::Date::now();
+        UnixTimestamp::from_offset(date.into())
     }
 
     ///
