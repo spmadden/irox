@@ -560,8 +560,9 @@ crate::cfg_feature_alloc! {
     /// Creates a string based on the words for the provided data, separated with the separator
     ///
     /// ```
+    /// # use irox_tools::hash::sha2wordlist::*;
     /// let result = words_to_string(&[0x70, 0x01, 0x02, 0xFF], "-");
-    /// assert_eq!(result, "judo-acid-also-zoom");
+    /// assert_eq!(result, "guidance-adviser-accrue-Yucatan");
     /// ```
     pub fn words_to_string(data: &[u8], separator: &str) -> alloc::string::String {
         let mut out = alloc::string::String::new();
