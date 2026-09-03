@@ -18,7 +18,7 @@ workspace = true
 [dependencies]
 irox-fixedmath.workspace = true
 irox-units.workspace = true
-irox-tools = { version = "^0", path = "../tools", default-features = false }
+irox-tools = { version = "^0", path = "../tools", default-features = false, features = ["alloc"] }
 irox-enums.workspace = true
 serde = {workspace = true, optional = true}
 
@@ -28,7 +28,7 @@ serde = {workspace = true, features=["derive"]}
 
 [features]
 default = []
-std = []
+std = ["irox-tools/std"]
 serde = ["dep:serde"]
 
 [package.metadata.docs.rs]
