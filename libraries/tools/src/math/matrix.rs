@@ -579,8 +579,11 @@ impl<
 
 #[cfg(test)]
 mod test {
-    use crate::math::{AsMatrix, LUPDecomposition, Matrix};
-    use core::ops::Deref;
+    use crate::math::Matrix;
+    cfg_feature_std! {
+        use crate::math::{AsMatrix, LUPDecomposition};
+        use core::ops::Deref;
+    }
 
     #[test]
     pub fn test_scalar() {
