@@ -263,6 +263,22 @@ pub fn install_update(tool: &str) {
         warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
     };
 }
+pub fn install_update_version(tool: &str, version: &str) {
+    if let Err(e) = exec(
+        "cargo",
+        &[
+            "+stable",
+            "install",
+            "--locked",
+            tool,
+            "--version",
+            version,
+            "--color=always",
+        ],
+    ) {
+        warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
+    };
+}
 
 pub fn ignore_errors<'a, T: Into<Arguments<'a>>>(cmd: &str, args: &[&str], msg: T) {
     if let Err(e) = exec(cmd, args) {

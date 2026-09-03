@@ -531,5 +531,8 @@ fn bootstrap() -> Result<(), Error> {
         exec_passthru("rustup", &["component", "add", component])?;
     }
     install_update("just");
+    install_update_version("wasm-bindgen-cli", "0.2.108");
+    install_update("wasm-pack");
+    install_update("cargo-deny");
     Ok(())
 }
