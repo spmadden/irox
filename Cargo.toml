@@ -97,9 +97,11 @@ xml = { version = "^0.8", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.21.0", default-features = false, features = ["vendored-libgit2"] }
-wasm-bindgen = {version = "0.2.104", default-features = false, features = []}
-wasm-bindgen-futures = "0.4.54"
-criterion = "0.5"
+wasm-bindgen = {version = "=0.2.108", default-features = false, features = []}
+wasm-bindgen-test = {version = "=0.3.58", default-features = false, features = []}
+wasm-bindgen-futures = "=0.4.58"
+web-sys = {version = "=0.3.85"}
+criterion = { version = "0.5", default-features = false, features = [] }
 core_affinity = "0.8"
 toml = "0.8"
 glow = "0.17"
@@ -110,7 +112,6 @@ rsa = {version = "0.9.10", default-features = false, features = []}
 
 
 irox-arch-x86-64 = { version = "0.1" }
-web-sys = {version = "0.3.81"}
 
 irox-cargo-metadata = { version = "^0", path = "data-formats/cargo-metadata" }
 irox-csv = { version = "^0", path = "data-formats/csv" }

@@ -10,6 +10,7 @@ use core::ops::{BitXor, BitXorAssign};
 use irox_bits::MutBits;
 
 /// Default starting state/seed if the system clock fails
+#[allow(unused)]
 const DEFAULT_STATE: u64 = 0x4d595df4d0f33173u64;
 
 /// incremental multiplier for each state
@@ -300,12 +301,21 @@ crate::cfg_feature_std! {
         Random::default().into()
     });
 
+    #[cfg(not(target_arch = "wasm32"))]
     impl Default for Random {
         fn default() -> Self {
             let seed = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
                 Ok(e) => e.as_nanos() as u64,
                 Err(_) => DEFAULT_STATE,
             };
+            Random::new_seed(seed)
+        }
+    }
+    #[cfg(target_arch = "wasm32")]
+    impl Default for Random {
+        fn default() -> Self {
+            let date = web_sys::js_sys::Date::now();
+            let seed = date.to_bits();
             Random::new_seed(seed)
         }
     }
@@ -345,6 +355,11 @@ mod tests {
         let did = todo as f64 * 128. / 1e6;
         println!("Did {} MB/s", did / elapsed);
         did
+    }
+    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
+    pub fn speedtest_128_test() {
+        speedtest_128();
     }
     #[allow(unused)]
     pub fn speedtest_64() -> f64 {
