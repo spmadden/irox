@@ -30,6 +30,14 @@ macro_rules! array {
         => {array!(@accum (4, $($es),*) -> ($($body)* $($es,)* $($es,)* $($es,)*))};
     (@accum (8, $($es:expr),*) -> ($($body:tt)*))
         => {array!(@accum (4, $($es,)* $($es),*) -> ($($body)*))};
+    (@accum (9, $($es:expr),*) -> ($($body:tt)*))
+        => {array!(@accum (4, $($es,)* $($es),*) -> ($($body)* $($es,)*))};
+    (@accum (10, $($es:expr),*) -> ($($body:tt)*))
+        => {array!(@accum (5, $($es,)* $($es),*) -> ($($body)*))};
+    (@accum (11, $($es:expr),*) -> ($($body:tt)*))
+        => {array!(@accum (5, $($es,)* $($es),*) -> ($($body)* $($es,)*))};
+    (@accum (12, $($es:expr),*) -> ($($body:tt)*))
+        => {array!(@accum (6, $($es,)* $($es),*) -> ($($body)*))};
     (@accum (16, $($es:expr),*) -> ($($body:tt)*))
         => {array!(@accum (8, $($es,)* $($es),*) -> ($($body)*))};
     (@accum (32, $($es:expr),*) -> ($($body:tt)*))
@@ -177,6 +185,7 @@ pub fn longest_consecutive_values<T: PartialOrd>(arr: &[T], val: &T) -> Option<(
 #[cfg(test)]
 mod tests {
     use crate::arrays::longest_consecutive_values;
+    use crate::assert_eq_hex_slice;
 
     #[test]
     pub fn test1() {
@@ -194,5 +203,23 @@ mod tests {
 
         assert_eq!(position, 6);
         assert_eq!(length, 5);
+    }
+
+    #[test]
+    pub fn test_array() {
+        let array1 = array![1; 1];
+        assert_eq_hex_slice!(&array1, &[1i32]);
+        let array2 = array![2; 2];
+        assert_eq_hex_slice!(&array2, &[2i32, 2]);
+        let array3 = array![3;3];
+        assert_eq_hex_slice!(&array3, &[3i32, 3, 3]);
+
+        let array9 = array![9;9];
+        assert_eq_hex_slice!(&array9, &[9i32, 9, 9, 9, 9, 9, 9, 9, 9]);
+        let array12 = array![12;12];
+        assert_eq_hex_slice!(
+            &array12,
+            &[12i32, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+        );
     }
 }
