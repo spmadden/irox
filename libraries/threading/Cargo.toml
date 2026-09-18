@@ -19,7 +19,7 @@ workspace = true
 default = []
 
 [dependencies]
-log.workspace = true
+irox-log.workspace = true
 num_cpus = {workspace = true, optional = true}
 
 [dev-dependencies]

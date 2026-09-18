@@ -11,7 +11,7 @@ use std::future::Future;
 use std::sync::Arc;
 use std::thread::JoinHandle;
 
-use log::{debug, error};
+use irox_log::log::{debug, error};
 
 use crate::single::{SingleThreadTask, TaskExchange};
 use crate::{
@@ -318,7 +318,7 @@ pub(crate) enum WorkerCommand {
 mod tests {
     use std::time::Duration;
 
-    use log::{debug, trace};
+    use irox_log::log::{debug, trace};
 
     use crate::MultiThreadedExecutor;
 

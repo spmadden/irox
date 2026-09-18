@@ -7,7 +7,8 @@
         $from -> $to [label="feature[$feature]"];
 !endprocedure
 !procedure $feat_std($name)
-        $name [label="feature[std]"]
+        $name
+        '[taillabel="feature[std]"]
 !endprocedure
 !procedure $module($name, $std, $alloc)
     $name [label=<
@@ -111,15 +112,15 @@ digraph DEPS {
             'irox_bits 'through tools
             irox_types
             irox_time
-            'irox_units 'through time 
+            'irox_units 'through time
         }
         $module("irox_stats", "no", "required")
 
 
-        irox_progress -> log
+        irox_progress -> irox_log
         irox_progress -> $feat_std(irox_time)
-        irox_progress -> $feat_std(irox_tools)
-        irox_progress -> $feat_std(irox_bits)
+        'irox_progress -> $feat_std(irox_tools)
+        'irox_progress -> $feat_std(irox_bits)
         $module("irox_progress", "required", "required")
 
         irox_structs -> irox_bits
@@ -147,10 +148,10 @@ digraph DEPS {
         irox_graphing -> irox_geometry
         irox_graphing -> $feat_std(irox_units)
         irox_graphing -> $feat_std(irox_log)
-        irox_graphing -> $feat_std(irox_tools)
+        'irox_graphing -> $feat_std(irox_tools)
         $module("irox_graphing", "required", "required")
 
-        irox_threading -> log
+        irox_threading -> irox_log
         $module("irox_threading", "required", "required")
 
 
