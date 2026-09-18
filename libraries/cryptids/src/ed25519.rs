@@ -41,7 +41,7 @@ use core::fmt::{Display, Formatter};
 use core::marker::PhantomData;
 use core::ops::{AddAssign, SubAssign};
 use core::ops::{Deref, MulAssign};
-use irox_bits::{Bits, BitsError, Error, MutBits, ReadFromBEBits, WriteToBEBits};
+use irox_bits::{Bits, BitsError, BitsErrorKind, Error, MutBits, ReadFromBEBits, WriteToBEBits};
 use irox_tools::arrays::copy_subset;
 use irox_tools::hash::SHA512;
 use irox_tools::hash::{HashAlgorithm, HashDigest};
@@ -56,6 +56,7 @@ pub enum Ed25519Error {
     InvalidSecretKey,
     InvalidMessage,
     InvalidInput,
+    NonContributoryInput,
 }
 impl Ed25519Error {
     pub fn msg(&self) -> &'static str {
@@ -67,6 +68,7 @@ impl Ed25519Error {
             Ed25519Error::InvalidSecretKey => "Invalid secret key",
             Ed25519Error::InvalidMessage => "Invalid message",
             Ed25519Error::InvalidInput => "Invalid input",
+            Ed25519Error::NonContributoryInput => "Non-contributory input",
         }
     }
 }
@@ -283,33 +285,35 @@ pub struct Ed25519KeyPair {
 impl Ed25519KeyPair {
     ///
     /// Loads the provided secret key and generates the associated public key
-    pub fn from_secret_bytes(sb: [u8; 32]) -> Ed25519KeyPair {
+    pub fn from_secret_bytes(sb: [u8; 32]) -> Result<Ed25519KeyPair, Ed25519Error> {
         let secret_key: Ed25519SecretKey = Ed25519SecretKey(sb);
         let public_key: Ed25519PublicKey = secret_key.generate_public_key();
-        Ed25519KeyPair {
+        check_valid_publickey(&public_key.0)?;
+        Ok(Ed25519KeyPair {
             secret_key,
             public_key,
-        }
+        })
     }
     ///
     /// Loads the provided keypair `<sk[0..32]>||<pk[0..32]>` and does not verify the loaded
     /// PK was derived from the SK.
-    pub fn from_full_bytes_unchecked(mut fb: [u8; 64]) -> Ed25519KeyPair {
+    pub fn from_full_bytes_unchecked(mut fb: [u8; 64]) -> Result<Ed25519KeyPair, Ed25519Error> {
         let mut sk = [0u8; 32];
         let mut pk = [0u8; 32];
         sk.copy_from_slice(&fb[0..32]);
         pk.copy_from_slice(&fb[32..64]);
         zeroize_u8(&mut fb);
-        Ed25519KeyPair {
+        check_valid_publickey(&pk)?;
+        Ok(Ed25519KeyPair {
             secret_key: Ed25519SecretKey(sk),
             public_key: Ed25519PublicKey(pk),
-        }
+        })
     }
     ///
     /// Loads the provided keypair `<sk[0..32]>||<pk[0..32]>` and verifies the loaded
     /// PK was derived from the SK.
     pub fn from_full_bytes(fb: [u8; 64]) -> Result<Ed25519KeyPair, Ed25519Error> {
-        let kp = Ed25519KeyPair::from_full_bytes_unchecked(fb);
+        let kp = Ed25519KeyPair::from_full_bytes_unchecked(fb)?;
         let gpk = kp.secret_key.generate_public_key();
         if kp.public_key != gpk || check_valid_publickey(&kp.public_key.0).is_err() {
             return Err(Ed25519Error::InvalidPublicKey);
@@ -321,7 +325,7 @@ impl Ed25519KeyPair {
     ///
     /// Loads the provided secret key and public key, verifying the pk was generated from the sk.
     pub fn from_parts(sk: [u8; 32], pk: [u8; 32]) -> Result<Ed25519KeyPair, Ed25519Error> {
-        let kp = Self::from_secret_bytes(sk);
+        let kp = Self::from_secret_bytes(sk)?;
         if kp.public_key != Ed25519PublicKey(pk) || check_valid_publickey(&kp.public_key.0).is_err()
         {
             return Err(Ed25519Error::InvalidPublicKey);
@@ -444,6 +448,7 @@ impl ReadFromBEBits for Ed25519Signature {
     fn read_from_be_bits<R: Bits>(reader: &mut R) -> Result<Self, BitsError> {
         let pubkey = reader.read_exact()?;
         let signature = reader.read_exact()?;
+        check_valid_publickey(&pubkey).map_err(|_| BitsErrorKind::InvalidData)?;
         Ok(Ed25519Signature {
             pubkey: Ed25519PublicKey(pubkey),
             signature,
@@ -701,7 +706,7 @@ mod tests {
             }
             let sk = self.sk()?;
             let pk = self.pk()?;
-            let kp = Ed25519KeyPair::from_secret_bytes(sk.0);
+            let kp = Ed25519KeyPair::from_secret_bytes(sk.0)?;
             let m = self.msg()?;
             let sig = kp.sign_message(&m);
             let check = self.sig()?;

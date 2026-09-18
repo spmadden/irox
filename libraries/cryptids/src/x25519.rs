@@ -39,9 +39,7 @@ macro_rules! zeroize {
     ($name:ident,$ty:ty) => {
         #[inline]
         pub fn $name(v: &mut [$ty]) {
-            for x in v.iter_mut() {
-                *x = 0;
-            }
+            core::hint::black_box(v.fill(0))
         }
     };
 }
@@ -94,7 +92,6 @@ impl TryFrom<[u8; 32]> for SecretKey {
     type Error = Ed25519Error;
 
     fn try_from(value: [u8; 32]) -> Result<Self, Self::Error> {
-        check_blocklist(&value)?;
         Ok(SecretKey(value))
     }
 }
@@ -113,10 +110,6 @@ impl Curve25519PublicKey {
     ) -> Result<SharedCurve25519Secret, Ed25519Error> {
         check_valid_publickey(&self.0)?;
         Ok(SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0)?))
-    }
-
-    pub fn as_signing_key(&self) -> Ed25519PublicKey {
-        Ed25519PublicKey(self.0)
     }
 }
 impl AsRef<[u8]> for Curve25519PublicKey {
@@ -154,6 +147,7 @@ impl TryFrom<&[u8]> for Curve25519PublicKey {
         }
         let mut out = Curve25519PublicKey([0u8; 32]);
         out.0.copy_from_slice(value);
+        check_valid_publickey(&out.0)?;
         Ok(out)
     }
 }
@@ -174,7 +168,6 @@ impl AsRef<[u8; 32]> for SharedCurve25519Secret {
 }
 
 pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> Result<[u8; 32], Ed25519Error> {
-    check_scalar_clamped(scalar)?;
     let mut clamp = *scalar;
     clamp[0] &= 0xF8;
     clamp[31] &= 0x7F;
@@ -217,7 +210,20 @@ pub fn scalarmult(scalar: &[u8; 32], point: &[u8; 32]) -> Result<[u8; 32], Ed255
     }
     invert(&mut c);
     a *= &c;
-    Ok(a.pack())
+    let out = a.pack();
+    if equal(&out, &[0u8; 32]) {
+        return Err(Ed25519Error::NonContributoryInput);
+    }
+    Ok(out)
+}
+
+fn equal(a: &[u8; 32], b: &[u8; 32]) -> bool {
+    let mut d: u32 = 0;
+    for idx in 0..32 {
+        d |= a[idx] as u32 ^ b[idx] as u32;
+    }
+
+    d == 0
 }
 
 #[derive(Clone)]
@@ -443,16 +449,20 @@ pub(crate) fn invert(v: &mut FieldElement) {
 }
 #[allow(clippy::needless_range_loop)]
 pub(crate) fn check_scalar_clamped(scalar: &[u8; 32]) -> Result<(), Ed25519Error> {
+    let mut valid = false;
     if scalar[0] < 0xED {
-        return Ok(());
+        valid |= true;
     }
 
     for i in 1..31 {
         if scalar[i] != 0xFF {
-            return Ok(());
+            valid |= true;
         }
     }
     if scalar[31] | 0x7F != 0xFF {
+        valid |= true;
+    }
+    if valid {
         return Ok(());
     }
     Err(Ed25519Error::InvalidSecretKey)
