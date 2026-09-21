@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -110,6 +110,10 @@ impl Curve25519PublicKey {
     ) -> Result<SharedCurve25519Secret, Ed25519Error> {
         check_valid_publickey(&self.0)?;
         Ok(SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0)?))
+    }
+    pub fn as_signing_key(&self) -> Ed25519PublicKey {
+        //TODO: properly convert this to twisted edwards format
+        Ed25519PublicKey(self.0)
     }
 }
 impl AsRef<[u8]> for Curve25519PublicKey {
