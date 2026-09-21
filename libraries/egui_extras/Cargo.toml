@@ -40,6 +40,7 @@ irox-units = { workspace = true, features = ["std"] }
 irox-imagery = { workspace = true, features = ["egui", "std"] }
 irox-stats = { workspace = true, optional = true, features = ["emath", "std"] }
 irox-progress = {workspace = true}
+irox-types = {workspace = true}
 log.workspace = true
 irox-log = {workspace = true, features = ["std"]}
 profiling = { workspace = true, optional = true }

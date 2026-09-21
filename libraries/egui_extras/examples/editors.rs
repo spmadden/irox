@@ -6,8 +6,10 @@ use eframe::emath::Vec2;
 use eframe::{App, CreationContext, Frame};
 use egui::{CentralPanel, Ui, ViewportBuilder};
 use irox_egui_extras::toolframe::{ToolApp, ToolFrame};
-use irox_egui_extras::widgets::NullableBooleanEditor;
-use log::{error, Level};
+use irox_egui_extras::widgets::Editor;
+use irox_egui_extras::widgets::{BooleanEditor, Field};
+use irox_log::log::{error, Level};
+use irox_types::fields::FieldDescriptorBuilder;
 
 pub fn main() {
     irox_log::init_console_level(Level::Info);
@@ -30,19 +32,36 @@ pub fn main() {
 }
 
 pub struct TestApp {
-    field1: Option<bool>,
-    field1_desc: NullableBooleanEditor<'static>,
+    field1: Field<bool>,
+    field2: Field<bool>,
 }
 impl TestApp {
     pub fn new(_cc: &CreationContext) -> Self {
         TestApp {
-            field1: None,
-            field1_desc: NullableBooleanEditor::new("Field1", false),
+            field1: Field {
+                descriptor: FieldDescriptorBuilder::new(&"nullable_field")
+                    .with_display_name(&"Field One - Nullable")
+                    .with_help_description(&"This is a nullable boolean field")
+                    .with_nullable(true)
+                    .build(),
+                value: None,
+            },
+            field2: Field {
+                descriptor: FieldDescriptorBuilder::new(&"not_nullable_field")
+                    .with_display_name(&"Field One - Not Nullable")
+                    .with_help_description(&"This is not a nullable boolean field")
+                    .with_nullable(false)
+                    .with_enforce_not_null(true)
+                    .build(),
+                value: None,
+            },
         }
     }
 
     pub fn show(&mut self, ui: &mut Ui) {
-        self.field1_desc.show(&mut self.field1, ui);
+        BooleanEditor.show(&mut self.field1, ui);
+        ui.end_row();
+        BooleanEditor.show(&mut self.field2, ui);
     }
 }
 

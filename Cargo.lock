@@ -2176,6 +2176,7 @@ dependencies = [
  "irox-stats",
  "irox-time",
  "irox-tools 0.11.1",
+ "irox-types",
  "irox-units",
  "log",
  "profiling",
