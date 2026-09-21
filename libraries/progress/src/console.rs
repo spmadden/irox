@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright ${YEAR} IROX Contributors
+// Copyright 2026 IROX Contributors
 //
 
 use std::io::{stdout, Error, Write};
@@ -7,7 +7,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Sender, TryRecvError};
 use std::sync::Arc;
 
-use log::error;
+use irox_log::log::error;
 
 use irox_time::epoch::UnixTimestamp;
 use irox_time::format::iso8601::ISO8601Duration;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
 //
 
 //!
@@ -11,7 +11,7 @@ use std::fmt::{Debug, Formatter};
 use std::sync::atomic::{AtomicBool, AtomicU16, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 
-use log::trace;
+use irox_log::log::trace;
 
 use crate::TaskError;
 
@@ -281,7 +281,7 @@ mod tests {
     use std::thread::JoinHandle;
     use std::time::Duration;
 
-    use log::{error, info, Level};
+    use irox_log::log::{error, info, Level};
 
     use crate::{Exchanger, ExchangerError, TaskError};
 
