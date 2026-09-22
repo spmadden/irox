@@ -53,6 +53,7 @@ impl SearchWidget {
     pub fn process(&mut self, graph: &mut Graph) {
         self.operation_result.retain(|op| {
             if let SearchResult::QueryChanged(query) = op {
+                let query = query.to_lowercase();
                 for res in self.results.drain(..) {
                     Self::mark_highlighted(&res, graph, false);
                 }
@@ -69,18 +70,18 @@ impl SearchWidget {
                         let Some(d) = d else {
                             return false;
                         };
-                        if d.id.to_string().to_lowercase().contains(query) {
+                        if d.id.to_string().to_lowercase().contains(&query) {
                             self.results.push(id.clone().into());
                             return true;
                         }
                         if let Some(desc) = &d.description {
-                            if desc.to_lowercase().contains(query) {
+                            if desc.to_lowercase().contains(&query) {
                                 self.results.push(id.clone().into());
                                 return true;
                             }
                         }
                         for val in d.attrs.values() {
-                            if val.to_lowercase().contains(query) {
+                            if val.to_lowercase().contains(&query) {
                                 self.results.push(id.clone().into());
                                 return true;
                             }
