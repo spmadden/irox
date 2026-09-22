@@ -146,13 +146,19 @@ impl<T> EventualInner<T> {
 ///
 /// Represents a computation result that may eventually appear.  Semantically equivalent to a Future,
 /// but doesn't necessarily require an Async ecosystem around it.
-#[derive(Clone)]
 pub struct Eventual<T> {
     inner: Arc<EventualInner<T>>,
 }
+impl<T> Clone for Eventual<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+        }
+    }
+}
 impl<T> Default for Eventual<T> {
     fn default() -> Self {
-        Eventual {
+        Self {
             inner: Arc::new(EventualInner::default()),
         }
     }
