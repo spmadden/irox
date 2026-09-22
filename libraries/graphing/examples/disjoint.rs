@@ -248,11 +248,11 @@ impl eframe::App for FDPSimulationApp {
                         .get::<_, NodeRenderingState>("NodeRenderingState")
                         .map(|state| state.last_render_box_model.center())
                 }) {
-                    let pos = self.widget.panel.transform.mul_pos(pos);
-                    // if let Some(area) = self.widget.panel.last_window_area {
-                    //     pos += area.center() - area.min;
-                    // }
-                    self.widget.panel.transform = TSTransform::new(pos.to_vec2(), 4.);
+                    let mut pos = -1.0 * pos;
+                    if let Some(area) = self.widget.panel.last_window_area {
+                        pos += area.center() - area.min;
+                    }
+                    self.widget.panel.transform = TSTransform::new(pos.to_vec2(), 1.);
                 }
             }
             self.widget.show(ui);
