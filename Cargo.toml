@@ -30,6 +30,8 @@ members = [
     "interfaces/gnss",
     "interfaces/chronyc",
     "interfaces/influxdb_v1",
+    "interfaces/postgres/postgres",
+    "interfaces/postgres/pgderive",
     "interfaces/sqlite3",
     "interfaces/win-location-api",
     "libraries/app-helpers",
@@ -97,18 +99,23 @@ xml = { version = "^0.8", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.21.0", default-features = false, features = ["vendored-libgit2"] }
-wasm-bindgen = {version = "=0.2.108", default-features = false, features = []}
-wasm-bindgen-test = {version = "=0.3.58", default-features = false, features = []}
+wasm-bindgen = { version = "=0.2.108", default-features = false, features = [] }
+wasm-bindgen-test = { version = "=0.3.58", default-features = false, features = [] }
 wasm-bindgen-futures = "=0.4.58"
-web-sys = {version = "=0.3.85"}
+web-sys = { version = "=0.3.85" }
 criterion = { version = "0.5", default-features = false, features = [] }
 core_affinity = "0.8"
 toml = "0.8"
 glow = "0.17"
 cms = { version = "0.2.3", default-features = false, features = [] }
-ecdsa = {version = "0.16.9", default-features = false, features = []}
-p384 = {version = "0.13.1", default-features = false, features = []}
-rsa = {version = "0.9.10", default-features = false, features = []}
+ecdsa = { version = "0.16.9", default-features = false, features = [] }
+p384 = { version = "0.13.1", default-features = false, features = [] }
+rsa = { version = "0.9.10", default-features = false, features = [] }
+tokio = { version = "=1.53.2", default-features = false, features = [] }
+tokio-postgres = { version = "=0.7.18", default-features = false, features = ["array-impls"] }
+postgres-native-tls = { version = "=0.5.3", default-features = false, features = [] }
+native-tls = { version = "=0.2.18", default-features = false, features = ["vendored"] }
+
 
 
 irox-arch-x86-64 = { version = "0.1" }
@@ -119,7 +126,7 @@ irox-dot = { version = "^0", path = "data-formats/dot" }
 irox-gpx = { version = "^0", path = "data-formats/gpx" }
 irox-nmea0183 = { version = "^0", path = "data-formats/nmea0183" }
 irox-protobuf = { version = "^0", path = "data-formats/protobuf/lib" }
-irox-openpgp = {version = "^0", path = "data-formats/openpgp"}
+irox-openpgp = { version = "^0", path = "data-formats/openpgp" }
 irox-raymarine-sonar = { version = "^0", path = "data-formats/raymarine-sonar" }
 irox-sirf = { version = "^0", path = "data-formats/sirf" }
 irox-ubx = { version = "^0", path = "data-formats/ubx" }
@@ -127,10 +134,12 @@ irox-ubx = { version = "^0", path = "data-formats/ubx" }
 irox-eieio-api = { version = "^0", path = "eieio/api" }
 irox-eieio-nmea0183 = { version = "^0", path = "eieio/nmea0183" }
 
-irox-gnss = {version = "^0", path = "interfaces/gnss"}
+irox-gnss = { version = "^0", path = "interfaces/gnss" }
 irox-influxdb_v1 = { version = "^0", path = "interfaces/influxdb_v1" }
 irox-winlocation-api = { version = "^0", path = "interfaces/win-location-api" }
-irox-sqlite3 = {version = "^0", path = "interfaces/sqlite3"}
+irox-pgderive = { version = "^0", path = "interfaces/postgres/pgderive" }
+irox-postgres = { version = "^0", path = "interfaces/postgres/postgres" }
+irox-sqlite3 = { version = "^0", path = "interfaces/sqlite3" }
 
 irox-app-helpers = { version = "^0", path = "libraries/app-helpers" }
 irox-bits = { version = "^0", path = "libraries/bits" }
@@ -267,7 +276,7 @@ ref_option_ref = "warn"
 return_self_not_must_use = "warn"
 return_and_then = "warn"
 same_functions_in_if_condition = "warn"
-semicolon_if_nothing_returned = "warn"
+semicolon_if_nothing_returned = "allow"
 single_option_map = "warn"
 str_split_at_newline = "warn"
 tests_outside_test_module = "warn"
@@ -292,5 +301,4 @@ wildcard_dependencies = "warn"
 zero_sized_map_values = "warn"
 missing_errors_doc = "allow"
 module-name-repetitions = "allow"
-semicolon-if-nothing-returned = "allow"
 

@@ -18,10 +18,10 @@ workspace = true
 [dependencies]
 clap.workspace = true
 irox-tools = {workspace = true, features = ["std"]}
-tokio = { version = "1", features = ["rt", "io-util", "sync", "macros"] }
+tokio = { workspace = true, features = ["rt", "io-util", "sync", "macros"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1", features = ["full"] }
+tokio = { workspace = true, features = ["full"] }
 
 [package.metadata.docs.rs]
 all-features = true

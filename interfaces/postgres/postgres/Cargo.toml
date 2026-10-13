@@ -1,0 +1,33 @@
+[package]
+name = "irox-postgres"
+description = "Postgres wrappers and helpers"
+keywords = ["irox", "postgres"]
+version = "0.1.0"
+categories = ["database"]
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+
+[dependencies]
+irox-types = {workspace = true}
+irox-bits = {workspace = true}
+tokio = {workspace = true, features = []}
+tokio-postgres = {workspace = true, features = []}
+serde_json = {workspace = true}
+irox-pgderive = {workspace = true}
+
+[dev-dependencies]
+tokio = {workspace = true, features = ["macros"]}
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = {version = "0.4.3", features = ["wasm_js"]}
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = {workspace = true, features = ["rt"]}
+tokio-postgres = {workspace = true, features = ["runtime"]}
+postgres-native-tls = {workspace = true, features = ["runtime"]}
+native-tls = {workspace = true, features = ["vendored"]}
