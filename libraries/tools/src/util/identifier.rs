@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -240,7 +240,7 @@ pub trait Identifiable {
     fn id(&self) -> Option<Identifier>;
 }
 
-#[cfg(all(test, feature = "alloc"))]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::identifier::Identifier;
 

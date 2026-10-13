@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![forbid(unsafe_code)]
@@ -27,7 +27,6 @@ pub mod hex;
 pub mod iterators;
 pub mod options;
 cfg_feature_std! {
-    pub mod read;
     pub mod map;
     #[macro_use]
     pub mod sync;
@@ -35,6 +34,7 @@ cfg_feature_std! {
 pub mod random;
 cfg_feature_alloc! {
     pub mod packetio;
+    pub mod read;
     pub mod vec;
 
     mod str;
