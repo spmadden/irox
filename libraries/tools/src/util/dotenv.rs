@@ -99,6 +99,22 @@ pub fn load_dotenv<P: AsRef<Path>>(path: P) -> Result<BTreeMap<String, String>, 
     Ok(varbls)
 }
 
+pub fn set_envs(varbls: &BTreeMap<String, String>) -> Result<(), Error> {
+    for (key, value) in varbls {
+        std::env::set_var(key, value);
+    }
+    Ok(())
+}
+
+pub fn load_dotenv_and_set<P: AsRef<Path>>(path: P) -> Result<(), Error> {
+    let varbls = load_dotenv(path)?;
+    set_envs(&varbls)
+}
+pub fn load_dotenv_from_cwd_and_set() -> Result<(), Error> {
+    let varbls = load_dotenv_from_cwd()?;
+    set_envs(&varbls)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::dotenv::load_dotenv;
