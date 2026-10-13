@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -35,7 +35,7 @@
 
 use crate::x25519;
 use crate::x25519::{
-    check_valid_publickey, invert, mul, sub, zeroize_u8, FieldElement, ED25519_ORDER,
+    check_valid_publickey, invert, mul, sub, zeroize_i64, zeroize_u8, FieldElement, ED25519_ORDER,
 };
 use core::fmt::{Display, Formatter};
 use core::marker::PhantomData;
@@ -171,6 +171,23 @@ impl core::ops::Deref for Ed25519PublicKey {
     }
 }
 impl Ed25519PublicKey {
+    pub(crate) fn from_montgomery(value: &[u8; 32]) -> Result<Self, Ed25519Error> {
+        let mut u = FieldElement::unpack(value);
+        if u.clone().pack() != *value {
+            return Err(Ed25519Error::InvalidPublicKey);
+        }
+        check_valid_publickey(value)?;
+        let mut denominator = u.clone();
+        denominator += &GF1;
+        invert(&mut denominator);
+        u -= &GF1;
+        u *= &denominator;
+        let public_key = Ed25519PublicKey(u.pack());
+        let mut point = empty_gf4();
+        unpack_neg(&mut point, &public_key.0).map_err(|_| Ed25519Error::InvalidPublicKey)?;
+        Ok(public_key)
+    }
+
     pub fn from_bytes(value: &[u8; 32]) -> Result<Ed25519PublicKey, Ed25519Error> {
         check_valid_publickey(value)?;
         Ok(Ed25519PublicKey(*value))
@@ -280,6 +297,114 @@ impl Ed25519SecretKey {
 pub struct Ed25519KeyPair {
     pub public_key: Ed25519PublicKey,
     pub secret_key: Ed25519SecretKey,
+}
+
+///
+/// An Ed25519-compatible signing keypair converted from X25519 using
+/// [XEdDSA](https://signal.org/docs/specifications/xeddsa/).
+///
+/// The secret is a reduced scalar, not an Ed25519 seed: it must not be hashed or
+/// re-clamped by the seed-based [`Ed25519KeyPair`] API. The public x-sign is zero.
+/// Secret arithmetic uses fixed loops and mask-based selection; this is not a
+/// substitute for a constant-time audit of the compiled code on the target CPU.
+pub struct XEd25519KeyPair {
+    public_key: Ed25519PublicKey,
+    secret_scalar: [u8; 32],
+}
+impl Drop for XEd25519KeyPair {
+    fn drop(&mut self) {
+        zeroize_u8(&mut self.secret_scalar);
+    }
+}
+impl XEd25519KeyPair {
+    pub(crate) fn from_curve25519_secret(secret: &[u8; 32]) -> Self {
+        let mut k = *secret;
+        k[0] &= 0xF8;
+        k[31] &= 0x7F;
+        k[31] |= 0x40;
+        let mut point = empty_gf4();
+        scalarbase(&mut point, &k);
+        let mut public = pack(&point);
+
+        let mut reduced = [0u8; 64];
+        reduced[..32].copy_from_slice(&k);
+        swap_reduce(&mut reduced);
+        let mut negative = [0u8; 64];
+        let mut x = [0i64; 64];
+        for i in 0..32 {
+            x[i] = i64::from(ED25519_ORDER[i]) - i64::from(reduced[i]);
+        }
+        mod_l(&mut negative, &mut x);
+        let mask = 0u8.wrapping_sub(public[31] >> 7);
+        let mut secret_scalar = [0u8; 32];
+        for i in 0..32 {
+            secret_scalar[i] = reduced[i] ^ (mask & (reduced[i] ^ negative[i]));
+        }
+        public[31] &= 0x7F;
+        zeroize_u8(&mut k);
+        zeroize_u8(&mut reduced);
+        zeroize_u8(&mut negative);
+        zeroize_i64(&mut x);
+        Self {
+            public_key: Ed25519PublicKey(public),
+            secret_scalar,
+        }
+    }
+
+    pub fn public_key(&self) -> &Ed25519PublicKey {
+        &self.public_key
+    }
+
+    ///
+    /// Signs with XEdDSA's SHA-512 nonce derivation, returning an Ed25519-compatible
+    /// detached signature. `random` must contain 64 fresh, secret bytes from a
+    /// cryptographically secure RNG for every signature. The caller owns and is
+    /// responsible for erasing that randomness after use.
+    ///
+    /// This implements signing, not XEdDSA's exact verification rejection rules;
+    /// signatures can be checked with [`Ed25519PublicKey::verify_signed_message`].
+    #[allow(non_snake_case)]
+    pub fn sign_message(&self, msg: &[u8], random: &[u8; 64]) -> Ed25519Signature {
+        let mut prefix = [0xFF; 32];
+        prefix[0] = 0xFE;
+        let mut h = SHA512::default();
+        h.write(&prefix);
+        h.write(&self.secret_scalar);
+        h.write(msg);
+        let mut r = h.hash(random);
+        swap_reduce(&mut r);
+        let mut nonce = copy_subset(&r);
+        let mut point = empty_gf4();
+        scalarbase(&mut point, &nonce);
+        zeroize_u8(&mut nonce);
+
+        let R = pack(&point);
+        let mut h = SHA512::default();
+        h.write(&R);
+        h.write(&self.public_key.0);
+        let mut h = h.hash(msg);
+        swap_reduce(&mut h);
+        let mut x = [0i64; 64];
+        for i in 0..32 {
+            x[i] = i64::from(r[i]);
+        }
+        for i in 0..32 {
+            for j in 0..32 {
+                x[i + j] += i64::from(h[i]) * i64::from(self.secret_scalar[j]);
+            }
+        }
+        mod_l(&mut h, &mut x);
+        let mut signature = [0u8; 64];
+        signature[..32].copy_from_slice(&R);
+        signature[32..].copy_from_slice(&h[..32]);
+        zeroize_u8(&mut r);
+        zeroize_u8(&mut h);
+        zeroize_i64(&mut x);
+        Ed25519Signature {
+            pubkey: self.public_key.clone(),
+            signature,
+        }
+    }
 }
 
 impl Ed25519KeyPair {

@@ -30,7 +30,7 @@
 #![allow(clippy::indexing_slicing)]
 #![allow(clippy::manual_memcpy)]
 
-use crate::ed25519::{Ed25519Error, Ed25519PublicKey};
+use crate::ed25519::{Ed25519Error, Ed25519PublicKey, XEd25519KeyPair};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::ops::{Index, IndexMut};
 use irox_tools::{cfg_feature_std, hex};
@@ -64,6 +64,16 @@ pub struct Curve25519PublicKey([u8; 32]);
 pub struct SharedCurve25519Secret([u8; 32]);
 
 impl SecretKey {
+    ///
+    /// Converts this X25519 secret into an XEdDSA scalar-based signing keypair.
+    /// Clamps as for X25519, then conditionally negates modulo the Edwards group
+    /// order so the public x-sign is zero. No Ed25519 seed is recovered.
+    /// The public key matches [`Curve25519PublicKey::as_signing_key`] applied to
+    /// this secret's X25519 public key.
+    pub fn as_signing_key(&self) -> XEd25519KeyPair {
+        XEd25519KeyPair::from_curve25519_secret(&self.0)
+    }
+
     ///
     /// Generates a public key using the original Curve25519 method of multiplying the
     /// secret key with the base point.  This is probably not what you want.
@@ -111,9 +121,12 @@ impl Curve25519PublicKey {
         check_valid_publickey(&self.0)?;
         Ok(SharedCurve25519Secret(scalarmult(&secret_key.0, &self.0)?))
     }
-    pub fn as_signing_key(&self) -> Ed25519PublicKey {
-        //TODO: properly convert this to twisted edwards format
-        Ed25519PublicKey(self.0)
+    ///
+    /// Maps the Montgomery coordinate with y = (u - 1)/(u + 1), choosing Edwards
+    /// x-sign zero as in XEdDSA. Rejects noncanonical, blocked low-order, and
+    /// twist inputs; an X25519 input is not necessarily an Edwards curve point.
+    pub fn as_signing_key(&self) -> Result<Ed25519PublicKey, Ed25519Error> {
+        Ed25519PublicKey::from_montgomery(&self.0)
     }
 }
 impl AsRef<[u8]> for Curve25519PublicKey {
@@ -600,6 +613,13 @@ mod tests {
     static ALICE_BOB_SHARED: SharedCurve25519Secret = SharedCurve25519Secret(hex!(
         "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"
     ));
+
+    #[test]
+    pub fn test_signing_basepoint() -> Result<(), Ed25519Error> {
+        let public = Curve25519PublicKey::try_from(*super::BASE)?;
+        assert_eq_hex_slice!(public.as_signing_key()?.0, *crate::ed25519::ED25519_GY);
+        Ok(())
+    }
 
     #[test]
     pub fn test_alice_pubkey() -> Result<(), Ed25519Error> {

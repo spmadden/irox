@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::Error;
@@ -59,7 +59,7 @@ impl RoadWarrior {
     }
     pub fn verify(&self, msg: &[u8], sig: &[u8; 64]) -> Result<bool, Error> {
         self.ext_key
-            .as_signing_key()
+            .as_signing_key()?
             .verify_signed_message(msg, sig)?;
         Ok(true)
     }
