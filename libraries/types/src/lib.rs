@@ -107,6 +107,18 @@ impl DynamicallySizedValue {
             DynamicallySizedValue::u64_blob(_) => VariableType::u64_blob,
         }
     }
+    
+    /// Returns the length of the bytes of this value
+    #[must_use]
+    pub fn bytes_length(&self) -> usize {
+        match self {
+            DynamicallySizedValue::str(v) => v.len(),
+            DynamicallySizedValue::u8_blob(v) => v.len(),
+            DynamicallySizedValue::u16_blob(v) => v.len(),
+            DynamicallySizedValue::u32_blob(v) => v.len(),
+            DynamicallySizedValue::u64_blob(v) => v.len(),
+        }
+    }
 }
 
 impl Display for DynamicallySizedValue {
@@ -139,6 +151,14 @@ impl From<PrimitiveValue> for VariableValue {
 pub enum VariableValue {
     Primitive(PrimitiveValue),
     DynamicallySized(DynamicallySizedValue),
+}
+impl VariableValue {
+    pub fn bytes_length(&self) -> usize {
+        match self {
+            VariableValue::Primitive(v) => v.primitive().bytes_length(),
+            VariableValue::DynamicallySized(v) => v.bytes_length(),
+        }
+    }
 }
 
 impl Display for VariableValue {
