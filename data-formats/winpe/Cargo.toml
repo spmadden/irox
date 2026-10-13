@@ -29,7 +29,7 @@ ecdsa = {workspace = true, optional = true}
 rsa = {workspace = true, optional = true, features = ["sha2", "std"]}
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = {version = "^0", features = ["js"]}
+getrandom = {version = "^0", features = ["wasm_js"]}
 
 [package.metadata.docs.rs]
 all-features = true
