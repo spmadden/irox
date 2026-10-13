@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![forbid(unsafe_code)]
@@ -11,6 +11,7 @@ use log::{debug, error, trace};
 use url::Url;
 
 use error::{Error, ErrorType};
+use irox_bits::BitsWrapper;
 use irox_csv::{Row, UNIX_DIALECT};
 use irox_networking::http::HttpProtocol;
 use types::RetentionPolicy;
@@ -226,6 +227,7 @@ impl InfluxDB {
 
     pub fn list_databases(&self) -> Result<Vec<String>, Error> {
         let res = self.query_csv("SHOW DATABASES", None)?;
+        let res = BitsWrapper::Owned(res);
         let mut out: Vec<String> = Vec::new();
         irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
             trace!("{row:?}");
@@ -247,6 +249,7 @@ impl InfluxDB {
             None => self.query_csv("SHOW RETENTION POLICIES", None),
         }?;
         let mut out: Vec<RetentionPolicy> = Vec::new();
+        let res = BitsWrapper::Owned(res);
         irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
             match TryInto::<RetentionPolicy>::try_into(row.into_map_lossy()) {
                 Ok(r) => out.push(r),
@@ -262,6 +265,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {db}"), None),
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
+        let res = BitsWrapper::Owned(res);
         irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?.for_each(|row| {
             debug!("{:?}", row.into_map_lossy());
         })?;
@@ -301,6 +305,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW TAG KEYS ON {db}"), None),
             None => self.query_csv("SHOW TAG KEYS", None),
         }?;
+        let res = BitsWrapper::Owned(res);
         let mut reader = irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {
@@ -312,6 +317,7 @@ impl InfluxDB {
             Some(db) => self.query_csv(format!("SHOW FIELD KEYS ON {db}"), None),
             None => self.query_csv("SHOW FIELD KEYS", None),
         }?;
+        let res = BitsWrapper::Owned(res);
         let mut reader = irox_csv::CSVMapReader::dialect(res, UNIX_DIALECT)?;
         while let Some(row) = reader.next_row()? {
             Self::update_descriptor_map(&mut data, row, |meas, row_map| {

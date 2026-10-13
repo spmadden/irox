@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::coordinate::{CartesianCoordinate, EllipticalCoordinate, Latitude, Longitude};
@@ -86,7 +86,7 @@ mod tests {
         let file =
             irox_compression::deflate::Inflater::new_zlib(BitsWrapper::Owned(file.as_slice()))
                 .to_bits();
-        let file = BitsWrapper::Owned(file);
+        let file = file;
 
         let mut reader = irox_csv::CSVMapReader::new(file).unwrap();
         let proj = Epsg2249::new();

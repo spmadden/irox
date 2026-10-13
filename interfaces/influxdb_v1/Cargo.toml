@@ -19,6 +19,7 @@ workspace = true
 ureq.workspace = true
 url.workspace = true
 log.workspace = true
+irox-bits.workspace = true
 irox-networking.workspace = true
 irox-types.workspace = true
 irox-csv.workspace = true

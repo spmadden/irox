@@ -1,23 +1,26 @@
-use std::collections::BTreeMap;
-use std::io::Read;
+// SPDX-License-Identifier: MIT
+// Copyright 2026 IROX Contributors
+//
 
 use crate::{BasicTokenReader, CSVError, CSVErrorType, Dialect, Token, TokenReader};
+use irox_tools::irox_bits::Bits;
+use std::collections::BTreeMap;
 
 ///
 /// Incredibly basic CSV reader.
 ///
 /// Has some equivalent functionality as `String.split(",")`, except it handles quoted entries.
-pub struct CSVReader<T>
+pub struct CSVReader<'a, T>
 where
-    T: Read + Sized,
+    T: Bits + Sized + 'static,
 {
-    tokenizer: BasicTokenReader<T>,
+    tokenizer: BasicTokenReader<'a, T>,
 }
 
-impl<T: Read + Sized> CSVReader<T> {
+impl<T: Bits + Sized> CSVReader<'_, T> {
     ///
     /// Create a new CSV Reader from the input.  Accepts anything that implements [`Read`]
-    pub fn new(reader: T) -> CSVReader<T> {
+    pub fn new(reader: T) -> Self {
         CSVReader {
             tokenizer: BasicTokenReader::new(reader),
         }
@@ -26,7 +29,7 @@ impl<T: Read + Sized> CSVReader<T> {
     ///
     /// Creates a new CSV reader based on the specified dialect.  Accepts any
     /// [`Read`]er and consumes it.
-    pub fn dialect(reader: T, dialect: Dialect) -> CSVReader<T> {
+    pub fn dialect(reader: T, dialect: Dialect) -> Self {
         CSVReader {
             tokenizer: BasicTokenReader::dialect(reader, dialect),
         }
@@ -83,21 +86,21 @@ impl<T: Read + Sized> CSVReader<T> {
 ///
 /// CSVMapReader has more validation than [`CSVReader`], as it REQUIRES that each line in the
 /// csv file have the same number of elements as the header.
-pub struct CSVMapReader<T>
+pub struct CSVMapReader<'a, T>
 where
-    T: Read + Sized,
+    T: Bits + Sized + 'static,
 {
-    reader: CSVReader<T>,
+    reader: CSVReader<'a, T>,
     keys: Vec<String>,
 }
 
-impl<T: Read + Sized> CSVMapReader<T> {
+impl<T: Bits + Sized> CSVMapReader<'_, T> {
     ///
     /// Creates a new [`CSVMapReader`]
     ///
     /// Will return [`Result::Ok(CSVMapReader)`] if it can read the CSV's header.
     /// Will return [`Result::Err(CSVError)`] if any I/O Error, or no header.
-    pub fn new(read: T) -> Result<CSVMapReader<T>, CSVError> {
+    pub fn new(read: T) -> Result<Self, CSVError> {
         Self::dialect(read, Dialect::default())
     }
 

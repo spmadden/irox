@@ -1,22 +1,23 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
 //
 
+use irox_bits::Bits;
 use irox_tools::options::MaybeMap;
 use irox_tools::read::Buffer;
 use irox_tools::scanner::{LineEnding, ReadToken, Scanner};
 use log::debug;
 use std::collections::BTreeMap;
-use std::io::{BufReader, Read, Write};
+use std::io::Write;
 
 #[derive(Default, Debug, Clone)]
 pub struct HttpHeaders {
     pub(crate) headers: BTreeMap<String, Vec<String>>,
 }
 
-pub struct HeaderResponse<T> {
+pub struct HeaderResponse<T: 'static> {
     pub headers: HttpHeaders,
-    pub remaining: Buffer<BufReader<T>>,
+    pub remaining: Buffer<'static, T>,
 }
 
 impl HttpHeaders {
@@ -78,7 +79,7 @@ impl HttpHeaders {
         }
     }
 
-    pub fn create_from<T: Read + Sized>(input: T) -> Result<HeaderResponse<T>, std::io::Error> {
+    pub fn create_from<T: Bits + Sized>(input: T) -> Result<HeaderResponse<T>, std::io::Error> {
         let mut headers = HttpHeaders::new_empty();
         let mut scanner = Scanner::new_crlf(input);
         loop {

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
+//
 
-use std::io::Read;
-
+use irox_tools::irox_bits::Bits;
 use irox_tools::scanner as sc;
 use irox_tools::scanner::{QuotedChars, ReadToken, Scanner};
 
@@ -44,14 +44,14 @@ pub trait TokenWriter {
 
 ///
 /// Scans the provided input stream and outputs [`Token`]s as it detects them.
-pub struct BasicTokenReader<T>
+pub struct BasicTokenReader<'a, T>
 where
-    T: Read + Sized,
+    T: Bits + Sized + 'static,
 {
-    scanner: Scanner<T, InnerToken>,
+    scanner: Scanner<'a, T, InnerToken>,
 }
 
-impl<T: Read + Sized> BasicTokenReader<T> {
+impl<T: Bits + Sized> BasicTokenReader<'_, T> {
     ///
     /// Creates a new Tokenizer using the default RFC4180 Dialect, consuming the
     /// underlying reader.
@@ -76,7 +76,7 @@ impl<T: Read + Sized> BasicTokenReader<T> {
     }
 }
 
-impl<T: Read + Sized> TokenReader for BasicTokenReader<T> {
+impl<T: Bits + Sized> TokenReader for BasicTokenReader<'_, T> {
     ///
     /// Attempts to scan the line and return the immediate next set of [`Token`]s it finds.
     /// The real brunt of the processing work is done here.

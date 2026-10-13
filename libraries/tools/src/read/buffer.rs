@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 extern crate alloc;
 
+use crate::cfg_feature_std;
 use alloc::collections::VecDeque;
+use alloc::vec::Vec;
 use core::cmp::min;
 use core::ops::RangeBounds;
-use std::io::{BufRead, BufReader, Read};
+use irox_bits::{Bits, BitsWrapper, Error};
 
 ///
 /// An effective, infinite cached buffer.  What [`BufRead`] and [`BufReader`]
@@ -14,17 +16,16 @@ use std::io::{BufRead, BufReader, Read};
 ///
 /// Calls to `read()` and `next()` fill the internal buffer & peek the data, but do not consume it.  Call either
 /// `drain()` or one of the `consume_*` functions.
-#[derive(Debug)]
-pub struct Buffer<T> {
-    reader: BufReader<T>,
+pub struct Buffer<'a, T> {
+    reader: BitsWrapper<'a, T>,
     buffer: VecDeque<u8>,
 }
 
-impl<T: Read> Buffer<T> {
+impl<'a, T: Bits> Buffer<'a, T> {
     /// Creates a new buffer
-    pub fn new(reader: T) -> Self {
+    pub fn new(reader: BitsWrapper<'a, T>) -> Self {
         Buffer {
-            reader: BufReader::new(reader),
+            reader,
             buffer: VecDeque::new(),
         }
     }
@@ -54,46 +55,61 @@ impl<T: Read> Buffer<T> {
     pub fn drain<R: RangeBounds<usize>>(&mut self, range: R) {
         self.buffer.drain(range);
     }
-}
 
-impl<T: Read> Read for Buffer<T> {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+    fn try_fill(&mut self) -> Result<(), Error> {
         if self.buffer.is_empty() {
-            let mut buf: [u8; 4096] = [0; 4096];
-            let read = self.reader.read(&mut buf)?;
-            self.buffer.extend(buf.get(0..read).unwrap_or_default());
+            self.reader.read_some_into(&mut self.buffer)?;
         }
-        let read = self.buffer.read(buf)?;
-        Ok(read)
+        Ok(())
+    }
+    cfg_feature_std! {
+        pub fn read(&mut self, buf: &mut [u8]) -> Result<usize, Error> {
+            use std::io::Read;
+            self.try_fill()?;
+            let read = self.buffer.read(buf)?;
+            Ok(read)
+        }
     }
 }
 
-impl<T: Read> Iterator for Buffer<T> {
+impl<T: Bits> Bits for Buffer<'_, T> {
+    fn next_u8(&mut self) -> Result<Option<u8>, Error> {
+        self.try_fill()?;
+        Ok(self.buffer.pop_front())
+    }
+}
+
+impl<T: Bits> Iterator for Buffer<'_, T> {
     type Item = u8;
 
+    // Iteration here does NOT consume the read buffer
     fn next(&mut self) -> Option<Self::Item> {
-        let mut buf: [u8; 1] = [0; 1];
-        let Ok(val) = self.reader.read(&mut buf) else {
-            return None;
-        };
-        if val == 1 {
-            self.buffer.push_back(buf[0]);
-            return Some(buf[0]);
-        }
-        None
+        let val = self.reader.next_u8().ok()??;
+        self.buffer.push_back(val);
+        Some(val)
     }
 }
-
-impl<T: Read> BufRead for Buffer<T> {
-    fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
-        let buf = self.reader.fill_buf()?;
-        let len = buf.len();
-        self.buffer.extend(buf.iter());
-        self.reader.consume(len);
-        Ok(self.buffer.make_contiguous())
+cfg_feature_std! {
+    impl<T: Bits> std::io::Read for Buffer<'_, T> {
+        fn read(&mut self, buf: &mut [u8]) -> Result<usize, std::io::Error> {
+            self.try_fill()?;
+            let read = self.buffer.read(buf)?;
+            Ok(read)
+        }
     }
+}
+cfg_feature_std! {
+    impl<T: irox_bits::BufBits> std::io::BufRead for Buffer<'_, T> {
+        fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
+            let buf = self.reader.fill_buf()?;
+            let len = buf.len();
+            self.buffer.extend(buf.iter());
+            self.reader.consume(len);
+            Ok(self.buffer.make_contiguous())
+        }
 
-    fn consume(&mut self, amt: usize) {
-        self.consume_read_buffer_up_to(amt);
+        fn consume(&mut self, amt: usize) {
+            self.consume_read_buffer_up_to(amt);
+        }
     }
 }

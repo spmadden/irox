@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2024-2026 IROX Contributors
 //
 
 /// Type alias to [`BitsError`]
@@ -207,8 +207,7 @@ impl BitsErrorKind {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for BitsError {}
+impl core::error::Error for BitsError {}
 
 impl core::fmt::Display for BitsError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {

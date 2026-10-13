@@ -50,10 +50,10 @@ impl<T> Permutation<T> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use crate::iterators::permuted::Permutation;
-
+    
     #[test]
     pub fn test() {
         let set = vec![0, 1, 2, 3];

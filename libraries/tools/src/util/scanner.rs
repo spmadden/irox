@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -11,8 +11,12 @@ extern crate alloc;
 use crate::hex;
 use crate::read::Buffer;
 use alloc::borrow::Cow;
+use alloc::borrow::ToOwned;
 use alloc::collections::VecDeque;
-use std::io::{BufReader, Read};
+use alloc::string::String;
+use alloc::vec;
+use alloc::vec::Vec;
+use irox_bits::{Bits, BitsWrapper, Error};
 
 ///
 /// What characters are considered "quotes"
@@ -38,7 +42,7 @@ pub enum QuotedChars {
 ///
 /// Can optionally provide an `quote_char` to indicate that `search` should be
 /// precluded if wrapped in those characters.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Token<T: Clone> {
     search: Vec<u8>,
     response: T,
@@ -101,6 +105,7 @@ pub enum FoundToken<'a, T: Clone> {
 /// `Found` if the token was found, which token, and the data preceding it
 /// `EndOfData` if the scanner hit EOF and found no token
 /// `NotFound` if there is no more data in the boffer
+#[derive(Debug)]
 pub enum ReadToken<'a, T: Clone> {
     Found { data: Vec<u8>, token: &'a Token<T> },
     EndOfData { data: Vec<u8> },
@@ -221,34 +226,34 @@ impl<'a, T: Clone> TokenWorkingMem<'a, T> {
 ///
 /// The amount of possible forward lookahead is specified by the internal buffer
 /// size of the [`BufReader`]
-pub struct Scanner<T, R>
+pub struct Scanner<'a, T, R>
 where
-    T: Read + Sized,
+    T: Bits + Sized,
     R: Clone,
 {
-    reader: Buffer<BufReader<T>>,
+    reader: Buffer<'a, T>,
     tokens: Vec<Token<R>>,
     skip_empty_data: bool,
 }
 
-impl<T: Read + Sized, R: Clone> Scanner<T, R> {
+impl<'a, T: Bits + Sized, R: Clone> Scanner<'a, T, R> {
     ///
     /// Creates a scanner with the default buffer capacity, 8KB
     pub fn new(input: T, delimiters: &[Token<R>]) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             tokens: Vec::from(delimiters),
             skip_empty_data: false,
         }
     }
 
     ///
-    /// Creates a scanner with the specified buffer capacity
-    pub fn with_max_lookahead(input: T, max_buffer: usize, delimiters: &[Token<R>]) -> Self {
+    /// Creates a scanner that skips empty data
+    pub fn with_skip_empty(input: T, delimiters: &[Token<R>]) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(max_buffer, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             tokens: Vec::from(delimiters),
-            skip_empty_data: false,
+            skip_empty_data: true,
         }
     }
 
@@ -261,7 +266,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
     /// Returns `Ok(N)` if it found the token in the input stream, or hit the end of the buffer without finding the token
     /// Returns `Ok(None)` if there are no additional characters to read in the buffer - we've hit EOF.
     /// Returns `Err(e)` if there's an error reading from the underlying stream
-    pub fn scan_until_next(&mut self) -> Result<FoundToken<'_, R>, std::io::Error> {
+    pub fn scan_until_next(&mut self) -> Result<FoundToken<'_, R>, Error> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
         let mut num_read = 0;
@@ -292,7 +297,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         })
     }
 
-    pub fn read_next(&mut self) -> Result<ReadToken<'_, R>, std::io::Error> {
+    pub fn read_next(&mut self) -> Result<ReadToken<'_, R>, Error> {
         let mut workingmem: Vec<TokenWorkingMem<R>> =
             self.tokens.iter().map(TokenWorkingMem::new).collect();
 
@@ -331,7 +336,7 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         self.reader.drain(..len);
     }
 
-    pub fn take_back(self) -> Buffer<BufReader<T>> {
+    pub fn take_back(self) -> Buffer<'a, T> {
         self.reader
     }
 
@@ -339,24 +344,24 @@ impl<T: Read + Sized, R: Clone> Scanner<T, R> {
         self.skip_empty_data = true;
     }
 }
-impl<T: Read + Sized> Scanner<T, LineEnding> {
+impl<T: Bits + Sized> Scanner<'_, T, LineEnding> {
     pub fn new_lf(input: T) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             tokens: vec![Token::new("\n", LineEnding::LineFeed)],
             skip_empty_data: false,
         }
     }
     pub fn new_crlf(input: T) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             tokens: vec![Token::new("\r\n", LineEnding::CarriageReturnLineFeed)],
             skip_empty_data: false,
         }
     }
     pub fn new_cr(input: T) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             tokens: vec![Token::new("\r", LineEnding::CarriageReturn)],
             skip_empty_data: false,
         }
@@ -373,10 +378,10 @@ pub enum WhitespaceCharacter {
     NextLine,
     NBSP,
 }
-impl<T: Read + Sized> Scanner<T, WhitespaceCharacter> {
+impl<T: Bits + Sized> Scanner<'_, T, WhitespaceCharacter> {
     pub fn new_whitespace(input: T) -> Self {
         Scanner {
-            reader: Buffer::new(BufReader::with_capacity(8 * 1024, input)),
+            reader: Buffer::new(BitsWrapper::Owned(input)),
             skip_empty_data: true,
             tokens: vec![
                 Token::new(hex!("09"), WhitespaceCharacter::Tab),
@@ -410,7 +415,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_scan_until() -> Result<(), std::io::Error> {
+    pub fn test_scan_until() -> Result<(), Error> {
         let data = "this is a basic test\nthis is a second line";
 
         let delims = &[Token::new(b" ", Tokens::Space)];
@@ -438,7 +443,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_scan_escaped() -> Result<(), std::io::Error> {
+    pub fn test_scan_escaped() -> Result<(), Error> {
         let data = "this is a basic \"escaped\\ test\nthis\" is a second line";
 
         let delims = &[Token::new(b" ", Tokens::Space).with_escape_char(b'\\')];
@@ -463,7 +468,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_scan_quoted_double() -> Result<(), std::io::Error> {
+    pub fn test_scan_quoted_double() -> Result<(), Error> {
         let data = "this is a basic \"escaped\\ test\nthis\" is a second line";
         let delims = &[Token::new(b" ", Tokens::Space).with_quote_char(QuotedChars::DoubleQuotes)];
         let mut scanner = Scanner::new(data.as_bytes(), delims);
@@ -486,7 +491,7 @@ mod tests {
         Ok(())
     }
     #[test]
-    pub fn test_scan_quoted_single() -> Result<(), std::io::Error> {
+    pub fn test_scan_quoted_single() -> Result<(), Error> {
         let data = "this is a basic \'escaped\\ test\nthis\' is a second line";
         let delims = &[Token::new(b" ", Tokens::Space).with_quote_char(QuotedChars::SingleQuotes)];
 
@@ -511,7 +516,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_scan_quoted_other() -> Result<(), std::io::Error> {
+    pub fn test_scan_quoted_other() -> Result<(), Error> {
         let data = "this is a basic |escaped\\ test\nthis| is a second line";
 
         let delims = &[Token::new(b" ", Tokens::Space).with_quote_char(QuotedChars::Other(b'|'))];
@@ -536,7 +541,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_scan_quoted_both() -> Result<(), std::io::Error> {
+    pub fn test_scan_quoted_both() -> Result<(), Error> {
         let data = "this is a \"more\' advanced\" \'escaped\\ \"test\nthis\' is a second line";
         let delims =
             &[Token::new(b" ", Tokens::Space).with_quote_char(QuotedChars::SingleOrDoubleQuotes)];
@@ -566,7 +571,7 @@ mod tests {
         Newline,
     }
     #[test]
-    pub fn test_scan_csv() -> Result<(), std::io::Error> {
+    pub fn test_scan_csv() -> Result<(), Error> {
         let data = "name1,name2,name3,name4\r\nescaped\\,value1,\"quoted,value2\",\'quoted,value3\',\"long value\"\n\n";
 
         let delims = &[
@@ -614,7 +619,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_three_delim() -> Result<(), std::io::Error> {
+    pub fn test_three_delim() -> Result<(), Error> {
         let data = "this is a test of the testing test";
         let mut scanner = Scanner::new(data.as_bytes(), &[Token::new("test", "test")]);
         for (exp_off, exp) in &[(10, "test"), (8, "test"), (4, "test")] {

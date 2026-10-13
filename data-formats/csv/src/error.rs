@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
+//
 
 use std::fmt::Display;
 
@@ -37,6 +38,12 @@ impl CSVError {
 
 impl From<std::io::Error> for CSVError {
     fn from(value: std::io::Error) -> Self {
+        CSVError::new(CSVErrorType::IOError, format!("{value:?}"))
+    }
+}
+
+impl From<irox_tools::irox_bits::Error> for CSVError {
+    fn from(value: irox_tools::irox_bits::Error) -> Self {
         CSVError::new(CSVErrorType::IOError, format!("{value:?}"))
     }
 }
