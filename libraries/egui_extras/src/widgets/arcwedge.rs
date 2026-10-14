@@ -107,7 +107,7 @@ impl ArcWedge {
         }
         let shp = Shape::Path(PathShape::closed_line(
             points,
-            Stroke::new(4.0, self.stroke_color),
+            Stroke::new(4.0f32, self.stroke_color),
         ));
         painter.add(shp);
 

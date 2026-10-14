@@ -121,7 +121,7 @@ impl NodeRenderer for DefaultNodeRenderer {
                 let r = Shape::Rect(RectShape::stroke(
                     bbox,
                     CornerRadius::ZERO,
-                    Stroke::new(1.0, Color32::YELLOW),
+                    Stroke::new(1.0f32, Color32::YELLOW),
                     StrokeKind::Middle,
                 ));
                 shapes.push(r);
@@ -214,7 +214,7 @@ impl NodeRenderer for DebugForceNodeRenderer {
     ) {
         let cvel = sim_node.current_velocity * 100.;
         let end = *start.deref() + cvel;
-        let stroke = Stroke::new(1.5, Color32::RED);
+        let stroke = Stroke::new(1.5f32, Color32::RED);
         let mut shp = Shape::line_segment(
             [
                 Pos2::new(start.x as f32, start.y as f32),

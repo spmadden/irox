@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
+//
 
 use std::borrow::Cow;
 use std::clone::Clone;
@@ -91,11 +92,11 @@ impl GPXWriter {
             XmlEvent::start_element(name)
                 .attr(
                     "lat",
-                    format!("{}", &wpt.lat.0.as_degrees().value()).as_str(),
+                    format!("{}", wpt.lat.0.as_degrees().value()).as_str(),
                 )
                 .attr(
                     "lon",
-                    format!("{}", &wpt.lon.0.as_degrees().value()).as_str(),
+                    format!("{}", wpt.lon.0.as_degrees().value()).as_str(),
                 ),
         )?;
 

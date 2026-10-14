@@ -322,7 +322,7 @@ impl FDPSimulationWidget {
                         bbox,
                         CornerRadius::default(),
                         Color32::TRANSPARENT,
-                        Stroke::new(1.0, Color32::RED),
+                        Stroke::new(1.0f32, Color32::RED),
                         StrokeKind::Middle,
                     ));
                     eshapes.push(rect);

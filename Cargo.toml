@@ -174,9 +174,10 @@ irox-winpe = { version = "^0", path = "data-formats/winpe" }
 [profile.test]
 #opt-level = 1
 
-# Lints last updated for Rust 1.84.0
+# Lints last updated for Rust 1.97.0
 [workspace.lints.rust]
 unsafe_code = "forbid"
+linker_messages = "warn"
 
 [workspace.lints.rustdoc]
 broken_intra_doc_links = "warn"
@@ -232,6 +233,7 @@ large_types_passed_by_value = "warn"
 linkedlist = "warn"
 lossy_float_literal = "warn"
 manual_assert = "warn"
+manual_assert_eq = "warn"
 manual_checked_ops = "warn"
 manual_ilog2 = "warn"
 manual_instant_elapsed = "warn"

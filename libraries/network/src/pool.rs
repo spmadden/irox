@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
+//
 
 use std::fmt::Debug;
 use std::io::Write;
@@ -39,7 +40,7 @@ impl TCPConnectionManager {
         let sock = match TcpListener::bind(addr) {
             Ok(s) => s,
             Err(e) => {
-                error!("Error binding to address {:?}: {e:?}", &addr);
+                error!("Error binding to address {addr:?}: {e:?}");
                 return Err(e);
             }
         };

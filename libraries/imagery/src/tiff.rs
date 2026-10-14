@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 extern crate alloc;
 use crate::tags::{get_geokey_directory_tags, GEO_KEY_DIRECTORY, KNOWN_TAG_TYPES};
@@ -399,7 +399,7 @@ impl TiffImageReader {
                                 let TiffTagValue::ParsedAscii(val) = &deref.value else {
                                     warn!(
                                         "Expected a parsed ascii value, but was: {:#?}",
-                                        &deref.value
+                                        deref.value
                                     );
                                     continue;
                                 };
@@ -422,7 +422,7 @@ impl TiffImageReader {
                                 let TiffTagValue::ParsedDoubles(val) = &deref.value else {
                                     warn!(
                                         "Expected a parsed double values, but was: {:#?}",
-                                        &deref.value
+                                        deref.value
                                     );
                                     continue;
                                 };

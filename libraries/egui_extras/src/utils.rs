@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use egui::emath::Pos2;
@@ -22,6 +22,6 @@ pub fn line_to_bezier(pts: [Pos2; 2]) -> Shape {
         [a, c, b],
         false,
         Color32::TRANSPARENT,
-        Stroke::new(1.0, Color32::BLACK),
+        Stroke::new(1.0f32, Color32::BLACK),
     ))
 }

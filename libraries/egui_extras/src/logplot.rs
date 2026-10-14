@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -352,7 +352,7 @@ impl BasicPlot {
             .copied()
             .unwrap_or_default()
             .into_color32();
-        let stroke = Stroke::new(0.75, color);
+        let stroke = Stroke::new(0.75f32, color);
         let mut line = Line {
             line_stroke: stroke,
             visible: AtomicBool::new(true),
@@ -922,7 +922,7 @@ impl BasicPlot {
                     Pos2::new(self.x_axis.screen_origin, val),
                     Pos2::new(self.x_axis.screen_limit, val),
                 ],
-                Stroke::new(1.0, caution_color),
+                Stroke::new(1.0f32, caution_color),
             );
         } else if point.x > 0.0 {
             // x is fine, vertical at x
@@ -934,14 +934,14 @@ impl BasicPlot {
                     Pos2::new(val, axis.screen_origin),
                     Pos2::new(val, axis.screen_limit),
                 ],
-                Stroke::new(1.0, caution_color),
+                Stroke::new(1.0f32, caution_color),
             );
         }
     }
 
     fn draw_structure(&mut self, ui: &mut Ui, painter: &mut Painter) {
-        let major_stroke = Stroke::new(2.0, ui.visuals().widgets.inactive.fg_stroke.color);
-        let minor_stroke = Stroke::new(1.0, ui.visuals().widgets.open.bg_stroke.color);
+        let major_stroke = Stroke::new(2.0f32, ui.visuals().widgets.inactive.fg_stroke.color);
+        let minor_stroke = Stroke::new(1.0f32, ui.visuals().widgets.open.bg_stroke.color);
         let small_font = TextStyle::Small.resolve(ui.style());
 
         // draw the info across the bottom of the x-axis

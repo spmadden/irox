@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -108,7 +108,7 @@ impl FrameHistory {
 
         let rect = rect.shrink(4.0);
         let color = ui.visuals().text_color();
-        let line_stroke = Stroke::new(1.0, color);
+        let line_stroke = Stroke::new(1.0f32, color);
 
         if let Some(pointer_pos) = response.hover_pos() {
             let y = pointer_pos.y;

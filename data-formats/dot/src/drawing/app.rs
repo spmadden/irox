@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::drawing::{DotJson, DrawContext, Edge, Metanode};
@@ -218,7 +218,7 @@ impl App {
                 .send(LayerCommand::AppendShape(Shape::Rect(RectShape::stroke(
                     rect,
                     CornerRadius::default(),
-                    Stroke::new(2.0, Color32::RED),
+                    Stroke::new(2.0f32, Color32::RED),
                     StrokeKind::Middle,
                 ))));
             let scale = 1.0;

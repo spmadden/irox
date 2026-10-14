@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -124,7 +124,7 @@ impl Display for UBXMessage {
                     "UBXPayload::Unknown (0x{:02X}/0x{:02X}) {}",
                     self.class,
                     self.id,
-                    &irox_tools::hex::to_hex_str_upper(p)
+                    irox_tools::hex::to_hex_str_upper(p)
                 )
             }
         }

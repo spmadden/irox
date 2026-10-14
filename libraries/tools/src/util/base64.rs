@@ -11,33 +11,17 @@ use alloc::collections::BTreeMap;
 use irox_bits::{Bits, Error, ErrorKind, MutBits};
 
 /// `A-Z,a-z,0-9,+,/` - not filesystem or URL-safe
-pub static BASE64_ALPHABET: [u8; 64] = [
-    b'A', b'B', b'C', b'D', b'E', b'F', b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P',
-    b'Q', b'R', b'S', b'T', b'U', b'V', b'W', b'X', b'Y', b'Z', b'a', b'b', b'c', b'd', b'e', b'f',
-    b'g', b'h', b'i', b'j', b'k', b'l', b'm', b'n', b'o', b'p', b'q', b'r', b's', b't', b'u', b'v',
-    b'w', b'x', b'y', b'z', b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'+', b'/',
-];
+pub static BASE64_ALPHABET: [u8; 64] =
+    *b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 /// `A-Z,a-z,0-9,-,_` - filesystem and URL-safe
-pub static BASE64URL_ALPHABET: [u8; 64] = [
-    b'A', b'B', b'C', b'D', b'E', b'F', b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P',
-    b'Q', b'R', b'S', b'T', b'U', b'V', b'W', b'X', b'Y', b'Z', b'a', b'b', b'c', b'd', b'e', b'f',
-    b'g', b'h', b'i', b'j', b'k', b'l', b'm', b'n', b'o', b'p', b'q', b'r', b's', b't', b'u', b'v',
-    b'w', b'x', b'y', b'z', b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'-', b'_',
-];
+pub static BASE64URL_ALPHABET: [u8; 64] =
+    *b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 /// `A-Z,2-7` - filesystem and URL-safe
-pub static BASE32_ALPHABET: [u8; 32] = [
-    b'A', b'B', b'C', b'D', b'E', b'F', b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P',
-    b'Q', b'R', b'S', b'T', b'U', b'V', b'W', b'X', b'Y', b'Z', b'2', b'3', b'4', b'5', b'6', b'7',
-];
+pub static BASE32_ALPHABET: [u8; 32] = *b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 /// `0-9,A-V` - "Extended Hex", filesystem and URL-safe
-pub static BASE32HEX_ALPHABET: [u8; 32] = [
-    b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D', b'E', b'F',
-    b'G', b'H', b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P', b'Q', b'R', b'S', b'T', b'U', b'V',
-];
+pub static BASE32HEX_ALPHABET: [u8; 32] = *b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
 /// `0-9,A-F` - Standard Hex.
-pub static BASE16_ALPHABET: [u8; 16] = [
-    b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D', b'E', b'F',
-];
+pub static BASE16_ALPHABET: [u8; 16] = *b"0123456789ABCDEF";
 
 macro_rules! getalpha {
     ($alpha:ident,$idx:tt) => {
