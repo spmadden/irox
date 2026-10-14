@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use alloc::collections::VecDeque;
@@ -330,8 +330,8 @@ impl<'a, T: Bits> Inflater<'a, T> {
             let len = del.read_le_u16()?;
             let _nlen = del.read_le_u16()?;
             self.block.clear();
-            let mut bl = &mut self.block;
-            del.read_exact_into(len as usize, &mut bl)?;
+            let bl = &mut self.block;
+            del.read_exact_into(len as usize, &mut *bl)?;
             return Ok(self.block.as_slices().0.get(0..len as usize));
         }
         let dec = if btype == DeflateBlockType::CompressedDynamic {

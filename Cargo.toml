@@ -174,7 +174,7 @@ irox-winpe = { version = "^0", path = "data-formats/winpe" }
 [profile.test]
 #opt-level = 1
 
-# Lints last updated for Rust 1.98.0
+# Lints last updated for Rust 1.99.0
 [workspace.lints.rust]
 unsafe_code = "forbid"
 linker_messages = "warn"
@@ -305,5 +305,5 @@ verbose_file_reads = "warn"
 wildcard_dependencies = "warn"
 zero_sized_map_values = "warn"
 missing_errors_doc = "allow"
-module-name-repetitions = "allow"
+module_name_repetitions = "allow"
 

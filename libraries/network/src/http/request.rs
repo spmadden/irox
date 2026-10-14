@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
 //
 
 use crate::http::headers::HttpHeaders;
@@ -41,7 +41,7 @@ impl HttpRequest {
         &self.url
     }
 
-    pub fn write_to<T: Write>(mut self, mut out: &mut T) -> Result<(), std::io::Error> {
+    pub fn write_to<T: Write>(mut self, out: &mut T) -> Result<(), std::io::Error> {
         if !self.headers.contains_header("Host") {
             let port = if let Some(port) = self.url.port {
                 format!(":{port}")
@@ -76,9 +76,9 @@ impl HttpRequest {
         );
         debug!("{hdr}");
         write!(out, "{hdr}\r\n")?;
-        self.headers.write_to(&mut out)?;
+        self.headers.write_to(&mut *out)?;
 
-        self.body.write_to(&mut out)?;
+        self.body.write_to(&mut *out)?;
 
         out.flush()?;
 
