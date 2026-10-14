@@ -3,8 +3,8 @@
 //
 
 use crate::scanner::{LineEnding, QuotedChars, ReadToken, Scanner, Token};
-use irox_bits::Error;
 use alloc::collections::BTreeMap;
+use irox_bits::Error;
 use std::path::Path;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -16,7 +16,6 @@ enum Sep {
 }
 pub fn load_dotenv_from_cwd() -> Result<BTreeMap<String, String>, Error> {
     let Ok(cwd) = std::env::current_dir() else {
-        // println!("no cwd");
         return Ok(Default::default());
     };
     let p = cwd.join(".env");
@@ -47,7 +46,7 @@ pub fn load_dotenv<P: AsRef<Path>>(path: P) -> Result<BTreeMap<String, String>, 
             Token::new("\r\n", Sep::LineEnding(LineEnding::CarriageReturnLineFeed))
                 .with_quote_char(QuotedChars::SingleOrDoubleQuotes),
             Token::new("#", Sep::Comment).with_quote_char(QuotedChars::SingleOrDoubleQuotes),
-            Token::new("export ", Sep::Export)
+            Token::new("export ", Sep::Export),
         ],
     );
     let mut varbls = BTreeMap::<String, String>::new();
@@ -135,7 +134,11 @@ mod tests {
         check!("BASE", "base", iter);
         check!("BASE_URL", "https://api.example.com", iter);
         check!("DATABASE_POOL_SIZE", "10", iter);
-        check!("DATABASE_URL", "postgres://user:pass@localhost:5432/mydb", iter);
+        check!(
+            "DATABASE_URL",
+            "postgres://user:pass@localhost:5432/mydb",
+            iter
+        );
         check!("DOLLAR", "base-suffix", iter);
         check!("DOUBLE", "double value", iter);
         check!("DUP", "second", iter);
@@ -149,7 +152,11 @@ mod tests {
         check!("MULTI", "line one\r\nline two", iter);
         check!("NODE_ENV", "development", iter);
         check!("PORT", "3000", iter);
-        check!("PRIVATE_KEY", "-----BEGIN RSA KEY-----\r\nMIIBogIBAAJBALRi...\r\n-----END RSA KEY-----", iter);
+        check!(
+            "PRIVATE_KEY",
+            "-----BEGIN RSA KEY-----\r\nMIIBogIBAAJBALRi...\r\n-----END RSA KEY-----",
+            iter
+        );
         check!("SENDGRID_API_KEY", "SG.xxxx", iter);
         check!("SINGLE", "single value", iter);
         check!("SPACE", "spaced value", iter);

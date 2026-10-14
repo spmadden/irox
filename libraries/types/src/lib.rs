@@ -110,6 +110,7 @@ impl DynamicallySizedValue {
 
     /// Returns the length of the bytes of this value
     #[must_use]
+    #[allow(clippy::match_same_arms)]
     pub fn bytes_length(&self) -> usize {
         match self {
             DynamicallySizedValue::str(v) => v.len(),
