@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -775,14 +775,12 @@ impl Duration {
                     years += buf.as_f64()?;
                     buf.clear();
                 }
-                b'0'..=b'9' | b'.' => {
-                    if buf.push_back(*v).is_err() {
-                        return Err(Error::new(
-                            ErrorKind::OutOfMemory,
-                            "Buffer overflowed parsing number in Duration::parse_iso8601_from",
-                        )
-                        .into());
-                    }
+                b'0'..=b'9' | b'.' if buf.push_back(*v).is_err() => {
+                    return Err(Error::new(
+                        ErrorKind::OutOfMemory,
+                        "Buffer overflowed parsing number in Duration::parse_iso8601_from",
+                    )
+                    .into());
                 }
                 b'T' | b't' => {
                     encountered_t = true;

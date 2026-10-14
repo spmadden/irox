@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -136,7 +136,7 @@ fn create_binread_fn() -> TokenStream {
 
     ts
 }
-#[proc_macro_derive(ProtobufBinary, attributes(id, ignore))]
+#[proc_macro_derive(ProtobufBinary, attributes(id, pb_ignore))]
 pub fn protobinary_derive(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as syn::DeriveInput);
 

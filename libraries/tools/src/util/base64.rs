@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2023 IROX Contributors
+// Copyright 2023-2026 IROX Contributors
 //
 
 //!
@@ -87,11 +87,7 @@ impl Codec for SixBitCodec {
         let mut ctr = 0;
         let mut written = 0;
         let alpha = self.alphabet;
-        loop {
-            let Some(v) = input.next_u8()? else {
-                break;
-            };
-
+        while let Some(v) = input.next_u8()? {
             buf <<= 8;
             buf |= v as u32;
             ctr += 1;
@@ -142,10 +138,7 @@ impl Codec for SixBitCodec {
         let mut buf: u32 = 0;
         let mut ctr = 0;
         let mut written = 0;
-        loop {
-            let Some(var) = input.next_u8()? else {
-                break;
-            };
+        while let Some(var) = input.next_u8()? {
             if var == self.pad {
                 continue;
             }
