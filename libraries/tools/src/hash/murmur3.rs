@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -64,13 +64,13 @@ impl Murmur3_32 {
                 }
             }
         }
-        let mut chunks = key.chunks_exact(4);
-        for c in chunks.by_ref() {
-            let k = u32::from_le_bytes(c.try_into().unwrap_or_default());
+        let (chunks, remainder) = key.as_chunks::<4>();
+        for c in chunks {
+            let k = u32::from_le_bytes(*c);
             round32!(&mut self.h, k);
             self.total_len += 4;
         }
-        for b in chunks.remainder() {
+        for b in remainder {
             let _ = self.buf.push_back(*b);
             self.total_len += 1;
             self.try_chomp();
@@ -143,8 +143,8 @@ impl Murmur3_128 {
                 }
             }
         }
-        let mut chunks = key.chunks_exact(16);
-        for c in chunks.by_ref() {
+        let (chunks, remainder) = key.as_chunks::<16>();
+        for c in chunks {
             let (k1, k2) = c.split_at(8);
             let k1 = u64::from_le_bytes(k1.try_into().unwrap_or_default());
             let k2 = u64::from_le_bytes(k2.try_into().unwrap_or_default());
@@ -166,7 +166,7 @@ impl Murmur3_128 {
                 .wrapping_add(0x38495ab5);
             self.total_len += 16;
         }
-        for b in chunks.remainder() {
+        for b in remainder {
             let _ = self.buf.push_back(*b);
             self.total_len += 1;
             self.try_chomp();
@@ -255,8 +255,8 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
     let mut h1: u64 = seed as u64;
     let mut h2: u64 = seed as u64;
 
-    let mut chunks = data.chunks_exact(16);
-    for chunk_16 in chunks.by_ref() {
+    let (chunks, remainder) = data.as_chunks::<16>();
+    for chunk_16 in chunks {
         let (mut a, mut b) = chunk_16.split_at(8);
         let Ok(k1) = a.read_be_u64() else {
             return 0;
@@ -279,7 +279,7 @@ pub fn murmur3_128_seed<T: AsRef<[u8]>>(key: T, seed: u32) -> u128 {
             .wrapping_mul(5)
             .wrapping_add(0x38495ab5);
     }
-    let rem = chunks.remainder();
+    let rem = remainder;
     let len = rem.len();
     if len > 0 {
         let mut k1: u64 = 0;

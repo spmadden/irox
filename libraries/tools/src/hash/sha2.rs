@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
@@ -289,16 +289,14 @@ mod sha224_256 {
                     }
                 }
             }
-            let mut chunks = v.chunks_exact(4);
-            for c in chunks.by_ref() {
-                let _ = self
-                    .buf
-                    .push_prim(u32::from_be_bytes(c.try_into().unwrap_or_default()));
+            let (chunks, remainder) = v.as_chunks::<4>();
+            for c in chunks {
+                let _ = self.buf.push_prim(u32::from_be_bytes(*c));
                 self.written_length += 4;
 
                 self.try_chomp();
             }
-            for b in chunks.remainder() {
+            for b in remainder {
                 let _ = self.buf.push_back(*b);
                 self.written_length += 1;
                 self.try_chomp();
@@ -616,15 +614,13 @@ mod sha384_512 {
                     }
                 }
             }
-            let mut chunks = v.chunks_exact(8);
-            for c in chunks.by_ref() {
-                let _ = self
-                    .buf
-                    .push_prim(u64::from_be_bytes(c.try_into().unwrap_or_default()));
+            let (chunks, remainder) = v.as_chunks::<8>();
+            for c in chunks {
+                let _ = self.buf.push_prim(u64::from_be_bytes(*c));
                 self.written_length += 8;
                 self.try_chomp();
             }
-            for b in chunks.remainder() {
+            for b in remainder {
                 let _ = self.buf.push_back(*b);
                 self.written_length += 1;
                 self.try_chomp();

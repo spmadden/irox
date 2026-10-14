@@ -1265,15 +1265,17 @@ impl Axis {
                 let base_step_size = model_per_point * 5.0f64;
 
                 let incr = 10f64.powi(base_step_size.abs().log10().ceil() as i32);
-                let min_detent;
-                let max_detent;
-                if incr < 0.0 {
-                    min_detent = (self.min_val * incr).round() / incr;
-                    max_detent = (self.max_val * incr).round() / incr;
+                let (min_detent, max_detent) = if incr < 0.0 {
+                    (
+                        (self.min_val * incr).round() / incr,
+                        (self.max_val * incr).round() / incr,
+                    )
                 } else {
-                    min_detent = (self.min_val / incr).round() * incr;
-                    max_detent = (self.max_val / incr).round() * incr;
-                }
+                    (
+                        (self.min_val / incr).round() * incr,
+                        (self.max_val / incr).round() * incr,
+                    )
+                };
                 let range = max_detent - min_detent;
                 self.detents = Vec::with_capacity(10);
                 for idx in 0..=10 {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![allow(clippy::indexing_slicing)]
@@ -86,6 +86,7 @@ pub struct Aes256Enc {
     key: [u32; 120],
 }
 impl Drop for Aes256Enc {
+    #[allow(clippy::manual_slice_fill)]
     fn drop(&mut self) {
         for x in &mut self.key {
             *x = 0;
