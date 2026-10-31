@@ -3,7 +3,6 @@
 //
 
 pub mod env;
-// pub mod proc;
 pub mod osgeo4w;
 
 use crate::ShellFolder;

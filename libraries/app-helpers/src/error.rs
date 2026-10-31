@@ -17,7 +17,15 @@ pub struct Error {
     pub msg: String,
     pub kind: ErrorKind,
 }
-
+#[macro_export]
+macro_rules! subprocess_error {
+    ($($arg:tt)*) => {
+        Error {
+            kind: ErrorKind::SubprocessError,
+            msg: format!($($arg)*)
+        }
+    };
+}
 impl From<irox_bits::Error> for Error {
     fn from(value: irox_bits::Error) -> Self {
         Self {

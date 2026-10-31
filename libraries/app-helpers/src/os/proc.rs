@@ -3,25 +3,28 @@
 //
 
 use crate::error::{Error, ErrorKind};
-use crate::os::win::env::set_osgeo_envs;
+// use crate::os::win::env::set_osgeo_envs;
+use crate::subprocess_error;
+use core::fmt::{Arguments, Debug};
+use core::sync::atomic::{AtomicBool, Ordering};
 use irox_bits::{BitsWrapper, MutBits};
-use irox_log::log::debug;
 use irox_log::log::warn;
+use irox_log::log::{debug, error};
 use std::ffi::OsStr;
-use std::fmt::{Arguments, Debug};
-use std::fs::OpenOptions;
-use std::io::{stdout, BufRead, BufReader, Read, Stdout, Write};
+use std::fs::{DirEntry, OpenOptions};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, ChildStdin, ChildStdout, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+extern crate alloc;
+use alloc::sync::Arc;
 
 pub struct ChildIO<'a, T: MutBits> {
     pub outstream: BitsWrapper<'a, T>,
+    pub stdin: Option<ChildStdin>,
     pub stdout: Option<ChildStdout>,
     pub stderr: Option<ChildStderr>,
 }
-impl<'a, T: MutBits> ChildIO<'a, T> {
+impl<T: MutBits> ChildIO<'_, T> {
     pub fn run_some(&mut self) -> Result<(), Error> {
         if let Some(so) = &mut self.stdout {
             let mut bw = BitsWrapper::Borrowed(so);
@@ -45,16 +48,26 @@ where
     V: AsRef<OsStr>,
 {
     let mut child = std::process::Command::new(cmd);
-    set_osgeo_envs(&mut child)?;
-    let mut child = child
+    // set_osgeo_envs(&mut child)?;
+    let mut child = match child
         .args(args)
         .envs(vars)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
-    let mut stdout = child.stdout.take().expect("Unable to take stdout");
-    let mut stderr = child.stderr.take().expect("Unable to take stderr");
+    {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Unable to spawn command: {cmd} {}", args.join(" "));
+            return Err(e.into());
+        }
+    };
+    let Some(mut stdout) = child.stdout.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
+    let Some(mut stderr) = child.stderr.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
     let run = Arc::new(AtomicBool::new(true));
     let run2 = run.clone();
     let run3 = run.clone();
@@ -66,7 +79,9 @@ where
                     if len == 0 {
                         break;
                     }
-                    let _ = std::io::stdout().write_all(&buf[..len]);
+                    if let Some(l) = buf.get(..len) {
+                        let _ = std::io::stdout().write_all(l);
+                    }
                 }
                 Err(_e) => {
                     break;
@@ -82,7 +97,9 @@ where
                     if len == 0 {
                         break;
                     }
-                    let _ = std::io::stderr().write_all(&buf[..len]);
+                    if let Some(l) = buf.get(..len) {
+                        let _ = std::io::stderr().write_all(l);
+                    }
                 }
                 Err(_e) => {
                     break;
@@ -128,21 +145,31 @@ where
     P: AsRef<Path>,
 {
     let mut child = std::process::Command::new(cmd);
-    set_osgeo_envs(&mut child)?;
+    // set_osgeo_envs(&mut child)?;
     debug!("envs: {:?}", child.get_envs());
     if let Some(cwd) = cwd {
         child.current_dir(cwd);
     }
 
-    let mut child = child
+    let mut child = match child
         .args(args)
         .envs(vars)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
-    let stdout = child.stdout.take().expect("Unable to take stdout");
-    let mut stderr = child.stderr.take().expect("Unable to take stderr");
+    {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Unable to spawn command: {cmd} {}", args.join(" "));
+            return Err(e.into());
+        }
+    };
+    let Some(stdout) = child.stdout.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
+    let Some(mut stderr) = child.stderr.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
     let run = Arc::new(AtomicBool::new(true));
     let run3 = run.clone();
     let stdout_hnd = std::thread::spawn(move || {
@@ -157,7 +184,9 @@ where
                     if len == 0 {
                         break;
                     }
-                    let _ = std::io::stderr().write(&buf[..len]);
+                    if let Some(l) = buf.get(..len) {
+                        let _ = std::io::stderr().write(l);
+                    }
                 }
                 Err(_e) => {
                     break;
@@ -196,16 +225,26 @@ pub fn exec_stdout_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Error>
 
 pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Error> {
     let mut child = std::process::Command::new(cmd);
-    set_osgeo_envs(&mut child)?;
+    // set_osgeo_envs(&mut child)?;
     debug!("envs: {:#?}", std::env::vars());
-    let mut child = child
+    let mut child = match child
         .args(args)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
-    let mut stdout = child.stdout.take().expect("Unable to take stdout");
-    let mut stderr = child.stderr.take().expect("Unable to take stderr");
+    {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Unable to spawn command: {cmd} {}", args.join(" "));
+            return Err(e.into());
+        }
+    };
+    let Some(mut stdout) = child.stdout.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
+    let Some(mut stderr) = child.stderr.take() else {
+        return Err(subprocess_error!("Unable to take stdout"));
+    };
     let run = Arc::new(AtomicBool::new(true));
     let run2 = run.clone();
     let run3 = run.clone();
@@ -222,7 +261,9 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
                     if len == 0 {
                         break;
                     }
-                    let _ = file.write_all(&buf[..len]);
+                    if let Some(l) = buf.get(..len) {
+                        let _ = file.write_all(l);
+                    }
                 }
                 Err(_e) => {
                     break;
@@ -238,7 +279,9 @@ pub fn exec_stdout_file(cmd: &str, args: &[&str], file: &str) -> Result<(), Erro
                     if len == 0 {
                         break;
                     }
-                    let _ = std::io::stderr().write(&buf[..len]);
+                    if let Some(l) = buf.get(..len) {
+                        let _ = std::io::stderr().write(l);
+                    }
                 }
                 Err(_e) => {
                     break;
@@ -288,15 +331,21 @@ where
     V: AsRef<OsStr>,
 {
     let mut child = std::process::Command::new(cmd);
-    set_osgeo_envs(&mut child)?;
-    let mut child = child
+    // set_osgeo_envs(&mut child)?;
+    let mut child = match child
         .args(args)
         .envs(vars)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .spawn()
-        .unwrap_or_else(|_| panic!("Unable to spawn command: {cmd} {}", args.join(" ")));
+    {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Unable to spawn command: {cmd} {}", args.join(" "));
+            return Err(e.into());
+        }
+    };
     let status = child.wait()?;
     match status.code() {
         Some(c) => {
@@ -336,16 +385,24 @@ where
         child.current_dir(cwd);
     }
 
-    let mut child = child
+    let mut child = match child
         .args(args)
         .envs(vars)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .unwrap_or_else(|e| panic!("Unable to spawn command: {cmd} {}: {e}", args.join(" ")));
+    {
+        Ok(c) => c,
+        Err(e) => {
+            warn!("Unable to spawn command: {cmd} {}: {e}", args.join(" "));
+            return Err(e.into());
+        }
+    };
+
     let mut io = ChildIO {
         outstream: BitsWrapper::Owned(String::new()),
+        stdin: child.stdin.take(),
         stdout: child.stdout.take(),
         stderr: child.stderr.take(),
     };
@@ -414,10 +471,11 @@ pub fn run_cyg_command_lines(cmd: &str, args: &[&str]) -> Result<Vec<String>, Er
     } else {
         std::env::current_dir()?
     };
-    let cygpath = (&cwd).join("msys2");
+    let cygpath = cwd.join("msys2");
     check_cyg_present(&cygpath)?;
     let cygpath = cygpath.join("msys64");
-    let bash = (&cygpath.clone())
+    let bash = cygpath
+        .clone()
         .join("usr")
         .join("bin")
         .join("bash.exe")
@@ -440,10 +498,11 @@ pub fn run_cyg_command(cmd: &str, args: &[&str]) -> Result<(), Error> {
     } else {
         std::env::current_dir()?
     };
-    let cygpath = (&cwd).join("msys2");
+    let cygpath = cwd.join("msys2");
     check_cyg_present(&cygpath)?;
     let cygpath = cygpath.join("msys64");
-    let bash = (&cygpath.clone())
+    let bash = cygpath
+        .clone()
         .join("usr")
         .join("bin")
         .join("bash.exe")
@@ -470,10 +529,11 @@ pub fn run_cyg_command_in<P: AsRef<Path>>(
     } else {
         std::env::current_dir()?
     };
-    let cygpath = (&cwd).join("msys2");
+    let cygpath = cwd.join("msys2");
     check_cyg_present(&cygpath)?;
     let cygpath = cygpath.join("msys64");
-    let bash = (&cygpath.clone())
+    let bash = cygpath
+        .clone()
         .join("usr")
         .join("bin")
         .join("bash.exe")
@@ -509,19 +569,63 @@ pub fn replace_extension<T: AsRef<Path>>(orig: T, ext: &str) -> PathBuf {
         .unwrap_or_default();
     parent.join(format!("{stem}{ext}"))
 }
+pub fn find_matching_file_in_dir<T: AsRef<Path>>(
+    dir: T,
+    prefix: &str,
+    suffix: &str,
+) -> Result<Option<PathBuf>, Error> {
+    let dir = std::fs::read_dir(dir)?;
+    let mut matches = Vec::new();
+    for file in dir {
+        let file = file?;
+        if !file.metadata()?.is_file() {
+            continue;
+        }
+        let name = file.file_name();
+        let name = name.to_string_lossy();
+        if name.starts_with(prefix) && name.ends_with(suffix) {
+            matches.push(file.path());
+        }
+    }
+    if matches.len() == 1 {
+        return Ok(matches.pop());
+    }
+    warn!("Warning: Multiple world matches found - skipping.");
+    for m in matches {
+        warn!("  {}", m.display());
+    }
 
-pub fn run_qgis_processing(
-    project_path: &str,
-    script: &str,
-    extraparams: &[&str],
+    Ok(None)
+}
+
+pub fn find_all_files<T: AsRef<Path>>(start: T, ext: &str) -> Result<Vec<PathBuf>, Error> {
+    let mut out = Vec::new();
+    let path = start.as_ref();
+    let ent = std::fs::read_dir(path)?;
+    for dirent in ent {
+        let dirent = dirent?;
+        collect_fileswithext_in_dirent(&dirent, &mut out, ext)?;
+    }
+    Ok(out)
+}
+
+fn collect_fileswithext_in_dirent(
+    dirent: &DirEntry,
+    out: &mut Vec<PathBuf>,
+    ext: &str,
 ) -> Result<(), Error> {
-    let projpath = format!("--PROJECT_PATH={project_path}");
-    let mut params = Vec::new();
-    params.push("run");
-    params.push(script);
-    params.push(projpath.as_str());
-    params.push("--");
-    params.extend(extraparams);
-    exec_passthru_osgeo("qgis_process.exe", &params)?;
+    let path = dirent.path();
+    if path.is_dir() {
+        let ent = std::fs::read_dir(path)?;
+        for dirent in ent {
+            let dirent = dirent?;
+            collect_fileswithext_in_dirent(&dirent, out, ext)?;
+        }
+    } else if let Some(pathext) = path.extension() {
+        if pathext.to_string_lossy().to_lowercase().as_str() == ext {
+            out.push(path);
+        }
+    }
+
     Ok(())
 }

@@ -5,7 +5,7 @@
 cfg_windows! {
     pub mod win;
 }
-
+pub mod proc;
 use irox_tools::cfg_windows;
 use std::path::PathBuf;
 
