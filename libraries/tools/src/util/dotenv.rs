@@ -4,7 +4,7 @@
 
 use crate::scanner::{LineEnding, QuotedChars, ReadToken, Scanner, Token};
 use irox_bits::Error;
-use std::collections::BTreeMap;
+use alloc::collections::BTreeMap;
 use std::path::Path;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -16,7 +16,7 @@ enum Sep {
 }
 pub fn load_dotenv_from_cwd() -> Result<BTreeMap<String, String>, Error> {
     let Ok(cwd) = std::env::current_dir() else {
-        println!("no cwd");
+        // println!("no cwd");
         return Ok(Default::default());
     };
     let p = cwd.join(".env");

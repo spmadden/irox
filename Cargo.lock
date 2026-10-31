@@ -2572,7 +2572,6 @@ dependencies = [
  "getrandom 0.4.3",
  "irox-bits 0.5.0",
  "irox-pgderive",
- "irox-tools 0.11.1",
  "irox-types",
  "native-tls",
  "postgres-native-tls",

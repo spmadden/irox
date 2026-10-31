@@ -107,16 +107,16 @@ impl DynamicallySizedValue {
             DynamicallySizedValue::u64_blob(_) => VariableType::u64_blob,
         }
     }
-    
+
     /// Returns the length of the bytes of this value
     #[must_use]
     pub fn bytes_length(&self) -> usize {
         match self {
             DynamicallySizedValue::str(v) => v.len(),
-            DynamicallySizedValue::u8_blob(v) => v.len(),
-            DynamicallySizedValue::u16_blob(v) => v.len(),
-            DynamicallySizedValue::u32_blob(v) => v.len(),
-            DynamicallySizedValue::u64_blob(v) => v.len(),
+            DynamicallySizedValue::u8_blob(v)
+            | DynamicallySizedValue::u16_blob(v)
+            | DynamicallySizedValue::u32_blob(v)
+            | DynamicallySizedValue::u64_blob(v) => v.len(),
         }
     }
 }
