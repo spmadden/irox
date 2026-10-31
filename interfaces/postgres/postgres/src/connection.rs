@@ -56,7 +56,7 @@ impl DbConnBuilder {
             .with_identity_cert(Identity::from_pkcs8(&mycert, &mykey)?))
     }
     #[cfg(any(target_os = "linux", target_os = "macos"))]
-    pub fn with_identity_cert_home(mut self) -> Result<Self, Error> {
+    pub fn with_identity_cert_home(self) -> Result<Self, Error> {
         let ad = std::env::var("HOME")?;
         let mycert = std::path::PathBuf::new()
             .join(&ad)
@@ -73,9 +73,9 @@ impl DbConnBuilder {
         let mycert = std::fs::read(&mycert)?;
         let mykey = std::fs::read(&mykey)?;
         let root = std::fs::read(&root)?;
-        self.with_root_cert(&root)?
-            .with_identity_cert(Identity::from_pkcs8(&mycert, &mykey)?);
-        Ok(self)
+        Ok(self
+            .with_root_cert(&root)?
+            .with_identity_cert(Identity::from_pkcs8(&mycert, &mykey)?))
     }
     ///
     /// Use postgres standard `PGSSLCERT` and `PGSSLKEY` environment variables to
