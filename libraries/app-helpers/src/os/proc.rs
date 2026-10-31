@@ -14,27 +14,56 @@ use std::ffi::OsStr;
 use std::fs::{DirEntry, OpenOptions};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::{ChildStderr, ChildStdin, ChildStdout, Stdio};
+use std::process::{Child, ChildStderr, ChildStdin, ChildStdout, Stdio};
 extern crate alloc;
 use alloc::sync::Arc;
+use std::sync::Mutex;
+use std::thread::JoinHandle;
 
-pub struct ChildIO<'a, T: MutBits> {
-    pub outstream: BitsWrapper<'a, T>,
+pub struct ChildIO<T: MutBits + 'static> {
+    pub child: Child,
+    pub outstream: Arc<Mutex<BitsWrapper<'static, T>>>,
     pub stdin: Option<ChildStdin>,
     pub stdout: Option<ChildStdout>,
     pub stderr: Option<ChildStderr>,
+    pub handles: Vec<JoinHandle<()>>,
 }
-impl<T: MutBits> ChildIO<'_, T> {
-    pub fn run_some(&mut self) -> Result<(), Error> {
-        if let Some(so) = &mut self.stdout {
-            let mut bw = BitsWrapper::Borrowed(so);
-            self.outstream.write_all_into_self_from(&mut bw)?;
+impl<T: MutBits> Drop for ChildIO<T> {
+    fn drop(&mut self) {
+        let _ = self.child.kill();
+        for handle in self.handles.drain(..) {
+            let _ = handle.join();
         }
-        if let Some(so) = &mut self.stderr {
-            let mut bw = BitsWrapper::Borrowed(so);
-            self.outstream.write_all_into_self_from(&mut bw)?;
+    }
+}
+impl<T: MutBits + Send + 'static> ChildIO<T> {
+    pub fn start(&mut self) {
+        if let Some(mut io) = self.stdout.take() {
+            let lock1 = self.outstream.clone();
+            let hndl = std::thread::spawn(move || {
+                let mut buf = vec![0u8; 4096];
+                let lock = lock1;
+                loop {
+                    match io.read(&mut buf) {
+                        Ok(read) => {
+                            if read == 0 {
+                                break;
+                            }
+                            if let Some(l) = buf.get(..read) {
+                                if let Ok(mut lock) = lock.lock() {
+                                    let _ = lock.write_all_bytes(l);
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            error!("Error reading from stdout: {e}");
+                            break;
+                        }
+                    }
+                }
+            });
+            self.handles.push(hndl);
         }
-        Ok(())
     }
 }
 
@@ -399,21 +428,7 @@ where
             return Err(e.into());
         }
     };
-
-    let mut io = ChildIO {
-        outstream: BitsWrapper::Owned(String::new()),
-        stdin: child.stdin.take(),
-        stdout: child.stdout.take(),
-        stderr: child.stderr.take(),
-    };
-    let status = loop {
-        let res = child.try_wait()?;
-        if let Some(res) = res {
-            break res;
-        }
-        io.run_some()?;
-    };
-
+    let status = child.wait()?;
     match status.code() {
         Some(c) => {
             if c != 0 {
@@ -434,6 +449,54 @@ where
     Ok(())
 }
 
+pub fn exec_passthru_streamed<I, K, V, P, T: MutBits + Send + 'static>(
+    cmd: &str,
+    args: &[&str],
+    cwd: Option<P>,
+    vars: I,
+    mut streamer: BitsWrapper<'static, T>,
+) -> Result<ChildIO<T>, Error>
+where
+    I: IntoIterator<Item = (K, V)>,
+    K: AsRef<OsStr> + Debug,
+    V: AsRef<OsStr> + Debug,
+    P: AsRef<Path>,
+{
+    let vars = vars.into_iter().collect::<Vec<_>>();
+    let status = format!("Executing command: {cmd} with args: {args:?} and vars: {vars:?}");
+    debug!("{status}");
+    streamer.write_all_bytes(status.as_bytes())?;
+    let mut child = std::process::Command::new(cmd);
+    if let Some(cwd) = cwd {
+        child.current_dir(cwd);
+    }
+
+    let mut child = match child
+        .args(args)
+        .envs(vars)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+    {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Unable to spawn command: {cmd} {}: {e}", args.join(" "));
+            return Err(e.into());
+        }
+    };
+    let mut io = ChildIO {
+        outstream: Arc::new(Mutex::new(streamer)),
+        stdin: child.stdin.take(),
+        stdout: child.stdout.take(),
+        stderr: child.stderr.take(),
+        child,
+        handles: vec![],
+    };
+    io.start();
+
+    Ok(io)
+}
 pub fn ignore_errors<'a, T: Into<Arguments<'a>>>(cmd: &str, args: &[&str], msg: T) {
     if let Err(e) = exec(cmd, args) {
         warn!("{}.  Error was: {e:?}", msg.into());
