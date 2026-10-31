@@ -16,6 +16,7 @@ mod manifest;
 mod pgp;
 mod updater;
 
+pub mod cli;
 pub mod commit_messages;
 mod error;
 mod os;
