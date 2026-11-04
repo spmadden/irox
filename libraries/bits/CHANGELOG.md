@@ -1,12 +1,44 @@
 
 
-## v0.5.0 (2026-02-01)
-
-<csr-id-dc305634f1eda45a6a3137a6d270f9d406579c7c/>
+## v0.6.0 (2026-11-04)
 
 ### Chore
 
- - <csr-id-dc305634f1eda45a6a3137a6d270f9d406579c7c/> bump version to 0.5.0
+ - <csr-id-ac4fbd1289190ecdf910de8c5dd89f017b0f2b87/> bump irox-bits to 0.6.0 for release
+
+### New Features
+
+ - <csr-id-caf0497058e081df23bad174edd3861e826e566f/> big refactor to pivot from std/read to irox_bits for scanner
+ - <csr-id-a5c4b2ce43d0e50fa0d96e1c47e6d874b581b65e/> Seek gets rewind and position impls, BitsWrapper gets Seek
+ - <csr-id-394d624c8a254ceccfedb522120038d6ac2d6219/> basic impl of SeekRead that doesn't rely on os-specific extensions
+ - <csr-id-acd565f0d83aa12c31b57eb3666d198cfa4fa649/> Bits and Seek get position()
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 276 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Bump irox-bits to 0.6.0 for release ([`ac4fbd1`](https://github.com/spmadden/irox/commit/ac4fbd1289190ecdf910de8c5dd89f017b0f2b87))
+    - Big refactor to pivot from std/read to irox_bits for scanner ([`caf0497`](https://github.com/spmadden/irox/commit/caf0497058e081df23bad174edd3861e826e566f))
+    - Seek gets rewind and position impls, BitsWrapper gets Seek ([`a5c4b2c`](https://github.com/spmadden/irox/commit/a5c4b2ce43d0e50fa0d96e1c47e6d874b581b65e))
+    - Basic impl of SeekRead that doesn't rely on os-specific extensions ([`394d624`](https://github.com/spmadden/irox/commit/394d624c8a254ceccfedb522120038d6ac2d6219))
+    - Bits and Seek get position() ([`acd565f`](https://github.com/spmadden/irox/commit/acd565f0d83aa12c31b57eb3666d198cfa4fa649))
+</details>
+
+## v0.5.0 (2026-02-01)
+
+<csr-id-dc305634f1eda45a6a3137a6d270f9d406579c7c/>
 
 ### New Features
 
@@ -34,7 +66,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 18 commits contributed to the release.
+ - 19 commits contributed to the release.
  - 337 days passed between releases.
  - 17 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -46,6 +78,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-bits v0.5.0 ([`f1b8571`](https://github.com/spmadden/irox/commit/f1b85719eedf584c9953a917ff94b9a9f528bcae))
     - Release irox-bits v0.5.0 ([`9a6d933`](https://github.com/spmadden/irox/commit/9a6d9331ad0ea937fea6635ef972e292881e9cda))
     - Bump version to 0.5.0 ([`dc30563`](https://github.com/spmadden/irox/commit/dc305634f1eda45a6a3137a6d270f9d406579c7c))
     - Impl u32 to/from [u8;64] ([`79cd221`](https://github.com/spmadden/irox/commit/79cd221db336001a43bf474011f6779a30db731e))
@@ -70,11 +103,6 @@
 
 <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/>
 <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
-
-### Chore
-
- - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
- - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
 
 ### New Features
 
@@ -161,7 +189,7 @@
 <csr-read-only-do-not-edit/>
 
  - 15 commits contributed to the release over the course of 25 calendar days.
- - 43 days passed between releases.
+ - 44 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -208,6 +236,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 13 calendar days.
+ - 45 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -331,16 +360,12 @@
 
 <csr-id-77677189e46aec6b857762f5a8ff0b49d6922ebf/>
 
-### Other
-
- - <csr-id-77677189e46aec6b857762f5a8ff0b49d6922ebf/> fix docsrs for irox-bits
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 12 days passed between releases.
+ - 13 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -439,10 +464,6 @@
 ### Bug Fixes
 
  - <csr-id-91da08c9b855233a77b7e0df369d70736eaeabc9/> fix removing u8 from wrong end of struct for String and Vec with horribly inefficient solution
-
-### Refactor (BREAKING)
-
- - <csr-id-05c5b84578474138d78211db2763e11a7bb3a925/> pull out tools/bits into own module, no-std, no-alloc
 
 ### Commit Statistics
 
