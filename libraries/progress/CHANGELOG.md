@@ -1,5 +1,36 @@
 
 
+## v0.7.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-306ecdf97f797b33cc68f485b0bd7aebd5b6212c/> hide log behind internal export in threading & progress
+
+### Bug Fixes
+
+ - <csr-id-2b93d9d46592e0e3e2291a497d1cb5e944060ea2/> push progress & threading behind logging facade
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 605 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Push progress & threading behind logging facade ([`2b93d9d`](https://github.com/spmadden/irox/commit/2b93d9d46592e0e3e2291a497d1cb5e944060ea2))
+    - Hide log behind internal export in threading & progress ([`306ecdf`](https://github.com/spmadden/irox/commit/306ecdf97f797b33cc68f485b0bd7aebd5b6212c))
+</details>
+
 ## v0.6.0 (2025-03-09)
 
 ### Refactor (BREAKING)
@@ -10,7 +41,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
+ - 28 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +53,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-progress v0.6.0, safety bump 2 crates ([`d27f82c`](https://github.com/spmadden/irox/commit/d27f82c385255f496741b01be6dcb68e04ef65f4))
     - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
 </details>
 
@@ -54,11 +87,6 @@
 
 <csr-id-1b028d5fb637422c379414c26561662b6a299c25/>
 <csr-id-1e5f58d8d9ce3924b1db439a765fccfc58f97213/>
-
-### Chore
-
- - <csr-id-1b028d5fb637422c379414c26561662b6a299c25/> bump version of progress for dep resolution
- - <csr-id-1e5f58d8d9ce3924b1db439a765fccfc58f97213/> bump progress to 0.5.0 and irox to 0.8.1 for release
 
 ### Bug Fixes
 
@@ -97,6 +125,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 135 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -122,7 +151,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 10 calendar days.
- - 73 days passed between releases.
+ - 74 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -148,7 +177,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 24 days passed between releases.
+ - 25 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -166,10 +195,6 @@
 ## v0.3.3 (2024-04-24)
 
 <csr-id-5a9b27c4d1a52e0d84365cede052dd6d70e3448b/>
-
-### Chore
-
- - <csr-id-5a9b27c4d1a52e0d84365cede052dd6d70e3448b/> bump version of progress for deps
 
 ### Commit Statistics
 
@@ -196,11 +221,6 @@
 <csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/>
 <csr-id-9ceb75cbf96dcbe8808bccfed147810dd9795401/>
 
-### Refactor
-
- - <csr-id-9716722093a4c5ccccf1894111ca95d356d79fa6/> convert new bits error
- - <csr-id-9ceb75cbf96dcbe8808bccfed147810dd9795401/> fix structs to use new bits module
-
 ### Bug Fixes
 
  - <csr-id-225a01c29e9bf66d2054c3c2ae88ce94e42626ae/> pull in irox_tools::std
@@ -210,6 +230,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release over the course of 1 calendar day.
+ - 49 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -238,7 +259,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 35 calendar days.
- - 50 days passed between releases.
+ - 51 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -264,7 +285,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 2 calendar days.
- - 37 days passed between releases.
+ - 38 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -315,11 +336,6 @@
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### New Features
 
  - <csr-id-d08939007d939152e532b84654208b0156b3a8d6/> update egui to 0.24
@@ -333,6 +349,7 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 23 calendar days.
+ - 27 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -363,7 +380,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -390,7 +407,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
