@@ -1,6 +1,37 @@
 
 
 
+## v0.3.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-30c0363684f1c7e5f3cdb61f8cab8f4cda290cd4/> clean up some lints
+
+### New Features (BREAKING)
+
+ - <csr-id-34e3a265c10752a38063bbf81204dfaf9cbfae7a/> change signature of iter_names(), add items()
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 241 calendar days.
+ - 976 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Clean up some lints ([`30c0363`](https://github.com/spmadden/irox/commit/30c0363684f1c7e5f3cdb61f8cab8f4cda290cd4))
+    - Change signature of iter_names(), add items() ([`34e3a26`](https://github.com/spmadden/irox/commit/34e3a265c10752a38063bbf81204dfaf9cbfae7a))
+</details>
+
 ## v0.2.2 (2024-03-03)
 
 ### New Features
@@ -11,8 +42,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 95 days passed between releases.
+ - 2 commits contributed to the release.
+ - 96 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,16 +54,13 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.2, irox-enums v0.2.2 ([`d9f7875`](https://github.com/spmadden/irox/commit/d9f7875c92dba92845f5833fec2173a8b43a26f0))
     - Now no_std! ([`be3d307`](https://github.com/spmadden/irox/commit/be3d30732b59faf7fff949fdeebb908fc12640a3))
 </details>
 
-## v0.2.1 (2023-11-29)
+## v0.2.1 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
-
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
 
 ### Commit Statistics
 
@@ -54,15 +82,10 @@
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
