@@ -1,6 +1,52 @@
 
 
 
+## v0.6.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-5b73b99248e7ba1baa5e6d7a0d913401542c96b0/> update to rust 1.95, cleanup lints
+ - <csr-id-f073ee1f4fd1f9f927df876c74e0221cf7a0d052/> fix formatting
+
+### New Features
+
+ - <csr-id-e344dd9819e5bfe3f93e54ac4ad25827de0cb85f/> add concept of coordinate systems
+ - <csr-id-9b79c450a32db515af596f11e0b4bd1efca2e94b/> Most of units gets serde support
+ - <csr-id-e667c8f7f00a2fb57bda55e1d5765df3ed60d6ef/> extra edge case in Angle
+ - <csr-id-0bc749b9c65d02d3853141dc312ac03280739ef2/> augmentation to angle
+ - <csr-id-faffbd284cd10a3cff22bd8acb848e8ffc08875b/> Angle gets min, max, normalize, angle_between
+
+### Test
+
+ - <csr-id-367f0d1cf22921f485aef390c381f91d0724b890/> clean up quantities tests
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 276 days passed between releases.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.95, cleanup lints ([`5b73b99`](https://github.com/spmadden/irox/commit/5b73b99248e7ba1baa5e6d7a0d913401542c96b0))
+    - Fix formatting ([`f073ee1`](https://github.com/spmadden/irox/commit/f073ee1f4fd1f9f927df876c74e0221cf7a0d052))
+    - Clean up quantities tests ([`367f0d1`](https://github.com/spmadden/irox/commit/367f0d1cf22921f485aef390c381f91d0724b890))
+    - Add concept of coordinate systems ([`e344dd9`](https://github.com/spmadden/irox/commit/e344dd9819e5bfe3f93e54ac4ad25827de0cb85f))
+    - Most of units gets serde support ([`9b79c45`](https://github.com/spmadden/irox/commit/9b79c450a32db515af596f11e0b4bd1efca2e94b))
+    - Extra edge case in Angle ([`e667c8f`](https://github.com/spmadden/irox/commit/e667c8f7f00a2fb57bda55e1d5765df3ed60d6ef))
+    - Augmentation to angle ([`0bc749b`](https://github.com/spmadden/irox/commit/0bc749b9c65d02d3853141dc312ac03280739ef2))
+    - Angle gets min, max, normalize, angle_between ([`faffbd2`](https://github.com/spmadden/irox/commit/faffbd284cd10a3cff22bd8acb848e8ffc08875b))
+</details>
+
 ## v0.5.0 (2026-02-01)
 
 ### Chore
@@ -27,7 +73,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release.
+ - 12 commits contributed to the release.
  - 337 days passed between releases.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -39,6 +85,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-units v0.5.0 ([`3e4764b`](https://github.com/spmadden/irox/commit/3e4764b0d1ddd4ea31d4c8a3edef27efb02da1f0))
     - Bump version to 0.5.0 ([`d6b1811`](https://github.com/spmadden/irox/commit/d6b1811a557f18d2a1c806c29562dafab66d2492))
     - No-std sin/cos for FloatExt ([`f5f3e19`](https://github.com/spmadden/irox/commit/f5f3e19e5d6b144b94e2269bf6a6e20765e54f7a))
     - Units & graphing ([`5a2ef90`](https://github.com/spmadden/irox/commit/5a2ef90e7bafeec40e35a61f68c34ad2935996b1))
@@ -55,10 +102,6 @@
 ## v0.4.7 (2025-03-01)
 
 <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/>
-
-### Chore
-
- - <csr-id-e77e9a5d2460581f0f4140a350ca5fe0b283cc05/> cleanup remaining misc lints
 
 ### Commit Statistics
 
@@ -153,7 +196,7 @@
 <csr-read-only-do-not-edit/>
 
  - 8 commits contributed to the release over the course of 40 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -189,7 +232,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -217,6 +260,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 20 calendar days.
+ - 131 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -262,10 +306,6 @@
 
 <csr-id-7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e/>
 
-### Refactor (BREAKING)
-
- - <csr-id-7a4c7dcdf5d871f561fb3ad8d30da358ae6ff39e/> rename feature std_errors to std to align with other modules
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -297,6 +337,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 29 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -326,7 +367,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
- - 50 days passed between releases.
+ - 51 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -348,16 +389,12 @@
 
 <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
-### Chore
-
- - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 44 days passed between releases.
+ - 45 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -375,10 +412,6 @@
 ## v0.3.3 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
-
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
 
 ### New Features
 
@@ -416,6 +449,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 10 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -433,10 +467,6 @@
 ## v0.3.1 (2023-10-29)
 
 <csr-id-f374b5ef4a7f69938753223712d28c52353bbb92/>
-
-### Chore
-
- - <csr-id-f374b5ef4a7f69938753223712d28c52353bbb92/> ALL THE LINTS.
 
 ### New Features
 
@@ -512,10 +542,6 @@
  - <csr-id-a7c461de86da33b33f5d79b3354e367cf0cbc4a4/> fix basic_unit macro export
  - <csr-id-806d3086ba751e7d2e12ebae98840ea548eaa583/> fix name for speed macro
 
-### Other
-
- - <csr-id-90e274aabca747c30b3a32823940fec6225f0a07/> Update docs for angle and compass
-
 ### New Features (BREAKING)
 
  - <csr-id-9245b11a33fe56f75028ef5d2faa09efa4f40626/> break out time into own module
@@ -526,7 +552,7 @@
 <csr-read-only-do-not-edit/>
 
  - 34 commits contributed to the release over the course of 5 calendar days.
- - 27 days passed between releases.
+ - 28 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -586,12 +612,6 @@
 <csr-id-a1829550c5c0acdac004160b8050d69b4afdb3bd/>
 <csr-id-05a5b43bfb2f907d36b17cf844a52ddc92c2dfde/>
 
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
-
 ### New Features
 
  - <csr-id-0bb78ee642c9952e70b5ec91d66d101db0263e9d/> impl ShortName and Display for Length
@@ -627,19 +647,6 @@
  - <csr-id-b9a64189e4b2c4b359395a2ca313179fa76474e4/> Fix missing modules from units
  - <csr-id-1ee26b0b6b0ae9468d826b5ac82b56f6bcb37509/> Fixing fmt
  - <csr-id-d9df940c05bfafe2065c9a03015a6ced7a1eba77/> Fix backwards datasize
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
- - <csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/> exclude docs folder from publish
- - <csr-id-6c088bdcb392c82ec09a9cf4288318b6933a4c35/> add license headers
- - <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/> update metadata, prepare for release
-
-### Refactor
-
- - <csr-id-553cfcabf7e0a3066eeb646952f8271ac0887208/> Move coordinate & geo from units
- - <csr-id-a1829550c5c0acdac004160b8050d69b4afdb3bd/> Compass tweaks
- - <csr-id-05a5b43bfb2f907d36b17cf844a52ddc92c2dfde/> Move geo and coord to carto
 
 ### Commit Statistics
 
