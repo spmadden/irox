@@ -1,5 +1,38 @@
 
 
+## v0.3.0 (2026-11-04)
+
+### New Features
+
+ - <csr-id-cae993888b2f43e20b2709702dda864aecb4195b/> Add MinValue, MaxValue, and is_finite to FloatIsh things
+ - <csr-id-dcfc86b140145cec936b951008a50060f4d3186b/> log2, min, max functions in FloatExt
+
+### Refactor
+
+ - <csr-id-c41491ac9b55af7167eb7ec9704cfa1bc35e83b0/> rejigger FloatExt to not require a type value
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 276 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Rejigger FloatExt to not require a type value ([`c41491a`](https://github.com/spmadden/irox/commit/c41491ac9b55af7167eb7ec9704cfa1bc35e83b0))
+    - Add MinValue, MaxValue, and is_finite to FloatIsh things ([`cae9938`](https://github.com/spmadden/irox/commit/cae993888b2f43e20b2709702dda864aecb4195b))
+    - Log2, min, max functions in FloatExt ([`dcfc86b`](https://github.com/spmadden/irox/commit/dcfc86b140145cec936b951008a50060f4d3186b))
+</details>
+
 ## v0.2.0 (2026-02-01)
 
 ### Chore
@@ -23,7 +56,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release over the course of 56 calendar days.
+ - 9 commits contributed to the release over the course of 56 calendar days.
  - 371 days passed between releases.
  - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -35,6 +68,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-fixedmath v0.2.0 ([`be3497a`](https://github.com/spmadden/irox/commit/be3497a4f28c50030a730ecdf905e64db883474b))
     - Bump version to 0.2.0 ([`7c8b8be`](https://github.com/spmadden/irox/commit/7c8b8be2297da59ec0c839eb4b1891270e08efa5))
     - Pull in CORDIC ([`b39d328`](https://github.com/spmadden/irox/commit/b39d32800aec5d913d6bbfb739fc8ccf1ac10772))
     - Floatish gets clamp() ([`08ca5c0`](https://github.com/spmadden/irox/commit/08ca5c08d742fd1c2a5e64c0a164166f084a4e6f))
@@ -57,6 +91,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 31 calendar days.
+ - 94 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
