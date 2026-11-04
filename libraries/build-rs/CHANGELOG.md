@@ -1,5 +1,45 @@
 
 
+## v0.3.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-43615bc89fd3366f42b52950acc08d6f566ccfe7/> clean up import errors
+ - <csr-id-8ed5d1f5e72b93c4cef5332f45d034d4bc5101fc/> clean up lints
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+
+### New Features
+
+ - <csr-id-dff5644597f668c031fb069847c7e3b2c70f2b8e/> rejigger to be more compatible with wasm32
+
+### Bug Fixes
+
+ - <csr-id-b93f50c231124321ea562693eca3bec7f169cf66/> fixed missing imports for linux build
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release.
+ - 633 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Fixed missing imports for linux build ([`b93f50c`](https://github.com/spmadden/irox/commit/b93f50c231124321ea562693eca3bec7f169cf66))
+    - Clean up import errors ([`43615bc`](https://github.com/spmadden/irox/commit/43615bc89fd3366f42b52950acc08d6f566ccfe7))
+    - Clean up lints ([`8ed5d1f`](https://github.com/spmadden/irox/commit/8ed5d1f5e72b93c4cef5332f45d034d4bc5101fc))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Rejigger to be more compatible with wasm32 ([`dff5644`](https://github.com/spmadden/irox/commit/dff5644597f668c031fb069847c7e3b2c70f2b8e))
+</details>
+
 ## v0.2.5 (2025-02-09)
 
 ### New Features
@@ -10,7 +50,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 1 calendar day.
+ - 2 commits contributed to the release over the course of 1 calendar day.
+ - 103 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +62,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-build-rs v0.2.5 ([`a73825d`](https://github.com/spmadden/irox/commit/a73825d0b3a118c9e3a6dd23472e252e6550d013))
     - Reworks buildrs to remove dep from irox_egui_extras ([`c419ac5`](https://github.com/spmadden/irox/commit/c419ac5c2c140c909341021143e94348d30799c7))
 </details>
 
@@ -99,6 +141,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 2 calendar days.
+ - 128 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -117,10 +160,6 @@
 ## v0.2.1 (2024-03-03)
 
 <csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/>
-
-### Refactor
-
- - <csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/> deconflict network/example and build-rs/example
 
 ### Commit Statistics
 
@@ -149,7 +188,7 @@
 <csr-read-only-do-not-edit/>
 
  - 1 commit contributed to the release.
- - 18 days passed between releases.
+ - 19 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
