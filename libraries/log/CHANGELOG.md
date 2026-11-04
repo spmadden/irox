@@ -1,5 +1,36 @@
 
 
+## v0.3.0 (2026-11-04)
+
+### New Features
+
+ - <csr-id-51893591ec7b3a9d09dc3bf86d5fc71d85e028c0/> new multi-appender support
+
+### Bug Fixes
+
+ - <csr-id-a242f8c14318a6feb230b348019151e942dbde15/> Fix alloc=>std features
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 647 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Fix alloc=>std features ([`a242f8c`](https://github.com/spmadden/irox/commit/a242f8c14318a6feb230b348019151e942dbde15))
+    - New multi-appender support ([`5189359`](https://github.com/spmadden/irox/commit/51893591ec7b3a9d09dc3bf86d5fc71d85e028c0))
+</details>
+
 ## v0.2.3 (2025-01-26)
 
 ### Bug Fixes
@@ -10,7 +41,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +52,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-log v0.2.3 ([`9d5e75e`](https://github.com/spmadden/irox/commit/9d5e75eec4ec61b948c5893489020d6c03f83ac6))
     - Hopefully fix docsrs builds for cargo, log, stats, units ([`9cd9e62`](https://github.com/spmadden/irox/commit/9cd9e624907cded75b72e0aa9734909ded0f93d1))
 </details>
 
@@ -36,7 +68,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 7 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -85,7 +117,7 @@
 <csr-read-only-do-not-edit/>
 
  - 1 commit contributed to the release.
- - 18 days passed between releases.
+ - 19 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -110,7 +142,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 2 calendar days.
- - 11 days passed between releases.
+ - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -155,16 +187,12 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 3 calendar days.
- - 23 days passed between releases.
+ - 24 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
