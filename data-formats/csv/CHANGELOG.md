@@ -1,18 +1,18 @@
 
 
 
-## v0.5.1 (2024-04-21)
+## v0.6.0 (2026-11-04)
 
-### Bug Fixes
+### New Features
 
- - <csr-id-71c3816c42a3449a7b5e4a16767077b729b4d374/> require irox-tools::std
+ - <csr-id-caf0497058e081df23bad174edd3861e826e566f/> big refactor to pivot from std/read to irox_bits for scanner
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
- - 98 days passed between releases.
+ - 2 commits contributed to the release.
+ - 927 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,16 +23,60 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Big refactor to pivot from std/read to irox_bits for scanner ([`caf0497`](https://github.com/spmadden/irox/commit/caf0497058e081df23bad174edd3861e826e566f))
+</details>
+
+## v0.5.1 (2024-04-21)
+
+### Bug Fixes
+
+ - <csr-id-71c3816c42a3449a7b5e4a16767077b729b4d374/> require irox-tools::std
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 99 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-csv v0.5.1 ([`3d1ab6e`](https://github.com/spmadden/irox/commit/3d1ab6e25da4028cfab7438a4752c584a3af6fab))
     - Require irox-tools::std ([`71c3816`](https://github.com/spmadden/irox/commit/71c3816c42a3449a7b5e4a16767077b729b4d374))
 </details>
 
-## v0.4.1 (2023-11-29)
+## v0.5.0 (2024-01-13)
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 46 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
+## v0.4.1 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
-
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
 
 ### New Features
 
@@ -59,28 +103,7 @@
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
 </details>
 
-## v0.5.0 (2024-01-13)
-
-### Commit Statistics
-
-<csr-read-only-do-not-edit/>
-
- - 1 commit contributed to the release.
- - 45 days passed between releases.
- - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
- - 0 issues like '(#ID)' were seen in commit messages
-
-### Commit Details
-
-<csr-read-only-do-not-edit/>
-
-<details><summary>view details</summary>
-
- * **Uncategorized**
-    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
-</details>
-
-## v0.4.0 (2023-10-30)
+## v0.4.0 (2023-10-29)
 
 ### Bug Fixes
 
@@ -107,7 +130,7 @@
     - Fix issue with CSV interspersing double/single quotes by default ([`47dec1c`](https://github.com/spmadden/irox/commit/47dec1ce858b6792544264c7e109e5494b05682c))
 </details>
 
-## v0.3.0 (2023-10-16)
+## v0.3.0 (2023-10-15)
 
 ### Documentation
 
@@ -136,7 +159,7 @@
 <csr-read-only-do-not-edit/>
 
  - 12 commits contributed to the release over the course of 7 calendar days.
- - 27 days passed between releases.
+ - 28 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -161,13 +184,9 @@
     - Created Dialects and Tokenizers ([`7c509d0`](https://github.com/spmadden/irox/commit/7c509d006010ac421429b08b3cfb51afbfa1f0c4))
 </details>
 
-## v0.2.1 (2023-09-18)
+## v0.2.1 (2023-09-17)
 
 <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/>
-
-### Chore
-
- - <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/> Fix up the readmes for publishing
 
 ### Commit Statistics
 
@@ -188,7 +207,7 @@
     - Fix up the readmes for publishing ([`f99614a`](https://github.com/spmadden/irox/commit/f99614a5ce3368072b4d44dacede0e6e847b0b2e))
 </details>
 
-## v0.2.0 (2023-09-18)
+## v0.2.0 (2023-09-17)
 
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
@@ -196,12 +215,6 @@
 <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
 <csr-id-6d1d9a937390e9c89c4a1c66ae55f547d22e63df/>
 <csr-id-e720f74b2427c4e02a92f384eaa93a28b9de28c3/>
-
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
@@ -216,15 +229,6 @@
 ### Bug Fixes
 
  - <csr-id-e91b38d650a1f4cae2bf4b5b3c31717c2d9de83c/> fix fmt
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
- - <csr-id-6d1d9a937390e9c89c4a1c66ae55f547d22e63df/> started tokenizer
-
-### Refactor
-
- - <csr-id-e720f74b2427c4e02a92f384eaa93a28b9de28c3/> use buffer, ignore repeated newlines, add test
 
 ### Commit Statistics
 
