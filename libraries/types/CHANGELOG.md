@@ -1,6 +1,43 @@
 
 
 
+## v0.6.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-1540b11709da2b2e5cc2c0f6f50920d9668925b8/> update to rust 1.93, cleanup lints
+ - <csr-id-f99487c00dd270a85ba576f14151ed44104965d1/> cleaning up some linted values
+ - <csr-id-e2a08aae1f0c26dfa553292540a7e3a873867db4/> remove feat 'bits' from irox_types
+
+### New Features
+
+ - <csr-id-922168b516f1bf9ca42e9fa674ceb298d29e4bd5/> add bytes_length method to more variable types
+ - <csr-id-d926e8cd87328eb3f353fd6efa5b1cee60e9fcb3/> new field and descriptor structures
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 6 commits contributed to the release.
+ - 613 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.93, cleanup lints ([`1540b11`](https://github.com/spmadden/irox/commit/1540b11709da2b2e5cc2c0f6f50920d9668925b8))
+    - Cleaning up some linted values ([`f99487c`](https://github.com/spmadden/irox/commit/f99487c00dd270a85ba576f14151ed44104965d1))
+    - Add bytes_length method to more variable types ([`922168b`](https://github.com/spmadden/irox/commit/922168b516f1bf9ca42e9fa674ceb298d29e4bd5))
+    - New field and descriptor structures ([`d926e8c`](https://github.com/spmadden/irox/commit/d926e8cd87328eb3f353fd6efa5b1cee60e9fcb3))
+    - Remove feat 'bits' from irox_types ([`e2a08aa`](https://github.com/spmadden/irox/commit/e2a08aae1f0c26dfa553292540a7e3a873867db4))
+</details>
+
 ## v0.5.2 (2025-03-01)
 
 ### Chore
@@ -11,7 +48,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 34 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-types v0.5.2 ([`86f2594`](https://github.com/spmadden/irox/commit/86f2594105c9ee7269322d01e751aef5c3df5239))
     - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
 </details>
 
@@ -37,7 +75,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 7 calendar days.
- - 43 days passed between releases.
+ - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -67,6 +105,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 19 calendar days.
+ - 45 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -203,15 +242,12 @@
 
 <csr-id-4e8bd7e566d5eb0eda3e7a4e0992abcc05da389c/>
 
-### Refactor (BREAKING)
-
- - <csr-id-4e8bd7e566d5eb0eda3e7a4e0992abcc05da389c/> Moved the variably sized elements from Primitives into new enum
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 125 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -230,10 +266,6 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### New Features
 
  - <csr-id-6919741e9ff5ca0b599e80a84c701b2fdb80a6af/> support converting a 'Vec<u8>' into a Primitives::u32_blob
@@ -247,6 +279,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 9 calendar days.
+ - 30 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -266,10 +299,6 @@
 ## v0.2.2 (2023-10-29)
 
 <csr-id-645afe2dca3b6f200aa6a8ed73c157316d30943c/>
-
-### Chore
-
- - <csr-id-645afe2dca3b6f200aa6a8ed73c157316d30943c/> ALL THE LINTS.
 
 ### Commit Statistics
 
@@ -307,7 +336,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 8 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -328,11 +357,6 @@
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
