@@ -1,5 +1,55 @@
 
 
+## v0.2.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-d852f3f634768b5f6632d9dc3d20f774badda2e2/> update to rust 1.98, cleanup lints
+ - <csr-id-e94cca70549d6a6f74028244d05bd47b7043eae9/> clean up some review comments around x/ed/25519
+
+### New Features
+
+ - <csr-id-7bed0533fe76c6a8d9e809b326e9a1c57931f168/> improved conversions between montgomery and edwards for XEdDSA signing keypair
+ - <csr-id-b01b543f880a3bed5c9cea90bf8db1c7045b9ae2/> further gate crng options
+
+### Bug Fixes
+
+ - <csr-id-6ce881c8ab1a6c24d751f7750c6307644b6f9639/> restore as_signing_key method for Ed25519PublicKey conversion
+ - <csr-id-20cd6770f774fa4fa49da684a5e35dfbd1c18304/> put second timer function behind arch gate
+ - <csr-id-0d0c003f0d94c45ccf9712a179f1298f31f99675/> put x86_64 specific assembly gated behind the cfg macro
+ - <csr-id-8743bf41fe92c13029d768d3d05047f2a1c2d5a8/> clean up warnings on linux build in crng
+ - <csr-id-2ac0d632e4fbc38bd1b4288be044b3bbb4d89fee/> rejigger crng sequencing
+ - <csr-id-ef2d584de871dfd5bd964228849dc19e2aa454ed/> fix imports
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release over the course of 274 calendar days.
+ - 276 days passed between releases.
+ - 10 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.98, cleanup lints ([`d852f3f`](https://github.com/spmadden/irox/commit/d852f3f634768b5f6632d9dc3d20f774badda2e2))
+    - Improved conversions between montgomery and edwards for XEdDSA signing keypair ([`7bed053`](https://github.com/spmadden/irox/commit/7bed0533fe76c6a8d9e809b326e9a1c57931f168))
+    - Restore as_signing_key method for Ed25519PublicKey conversion ([`6ce881c`](https://github.com/spmadden/irox/commit/6ce881c8ab1a6c24d751f7750c6307644b6f9639))
+    - Clean up some review comments around x/ed/25519 ([`e94cca7`](https://github.com/spmadden/irox/commit/e94cca70549d6a6f74028244d05bd47b7043eae9))
+    - Put second timer function behind arch gate ([`20cd677`](https://github.com/spmadden/irox/commit/20cd6770f774fa4fa49da684a5e35dfbd1c18304))
+    - Put x86_64 specific assembly gated behind the cfg macro ([`0d0c003`](https://github.com/spmadden/irox/commit/0d0c003f0d94c45ccf9712a179f1298f31f99675))
+    - Clean up warnings on linux build in crng ([`8743bf4`](https://github.com/spmadden/irox/commit/8743bf41fe92c13029d768d3d05047f2a1c2d5a8))
+    - Rejigger crng sequencing ([`2ac0d63`](https://github.com/spmadden/irox/commit/2ac0d632e4fbc38bd1b4288be044b3bbb4d89fee))
+    - Fix imports ([`ef2d584`](https://github.com/spmadden/irox/commit/ef2d584de871dfd5bd964228849dc19e2aa454ed))
+    - Further gate crng options ([`b01b543`](https://github.com/spmadden/irox/commit/b01b543f880a3bed5c9cea90bf8db1c7045b9ae2))
+</details>
+
 ## v0.1.2 (2026-02-01)
 
 ### Bug Fixes
@@ -10,7 +60,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +71,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-cryptids v0.1.2 ([`13cca7d`](https://github.com/spmadden/irox/commit/13cca7d3def4ae03ac914be0d648ab291982bd1d))
     - Docsrs fix round 2 ([`442dc8c`](https://github.com/spmadden/irox/commit/442dc8cc475b26d8e6801a3a1ccbb85c99100520))
 </details>
 
@@ -56,11 +107,6 @@
 <csr-id-2de510fd54646200cf214dadcd2323273bd1db94/>
 <csr-id-d2df47065c23ebaf632143cb1c8a4cb6dad559cc/>
 <csr-id-759bf9c7de15076346de3c8f5c93b493b81729d8/>
-
-### Chore
-
- - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
- - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
 
 ### New Features
 
@@ -100,12 +146,6 @@
  - <csr-id-b7fa87a606780d8d8855a44b0b9c8e0b1e39fd90/> fix x25519 bencher
  - <csr-id-348890dc3f736ba34297142b3fc0af03aa2c59fc/> fix aes test compilation error
  - <csr-id-99d549d56286fbca875ec3fcfa2caee297319fe0/> ignore currently failing test - will fix
-
-### Other
-
- - <csr-id-2de510fd54646200cf214dadcd2323273bd1db94/> cryptids
- - <csr-id-d2df47065c23ebaf632143cb1c8a4cb6dad559cc/> poly1305
- - <csr-id-759bf9c7de15076346de3c8f5c93b493b81729d8/> update readme to be useful
 
 ### Commit Statistics
 
