@@ -1,6 +1,39 @@
 
 
 
+## v0.6.0 (2026-11-04)
+
+### New Features
+
+ - <csr-id-921a2e3274d10bbe85854ae1cb37a97278ca91d9/> add offset tracking
+ - <csr-id-db778be08157c490b5b994c4c9b1efc16c401ba3/> add get and get_mut functions
+
+### Bug Fixes
+
+ - <csr-id-96b02fc2134c601dcf1c7ca067e4ba766d65c71a/> fix errant Node in Shared
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 276 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Add offset tracking ([`921a2e3`](https://github.com/spmadden/irox/commit/921a2e3274d10bbe85854ae1cb37a97278ca91d9))
+    - Fix errant Node in Shared ([`96b02fc`](https://github.com/spmadden/irox/commit/96b02fc2134c601dcf1c7ca067e4ba766d65c71a))
+    - Add get and get_mut functions ([`db778be`](https://github.com/spmadden/irox/commit/db778be08157c490b5b994c4c9b1efc16c401ba3))
+</details>
+
 ## v0.5.0 (2026-02-01)
 
 ### Chore
@@ -16,7 +49,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 415 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -28,6 +61,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-structs_derive v0.5.0 ([`70cafa8`](https://github.com/spmadden/irox/commit/70cafa853458a4dcc3057b9e7f3ae2810abeee0d))
     - Bump version to 0.5.0 ([`b4557e3`](https://github.com/spmadden/irox/commit/b4557e31ce7e4e9335ec1e25753733b858293995))
     - Ability to derive a basic SharedX variant of a struct that wraps the inner struct's fields with an RwLock ([`b0386c2`](https://github.com/spmadden/irox/commit/b0386c20f52f1d585e7f74efe159b3e822dd138f))
     - Add todo!(), Self: Sized, and syn compile error helper ([`4e50426`](https://github.com/spmadden/irox/commit/4e504268ee4b91d397e688542722a66495812895))
@@ -44,6 +78,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 13 calendar days.
+ - 168 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -94,10 +129,6 @@
 
  - <csr-id-f0e7ae115ce7529c398c0731d8928b12d6d90cae/> change derive to export structs rather than irox_bits directly
 
-### Refactor
-
- - <csr-id-206ec2a2390f69081af79ca6bf069db1c13a647e/> fix structs to use new bits module
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -124,23 +155,16 @@
 <csr-id-56ab68398e06e2df370cf615665988ee62346999/>
 <csr-id-9427c1392d00725f7ee3cc73ffb23e25a9dd72a1/>
 
-### Chore
-
- - <csr-id-56ab68398e06e2df370cf615665988ee62346999/> lints and fmt
-
 ### New Features
 
  - <csr-id-00590ab1f9749f74bf3a2cc54dea8635328555d1/> add little-endian support for derived structs
-
-### Refactor (BREAKING)
-
- - <csr-id-9427c1392d00725f7ee3cc73ffb23e25a9dd72a1/> pretty much a full rewrite of the derive code to use less proc_macro2
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 1 calendar day.
+ - 124 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -161,10 +185,6 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### New Features
 
  - <csr-id-29987c2492e82336d874a5f0cc2082d565faa5bf/> derive the new Primitive blob types
@@ -174,6 +194,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 9 calendar days.
+ - 31 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -219,17 +240,12 @@
 
 <csr-id-9725e632a2d780013e1ac3b58449c4be9ffd951d/>
 
-### Chore
-
- - <csr-id-9725e632a2d780013e1ac3b58449c4be9ffd951d/> locking deps to current versions
-   This should enable us to verify behaviors through tests, and not rely on a dev's goodwill and semver versioning to ensure the tools and libraries work.
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -251,12 +267,6 @@
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
 <csr-id-dde7377b87baf75bfe664155378ae1a0b9639fcd/>
 
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
-
 ### New Features
 
  - <csr-id-1d102501e7a44c37461e77184031897b0ab07bc0/> update README.md and Cargo.toml
@@ -265,10 +275,6 @@
 ### Bug Fixes
 
  - <csr-id-74f6a74ed05e38eefa6b6298e8bd2835fdb29618/> add specific version
-
-### Refactor
-
- - <csr-id-dde7377b87baf75bfe664155378ae1a0b9639fcd/> There's no reason to have a separate error type, so it just returns std::io::Error now
 
 ### Commit Statistics
 
