@@ -1,6 +1,31 @@
 
 
 
+## v0.3.0 (2026-11-04)
+
+### New Features (BREAKING)
+
+ - <csr-id-34e3a265c10752a38063bbf81204dfaf9cbfae7a/> change signature of iter_names(), add items()
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 241 calendar days.
+ - 276 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Change signature of iter_names(), add items() ([`34e3a26`](https://github.com/spmadden/irox/commit/34e3a265c10752a38063bbf81204dfaf9cbfae7a))
+</details>
+
 ## v0.2.4 (2026-02-01)
 
 ### New Features
@@ -12,7 +37,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release.
+ - 3 commits contributed to the release.
+ - 583 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.2.4 ([`87bcce5`](https://github.com/spmadden/irox/commit/87bcce5c80fe64e03d2f302770df69bb647722f8))
     - New ability to derive EnumTryFromRepr (try_from(&Repr)) for [Repr(u8)] enums ([`6a38a79`](https://github.com/spmadden/irox/commit/6a38a798d007e0a7f06720b750e214e97c792054))
     - Ability to skip enum items with #[skip] ([`03ba903`](https://github.com/spmadden/irox/commit/03ba903cd2a616d84ee437f46340f948502b2422))
 </details>
@@ -38,6 +65,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 19 calendar days.
+ - 117 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -64,7 +92,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 95 days passed between releases.
+ - 96 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -83,15 +111,12 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 3 calendar days.
+ - 72 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -111,12 +136,6 @@
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
