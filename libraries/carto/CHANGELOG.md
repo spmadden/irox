@@ -1,6 +1,52 @@
 
 
 
+## v0.7.0 (2026-11-04)
+
+### New Features
+
+ - <csr-id-caf0497058e081df23bad174edd3861e826e566f/> big refactor to pivot from std/read to irox_bits for scanner
+ - <csr-id-0701783e913101e3abea59847002deaddfdd70e6/> Reworking LCC & spcs for accuracy
+ - <csr-id-7d1e0eef9352c99275e42d8464ccfc71a20d9650/> lcc older table math for compliance with older calcs
+ - <csr-id-de3e7bd6595250edcdf714b4c8271841cf28dd70/> coordinate ranges for projection bounds
+ - <csr-id-9f105c69559f7c5b312c3008f8b7ee12d8fc44f5/> constifying as_ellipse()
+ - <csr-id-d354cb25e6ed78c7ec8d944aaec3db37eed3fff3/> as_unit conversions for altitude, coordinate.  latitude conversions
+
+### Bug Fixes
+
+ - <csr-id-f08491b97d82795d211ff678508257a2409c0a32/> put spcs behind std
+
+### Other
+
+ - <csr-id-bf363a0ba0dc199e28bc1339a28fc74ddcfcf9ad/> some state plane conversions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 613 days passed between releases.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Big refactor to pivot from std/read to irox_bits for scanner ([`caf0497`](https://github.com/spmadden/irox/commit/caf0497058e081df23bad174edd3861e826e566f))
+    - Reworking LCC & spcs for accuracy ([`0701783`](https://github.com/spmadden/irox/commit/0701783e913101e3abea59847002deaddfdd70e6))
+    - Put spcs behind std ([`f08491b`](https://github.com/spmadden/irox/commit/f08491b97d82795d211ff678508257a2409c0a32))
+    - Lcc older table math for compliance with older calcs ([`7d1e0ee`](https://github.com/spmadden/irox/commit/7d1e0eef9352c99275e42d8464ccfc71a20d9650))
+    - Coordinate ranges for projection bounds ([`de3e7bd`](https://github.com/spmadden/irox/commit/de3e7bd6595250edcdf714b4c8271841cf28dd70))
+    - Some state plane conversions ([`bf363a0`](https://github.com/spmadden/irox/commit/bf363a0ba0dc199e28bc1339a28fc74ddcfcf9ad))
+    - Constifying as_ellipse() ([`9f105c6`](https://github.com/spmadden/irox/commit/9f105c69559f7c5b312c3008f8b7ee12d8fc44f5))
+    - As_unit conversions for altitude, coordinate.  latitude conversions ([`d354cb2`](https://github.com/spmadden/irox/commit/d354cb25e6ed78c7ec8d944aaec3db37eed3fff3))
+</details>
+
 ## v0.6.5 (2025-03-01)
 
 ### Chore
@@ -12,7 +58,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 13 calendar days.
+ - 3 commits contributed to the release over the course of 13 calendar days.
  - 34 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -24,6 +70,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-carto v0.6.5 ([`f4804a6`](https://github.com/spmadden/irox/commit/f4804a686622431b9cb2be6b5796fe6c20b21e60))
     - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
     - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
 </details>
@@ -58,10 +105,6 @@
 
 <csr-id-bad3955a8da0b295db8543b867dc418b8d3d667c/>
 
-### Chore
-
- - <csr-id-bad3955a8da0b295db8543b867dc418b8d3d667c/> Cleanup lints with new math macros
-
 ### New Features
 
  - <csr-id-8270cefc0903fafcf39d8b206a250403df3c79e9/> fixup nostd support in carto
@@ -78,7 +121,7 @@
 <csr-read-only-do-not-edit/>
 
  - 10 commits contributed to the release over the course of 35 calendar days.
- - 43 days passed between releases.
+ - 44 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -131,10 +174,6 @@
 
 <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
 
-### Chore
-
- - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -159,16 +198,12 @@
 
 <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
-### Chore
-
- - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 45 days passed between releases.
+ - 46 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -190,25 +225,17 @@
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 <csr-id-310985b4d9166fa77b198ca16f5c1f125506c615/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### New Features
 
  - <csr-id-5c80a81df3d651e32aa37ca7f7f33b0e01b281b1/> new PositionsBuilder and WGS84PositionBuilder
  - <csr-id-5e4c0c9b9c524fbb66ac50f11bfc0503be8fe27f/> Add new 'Positions' structs to represent the same position
-
-### Other
-
- - <csr-id-310985b4d9166fa77b198ca16f5c1f125506c615/> update/add docs to carto module
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 23 calendar days.
+ - 30 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -275,7 +302,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -311,7 +338,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 19 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -343,13 +370,6 @@
 <csr-id-5d31a592ac1abf6e3e616e65f7a5b8d699558fb2/>
 <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
 <csr-id-553cfcabf7e0a3066eeb646952f8271ac0887208/>
-
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-b9a0ae0ccb51682bd9c36e9ab198f38634a62ade/> fix new formatting errors from rust 1.72 upgrade
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
@@ -386,18 +406,6 @@
  - <csr-id-a84feba7fc3566be534a3d572d93985bd3d773a9/> fix clippy lints
  - <csr-id-8a9f899448f9b0b995a3510510398828d49dda9e/> fmt
  - <csr-id-6a6902f1d0a8c3cd6cc839bbeb483eb3ed421690/> Fixing issue with 3857
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
- - <csr-id-6fa2e180f0c44bb4cbf76738acdda5631ecea20e/> remove '*' versions
- - <csr-id-8ef5bb6167b6fae09c73e2ccfe8ff4fe862c7ac9/> exclude docs folder from publish
- - <csr-id-5d31a592ac1abf6e3e616e65f7a5b8d699558fb2/> add license headers
- - <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/> update metadata, prepare for release
-
-### Refactor
-
- - <csr-id-553cfcabf7e0a3066eeb646952f8271ac0887208/> Move coordinate & geo from units
 
 ### Commit Statistics
 
