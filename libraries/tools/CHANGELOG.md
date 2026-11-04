@@ -1,6 +1,140 @@
 
 
 
+## v0.12.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-d852f3f634768b5f6632d9dc3d20f774badda2e2/> update to rust 1.98, cleanup lints
+ - <csr-id-50b5d0e18a05b2e7b1da475efbccecf2c883af71/> update to rust 1.97, cleanup lints
+ - <csr-id-5b73b99248e7ba1baa5e6d7a0d913401542c96b0/> update to rust 1.95, cleanup lints
+ - <csr-id-1540b11709da2b2e5cc2c0f6f50920d9668925b8/> update to rust 1.93, cleanup lints
+ - <csr-id-f99487c00dd270a85ba576f14151ed44104965d1/> cleaning up some linted values
+
+### New Features
+
+ - <csr-id-0163c4e5e166db9d1eb950d1d285541f8dfe8250/> new dotenv functions for setting and loading envs
+ - <csr-id-35a575e2d172f91a1d481c163b8929df6f3a3ba6/> new .env file parser
+ - <csr-id-caf0497058e081df23bad174edd3861e826e566f/> big refactor to pivot from std/read to irox_bits for scanner
+ - <csr-id-65c10942edb7f9248cdcedba761877f4268b37ba/> Array macro up to 12
+ - <csr-id-fe5e7c68c4396d732e1eca979891734c3c289180/> fix doctests for *words
+ - <csr-id-94a949b0898fd4426e7c55be79bbaca5f1e677dc/> ability to pull out internal values of Identifier, concat identifiers.
+ - <csr-id-cae993888b2f43e20b2709702dda864aecb4195b/> Add MinValue, MaxValue, and is_finite to FloatIsh things
+ - <csr-id-115852898fec900a58738adc0f45b3303d367f22/> AnyMap gets *_or_create methods accepting a FnOnce
+ - <csr-id-7d12528693781f5c52529f3a87fec1e0838cf547/> new generic AnyHashMap
+ - <csr-id-ab9c2f36d99c497f8300daf840918ccd6dfaa0f6/> Identifier gets a static str type
+ - <csr-id-156645a2bd0a3a0254f0ba0eece1b355f27b74d5/> Add CRC32 implementation
+ - <csr-id-e4c4fb13c1c71c743374f11f00d1c97f84d886b7/> Identifier gets a static constable str option
+ - <csr-id-663690e9c82b8f928e4930799bec18d9304f791a/> Identifier gets serde support
+ - <csr-id-84f45ca6d391c1845338a0b8872ac0b704f30389/> random gets .choice() which returns a random element from the set
+ - <csr-id-d36ca67eba4299776ff3a995235ab391da5593c0/> Add basic permutations
+ - <csr-id-17ae7b8a0f61688474352509a88ec8dcc423c016/> Add SHA2 word lists
+ - <csr-id-fd4c439b8d63ee984b626cd4d57601ee526d5823/> new multi-index linear array.
+ - <csr-id-9104c60c54f879dc42927344c48d2ccbae666558/> new identifiable trait for things that can be identified.
+ - <csr-id-fc46da15ba7d1ee560dc4b59f5b0e7cd1b85d0fa/> new PoisonedError type for use in locks
+ - <csr-id-313b9f373391299a7bbf250062ee8ada0e84909e/> Improved OrderedHashMap apis
+ - <csr-id-dcfc86b140145cec936b951008a50060f4d3186b/> log2, min, max functions in FloatExt
+ - <csr-id-42c361039b280077e24c8e308c77e57cd1dcdf69/> rounding out bytewords with better accessors
+ - <csr-id-54ff64801a6c03c428248f6af2d21f32a6c8599c/> better ability to create random identifiers
+ - <csr-id-db2431cf93dd4aef1436aaac198540fc9e04e74a/> system-wide random under feature std
+ - <csr-id-e1a91d505bb5f69615d934df12afda5ab1f5b8dc/> impl of BCR-2020-012 Bytewords
+ - <csr-id-d4b5c32566d9c8fc5b9c4aae3375f4acc737f1c4/> pivot export of static_init!
+ - <csr-id-2e2888bb8f4c2ac9f1820110f1019f48768660df/> improved hashing compat API
+ - <csr-id-c5c494a2cb0a0ebb7fbcc21231cea07de9388257/> improved sha1 perf
+ - <csr-id-3092aabf854b04d7a002a2ecdb750ac734daa876/> new ContainsWindowed iterator check
+
+### Bug Fixes
+
+ - <csr-id-7bfe0259b5098c2714448ac1140c422f00f871b0/> The derive clone impl won't generate the clone method if T isn't clone for Eventual.
+ - <csr-id-3a08bd788b7a340901569ac4e5d010959725db6a/> fix features behind alloc & std for iterators & matrix
+ - <csr-id-820b2838d4ad16c3d955c660f75ec2f2c8de67b4/> use new hex formatting functions
+ - <csr-id-1fcff072fce1f13d2ef74612513eeccc2b95fa05/> remove rogue test that snuck back in
+ - <csr-id-a7ffb2c35a5425cdfe62e6a4a558bb387753262e/> fix regression in bits
+ - <csr-id-db46aaa20e52cc28cb3a25b49117db8293b9d010/> fix serde features
+ - <csr-id-af20b1befa4658f88aa055bc34c8c982240cac7c/> Fix OrderedMap entry missing the key for iteration
+ - <csr-id-2216b14c9ae5c791e55a57154f39323375908896/> fix imports in linear
+ - <csr-id-a9c7dcd20209544f393ed4780f811e1cde3004c0/> fix warning in identifier
+ - <csr-id-9e51923ebd33aeddf49111669f106644dc398ba8/> identifier alloc feature compatibility
+ - <csr-id-707bb68d57689652e5fbfdf2d170f00cdd1d4b66/> bytewords alloc feature compatibility
+ - <csr-id-32d216c62d06493efa8039a63ee0277cac46be83/> OrderedHashMap hella broken.  need better tests
+ - <csr-id-b844c0ab3faf70b52d70878553149a60a12b245c/> push f64 tests behind std flag
+
+### Other
+
+ - <csr-id-5e66d26f6b83ce36385ce428cadec8b944709b3a/> first attempt at better wasm support
+
+### Refactor
+
+ - <csr-id-c41491ac9b55af7167eb7ec9704cfa1bc35e83b0/> rejigger FloatExt to not require a type value
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 50 commits contributed to the release over the course of 241 calendar days.
+ - 276 days passed between releases.
+ - 49 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.98, cleanup lints ([`d852f3f`](https://github.com/spmadden/irox/commit/d852f3f634768b5f6632d9dc3d20f774badda2e2))
+    - Update to rust 1.97, cleanup lints ([`50b5d0e`](https://github.com/spmadden/irox/commit/50b5d0e18a05b2e7b1da475efbccecf2c883af71))
+    - Update to rust 1.95, cleanup lints ([`5b73b99`](https://github.com/spmadden/irox/commit/5b73b99248e7ba1baa5e6d7a0d913401542c96b0))
+    - Update to rust 1.93, cleanup lints ([`1540b11`](https://github.com/spmadden/irox/commit/1540b11709da2b2e5cc2c0f6f50920d9668925b8))
+    - Cleaning up some linted values ([`f99487c`](https://github.com/spmadden/irox/commit/f99487c00dd270a85ba576f14151ed44104965d1))
+    - New dotenv functions for setting and loading envs ([`0163c4e`](https://github.com/spmadden/irox/commit/0163c4e5e166db9d1eb950d1d285541f8dfe8250))
+    - New .env file parser ([`35a575e`](https://github.com/spmadden/irox/commit/35a575e2d172f91a1d481c163b8929df6f3a3ba6))
+    - Big refactor to pivot from std/read to irox_bits for scanner ([`caf0497`](https://github.com/spmadden/irox/commit/caf0497058e081df23bad174edd3861e826e566f))
+    - The derive clone impl won't generate the clone method if T isn't clone for Eventual. ([`7bfe025`](https://github.com/spmadden/irox/commit/7bfe0259b5098c2714448ac1140c422f00f871b0))
+    - Array macro up to 12 ([`65c1094`](https://github.com/spmadden/irox/commit/65c10942edb7f9248cdcedba761877f4268b37ba))
+    - First attempt at better wasm support ([`5e66d26`](https://github.com/spmadden/irox/commit/5e66d26f6b83ce36385ce428cadec8b944709b3a))
+    - Fix features behind alloc & std for iterators & matrix ([`3a08bd7`](https://github.com/spmadden/irox/commit/3a08bd788b7a340901569ac4e5d010959725db6a))
+    - Fix doctests for *words ([`fe5e7c6`](https://github.com/spmadden/irox/commit/fe5e7c68c4396d732e1eca979891734c3c289180))
+    - Ability to pull out internal values of Identifier, concat identifiers. ([`94a949b`](https://github.com/spmadden/irox/commit/94a949b0898fd4426e7c55be79bbaca5f1e677dc))
+    - Rejigger FloatExt to not require a type value ([`c41491a`](https://github.com/spmadden/irox/commit/c41491ac9b55af7167eb7ec9704cfa1bc35e83b0))
+    - Use new hex formatting functions ([`820b283`](https://github.com/spmadden/irox/commit/820b2838d4ad16c3d955c660f75ec2f2c8de67b4))
+    - Add MinValue, MaxValue, and is_finite to FloatIsh things ([`cae9938`](https://github.com/spmadden/irox/commit/cae993888b2f43e20b2709702dda864aecb4195b))
+    - AnyMap gets *_or_create methods accepting a FnOnce ([`1158528`](https://github.com/spmadden/irox/commit/115852898fec900a58738adc0f45b3303d367f22))
+    - New generic AnyHashMap ([`7d12528`](https://github.com/spmadden/irox/commit/7d12528693781f5c52529f3a87fec1e0838cf547))
+    - Identifier gets a static str type ([`ab9c2f3`](https://github.com/spmadden/irox/commit/ab9c2f36d99c497f8300daf840918ccd6dfaa0f6))
+    - Remove rogue test that snuck back in ([`1fcff07`](https://github.com/spmadden/irox/commit/1fcff072fce1f13d2ef74612513eeccc2b95fa05))
+    - Fix regression in bits ([`a7ffb2c`](https://github.com/spmadden/irox/commit/a7ffb2c35a5425cdfe62e6a4a558bb387753262e))
+    - Add CRC32 implementation ([`156645a`](https://github.com/spmadden/irox/commit/156645a2bd0a3a0254f0ba0eece1b355f27b74d5))
+    - Fix serde features ([`db46aaa`](https://github.com/spmadden/irox/commit/db46aaa20e52cc28cb3a25b49117db8293b9d010))
+    - Identifier gets a static constable str option ([`e4c4fb1`](https://github.com/spmadden/irox/commit/e4c4fb13c1c71c743374f11f00d1c97f84d886b7))
+    - Identifier gets serde support ([`663690e`](https://github.com/spmadden/irox/commit/663690e9c82b8f928e4930799bec18d9304f791a))
+    - Random gets .choice() which returns a random element from the set ([`84f45ca`](https://github.com/spmadden/irox/commit/84f45ca6d391c1845338a0b8872ac0b704f30389))
+    - Add basic permutations ([`d36ca67`](https://github.com/spmadden/irox/commit/d36ca67eba4299776ff3a995235ab391da5593c0))
+    - Add SHA2 word lists ([`17ae7b8`](https://github.com/spmadden/irox/commit/17ae7b8a0f61688474352509a88ec8dcc423c016))
+    - Fix OrderedMap entry missing the key for iteration ([`af20b1b`](https://github.com/spmadden/irox/commit/af20b1befa4658f88aa055bc34c8c982240cac7c))
+    - Fix imports in linear ([`2216b14`](https://github.com/spmadden/irox/commit/2216b14c9ae5c791e55a57154f39323375908896))
+    - New multi-index linear array. ([`fd4c439`](https://github.com/spmadden/irox/commit/fd4c439b8d63ee984b626cd4d57601ee526d5823))
+    - New identifiable trait for things that can be identified. ([`9104c60`](https://github.com/spmadden/irox/commit/9104c60c54f879dc42927344c48d2ccbae666558))
+    - New PoisonedError type for use in locks ([`fc46da1`](https://github.com/spmadden/irox/commit/fc46da15ba7d1ee560dc4b59f5b0e7cd1b85d0fa))
+    - Fix warning in identifier ([`a9c7dcd`](https://github.com/spmadden/irox/commit/a9c7dcd20209544f393ed4780f811e1cde3004c0))
+    - Improved OrderedHashMap apis ([`313b9f3`](https://github.com/spmadden/irox/commit/313b9f373391299a7bbf250062ee8ada0e84909e))
+    - Log2, min, max functions in FloatExt ([`dcfc86b`](https://github.com/spmadden/irox/commit/dcfc86b140145cec936b951008a50060f4d3186b))
+    - Identifier alloc feature compatibility ([`9e51923`](https://github.com/spmadden/irox/commit/9e51923ebd33aeddf49111669f106644dc398ba8))
+    - Bytewords alloc feature compatibility ([`707bb68`](https://github.com/spmadden/irox/commit/707bb68d57689652e5fbfdf2d170f00cdd1d4b66))
+    - Rounding out bytewords with better accessors ([`42c3610`](https://github.com/spmadden/irox/commit/42c361039b280077e24c8e308c77e57cd1dcdf69))
+    - OrderedHashMap hella broken.  need better tests ([`32d216c`](https://github.com/spmadden/irox/commit/32d216c62d06493efa8039a63ee0277cac46be83))
+    - Better ability to create random identifiers ([`54ff648`](https://github.com/spmadden/irox/commit/54ff64801a6c03c428248f6af2d21f32a6c8599c))
+    - System-wide random under feature std ([`db2431c`](https://github.com/spmadden/irox/commit/db2431cf93dd4aef1436aaac198540fc9e04e74a))
+    - Push f64 tests behind std flag ([`b844c0a`](https://github.com/spmadden/irox/commit/b844c0ab3faf70b52d70878553149a60a12b245c))
+    - Impl of BCR-2020-012 Bytewords ([`e1a91d5`](https://github.com/spmadden/irox/commit/e1a91d505bb5f69615d934df12afda5ab1f5b8dc))
+    - Pivot export of static_init! ([`d4b5c32`](https://github.com/spmadden/irox/commit/d4b5c32566d9c8fc5b9c4aae3375f4acc737f1c4))
+    - Improved hashing compat API ([`2e2888b`](https://github.com/spmadden/irox/commit/2e2888bb8f4c2ac9f1820110f1019f48768660df))
+    - Improved sha1 perf ([`c5c494a`](https://github.com/spmadden/irox/commit/c5c494a2cb0a0ebb7fbcc21231cea07de9388257))
+    - New ContainsWindowed iterator check ([`3092aab`](https://github.com/spmadden/irox/commit/3092aabf854b04d7a002a2ecdb750ac734daa876))
+</details>
+
 ## v0.11.1 (2026-02-01)
 
 ### Bug Fixes
@@ -11,7 +145,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +156,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-tools v0.11.1 ([`6026c83`](https://github.com/spmadden/irox/commit/6026c832750fb28ed2a0d2ddbf02e0bd1eb4dc16))
     - Readding unsafe forbidden flag ([`13e2548`](https://github.com/spmadden/irox/commit/13e25487cc41d3ba530be94fa054d59ff1553398))
 </details>
 
@@ -40,16 +175,6 @@
 <csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/>
 <csr-id-59f35131513a8b43d7e288832276943532e6bfee/>
 <csr-id-79458eaa00099c41ce5908191fee46a52af942a2/>
-
-### Chore
-
- - <csr-id-e89ac5f4fe6579db999e18db9b02f8e49668bb08/> bump version to 0.11.0
- - <csr-id-b7b95a377765d1af3c529cdf9bcf901579d74545/> fix lints & bump to 1.91
- - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
- - <csr-id-789f6fbb81e815454d18c68c310d9a8e58f969c5/> fix lints & bump to 1.87
- - <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/> fix lints & bump to 1.86
- - <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/> cleaning up the remainder of the feature cleanup detritus
- - <csr-id-f10ad9347376d5321920d23da0ebe787c3fe5150/> cleanup test code
 
 ### New Features
 
@@ -103,18 +228,6 @@
  - <csr-id-6f8080966a5e5e259d47bf556d7599f3409e8def/> fix missing box import
  - <csr-id-c81b779514e19fc9e459d8c1db3c4b3380c634a8/> fix compilation problem around alloc
  - <csr-id-380026234f60a4beaa213d711ee359c63d93e877/> fix issue in sha2 where buffer wasn't fully counted
-
-### Other
-
- - <csr-id-626b51ace277f02658e47da7c4beeac66912ea40/> units & graphing
- - <csr-id-2de510fd54646200cf214dadcd2323273bd1db94/> cryptids
-
-### Refactor
-
- - <csr-id-5beb610d54822c4045d088b378604ba3caab7d10/> Drop self parameter from HashDigest::algorithm
- - <csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/> move eframe behind feature
- - <csr-id-59f35131513a8b43d7e288832276943532e6bfee/> hexdump read -> bits
- - <csr-id-79458eaa00099c41ce5908191fee46a52af942a2/> rejigger ArrayBuf for performance
 
 ### Commit Statistics
 
@@ -202,13 +315,6 @@
 <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/>
 <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
 
-### Chore
-
- - <csr-id-fef64a162b568961be8445ec418918d64f3cadde/> fixing lints
- - <csr-id-dfe010053f41bf0531816c19c3229ce5a7e90a1c/> cleanup remaining misc lints
- - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
- - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
-
 ### New Features
 
  - <csr-id-47084c92d924079e50d8b020d411ece48cda76f9/> better iteration for UnlimitedBuffer
@@ -275,10 +381,6 @@
 <csr-id-6e72be2bb9d1b96561fadd46e5190c80f223a694/>
 <csr-id-b3c08ca4dc5c6a20c9661248b7c42a1a7dfceccd/>
 
-### Chore
-
- - <csr-id-6e72be2bb9d1b96561fadd46e5190c80f223a694/> cleanup some lints
-
 ### New Features
 
  - <csr-id-e3b6d01e1c085303d86114c996690e6be3666fe1/> Add `StrWrapper` abstraction for flexible string handling
@@ -291,10 +393,6 @@
  - <csr-id-077cd4518e68c35659e5d3eaef7bb607f47dda6c/> add basic base conversions
  - <csr-id-03c7ac5d1977ea18095d974737db55765410f07e/> add reverse method to FixedU8Buf
  - <csr-id-c7a8c574cdd6635ef242cc44792210a08e9564a9/> add add_str methods to FixedU8Buf
-
-### Refactor
-
- - <csr-id-b3c08ca4dc5c6a20c9661248b7c42a1a7dfceccd/> move sixwords to hashes
 
 ### Commit Statistics
 
@@ -359,10 +457,6 @@
 
 <csr-id-73c770e4c24a06ebd1938f68027b32354a8a6c29/>
 
-### Chore
-
- - <csr-id-73c770e4c24a06ebd1938f68027b32354a8a6c29/> fixup lints
-
 ### New Features
 
  - <csr-id-b71c23c77672f7efcb500268167874ec9f0403d3/> impl new,debug,clone in RoundBuffer
@@ -420,7 +514,7 @@
 <csr-read-only-do-not-edit/>
 
  - 45 commits contributed to the release over the course of 40 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 44 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -489,7 +583,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -523,6 +617,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 20 calendar days.
+ - 45 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -600,10 +695,6 @@
  - <csr-id-6e48657b59c217477e65bc2066ac87b08df7ef1c/> fix issue in RoundU8Buffer where the head pointer wouldn't increment if the buffer was full
  - <csr-id-b1542dbc8f81c8dd486d71b24b4b5b11dafa9a32/> fix garbage constants in random generators
 
-### Other
-
- - <csr-id-03011089653d97ae0c6ec0624aec627285d3c19a/> more work on multi-streams
-
 ### New Features (BREAKING)
 
  - <csr-id-d256059f37bcfc75dc8ba556e35343cb3cb18add/> Breaking: refactor BitsWrapper to have an owned and borrowed variant.
@@ -613,7 +704,7 @@
 <csr-read-only-do-not-edit/>
 
  - 25 commits contributed to the release over the course of 16 calendar days.
- - 37 days passed between releases.
+ - 38 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -682,26 +773,18 @@
 <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/>
 <csr-id-53f8eaa1d223ce33a9898de829d2557ca30832ed/>
 
-### Chore
-
- - <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/> fixup lints & formatting
-
 ### New Features
 
  - <csr-id-15ab6224386e56d53472b3991f2078d5f469e83e/> new SharedCell wrapper around Arc<RwLock<Option<T>>>
  - <csr-id-98d5046d137ecb02f5270ff794de182df044c606/> add new unlimited/paged buffer that does not reallocate
  - <csr-id-165dc1952bc470b07ab44a4834dc31edb4300a04/> derive clone on fixedbuf
 
-### Other
-
- - <csr-id-53f8eaa1d223ce33a9898de829d2557ca30832ed/> ignore the documentation that's not rustdoc tests in errors
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 4 calendar days.
- - 40 days passed between releases.
+ - 41 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -750,10 +833,6 @@
 
 <csr-id-d9679d01898271cdbffd1b56df072317da2d6880/>
 
-### Other
-
- - <csr-id-d9679d01898271cdbffd1b56df072317da2d6880/> fix docsrs for irox-tools
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -780,11 +859,6 @@
 <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/>
 <csr-id-0999f97c86fd40009c321c0100d6db5db735b3c2/>
 
-### Chore
-
- - <csr-id-7809b2d2af9bd4b9767c701782530d7fde558421/> Clean up new lints
- - <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/> fixup some 1.78 lint warnings
-
 ### New Features
 
  - <csr-id-c434f69700976ca796b29e6e9e213ae44ccf4e02/> improvements across the board for docs.rs docs
@@ -805,16 +879,12 @@
 
  - <csr-id-1459e3484dbf2d36ba0964fb903a9a2b10fdf2bb/> new testing '_toobig-tests' feature to ignore certain tests that are expensive & slow
 
-### Refactor
-
- - <csr-id-0999f97c86fd40009c321c0100d6db5db735b3c2/> playing with buffers in sha2 for perf.
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 15 commits contributed to the release over the course of 33 calendar days.
- - 36 days passed between releases.
+ - 37 days passed between releases.
  - 14 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -848,10 +918,6 @@
 <csr-id-c853a9178bdb1a6c471b80f817cc13cb2b8a1958/>
 <csr-id-826ce7f53cf2f8d84a251a83fd5909ae71e58a6c/>
 
-### Chore
-
- - <csr-id-b8c91df14a0642426aca122ded0339b555f84ade/> clean up some test warnings in irox-tools
-
 ### New Features
 
  - <csr-id-45b145ade2a9fa5e4dedbfc53ec197ddb71d7469/> add new (basic) pagefile wrapper.
@@ -862,14 +928,6 @@
  - <csr-id-835f4d7fb52581c4680e4f778409668f5e474fce/> fix pagefile compiling/function on Linux
  - <csr-id-62b40dc6b7c560153a6209ea3373aa9cb79ba27b/> disable lints for random's test code
  - <csr-id-1c413bba298204c593420a2d813291eb3997b054/> fix debug math panic in Random
-
-### Other
-
- - <csr-id-c853a9178bdb1a6c471b80f817cc13cb2b8a1958/> fix urls in primitives
-
-### Refactor
-
- - <csr-id-826ce7f53cf2f8d84a251a83fd5909ae71e58a6c/> move buf back into module, expose StrBuf
 
 ### Commit Statistics
 
@@ -906,10 +964,6 @@
 
  - <csr-id-bb44251a3eb5917a0b270880e4956700773da32f/> new feature: alloc, change default features to be nil rather than everything
  - <csr-id-2537e8c15422cee078684d2e01f0e0e4f7053316/> new no-std/no-alloc fixed-size stack impls FixedBuf and RoundBuf
-
-### Refactor (BREAKING)
-
- - <csr-id-05c5b84578474138d78211db2763e11a7bb3a925/> pull out tools/bits into own module, no-std, no-alloc
 
 ### Commit Statistics
 
@@ -989,6 +1043,7 @@
 <csr-read-only-do-not-edit/>
 
  - 12 commits contributed to the release over the course of 2 calendar days.
+ - 29 days passed between releases.
  - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1019,10 +1074,6 @@
 <csr-id-ca214f0f8b310c02e4009fcc37b51d04bda47368/>
 <csr-id-2c04083563c31f6f260cbc1b5d9bf9ecea0b99d1/>
 
-### Chore
-
- - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
-
 ### New Features
 
  - <csr-id-7902f54162a5f33d0e452ff3760ef3a7e91ab704/> recursive justfiles
@@ -1031,18 +1082,6 @@
 ### Bug Fixes
 
  - <csr-id-d012d6459e4853ea48798b1b0d98196d0577f6ec/> tweak alloc imports in fs, fix readme in cargo.toml
-
-### Refactor (BREAKING)
-
- - <csr-id-ca214f0f8b310c02e4009fcc37b51d04bda47368/> Refactor packetio traits to use Bits rather than std::io::*.  Is now no_std compliant.
- - <csr-id-2c04083563c31f6f260cbc1b5d9bf9ecea0b99d1/> big refactor of (Mut)Bits.  Default impls for std::io::{Read,Write} removed.
-   Impls for most of the standard types provided.  New 'BitsWrapper' provided to wrap arbitrary impls of Read/Write.
-   
-   New Bits functions: 'read_exact_into', 'read_all_str_lossy', 'read_all_vec', 'read_all_into', 'read_some_into'.
-   
-   New MutBits function: 'write_some_bytes'
-   
-   Functions from 'read' have been moved into base Bits trait: consume_until, read_until
 
 ### Commit Statistics
 
@@ -1082,7 +1121,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1105,24 +1144,16 @@
 <csr-id-350e0f8529bdc3a936149b634ebd824abd440d2f/>
 <csr-id-5be0cba49e4e0559570102152dfe0b4b73422158/>
 
-### Chore
-
- - <csr-id-7bb9983b0e144be41483b4b9a3e610c773aa26f4/> bump tools to 0.5.2
-
 ### New Features
 
  - <csr-id-55f70163a3d46f63956eb935645e344ec9c3ee13/> new errors macros to accelerate error conversions
-
-### Other
-
- - <csr-id-350e0f8529bdc3a936149b634ebd824abd440d2f/> update readme for error macros
- - <csr-id-5be0cba49e4e0559570102152dfe0b4b73422158/> update docs & readme for tools
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
+ - 1 day passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1152,49 +1183,6 @@
 <csr-id-cf0bff72254d93594a8b7ebd4067485f0434607a/>
 <csr-id-ca28aa6647aa5425067b557f532844022546bb95/>
 <csr-id-e753938da0ffabd720a5c91f63d8c998e2cec483/>
-
-### Chore
-
- - <csr-id-aa590522fb7bd75591949813d08cf221b7b729dd/> bump tools to 0.5.1
- - <csr-id-4160ef3c3d173bddc6688473113fb1a25a45a22a/> clean up lints for no-std compliance
- - <csr-id-af906604969d656432218f6843a8ac3f825b4a04/> clean up lints for no-std compliance
-
-### New Features
-
- - <csr-id-098c51c276447937fb20dd65c9c48ca1d6b84019/> add additional PCG random impls
- - <csr-id-0b67aa6b1dd893688862973d0b48029d6cce1924/> starting new vbyte impls
- - <csr-id-4000e53b0222938eed42e1534059f33efc337842/> HexDump is now no-std
- - <csr-id-65021dccf264ac2ac909dbc6fbd38b0f5a7186ec/> MutBits can now be used with write!()
- - <csr-id-f43a9291a7b8b2f8b092ed51bab40d685c8350ae/> Bits, Codec, Base64 now fully no_std
- - <csr-id-26986c9bd6c1ea2a7d9b8a174c2f10c9a03d847c/> new easy Line ending scanners
- - <csr-id-94bbd1d5ffb530559e016a8f3472d353d9f2d3ed/> new ReadAny and ReadEmpty, for converting random stuff into Read's
- - <csr-id-23d81e57f7cc5c044f827e8dbe644dbaa9c5a0d5/> new f32 and f64 traits for no-std
- - <csr-id-91705d832edccfc49849d0ba018f4cbf3210fd1d/> new 'Base64' conversions, compatible with RFC4648
- - <csr-id-7febef2493a70a7f25883b7e76a167afe6806836/> new 'Codec' trait for byte encoding conversions
- - <csr-id-1ad20e1bcd42018c5abbf62f9cb32d32456f107e/> Now 'no_std' capable (without the 'std' feature)
- - <csr-id-a9c45bfedc2d7b35a1f726ee5cd7fc555ebd6c81/> Now 'no_std' capable (without the 'std' feature)
-
-### Bug Fixes
-
- - <csr-id-194adf37e50dd9677bcab9fe0540ea8a90c9f069/> bump u32 to u64 in fmt to fix rollover in tests
- - <csr-id-2b00a47d28d1856f2e2e00b03f2aa40ee5b2033a/> fix busted impl of Read in Buffer
-
-### Other
-
- - <csr-id-4dc4b9d0b73f0ebf5d97ff2685db6233e527cb92/> Added missing readme?
- - <csr-id-c9bb39737d83b6d83376ce4700c088f20ec23b37/> Module docs for arrays, assert, options
-
-### Refactor
-
- - <csr-id-00bc196ddd2e8e0eb60fdb68fae661593752f3c0/> mv codec.rs into codec/mod.rs
- - <csr-id-081d7694415883c4569d762fe4da7864cbed8de4/> rename 'sync.rs' into 'sync/mod.rs'
- - <csr-id-cf0bff72254d93594a8b7ebd4067485f0434607a/> rename 'read.rs' into 'read/mod.rs'
- - <csr-id-ca28aa6647aa5425067b557f532844022546bb95/> move base64, bits, id, scanner, uuid to 'utils' module
- - <csr-id-e753938da0ffabd720a5c91f63d8c998e2cec483/> move associated primitives into primitives module
-
-### New Features (BREAKING)
-
- - <csr-id-59aa3f65a355740f793ea3db923629833fc0053c/> refactor random to have PRNG trait, impl new random algorithm
 
 ### Commit Statistics
 
@@ -1227,11 +1215,6 @@
 <csr-id-ca28aa6647aa5425067b557f532844022546bb95/>
 <csr-id-e753938da0ffabd720a5c91f63d8c998e2cec483/>
 
-### Chore
-
- - <csr-id-4160ef3c3d173bddc6688473113fb1a25a45a22a/> clean up lints for no-std compliance
- - <csr-id-af906604969d656432218f6843a8ac3f825b4a04/> clean up lints for no-std compliance
-
 ### New Features
 
  - <csr-id-098c51c276447937fb20dd65c9c48ca1d6b84019/> add additional PCG random impls
@@ -1252,19 +1235,6 @@
  - <csr-id-194adf37e50dd9677bcab9fe0540ea8a90c9f069/> bump u32 to u64 in fmt to fix rollover in tests
  - <csr-id-2b00a47d28d1856f2e2e00b03f2aa40ee5b2033a/> fix busted impl of Read in Buffer
 
-### Other
-
- - <csr-id-4dc4b9d0b73f0ebf5d97ff2685db6233e527cb92/> Added missing readme?
- - <csr-id-c9bb39737d83b6d83376ce4700c088f20ec23b37/> Module docs for arrays, assert, options
-
-### Refactor
-
- - <csr-id-00bc196ddd2e8e0eb60fdb68fae661593752f3c0/> mv codec.rs into codec/mod.rs
- - <csr-id-081d7694415883c4569d762fe4da7864cbed8de4/> rename 'sync.rs' into 'sync/mod.rs'
- - <csr-id-cf0bff72254d93594a8b7ebd4067485f0434607a/> rename 'read.rs' into 'read/mod.rs'
- - <csr-id-ca28aa6647aa5425067b557f532844022546bb95/> move base64, bits, id, scanner, uuid to 'utils' module
- - <csr-id-e753938da0ffabd720a5c91f63d8c998e2cec483/> move associated primitives into primitives module
-
 ### New Features (BREAKING)
 
  - <csr-id-59aa3f65a355740f793ea3db923629833fc0053c/> refactor random to have PRNG trait, impl new random algorithm
@@ -1274,7 +1244,7 @@
 <csr-read-only-do-not-edit/>
 
  - 25 commits contributed to the release over the course of 8 calendar days.
- - 37 days passed between releases.
+ - 38 days passed between releases.
  - 24 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1324,7 +1294,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 4 calendar days.
- - 6 days passed between releases.
+ - 7 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1343,10 +1313,6 @@
 ## v0.4.0 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
-
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
 
 ### New Features
 
@@ -1398,6 +1364,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 5 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1423,7 +1390,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1443,12 +1410,6 @@
 <csr-id-3793f0549be87bcce984d72c6153851be869cb43/>
 <csr-id-f8ab392c14af57bb2f6198c45c82c602225ac356/>
 <csr-id-7680bf804c1d6b4dd1352dc68b371eaf06bd29c5/>
-
-### Chore
-
- - <csr-id-3793f0549be87bcce984d72c6153851be869cb43/> fix fmt
- - <csr-id-f8ab392c14af57bb2f6198c45c82c602225ac356/> ALL THE LINTS.
- - <csr-id-7680bf804c1d6b4dd1352dc68b371eaf06bd29c5/> fix rustfmt
 
 ### New Features
 
@@ -1525,7 +1486,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 7 calendar days.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1549,10 +1510,6 @@
 
 <csr-id-c1fe9a1fe0a599202b7bf402bb6d81fc5eccc9e2/>
 
-### Chore
-
- - <csr-id-c1fe9a1fe0a599202b7bf402bb6d81fc5eccc9e2/> fix fmt in vec
-
 ### New Features
 
  - <csr-id-d9f3dc8b63ad33e68b42517ad684c04ba5764218/> added additional static functions to Bits
@@ -1565,7 +1522,7 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 12 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1593,12 +1550,6 @@
 <csr-id-211951e13f3d207f27dfa1ddbaa70157d019ad27/>
 <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
 
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
-
 ### New Features
 
  - <csr-id-f62ae9c875cc0c915fc06a9003d72e50cfc013b7/> new vec module with PrettyVec
@@ -1624,12 +1575,6 @@
  - <csr-id-0d50f60ee51713f0e1deb0ce049303472b60d18c/> fix clippy lint for slices
  - <csr-id-e70cf86587258ad73b9a813b6c7878a231157921/> Repair invalid tools Cargo.toml
  - <csr-id-b120f6852df399749d5be1aa75644275ea193fcb/> Fixing doctest
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
- - <csr-id-211951e13f3d207f27dfa1ddbaa70157d019ad27/> add license headers
- - <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/> update metadata, prepare for release
 
 ### Commit Statistics
 
