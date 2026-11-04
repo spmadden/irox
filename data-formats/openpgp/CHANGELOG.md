@@ -1,5 +1,33 @@
 
 
+## v0.2.0 (2026-11-04)
+
+### New Features
+
+ - <csr-id-ab5c4c9e8ab0b20c459c4f42555cb1fc7d555701/> improved unwrapping of decoded data
+ - <csr-id-7d9255b8bc865a7eef6d10ecfc307c19184096fd/> ability to verify cleartext signed messages
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release over the course of 270 calendar days.
+ - 276 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Improved unwrapping of decoded data ([`ab5c4c9`](https://github.com/spmadden/irox/commit/ab5c4c9e8ab0b20c459c4f42555cb1fc7d555701))
+    - Ability to verify cleartext signed messages ([`7d9255b`](https://github.com/spmadden/irox/commit/7d9255b8bc865a7eef6d10ecfc307c19184096fd))
+</details>
+
 ## v0.1.0 (2026-02-01)
 
 ### Chore
@@ -28,7 +56,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release.
+ - 15 commits contributed to the release.
  - 13 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -39,6 +67,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-openpgp v0.1.0 ([`6a39df8`](https://github.com/spmadden/irox/commit/6a39df81e09fa20cd5e7427beb3b217218330517))
     - Release irox-bits v0.5.0 ([`9a6d933`](https://github.com/spmadden/irox/commit/9a6d9331ad0ea937fea6635ef972e292881e9cda))
     - Hexdump read -> bits ([`59f3513`](https://github.com/spmadden/irox/commit/59f35131513a8b43d7e288832276943532e6bfee))
     - Fix lints & bump to 1.90 ([`6420aae`](https://github.com/spmadden/irox/commit/6420aae3a1d50dbaec8b2f6fa7f8ca04cf7fcd90))
