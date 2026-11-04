@@ -392,16 +392,6 @@ fn release(in_args: &[&str]) -> Result<(), Error> {
     }
     install_update("cargo-smart-release");
 
-    exec(
-        "cargo",
-        &[
-            "install",
-            "--locked",
-            "cargo-smart-release",
-            "--color=always",
-        ],
-    )?;
-
     exec_passthru("cargo", &["package", "-p", pkg])?;
 
     exec_passthru("cargo", &rgs)?;
