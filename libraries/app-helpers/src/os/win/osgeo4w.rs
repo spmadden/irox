@@ -2,7 +2,10 @@
 // Copyright 2025-2026 IROX Contributors
 //
 
-use crate::Error;
+use crate::{Error, ErrorKind};
+use std::path::Path;
+use crate::proc::ChildIO;
+use irox_bits::{BitsWrapper, MutBits};
 
 pub const ROOT_INSTALL_DIR: &str = "C:\\OSGeo4W";
 pub const SETUP_EXE: &str = "osgeo4w-setup.exe";
@@ -96,18 +99,18 @@ impl SendingStream {
     }
 }
 impl MutBits for SendingStream {
-    fn write_u8(&mut self, val: u8) -> Result<(), irox::bits::Error> {
+    fn write_u8(&mut self, val: u8) -> Result<(), irox_bits::Error> {
         let _ = self.sender.send(vec![val].into_boxed_slice());
         Ok(())
     }
 
-    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), irox::bits::Error> {
+    fn write_all_bytes(&mut self, val: &[u8]) -> Result<(), irox_bits::Error> {
         let boxed = Vec::from(val).into_boxed_slice();
         let _ = self.sender.send(boxed);
         Ok(())
     }
 }
-
+#[allow(unused)]
 macro_rules! log_stream_msg {
     ($level:expr, $streamer:ident, $($arg:tt)*) => {
         let msg = format!($($arg)*);
@@ -118,17 +121,17 @@ macro_rules! log_stream_msg {
 
 pub fn install_packages<T: MutBits + Send + 'static>(mut streamer: BitsWrapper<'static, T>) -> Result<ChildIO<T>, Error> {
     if !std::fs::exists(Path::new(EXEC_EXE))? {
-        let req = ehttp::Request::get(format!("{MIRROR}/{SETUP_EXE}"));
+        let req = ureq::get(&format!("{MIRROR}/{SETUP_EXE}")).call();
         streamer.write_all_bytes(b"Starting download of OSGeo4W setup...")?;
-        let resp = ehttp::fetch_blocking(&req);
-        if let Ok(resp) = resp {
-            if resp.status != 200 {
-                return Error::download_error(format!(
-                    "Failed to download OSGeo4W setup: {}",
-                    resp.status
-                ));
+        if let Ok(resp) = req {
+            if resp.status() != 200 {
+                return Err(Error {
+			msg: format!("Failed to download OSGeo4W setup: {}",resp.status()),
+			kind: ErrorKind::SubprocessError
+		});
             }
-            let body = resp.bytes;
+            let mut body = Vec::new();
+            resp.into_reader().read_to_end(&mut body)?;
             std::fs::create_dir_all(DOWNLOAD_DIR)?;
             let outpath = Path::new(DOWNLOAD_DIR).join(SETUP_EXE);
             std::fs::write(&outpath, body)?;
@@ -143,7 +146,7 @@ pub fn install_packages<T: MutBits + Send + 'static>(mut streamer: BitsWrapper<'
         "--packages", &packages,
     ]);
 
-    exec_passthru_streamed::<_, &str, &str, &str, T>(EXEC_EXE, args.as_ref(), None, [], streamer)
+    crate::proc::exec_passthru_streamed::<_, &str, &str, &str, T>(EXEC_EXE, args.as_ref(), None, [], streamer)
 }
 
 pub fn run_qgis_processing(
@@ -158,6 +161,6 @@ pub fn run_qgis_processing(
     params.push(projpath.as_str());
     params.push("--");
     params.extend(extraparams);
-    crate::os::win::proc::exec_passthru_osgeo("qgis_process.exe", &params)?;
+    crate::proc::exec_passthru_osgeo("qgis_process.exe", &params)?;
     Ok(())
 }

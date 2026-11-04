@@ -3,7 +3,7 @@
 //
 
 pub mod env;
-pub mod osgeo4w;
+//pub mod osgeo4w;
 
 use crate::ShellFolder;
 use irox_tools::irox_bits::Error;
