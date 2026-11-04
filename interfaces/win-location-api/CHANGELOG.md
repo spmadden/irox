@@ -1,6 +1,32 @@
 
 
 
+## v0.6.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 332 calendar days.
+ - 613 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+</details>
+
 ## v0.5.3 (2025-03-01)
 
 ### Chore
@@ -11,7 +37,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 2 commits contributed to the release over the course of 13 calendar days.
+ - 3 commits contributed to the release over the course of 13 calendar days.
  - 34 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-winlocation-api v0.5.3 ([`e09582c`](https://github.com/spmadden/irox/commit/e09582c35017ae0dedbf371a1b39c8107797fb73))
     - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
     - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
 </details>
@@ -30,10 +57,6 @@
 ## v0.5.2 (2025-01-26)
 
 <csr-id-f84f96d844d5be0456e68b99322812fa2cccf464/>
-
-### Chore
-
- - <csr-id-f84f96d844d5be0456e68b99322812fa2cccf464/> update to latest deps
 
 ### Bug Fixes
 
@@ -44,6 +67,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 11 calendar days.
+ - 253 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -63,15 +87,12 @@
 
 <csr-id-ab1f67daadda5ee1768564f07f1f4f72aa165bad/>
 
-### Chore
-
- - <csr-id-ab1f67daadda5ee1768564f07f1f4f72aa165bad/> bump winlocation-api to 0.5.1 for release
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
+ - 171 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -92,16 +113,12 @@
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 23 calendar days.
+ - 31 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -156,7 +173,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -194,7 +211,7 @@
 <csr-read-only-do-not-edit/>
 
  - 10 commits contributed to the release over the course of 19 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -222,12 +239,6 @@
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
