@@ -1,6 +1,53 @@
 
 
-## v0.4.0 (2023-11-29)
+## v0.6.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-50b5d0e18a05b2e7b1da475efbccecf2c883af71/> update to rust 1.97, cleanup lints
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release.
+ - 1026 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.97, cleanup lints ([`50b5d0e`](https://github.com/spmadden/irox/commit/50b5d0e18a05b2e7b1da475efbccecf2c883af71))
+</details>
+
+## v0.5.0 (2024-01-13)
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 46 days passed between releases.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-tools v0.5.0, safety bump 17 crates ([`a46e9e2`](https://github.com/spmadden/irox/commit/a46e9e2da699f6ccd3a85b660014f0e15e59c0d0))
+</details>
+
+## v0.4.0 (2023-11-28)
 
 ### Chore
 
@@ -11,7 +58,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 23 calendar days.
+ - 4 commits contributed to the release over the course of 23 calendar days.
  - 30 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,18 +70,15 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-gpx v0.4.0 ([`1fe3d29`](https://github.com/spmadden/irox/commit/1fe3d29b9b3d7ff152eed47f8bfb5aa9134c8860))
     - Pivot to using Cargo.toml workspace lints ([`88ebfb5`](https://github.com/spmadden/irox/commit/88ebfb5deea5508ca54f4aaab62f6fd5a36f531c))
     - Remove unused dependencies ([`8dac280`](https://github.com/spmadden/irox/commit/8dac28062fabe59a155f04de03a0f2429a655f6a))
     - Release irox-tools v0.3.2, irox-time v0.3.0, irox-log v0.1.0, safety bump 8 crates ([`9c08793`](https://github.com/spmadden/irox/commit/9c0879320a17a94fa7a4169426de4d9d3b62395e))
 </details>
 
-## v0.3.0 (2023-10-30)
+## v0.3.0 (2023-10-29)
 
 <csr-id-99485bbcc9e8af4cb5594becd10e496ab06f2535/>
-
-### Chore
-
- - <csr-id-99485bbcc9e8af4cb5594becd10e496ab06f2535/> ALL THE LINTS.
 
 ### New Features (BREAKING)
 
@@ -62,7 +106,7 @@
     - Pivot to using irox_time ([`756490d`](https://github.com/spmadden/irox/commit/756490d60114a26c87535de26e47b6e0a9d41a98))
 </details>
 
-## v0.2.0 (2023-10-16)
+## v0.2.0 (2023-10-15)
 
 ### Documentation
 
@@ -77,7 +121,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -94,22 +138,14 @@
     - Update docs for rustdoc-lints ([`13ae74c`](https://github.com/spmadden/irox/commit/13ae74c7a318037939a4604a28a1cf33d87741a0))
 </details>
 
-## v0.1.0 (2023-10-08)
+## v0.1.0 (2023-10-07)
 
 <csr-id-8b615cc2bb578961c2cd8895814932c9d84ee294/>
 <csr-id-31ab14449ae83ce6fbe3959461aa688fb3c1777c/>
 
-### Chore
-
- - <csr-id-8b615cc2bb578961c2cd8895814932c9d84ee294/> adding empty changelogs to prep for release
-
 ### New Features
 
  - <csr-id-b378b9da294474e73936e4e52bba9ae103fc1590/> new GPX reader/writer module
-
-### Other
-
- - <csr-id-31ab14449ae83ce6fbe3959461aa688fb3c1777c/> started reader impl
 
 ### Commit Statistics
 
