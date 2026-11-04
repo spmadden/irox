@@ -26,7 +26,7 @@ irox-structs = {workspace = true, features = ["alloc"]}
 cms = {workspace = true, optional = true, features = ["std"]}
 p384 = {workspace = true, optional = true, features = ["ecdsa"]}
 ecdsa = {workspace = true, optional = true}
-rsa = {workspace = true, optional = true, features = ["sha2", "std"]}
+rsa = {workspace = true, optional = true, features = ["sha2", "std", "encoding"]}
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = {version = "^0", features = ["wasm_js"]}
