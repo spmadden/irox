@@ -1,5 +1,37 @@
 
 
+## v0.7.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+
+### New Features
+
+ - <csr-id-c28882f6d3165d62fe322c3960abc8042362be7d/> rejigger to be more compatible with wasm32
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 691 days passed between releases.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Release irox-bits v0.5.0 ([`9a6d933`](https://github.com/spmadden/irox/commit/9a6d9331ad0ea937fea6635ef972e292881e9cda))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Rejigger to be more compatible with wasm32 ([`c28882f`](https://github.com/spmadden/irox/commit/c28882f6d3165d62fe322c3960abc8042362be7d))
+</details>
+
 ## v0.6.0 (2024-12-13)
 
 ### New Features (BREAKING)
@@ -10,7 +42,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 209 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -22,6 +54,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-raymarine-sonar v0.6.0 ([`b5b95bc`](https://github.com/spmadden/irox/commit/b5b95bce478e99783c62def1002f0fa9787380a1))
     - Add new dynamic byte ordering support in Bits ([`a980036`](https://github.com/spmadden/irox/commit/a9800369d86f46905c1309ca4e790220195807ec))
 </details>
 
@@ -36,7 +69,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 28 calendar days.
  - 47 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -66,7 +99,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 123 days passed between releases.
+ - 124 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -87,11 +120,6 @@
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### New Features
 
  - <csr-id-934f860fc30602a8f94d12ae1c4763bf0123ea9a/> pivot 'Box<[u8]>' into 'Vec<u8>' to support new Primitive blob types
@@ -101,8 +129,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release.
- - 30 days passed between releases.
+ - 6 commits contributed to the release over the course of 23 calendar days.
+ - 31 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -125,10 +153,6 @@
 
 <csr-id-3840427bd226f4fea576053351b0244bf817e55b/>
 
-### Chore
-
- - <csr-id-3840427bd226f4fea576053351b0244bf817e55b/> ALL THE LINTS.
-
 ### Bug Fixes
 
  - <csr-id-5d8962f7ff00e6bd0891fbe41c2acaf87f9cf279/> fix bin compilation
@@ -141,7 +165,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release.
+ - 5 commits contributed to the release over the course of 9 calendar days.
  - 14 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -171,7 +195,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -195,27 +219,16 @@
 <csr-id-461eab91332d6e02eb32cef638fdd1bc67668c3b/>
 <csr-id-f8344d4d68301e9f5d5769ee5b44e0f620de9b7d/>
 
-### Chore
-
- - <csr-id-8b615cc2bb578961c2cd8895814932c9d84ee294/> adding empty changelogs to prep for release
- - <csr-id-6044deb9138bcdad7cf892d1fe25e6ee84d4db04/> fixup copyright in headers
-
 ### New Features
 
  - <csr-id-a698240b8770f73bbd3bdae71583818d86271764/> write out gpx file
  - <csr-id-4ae68a2a460674837bc8ff4cf7282ae69e60bbbc/> new raymarine sonar converter module
 
-### Other
-
- - <csr-id-17196e558011bd32abec2109a01e9add4b829d78/> much cleaner parser impls
- - <csr-id-461eab91332d6e02eb32cef638fdd1bc67668c3b/> generating valid-ish points now
- - <csr-id-f8344d4d68301e9f5d5769ee5b44e0f620de9b7d/> more progress with the sonar converter
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 8 commits contributed to the release.
+ - 8 commits contributed to the release over the course of 8 calendar days.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
