@@ -1,18 +1,18 @@
 
 
 
-## v0.5.5 (2025-03-01)
+## v0.6.0 (2026-11-04)
 
 ### Chore
 
- - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
+ - <csr-id-622b21017e004b29d1107b7471339306083bcc4a/> fix debug lints
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
- - 77 days passed between releases.
+ - 2 commits contributed to the release.
+ - 613 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +23,33 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Fix debug lints ([`622b210`](https://github.com/spmadden/irox/commit/622b21017e004b29d1107b7471339306083bcc4a))
+</details>
+
+## v0.5.5 (2025-03-01)
+
+### Chore
+
+ - <csr-id-1f48b70c64fb0cde031bf379fe3d6b5b276b6f51/> cleanup bitmask order-of-operations
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 2 commits contributed to the release over the course of 13 calendar days.
+ - 78 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-nmea0183 v0.5.5 ([`7a446e7`](https://github.com/spmadden/irox/commit/7a446e7be23eb93932b4e77ae0c92c3678349816))
     - Cleanup bitmask order-of-operations ([`1f48b70`](https://github.com/spmadden/irox/commit/1f48b70c64fb0cde031bf379fe3d6b5b276b6f51))
 </details>
 
@@ -37,6 +64,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 20 calendar days.
+ - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -81,10 +109,6 @@
 
 <csr-id-1647c4611435c3a4c0547b5c28301b776a7196d7/>
 
-### Chore
-
- - <csr-id-1647c4611435c3a4c0547b5c28301b776a7196d7/> Clean up new lints
-
 ### New Features
 
  - <csr-id-323e0ff6c178d4c085f3cd94e7d9b17d9afd7860/> add GNS message
@@ -125,6 +149,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 1 calendar day.
+ - 49 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -144,17 +169,9 @@
 <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 <csr-id-aa699e9008f7c8e19e0faecbf9dea05eeb6df345/>
 
-### Chore
-
- - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
-
 ### Bug Fixes
 
  - <csr-id-6fdcc09292831e15053e44c5e01356b0375b1800/> fix import of tools::fmt
-
-### Refactor (BREAKING)
-
- - <csr-id-aa699e9008f7c8e19e0faecbf9dea05eeb6df345/> update to use Bits rather than Read
 
 ### Commit Statistics
 
@@ -185,12 +202,6 @@
 <csr-id-38d709a5df3fd8d11784427952480ca04e6ef965/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-38d709a5df3fd8d11784427952480ca04e6ef965/> fix new formatting rules in nmea0183
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### New Features
 
  - <csr-id-b1614a35161bc14d45a7b8fb03a121e6683cc872/> new partial impl of ZDA
@@ -203,6 +214,7 @@
 <csr-read-only-do-not-edit/>
 
  - 9 commits contributed to the release over the course of 23 calendar days.
+ - 31 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -267,7 +279,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 27 days passed between releases.
+ - 28 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -288,12 +300,6 @@
 <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/>
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-f03d8a3ec997d53470bfdeb5e76b71925aac3f10/> clean up code with additional lints
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
