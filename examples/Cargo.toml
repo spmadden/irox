@@ -1,0 +1,37 @@
+[package]
+name = "irox-examples"
+description = "Examples that don't fit anywhere else"
+keywords = ["irox"]
+categories = ["command-line-utilities"]
+version= "0.1.0"
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+license.workspace = true
+exclude.workspace = true
+repository.workspace = true
+readme = "README.md"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dev-dependencies]
+irox-units = { workspace = true }
+irox-time = { workspace = true, features = ["std"] }
+irox-bits = { workspace = true, features = ["std"] }
+irox-tools = { workspace = true, features = ["std"] }
+irox-egui-extras = { workspace = true, features = ["eframe", "plots"] }
+irox-log = { workspace = true }
+eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts"] }
+egui = { workspace = true, default-features = false, features = ["default_fonts"] }
+
+[[example]]
+name = "windowgraphs"
+required-features = ["irox-egui-extras/glow"]

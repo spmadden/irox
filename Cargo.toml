@@ -12,6 +12,7 @@ repository = "https://github.com/spmadden/irox"
 resolver = "2"
 members = [
     "irox",
+    "examples",
     "data-formats/cargo-metadata",
     "data-formats/csv",
     "data-formats/dot",

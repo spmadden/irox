@@ -2324,6 +2324,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "irox-examples"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "egui",
+ "irox-bits",
+ "irox-egui-extras",
+ "irox-log",
+ "irox-time",
+ "irox-tools",
+ "irox-units",
+]
+
+[[package]]
 name = "irox-fixedmath"
 version = "0.3.0"
 dependencies = [
@@ -2631,11 +2645,8 @@ dependencies = [
 name = "irox-stats"
 version = "0.4.0"
 dependencies = [
- "eframe",
- "egui",
  "emath",
  "irox-bits",
- "irox-egui-extras",
  "irox-log",
  "irox-time",
  "irox-tools",

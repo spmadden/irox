@@ -36,15 +36,10 @@ irox-units = { workspace = true }
 irox-time = { workspace = true, features = ["std"] }
 irox-bits = { workspace = true, features = ["std"] }
 irox-tools = { workspace = true, features = ["std"] }
-irox-egui-extras = { workspace = true, features = ["eframe", "plots"] }
 irox-log = { workspace = true }
-eframe = { workspace = true, default-features = false, features = ["wgpu", "default_fonts"] }
-egui = { workspace = true, default-features = false, features = ["default_fonts"] }
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
-[[example]]
-name = "windowgraphs"
-required-features = ["irox-egui-extras/glow"]
+
