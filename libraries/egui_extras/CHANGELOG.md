@@ -1,9 +1,168 @@
 
 
 
-## v0.7.0 (2025-03-09)
+## v0.8.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-d852f3f634768b5f6632d9dc3d20f774badda2e2/> update to rust 1.98, cleanup lints
+ - <csr-id-50b5d0e18a05b2e7b1da475efbccecf2c883af71/> update to rust 1.97, cleanup lints
+ - <csr-id-93ecd14c3c1f844f8a76388e02452b182fb43b3a/> fix imports
+ - <csr-id-b7b95a377765d1af3c529cdf9bcf901579d74545/> fix lints & bump to 1.91
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+ - <csr-id-789f6fbb81e815454d18c68c310d9a8e58f969c5/> fix lints & bump to 1.87
+
+### New Features
+
+ - <csr-id-a8db5e268bc04b97ba2c1676b425476a30da5edd/> rework of the boolean editor widget
+ - <csr-id-4251f45dad4e177f1f2bcc1353f9c95d452cd61c/> basic editors
+ - <csr-id-727a698b027559a877946b554140b6a65346f91d/> pivot to using Identifier, arcs return responses
+ - <csr-id-82f28c83316951e07476fc1a52842d06a63ff8b0/> add toast widget, refactor gallery by features
+ - <csr-id-0aea7db7b8d69e794c7fa3735046b0b1a396530f/> add arcwedge widget
+ - <csr-id-105c444e060dd095578a5444aaf28e20d101d412/> add arcwedge and colors examples
+ - <csr-id-523f014ce085ab6e43472ebbdd1a00d2f2f7166a/> arcwedges again
+ - <csr-id-70f78e89cb27a24270135241fd749374e325974d/> Start of arcwedge example implementation
+ - <csr-id-24940b7c225f0aa1e60d164f818b2c285fe8e178/> switch to using the nice built-in theme button.
+ - <csr-id-e76348a16c9f4e4d3e0cc801f60050e2d6147c52/> Add basic PNG image tests
+ - <csr-id-405acd2d8cdc965e6e1095dba9a4d6744049913b/> buncha new widgets
+ - <csr-id-84f45ca6d391c1845338a0b8872ac0b704f30389/> random gets .choice() which returns a random element from the set
+ - <csr-id-b6b852444ec0ddd2c63ae2805565c1b986fae00d/> expose Layer::scale_position
+ - <csr-id-8f787a847d27d8a9931cfce339338c95eb1d6586/> arrow drawing
+ - <csr-id-e41136f3a9766690a73ac4292676a2034e6edc21/> better interactions
+ - <csr-id-b7206818384d8b82b05222fe2c276996d5f5e537/> test image example
+ - <csr-id-c908820fda002d1c5ce2887897165c23bef53ec3/> improved profiling & composite app creation
+ - <csr-id-5abb02edc5c8b0bd8898a411b478dd5dab8a347c/> rejigger fonts, add emojis
+ - <csr-id-c2b61925ab265998e0919d1295f8b151ee4dafe7/> can disable dragging for other widgets
+ - <csr-id-bf8faa6a6410fa98a400985c4c16688cad76e805/> ability to disable toolframe settings menu
+ - <csr-id-d85675521504f1415d7107856c4d6ad84ca54b92/> new arc-ish bent line between two points based on distance
+ - <csr-id-af2db7ecf3739af78d94ef4624c3e2a957a2ba8b/> option to disable mouse crosshairs in drawpanel
+ - <csr-id-3e92b70ecd998fde8751a59823fbf7aa5fb4021c/> draw panel gets better location scaling options
+ - <csr-id-dc99f3159abd0b5aacd55ffe2f01e6377baf7476/> reset to initial transform on double-click and store the world area off
+ - <csr-id-b5a69f34b3eaf17bdccb2aaf104fc0396d259bdb/> new small terminal raster fonts
+ - <csr-id-0ad56c45761e83598f59548ab8ec71ac5f4a7e9c/> new mesh-based font
+ - <csr-id-6096a61fb0cbf628929fb2c59f980f336c0204ef/> ability to set fonts as default-egui fonts
+ - <csr-id-9ce4bedc880becf88afdae8237fc25ce08febae1/> DrawPanels get layer support
+ - <csr-id-cc7e6913467cabfa818b08a0891c1a3256e7e3e4/> remove indicatif dep RUSTSEC-2025-0119
+ - <csr-id-abd5d4915f1b5110ad189ab72031593f5df419d9/> new test rendering image
+ - <csr-id-dd6cdc080e4a3a5b2af01f2ac81b915edf0947b8/> add extra menu options to toolframe
+ - <csr-id-631bcdcc1037af4cbe6d8e2b55144f6c21648138/> WIP draw panels
+ - <csr-id-9afc16d087521217e15069bfe66d8f8f0ab0b81f/> test image generation
+ - <csr-id-90221033f46472e52b4eb604183b2dc14f09005c/> tweak persistence behavior for composite apps, cleanup deps
+ - <csr-id-2f4ab0cf269eb76666be7ebaeb42f3249b74099a/> easier all-fonts loading
+ - <csr-id-4462f83776d2aa47681f8786667d09bc51da9ef2/> rejigger to be more compatible with wasm32
+ - <csr-id-49093fc06cc2676b16d2244daceefa33cf9cc138/> also export eframe
+ - <csr-id-2a7510a6cfe434cf8264b4885f5a54e40d475f4c/> new dialog infra, for messages & passwords
+
+### Bug Fixes
+
+ - <csr-id-379bf1c0d76872fb694d387049063e8588c1ae37/> Fix import of eframe vs egui in arrows
+ - <csr-id-4347befc0255f48d228213db0112bf965d4c5602/> fix toolframe theming (maybe!)
+ - <csr-id-40879d4963d129f822372793cb62dd2db04dd1c5/> fix theming button bug
+ - <csr-id-03a1e18b85001f4448c87450571da9c513322956/> clean up features & imports
+ - <csr-id-a2be1d9002ecab07ce63fe580b5338b588033fc3/> move bottom bar before windows
+ - <csr-id-7b13ca4bfe1af1a6d8331aa366afb78f495ea50b/> remove default features
+ - <csr-id-eec9bdb46b7a6b5979b72717f989a5813ac27eb0/> put profiling behind feature gate
+ - <csr-id-e6bc47698c194864dc6e3941f81e77fe9bf7eae5/> default to wgpu
+ - <csr-id-79da433927d358967e5ca0b72896d80c5e9c0af0/> fix wasm for toolframe
+ - <csr-id-81032185a100f969cc6f26c7ee32472e1f92496b/> ensure NativeOptions isn't included for wasm32
+ - <csr-id-be75cf2c3f0b4402d71ff4d74f30733f6287447a/> put irox-stats dep behind plots feature where it's used
+ - <csr-id-18f86c9d7accff732208b0293dd2b118384e50b6/> add eframe wgpu, glow features
 
 ### Other
+
+ - <csr-id-ce68d4d5577feb8f49c2a4fc31122bf1181dfbe5/> drawing in wasm
+
+### Refactor
+
+ - <csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/> move eframe behind feature
+ - <csr-id-59f35131513a8b43d7e288832276943532e6bfee/> hexdump read -> bits
+
+### New Features (BREAKING)
+
+ - <csr-id-170a4ac732fd9524798c20960fbe7106a76e65e9/> bump egui to 0.34
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 61 commits contributed to the release.
+ - 605 days passed between releases.
+ - 60 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.98, cleanup lints ([`d852f3f`](https://github.com/spmadden/irox/commit/d852f3f634768b5f6632d9dc3d20f774badda2e2))
+    - Update to rust 1.97, cleanup lints ([`50b5d0e`](https://github.com/spmadden/irox/commit/50b5d0e18a05b2e7b1da475efbccecf2c883af71))
+    - Rework of the boolean editor widget ([`a8db5e2`](https://github.com/spmadden/irox/commit/a8db5e268bc04b97ba2c1676b425476a30da5edd))
+    - Fix imports ([`93ecd14`](https://github.com/spmadden/irox/commit/93ecd14c3c1f844f8a76388e02452b182fb43b3a))
+    - Basic editors ([`4251f45`](https://github.com/spmadden/irox/commit/4251f45dad4e177f1f2bcc1353f9c95d452cd61c))
+    - Pivot to using Identifier, arcs return responses ([`727a698`](https://github.com/spmadden/irox/commit/727a698b027559a877946b554140b6a65346f91d))
+    - Add toast widget, refactor gallery by features ([`82f28c8`](https://github.com/spmadden/irox/commit/82f28c83316951e07476fc1a52842d06a63ff8b0))
+    - Add arcwedge widget ([`0aea7db`](https://github.com/spmadden/irox/commit/0aea7db7b8d69e794c7fa3735046b0b1a396530f))
+    - Add arcwedge and colors examples ([`105c444`](https://github.com/spmadden/irox/commit/105c444e060dd095578a5444aaf28e20d101d412))
+    - Arcwedges again ([`523f014`](https://github.com/spmadden/irox/commit/523f014ce085ab6e43472ebbdd1a00d2f2f7166a))
+    - Start of arcwedge example implementation ([`70f78e8`](https://github.com/spmadden/irox/commit/70f78e89cb27a24270135241fd749374e325974d))
+    - Switch to using the nice built-in theme button. ([`24940b7`](https://github.com/spmadden/irox/commit/24940b7c225f0aa1e60d164f818b2c285fe8e178))
+    - Add basic PNG image tests ([`e76348a`](https://github.com/spmadden/irox/commit/e76348a16c9f4e4d3e0cc801f60050e2d6147c52))
+    - Fix import of eframe vs egui in arrows ([`379bf1c`](https://github.com/spmadden/irox/commit/379bf1c0d76872fb694d387049063e8588c1ae37))
+    - Buncha new widgets ([`405acd2`](https://github.com/spmadden/irox/commit/405acd2d8cdc965e6e1095dba9a4d6744049913b))
+    - Random gets .choice() which returns a random element from the set ([`84f45ca`](https://github.com/spmadden/irox/commit/84f45ca6d391c1845338a0b8872ac0b704f30389))
+    - Fix toolframe theming (maybe!) ([`4347bef`](https://github.com/spmadden/irox/commit/4347befc0255f48d228213db0112bf965d4c5602))
+    - Expose Layer::scale_position ([`b6b8524`](https://github.com/spmadden/irox/commit/b6b852444ec0ddd2c63ae2805565c1b986fae00d))
+    - Arrow drawing ([`8f787a8`](https://github.com/spmadden/irox/commit/8f787a847d27d8a9931cfce339338c95eb1d6586))
+    - Fix theming button bug ([`40879d4`](https://github.com/spmadden/irox/commit/40879d4963d129f822372793cb62dd2db04dd1c5))
+    - Better interactions ([`e41136f`](https://github.com/spmadden/irox/commit/e41136f3a9766690a73ac4292676a2034e6edc21))
+    - Clean up features & imports ([`03a1e18`](https://github.com/spmadden/irox/commit/03a1e18b85001f4448c87450571da9c513322956))
+    - Bump egui to 0.34 ([`170a4ac`](https://github.com/spmadden/irox/commit/170a4ac732fd9524798c20960fbe7106a76e65e9))
+    - Test image example ([`b720681`](https://github.com/spmadden/irox/commit/b7206818384d8b82b05222fe2c276996d5f5e537))
+    - Move bottom bar before windows ([`a2be1d9`](https://github.com/spmadden/irox/commit/a2be1d9002ecab07ce63fe580b5338b588033fc3))
+    - Remove default features ([`7b13ca4`](https://github.com/spmadden/irox/commit/7b13ca4bfe1af1a6d8331aa366afb78f495ea50b))
+    - Put profiling behind feature gate ([`eec9bdb`](https://github.com/spmadden/irox/commit/eec9bdb46b7a6b5979b72717f989a5813ac27eb0))
+    - Improved profiling & composite app creation ([`c908820`](https://github.com/spmadden/irox/commit/c908820fda002d1c5ce2887897165c23bef53ec3))
+    - Rejigger fonts, add emojis ([`5abb02e`](https://github.com/spmadden/irox/commit/5abb02edc5c8b0bd8898a411b478dd5dab8a347c))
+    - Can disable dragging for other widgets ([`c2b6192`](https://github.com/spmadden/irox/commit/c2b61925ab265998e0919d1295f8b151ee4dafe7))
+    - Ability to disable toolframe settings menu ([`bf8faa6`](https://github.com/spmadden/irox/commit/bf8faa6a6410fa98a400985c4c16688cad76e805))
+    - New arc-ish bent line between two points based on distance ([`d856755`](https://github.com/spmadden/irox/commit/d85675521504f1415d7107856c4d6ad84ca54b92))
+    - Option to disable mouse crosshairs in drawpanel ([`af2db7e`](https://github.com/spmadden/irox/commit/af2db7ecf3739af78d94ef4624c3e2a957a2ba8b))
+    - Draw panel gets better location scaling options ([`3e92b70`](https://github.com/spmadden/irox/commit/3e92b70ecd998fde8751a59823fbf7aa5fb4021c))
+    - Reset to initial transform on double-click and store the world area off ([`dc99f31`](https://github.com/spmadden/irox/commit/dc99f3159abd0b5aacd55ffe2f01e6377baf7476))
+    - Default to wgpu ([`e6bc476`](https://github.com/spmadden/irox/commit/e6bc47698c194864dc6e3941f81e77fe9bf7eae5))
+    - New small terminal raster fonts ([`b5a69f3`](https://github.com/spmadden/irox/commit/b5a69f34b3eaf17bdccb2aaf104fc0396d259bdb))
+    - New mesh-based font ([`0ad56c4`](https://github.com/spmadden/irox/commit/0ad56c45761e83598f59548ab8ec71ac5f4a7e9c))
+    - Ability to set fonts as default-egui fonts ([`6096a61`](https://github.com/spmadden/irox/commit/6096a61fb0cbf628929fb2c59f980f336c0204ef))
+    - DrawPanels get layer support ([`9ce4bed`](https://github.com/spmadden/irox/commit/9ce4bedc880becf88afdae8237fc25ce08febae1))
+    - Move eframe behind feature ([`159001f`](https://github.com/spmadden/irox/commit/159001f900b2ca97dd398671a85c548c90fc07c4))
+    - Hexdump read -> bits ([`59f3513`](https://github.com/spmadden/irox/commit/59f35131513a8b43d7e288832276943532e6bfee))
+    - Fix lints & bump to 1.91 ([`b7b95a3`](https://github.com/spmadden/irox/commit/b7b95a377765d1af3c529cdf9bcf901579d74545))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Fix lints & bump to 1.87 ([`789f6fb`](https://github.com/spmadden/irox/commit/789f6fbb81e815454d18c68c310d9a8e58f969c5))
+    - Remove indicatif dep RUSTSEC-2025-0119 ([`cc7e691`](https://github.com/spmadden/irox/commit/cc7e6913467cabfa818b08a0891c1a3256e7e3e4))
+    - New test rendering image ([`abd5d49`](https://github.com/spmadden/irox/commit/abd5d4915f1b5110ad189ab72031593f5df419d9))
+    - Add extra menu options to toolframe ([`dd6cdc0`](https://github.com/spmadden/irox/commit/dd6cdc080e4a3a5b2af01f2ac81b915edf0947b8))
+    - WIP draw panels ([`631bcdc`](https://github.com/spmadden/irox/commit/631bcdcc1037af4cbe6d8e2b55144f6c21648138))
+    - Test image generation ([`9afc16d`](https://github.com/spmadden/irox/commit/9afc16d087521217e15069bfe66d8f8f0ab0b81f))
+    - Fix wasm for toolframe ([`79da433`](https://github.com/spmadden/irox/commit/79da433927d358967e5ca0b72896d80c5e9c0af0))
+    - Tweak persistence behavior for composite apps, cleanup deps ([`9022103`](https://github.com/spmadden/irox/commit/90221033f46472e52b4eb604183b2dc14f09005c))
+    - Drawing in wasm ([`ce68d4d`](https://github.com/spmadden/irox/commit/ce68d4d5577feb8f49c2a4fc31122bf1181dfbe5))
+    - Easier all-fonts loading ([`2f4ab0c`](https://github.com/spmadden/irox/commit/2f4ab0cf269eb76666be7ebaeb42f3249b74099a))
+    - Rejigger to be more compatible with wasm32 ([`4462f83`](https://github.com/spmadden/irox/commit/4462f83776d2aa47681f8786667d09bc51da9ef2))
+    - Also export eframe ([`49093fc`](https://github.com/spmadden/irox/commit/49093fc06cc2676b16d2244daceefa33cf9cc138))
+    - Ensure NativeOptions isn't included for wasm32 ([`8103218`](https://github.com/spmadden/irox/commit/81032185a100f969cc6f26c7ee32472e1f92496b))
+    - Put irox-stats dep behind plots feature where it's used ([`be75cf2`](https://github.com/spmadden/irox/commit/be75cf2c3f0b4402d71ff4d74f30733f6287447a))
+    - Add eframe wgpu, glow features ([`18f86c9`](https://github.com/spmadden/irox/commit/18f86c9d7accff732208b0293dd2b118384e50b6))
+    - New dialog infra, for messages & passwords ([`2a7510a`](https://github.com/spmadden/irox/commit/2a7510a6cfe434cf8264b4885f5a54e40d475f4c))
+</details>
+
+## v0.7.0 (2025-03-09)
+
+### Documentation
 
  - <csr-id-270a40465f1364e048c5ba9cc962f940070e252e/> add new progress gif
 
@@ -15,7 +174,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
+ - 8 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -26,6 +186,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-egui-extras v0.7.0 ([`76c9f80`](https://github.com/spmadden/irox/commit/76c9f8002e46fdb98f249ab569eddf0d2d6a5502))
     - Release irox-progress v0.6.0, safety bump 2 crates ([`d27f82c`](https://github.com/spmadden/irox/commit/d27f82c385255f496741b01be6dcb68e04ef65f4))
     - Add new progress gif ([`270a404`](https://github.com/spmadden/irox/commit/270a40465f1364e048c5ba9cc962f940070e252e))
     - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
@@ -34,10 +195,6 @@
 ## v0.6.2 (2025-03-01)
 
 <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/>
-
-### Chore
-
- - <csr-id-de5e67fb00da4d87ac75adb7592f4848ba2399b2/> elude all the lifetimes!
 
 ### Commit Statistics
 
@@ -64,12 +221,6 @@
 <csr-id-538e405c4960593413c72be7eb9429c98d92642b/>
 <csr-id-e2387bc8ef08056c542b20f8b44e463755b55acb/>
 
-### Chore
-
- - <csr-id-538e405c4960593413c72be7eb9429c98d92642b/> Update rendering and dependencies for egui 0.31 upgrade
-   Upgraded egui, eframe, and related crates to version 0.31, introducing new rendering features like `StrokeKind` and `CornerRadius`. Updated code to align with API changes and improved compatibility, including adjustments for `wgpu` and its dependencies. Also updated licensing terms and resolved dependency clarifications.
- - <csr-id-e2387bc8ef08056c542b20f8b44e463755b55acb/> fix some lints
-
 ### New Features
 
  - <csr-id-ca5ce821102f6f51d83d17680e32a9ac8631a7fc/> Make utility functions public in logplot.rs
@@ -80,7 +231,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 1 calendar day.
- - 2 days passed between releases.
+ - 3 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -100,10 +251,6 @@
 ## v0.6.0 (2025-02-09)
 
 <csr-id-38267a2559f76808f24d092ddaa2c6c002c319c3/>
-
-### Chore
-
- - <csr-id-38267a2559f76808f24d092ddaa2c6c002c319c3/> fixup grammar in plots
 
 ### New Features
 
@@ -174,11 +321,6 @@
 <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/>
 <csr-id-9b3f63a99527aa22dccebac43a29057929b7493a/>
 
-### Chore
-
- - <csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/> cleanup some unused egui features
- - <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/> fix lints around using Arc<Vec<T>> instead of Arc<[T]>
-
 ### New Features
 
  - <csr-id-8270cefc0903fafcf39d8b206a250403df3c79e9/> fixup nostd support in carto
@@ -215,16 +357,12 @@
  - <csr-id-6e5e222a6a72cf565c8da73bb4bb157dfcd409dd/> updating examples from breaking api changes
  - <csr-id-5061f5fc9bb6e46a431ac2dc92691d35f1492c4b/> only draw the hover within the plot grid area
 
-### Refactor
-
- - <csr-id-9b3f63a99527aa22dccebac43a29057929b7493a/> move structure into own method
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 34 commits contributed to the release over the course of 40 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 33 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -341,6 +479,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -368,6 +507,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 20 calendar days.
+ - 45 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -391,10 +531,6 @@
 ### New Features
 
  - <csr-id-042f09d4a5463123b9ad02f2bb17b9226df11990/> update about window with build host variables.
-
-### Chore (BREAKING)
-
- - <csr-id-bf43c95acb312542bb94ca647366f0c23a692f19/> upgrade to latest libraries, including egui 0.29.1
 
 ### Commit Statistics
 
@@ -428,7 +564,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -481,7 +617,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 9 calendar days.
- - 36 days passed between releases.
+ - 37 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -526,10 +662,6 @@
 
 <csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/>
 
-### Chore
-
- - <csr-id-29a9615441c4762311484e3b6ecf32745dc3c486/> fix lints
-
 ### New Features
 
  - <csr-id-dcdd6df468290e02abd9188f3ec68f5aaf3e49c3/> plots now zoom
@@ -539,6 +671,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
+ - 1 day passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -636,7 +769,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 2 calendar days.
- - 2 days passed between releases.
+ - 3 days passed between releases.
  - 6 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -687,11 +820,6 @@
 <csr-id-cc3197e276912dd7aadf83c092086369381aad91/>
 <csr-id-e2a48c22f0dab037c9db1710a3b3e4764e199404/>
 
-### Chore
-
- - <csr-id-cc3197e276912dd7aadf83c092086369381aad91/> clean lints in egui_extras
- - <csr-id-e2a48c22f0dab037c9db1710a3b3e4764e199404/> Clean up new lints
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -726,7 +854,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 13 calendar days.
- - 23 days passed between releases.
+ - 24 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -747,15 +875,12 @@
 
 <csr-id-169d25bed38e36f5ae87e69a2bac055290ea0ff6/>
 
-### Chore
-
- - <csr-id-169d25bed38e36f5ae87e69a2bac055290ea0ff6/> bump version of egui-extras for deps
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 52 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -784,7 +909,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release over the course of 26 calendar days.
- - 50 days passed between releases.
+ - 51 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -806,10 +931,6 @@
 
 <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
 
-### Chore
-
- - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
-
 ### New Features
 
  - <csr-id-303aca0c8fb37543c95ab4c14770e671db4d5b11/> playing with wasm, now can make webpages!
@@ -819,7 +940,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 10 calendar days.
- - 25 days passed between releases.
+ - 26 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -846,7 +967,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 11 days passed between releases.
+ - 12 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -891,10 +1012,6 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### New Features
 
  - <csr-id-d08939007d939152e532b84654208b0156b3a8d6/> update egui to 0.24
@@ -910,6 +1027,7 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 14 calendar days.
+ - 27 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -939,7 +1057,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 3 days passed between releases.
+ - 4 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -957,10 +1075,6 @@
 ## v0.3.1 (2023-10-29)
 
 <csr-id-7218f70a16f1a21f1ed716bb7aaa712511645476/>
-
-### Chore
-
- - <csr-id-7218f70a16f1a21f1ed716bb7aaa712511645476/> ALL THE LINTS.
 
 ### Commit Statistics
 
@@ -993,7 +1107,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 7 calendar days.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1013,16 +1127,12 @@
 
 <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/>
 
-### Chore
-
- - <csr-id-f99614a5ce3368072b4d44dacede0e6e847b0b2e/> Fix up the readmes for publishing
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 19 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -1043,18 +1153,9 @@
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
 <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
 
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
-
 ### New Features
 
  - <csr-id-f98cc23ab3b3270e55c70d59d5ca75e10e8acc62/> fix module name to be consistent
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
 
 ### Commit Statistics
 
