@@ -1,5 +1,30 @@
 
 
+## v0.1.2 (2026-11-04)
+
+### New Features
+
+ - <csr-id-92ee04ad3a030ec31d2662a6fbafdd0244ec1d09/> remove dep on irox-tools
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release over the course of 241 calendar days.
+ - 276 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Remove dep on irox-tools ([`92ee04a`](https://github.com/spmadden/irox/commit/92ee04ad3a030ec31d2662a6fbafdd0244ec1d09))
+</details>
+
 ## v0.1.1 (2026-02-01)
 
 ### New Features
@@ -12,7 +37,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
+ - 583 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -23,6 +49,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-derive-helpers v0.1.1 ([`80e4304`](https://github.com/spmadden/irox/commit/80e43047346dcd7f7e6416348e28d5630b65dff8))
     - Mut idents and callchains ([`555fda7`](https://github.com/spmadden/irox/commit/555fda7814cccc2c06eebb4a3874aebb4245dc35))
     - Add todo!(), Self: Sized, and syn compile error helper ([`4e50426`](https://github.com/spmadden/irox/commit/4e504268ee4b91d397e688542722a66495812895))
     - New ability to derive EnumTryFromRepr (try_from(&Repr)) for [Repr(u8)] enums ([`6a38a79`](https://github.com/spmadden/irox/commit/6a38a798d007e0a7f06720b750e214e97c792054))

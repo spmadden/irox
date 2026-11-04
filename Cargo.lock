@@ -2058,7 +2058,7 @@ dependencies = [
  "irox-compression",
  "irox-cryptids",
  "irox-csv",
- "irox-derive-helpers 0.1.1",
+ "irox-derive-helpers 0.1.2",
  "irox-dot",
  "irox-egui-extras",
  "irox-enums 0.2.2",
@@ -2210,17 +2210,17 @@ dependencies = [
 [[package]]
 name = "irox-derive-helpers"
 version = "0.1.1"
-dependencies = [
- "syn 2.0.119",
-]
-
-[[package]]
-name = "irox-derive-helpers"
-version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e64f4cf03bbfad6573b601d0a0fb91423aab36eb38e960e626a06b83bb9ff736"
 dependencies = [
  "irox-tools 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "irox-derive-helpers"
+version = "0.1.2"
+dependencies = [
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -2318,7 +2318,7 @@ dependencies = [
 name = "irox-enums_derive"
 version = "0.2.4"
 dependencies = [
- "irox-derive-helpers 0.1.1",
+ "irox-derive-helpers 0.1.2",
  "syn 2.0.119",
 ]
 
@@ -2328,7 +2328,7 @@ version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93d3a1606a0f906b8152141fb3aba0c5f0b6597bdacc0f9c3b923db212324c42"
 dependencies = [
- "irox-derive-helpers 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "irox-derive-helpers 0.1.1",
  "syn 2.0.119",
 ]
 
@@ -2541,7 +2541,7 @@ dependencies = [
 name = "irox-pgderive"
 version = "0.1.0"
 dependencies = [
- "irox-derive-helpers 0.1.1",
+ "irox-derive-helpers 0.1.2",
  "irox-tools 0.11.1",
 ]
 
@@ -2582,7 +2582,7 @@ dependencies = [
 name = "irox-protobuf-derive"
 version = "0.1.0"
 dependencies = [
- "irox-derive-helpers 0.1.1",
+ "irox-derive-helpers 0.1.2",
  "irox-protobuf",
  "irox-tools 0.11.1",
  "syn 2.0.119",
@@ -2665,7 +2665,7 @@ dependencies = [
 name = "irox-structs_derive"
 version = "0.5.0"
 dependencies = [
- "irox-derive-helpers 0.1.1",
+ "irox-derive-helpers 0.1.2",
  "irox-tools 0.11.1",
  "irox-types",
  "quote",
