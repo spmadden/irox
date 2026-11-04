@@ -1,6 +1,41 @@
 
 
 
+## v0.5.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-64fa1405e48a0348b1de84d3ecf377a492384d75/> update to rust 1.99, cleanup lints
+ - <csr-id-50b5d0e18a05b2e7b1da475efbccecf2c883af71/> update to rust 1.97, cleanup lints
+ - <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/> cleaning up the remainder of the feature cleanup detritus
+
+### New Features
+
+ - <csr-id-caf0497058e081df23bad174edd3861e826e566f/> big refactor to pivot from std/read to irox_bits for scanner
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 613 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Update to rust 1.99, cleanup lints ([`64fa140`](https://github.com/spmadden/irox/commit/64fa1405e48a0348b1de84d3ecf377a492384d75))
+    - Update to rust 1.97, cleanup lints ([`50b5d0e`](https://github.com/spmadden/irox/commit/50b5d0e18a05b2e7b1da475efbccecf2c883af71))
+    - Big refactor to pivot from std/read to irox_bits for scanner ([`caf0497`](https://github.com/spmadden/irox/commit/caf0497058e081df23bad174edd3861e826e566f))
+    - Cleaning up the remainder of the feature cleanup detritus ([`80339f6`](https://github.com/spmadden/irox/commit/80339f6fd1474cf4182bca867517b3e9f83a98ca))
+</details>
+
 ## v0.4.7 (2025-03-01)
 
 ### Chore
@@ -11,7 +46,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release over the course of 13 calendar days.
+ - 2 commits contributed to the release over the course of 13 calendar days.
  - 34 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -23,6 +58,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-networking v0.4.7 ([`c7ae7ab`](https://github.com/spmadden/irox/commit/c7ae7ab0aa8d767dd6978121c82689efb71d55f9))
     - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
 </details>
 
@@ -37,7 +73,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 7 calendar days.
- - 43 days passed between releases.
+ - 44 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -63,6 +99,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 20 calendar days.
+ - 50 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -114,6 +151,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 77 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -132,14 +170,6 @@
 
 <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
 <csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/>
-
-### Chore
-
- - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
-
-### Refactor
-
- - <csr-id-b95c39f94603a7c42353fe65114e95cf6a37a4bb/> deconflict network/example and build-rs/example
 
 ### Commit Statistics
 
@@ -169,11 +199,6 @@
 <csr-id-6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f/>
 <csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/>
 
-### Chore
-
- - <csr-id-902df4173eb9542972a3712c8cbcb5b99612613f/> networking to 0.4.1
- - <csr-id-e1a2beccad777886c8495d0d15a72d4d666bbc2f/> cleanup some lints on networking before snap release
-
 ### New Features
 
  - <csr-id-01ef5caa98730e8c1c4a9415ea7f6395543178dc/> impl Display for AddressError
@@ -186,11 +211,6 @@
 
  - <csr-id-be738eef324236d125b8b1bc235cbfd0278f51db/> cleanup lints/unwraps in client and response
  - <csr-id-8ccfa7133187fdedbd5e271548857ecc29735922/> use $crate ident in url macro
-
-### Other
-
- - <csr-id-6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f/> wip snap HTTP client, basic interaction works
- - <csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/> wip snap HTTP client, basic interaction works
 
 ### Commit Statistics
 
@@ -229,34 +249,12 @@
 <csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/>
 <csr-id-e1a2beccad777886c8495d0d15a72d4d666bbc2f/>
 
-### Other
-
- - <csr-id-6a313ea002129ab2470e2b4c8543b2fc8d1a6a6f/> wip snap HTTP client, basic interaction works
- - <csr-id-663496c6dee3b0bd7c6bc2e2abf00fba851b786d/> wip snap HTTP client, basic interaction works
-
-### Bug Fixes
-
- - <csr-id-be738eef324236d125b8b1bc235cbfd0278f51db/> cleanup lints/unwraps in client and response
- - <csr-id-8ccfa7133187fdedbd5e271548857ecc29735922/> use $crate ident in url macro
-
-### New Features
-
- - <csr-id-01ef5caa98730e8c1c4a9415ea7f6395543178dc/> impl Display for AddressError
- - <csr-id-8f320425909ce9d9db1b2c3d3e9e1dafe1b160af/> impl FromStr for HttpProtocol
- - <csr-id-4381c274ae9858202cf43dac4c1574b4105805fd/> finish impl FromStr for HttpCodes
- - <csr-id-bbf2b845292f6ddee8cc3d06c0e0e982649827fd/> new error module using the new macros
- - <csr-id-c5511546b4615d7739b2d4c481e4a400c4d84cbf/> snap WIP http/ws client
-
-### Chore
-
- - <csr-id-e1a2beccad777886c8495d0d15a72d4d666bbc2f/> cleanup some lints on networking before snap release
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 1 commit contributed to the release.
- - 38 days passed between releases.
+ - 39 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -281,7 +279,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 5 calendar days.
- - 6 days passed between releases.
+ - 7 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -300,15 +298,12 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 3 calendar days.
+ - 30 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -365,7 +360,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -387,11 +382,6 @@
 <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/>
 <csr-id-d42d2489478ed55560afd87bd0cad63f25224e93/>
 
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
-
 ### New Features
 
  - <csr-id-df3fcaa0fcea819d40fea6b2487fe25024b4194c/> add keywords & categories to Cargo.toml
@@ -402,11 +392,6 @@
 ### Bug Fixes
 
  - <csr-id-d5f4d2f189d2dfe3d26ddf668d4e3dc042218a93/> Pool actually accepts clients now
-
-### Other
-
- - <csr-id-5c178560becc0b665d70be2d99a1cffad3ba4284/> cleaning up clippy warnings
- - <csr-id-d42d2489478ed55560afd87bd0cad63f25224e93/> influx pings
 
 ### Commit Statistics
 
