@@ -1,6 +1,44 @@
 
 
-## v0.5.1 (2026-02-01)
+## v0.6.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-9e1a14c9df909ccde744116aed38011be58ad2c6/> fix features for irox-tools
+
+### New Features
+
+ - <csr-id-7e35d30aad80d6d74d5969a774dac2070920ed60/> UTCDateTime gets Hash
+
+### Bug Fixes
+
+ - <csr-id-ba5cdc46c1f2f962a6e7a229383f1814ad3fe8c9/> fix wasm/time call in epoch
+ - <csr-id-776b96f208405995ebae9ce4be741ebc9d34c1f1/> fix wasm/time call in epoch
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 5 commits contributed to the release.
+ - 275 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Fix wasm/time call in epoch ([`ba5cdc4`](https://github.com/spmadden/irox/commit/ba5cdc46c1f2f962a6e7a229383f1814ad3fe8c9))
+    - Fix wasm/time call in epoch ([`776b96f`](https://github.com/spmadden/irox/commit/776b96f208405995ebae9ce4be741ebc9d34c1f1))
+    - Fix features for irox-tools ([`9e1a14c`](https://github.com/spmadden/irox/commit/9e1a14c9df909ccde744116aed38011be58ad2c6))
+    - UTCDateTime gets Hash ([`7e35d30`](https://github.com/spmadden/irox/commit/7e35d30aad80d6d74d5969a774dac2070920ed60))
+</details>
+
+## v0.5.1 (2026-02-02)
 
 ### Bug Fixes
 
@@ -10,7 +48,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
+ - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -21,6 +60,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-time v0.5.1 ([`f9e4f3c`](https://github.com/spmadden/irox/commit/f9e4f3c821cb8b30348a7a574c03fcb8fbda2bb6))
     - Fix docsrs build ([`8d5cb30`](https://github.com/spmadden/irox/commit/8d5cb30c5b104abf4d5b8a77cb6a3240d70b0338))
 </details>
 
@@ -31,14 +71,6 @@
 <csr-id-a24770267796c817d071c9576138b5acb58deaae/>
 <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/>
 <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/>
-
-### Chore
-
- - <csr-id-54c6e76019de271abbd461b2b38dc84fe6aeca92/> bump version to 0.5.0
- - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
- - <csr-id-a24770267796c817d071c9576138b5acb58deaae/> fix lints & bump to 1.88
- - <csr-id-84ff4e9c2fb4577b9e009f5ec6c9b40ec3a26acc/> fix lints & bump to 1.86
- - <csr-id-80339f6fd1474cf4182bca867517b3e9f83a98ca/> cleaning up the remainder of the feature cleanup detritus
 
 ### New Features
 
@@ -143,7 +175,7 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 40 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -177,7 +209,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -204,6 +236,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 20 calendar days.
+ - 45 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -260,6 +293,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release over the course of 25 calendar days.
+ - 235 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -313,19 +347,12 @@
 <csr-id-701cfdabf93315d4ec035d67522e139917ee57fb/>
 <csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/>
 
-### Chore
-
- - <csr-id-701cfdabf93315d4ec035d67522e139917ee57fb/> bump time to 0.4.1
-
-### Test
-
- - <csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/> some extra 8601 week tests
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
+ - 1 day passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -348,14 +375,6 @@
 <csr-id-94e82bc9ad4eab534cbb1cd234b0100658e8d607/>
 <csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/>
 
-### Chore
-
- - <csr-id-90899a9c3d23b8e9bb977d5604adb44fcd173f32/> fixup format
-
-### Test
-
- - <csr-id-a5d9a4055841d8207e3be50b09436b19508b6040/> some extra 8601 week tests
-
 ### New Features
 
  - <csr-id-310ea52244cc9529d170a070e9a9516c8ae5b6c2/> new Date.day_of_week and ISO8601 week number formatting
@@ -367,16 +386,12 @@
  - <csr-id-b78731f08bdcd48f0fa5becd8b4180eafdaa0c9d/> month::end dates were 1-indexed, not 0-indexed as intended
  - <csr-id-2d441bfe429979f1ce5bdba94b709cd960a948f6/> fix import of tools::fmt
 
-### Other
-
- - <csr-id-94e82bc9ad4eab534cbb1cd234b0100658e8d607/> add julian calendar doc
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 9 commits contributed to the release over the course of 8 calendar days.
- - 37 days passed between releases.
+ - 38 days passed between releases.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -409,7 +424,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 6 days passed between releases.
+ - 7 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -427,10 +442,6 @@
 ## v0.3.4 (2023-11-28)
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
-
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
 
 ### New Features
 
@@ -494,7 +505,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 2 days passed between releases.
+ - 3 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -564,6 +575,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
+ - 7 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -584,10 +596,6 @@
 ## v0.2.0 (2023-10-29)
 
 <csr-id-62a00cc08ddb4edc44b587e91db9d372ace2dcd8/>
-
-### Chore
-
- - <csr-id-62a00cc08ddb4edc44b587e91db9d372ace2dcd8/> ALL THE LINTS.
 
 ### New Features
 
