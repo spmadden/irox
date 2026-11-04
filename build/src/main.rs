@@ -534,5 +534,10 @@ fn bootstrap() -> Result<(), Error> {
     install_update_version("wasm-bindgen-cli", "0.2.108");
     install_update("wasm-pack");
     install_update("cargo-deny");
+    install_update("cargo-generate");
+    install_update("cargo-describe");
+    install_update("cargo-edit");
+    install_update("cargo-bloat");
+    install_update("cargo-smart-release");
     Ok(())
 }

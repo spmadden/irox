@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use crate::error::{Error, ErrorKind};
@@ -258,7 +258,12 @@ where
 pub fn install_update(tool: &str) {
     if let Err(e) = exec(
         "cargo",
-        &["+stable", "install", "--locked", tool, "--color=always"],
+        &["+stable", "install",
+            "--locked",
+            "--root", ".cargo/bin",
+            "--color=always",
+            tool,
+        ],
     ) {
         warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
     };
@@ -270,10 +275,10 @@ pub fn install_update_version(tool: &str, version: &str) {
             "+stable",
             "install",
             "--locked",
-            tool,
-            "--version",
-            version,
+            "--root", ".cargo/bin",
+            "--version", version,
             "--color=always",
+            tool,
         ],
     ) {
         warn!("Unable to install/update {tool} - probably due to a network failure.  The next commands may not work.  Error was: {e:?}");
