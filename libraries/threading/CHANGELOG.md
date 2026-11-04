@@ -1,5 +1,38 @@
 
 
+## v0.3.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-306ecdf97f797b33cc68f485b0bd7aebd5b6212c/> hide log behind internal export in threading & progress
+ - <csr-id-622b21017e004b29d1107b7471339306083bcc4a/> fix debug lints
+
+### Bug Fixes
+
+ - <csr-id-2b93d9d46592e0e3e2291a497d1cb5e944060ea2/> push progress & threading behind logging facade
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 613 days passed between releases.
+ - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Push progress & threading behind logging facade ([`2b93d9d`](https://github.com/spmadden/irox/commit/2b93d9d46592e0e3e2291a497d1cb5e944060ea2))
+    - Hide log behind internal export in threading & progress ([`306ecdf`](https://github.com/spmadden/irox/commit/306ecdf97f797b33cc68f485b0bd7aebd5b6212c))
+    - Fix debug lints ([`622b210`](https://github.com/spmadden/irox/commit/622b21017e004b29d1107b7471339306083bcc4a))
+</details>
+
 ## v0.2.6 (2025-03-01)
 
 ### Chore
@@ -11,7 +44,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 13 calendar days.
+ - 4 commits contributed to the release over the course of 13 calendar days.
+ - 246 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +56,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-threading v0.2.6 ([`cf47177`](https://github.com/spmadden/irox/commit/cf471777356becc38b281cf897e287a9edc7a3b4))
     - Adjusting changelogs prior to release of irox-threading v0.2.6, irox-winlocation-api v0.5.3, irox v0.8.4 ([`73f7a77`](https://github.com/spmadden/irox/commit/73f7a7776dbcd26a8b8b835acb1c0132b7d3aada))
     - Cleanup remaining misc lints ([`dfe0100`](https://github.com/spmadden/irox/commit/dfe010053f41bf0531816c19c3229ce5a7e90a1c))
     - Elude all the lifetimes! ([`de5e67f`](https://github.com/spmadden/irox/commit/de5e67fb00da4d87ac75adb7592f4848ba2399b2))
@@ -30,10 +65,6 @@
 ## v0.2.5 (2024-06-28)
 
 <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/>
-
-### Chore
-
- - <csr-id-7b8a2bfcae359473feeeb4eb7098f9eab14685ee/> fixup some 1.78 lint warnings
 
 ### Commit Statistics
 
@@ -66,6 +97,7 @@
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 13 calendar days.
+ - 76 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -84,11 +116,6 @@
 
 <csr-id-7b3a6247e34af3ad754a61c1bd15b03b1abdf82a/>
 <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/>
-
-### Chore
-
- - <csr-id-7b3a6247e34af3ad754a61c1bd15b03b1abdf82a/> bump deps to latest versions
- - <csr-id-300356f119c976f98a230fc37ce7c43e6bd1a9e0/> clean up new lints for 1.75
 
 ### Commit Statistics
 
@@ -142,17 +169,12 @@
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
- - <csr-id-8dac28062fabe59a155f04de03a0f2429a655f6a/> remove unused dependencies
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 21 calendar days.
- - 22 days passed between releases.
+ - 23 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -186,6 +208,7 @@
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release.
+ - 8 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
