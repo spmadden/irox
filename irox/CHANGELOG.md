@@ -1,6 +1,96 @@
 
 
 
+## v0.10.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-ac4fbd1289190ecdf910de8c5dd89f017b0f2b87/> bump irox-bits to 0.6.0 for release
+ - <csr-id-e2a08aae1f0c26dfa553292540a7e3a873867db4/> remove feat 'bits' from irox_types
+ - <csr-id-54c6e76019de271abbd461b2b38dc84fe6aeca92/> bump version to 0.5.0
+ - <csr-id-b4557e31ce7e4e9335ec1e25753733b858293995/> bump version to 0.5.0
+ - <csr-id-7c8b8be2297da59ec0c839eb4b1891270e08efa5/> bump version to 0.2.0
+ - <csr-id-d6b1811a557f18d2a1c806c29562dafab66d2492/> bump version to 0.5.0
+ - <csr-id-e89ac5f4fe6579db999e18db9b02f8e49668bb08/> bump version to 0.11.0
+ - <csr-id-dc305634f1eda45a6a3137a6d270f9d406579c7c/> bump version to 0.5.0
+
+### New Features
+
+ - <csr-id-e82868eb58beff09d4e114533acee5ab33bdf848/> some module finalizations, add std feature
+ - <csr-id-d860139c6a3318dbd591972bdf244c3db020e726/> better egui translations
+ - <csr-id-fc46da15ba7d1ee560dc4b59f5b0e7cd1b85d0fa/> new PoisonedError type for use in locks
+ - <csr-id-d8565d40928b4421b85d4c1e3a12136232883e53/> new WIP zip data-format
+ - <csr-id-c6d20948e4789e1364e1aa609faf6eeba70b47ed/> add openpgp feature
+ - <csr-id-7546db5509718908b6be8d1af9407edf2d37c44d/> expose imagery
+ - <csr-id-a721503bf9a201c1f5d4eff85d48e4954547ded3/> new Geometry crate
+ - <csr-id-ab6c43b5d370a40aaad651657a648ee254aed6d2/> fixing up features and exports
+ - <csr-id-2887b672c485b972abea89f29010bb2aeebaae50/> implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime
+ - <csr-id-998f908794b8e69be6a95a19c8ef7314357f134a/> new UBX (u-blox) messages module
+ - <csr-id-d6c7be0470641350b850960f15aebb5c3777b3cb/> add structure for protobuf module
+
+### Bug Fixes
+
+ - <csr-id-3e633b86847ec855436ab92aa55232d96afec9e6/> Fix missing irox-units/serde feature
+ - <csr-id-76b4aea42ac05b4a7dbb7941852971ccbdc25e2b/> including graphing/profiling at top level
+ - <csr-id-8ee44f3a55cac706481120e94cbf895e6f9c6ae5/> fix main egui features
+ - <csr-id-18f86c9d7accff732208b0293dd2b118384e50b6/> add eframe wgpu, glow features
+
+### Other
+
+ - <csr-id-626b51ace277f02658e47da7c4beeac66912ea40/> units & graphing
+ - <csr-id-3076c50abba3104a04beb592ce3ed5527be0885c/> structure for protobuf encoder & decoder
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 33 commits contributed to the release.
+ - 605 days passed between releases.
+ - 25 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Release irox-derive-helpers v0.1.2 ([`7d09d97`](https://github.com/spmadden/irox/commit/7d09d97c776f93856f15775bb2fd0bcfbad6c3a3))
+    - Bump irox-bits to 0.6.0 for release ([`ac4fbd1`](https://github.com/spmadden/irox/commit/ac4fbd1289190ecdf910de8c5dd89f017b0f2b87))
+    - Remove feat 'bits' from irox_types ([`e2a08aa`](https://github.com/spmadden/irox/commit/e2a08aae1f0c26dfa553292540a7e3a873867db4))
+    - Some module finalizations, add std feature ([`e82868e`](https://github.com/spmadden/irox/commit/e82868eb58beff09d4e114533acee5ab33bdf848))
+    - Fix missing irox-units/serde feature ([`3e633b8`](https://github.com/spmadden/irox/commit/3e633b86847ec855436ab92aa55232d96afec9e6))
+    - Better egui translations ([`d860139`](https://github.com/spmadden/irox/commit/d860139c6a3318dbd591972bdf244c3db020e726))
+    - New PoisonedError type for use in locks ([`fc46da1`](https://github.com/spmadden/irox/commit/fc46da15ba7d1ee560dc4b59f5b0e7cd1b85d0fa))
+    - Including graphing/profiling at top level ([`76b4aea`](https://github.com/spmadden/irox/commit/76b4aea42ac05b4a7dbb7941852971ccbdc25e2b))
+    - New WIP zip data-format ([`d8565d4`](https://github.com/spmadden/irox/commit/d8565d40928b4421b85d4c1e3a12136232883e53))
+    - Add openpgp feature ([`c6d2094`](https://github.com/spmadden/irox/commit/c6d20948e4789e1364e1aa609faf6eeba70b47ed))
+    - Release irox-time v0.5.1 ([`f9e4f3c`](https://github.com/spmadden/irox/commit/f9e4f3c821cb8b30348a7a574c03fcb8fbda2bb6))
+    - Bump version to 0.5.0 ([`54c6e76`](https://github.com/spmadden/irox/commit/54c6e76019de271abbd461b2b38dc84fe6aeca92))
+    - Bump version to 0.5.0 ([`b4557e3`](https://github.com/spmadden/irox/commit/b4557e31ce7e4e9335ec1e25753733b858293995))
+    - Release irox-enums_derive v0.2.4 ([`87bcce5`](https://github.com/spmadden/irox/commit/87bcce5c80fe64e03d2f302770df69bb647722f8))
+    - Release irox-cryptids v0.1.2 ([`13cca7d`](https://github.com/spmadden/irox/commit/13cca7d3def4ae03ac914be0d648ab291982bd1d))
+    - Release irox-tools v0.11.1 ([`6026c83`](https://github.com/spmadden/irox/commit/6026c832750fb28ed2a0d2ddbf02e0bd1eb4dc16))
+    - Release irox-derive-helpers v0.1.1 ([`80e4304`](https://github.com/spmadden/irox/commit/80e43047346dcd7f7e6416348e28d5630b65dff8))
+    - Release irox-cryptids v0.1.1 ([`c2a26ad`](https://github.com/spmadden/irox/commit/c2a26ada67146c4e827877619d222da1954859e6))
+    - Bump version to 0.2.0 ([`7c8b8be`](https://github.com/spmadden/irox/commit/7c8b8be2297da59ec0c839eb4b1891270e08efa5))
+    - Bump version to 0.5.0 ([`d6b1811`](https://github.com/spmadden/irox/commit/d6b1811a557f18d2a1c806c29562dafab66d2492))
+    - Bump version to 0.11.0 ([`e89ac5f`](https://github.com/spmadden/irox/commit/e89ac5f4fe6579db999e18db9b02f8e49668bb08))
+    - Bump version to 0.5.0 ([`dc30563`](https://github.com/spmadden/irox/commit/dc305634f1eda45a6a3137a6d270f9d406579c7c))
+    - Fix main egui features ([`8ee44f3`](https://github.com/spmadden/irox/commit/8ee44f3a55cac706481120e94cbf895e6f9c6ae5))
+    - Expose imagery ([`7546db5`](https://github.com/spmadden/irox/commit/7546db5509718908b6be8d1af9407edf2d37c44d))
+    - New Geometry crate ([`a721503`](https://github.com/spmadden/irox/commit/a721503bf9a201c1f5d4eff85d48e4954547ded3))
+    - Units & graphing ([`626b51a`](https://github.com/spmadden/irox/commit/626b51ace277f02658e47da7c4beeac66912ea40))
+    - Fixing up features and exports ([`ab6c43b`](https://github.com/spmadden/irox/commit/ab6c43b5d370a40aaad651657a648ee254aed6d2))
+    - Implementing Serialize/Deserialize for UUID, UnixTimestamp, UTCDateTime ([`2887b67`](https://github.com/spmadden/irox/commit/2887b672c485b972abea89f29010bb2aeebaae50))
+    - New UBX (u-blox) messages module ([`998f908`](https://github.com/spmadden/irox/commit/998f908794b8e69be6a95a19c8ef7314357f134a))
+    - Structure for protobuf encoder & decoder ([`3076c50`](https://github.com/spmadden/irox/commit/3076c50abba3104a04beb592ce3ed5527be0885c))
+    - Add structure for protobuf module ([`d6c7be0`](https://github.com/spmadden/irox/commit/d6c7be0470641350b850960f15aebb5c3777b3cb))
+    - Add eframe wgpu, glow features ([`18f86c9`](https://github.com/spmadden/irox/commit/18f86c9d7accff732208b0293dd2b118384e50b6))
+</details>
+
 ## v0.9.0 (2025-03-09)
 
 ### Refactor (BREAKING)
@@ -11,7 +101,8 @@
 
 <csr-read-only-do-not-edit/>
 
- - 15 commits contributed to the release.
+ - 16 commits contributed to the release.
+ - 25 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +113,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox v0.9.0 ([`9c6bdd0`](https://github.com/spmadden/irox/commit/9c6bdd0fbd27a2a27090e6387129557f24a00a12))
     - Release irox-progress v0.6.0, safety bump 2 crates ([`d27f82c`](https://github.com/spmadden/irox/commit/d27f82c385255f496741b01be6dcb68e04ef65f4))
     - BREAKING: Move egui progress window into irox_egui_extras, isolating the dep to a single module. ([`8222675`](https://github.com/spmadden/irox/commit/8222675712d45fb15804713e9f557b993c71057f))
     - Adjusting changelogs prior to release of irox v0.8.4 ([`36577f9`](https://github.com/spmadden/irox/commit/36577f949cf1a482ce8ff1e842e9380818333ff0))
@@ -45,16 +137,12 @@
 
 <csr-id-e8554fdbf92b2a1d46175f0e3a5180c17d340925/>
 
-### Chore
-
- - <csr-id-e8554fdbf92b2a1d46175f0e3a5180c17d340925/> bump irox to 0.8.3 for release
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 2 days passed between releases.
+ - 3 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -73,10 +161,6 @@
 ## v0.8.2 (2025-02-09)
 
 <csr-id-fffa7e209ce1d270d1975e8756b0a648bc357747/>
-
-### Chore
-
- - <csr-id-fffa7e209ce1d270d1975e8756b0a648bc357747/> bump irox to 0.8.2 for release
 
 ### Commit Statistics
 
@@ -103,10 +187,6 @@
 
 <csr-id-1e5f58d8d9ce3924b1db439a765fccfc58f97213/>
 
-### Chore
-
- - <csr-id-1e5f58d8d9ce3924b1db439a765fccfc58f97213/> bump progress to 0.5.0 and irox to 0.8.1 for release
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -131,10 +211,6 @@
 
 <csr-id-dba5957f0e6f34e940bc0d3695b9ded01a3bda1d/>
 
-### Chore
-
- - <csr-id-dba5957f0e6f34e940bc0d3695b9ded01a3bda1d/> bump irox to 0.8.0 for release
-
 ### Bug Fixes
 
  - <csr-id-ddc6246a57502b1492c9c1ea96422ea355273043/> add a bunch of missing features to main module
@@ -144,7 +220,7 @@
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release over the course of 26 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -166,10 +242,6 @@
 ## v0.7.2 (2024-12-15)
 
 <csr-id-f6b726c3a992b31af94754aa093eb970ab10538f/>
-
-### Chore
-
- - <csr-id-f6b726c3a992b31af94754aa093eb970ab10538f/> bump irox to 0.7.2 for release
 
 ### Commit Statistics
 
@@ -195,15 +267,12 @@
 
 <csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/>
 
-### Chore
-
- - <csr-id-093baea4c7f602e9692b7caaca99619aa0d96472/> bump irox to 0.7.1
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -222,15 +291,12 @@
 
 <csr-id-81c0d07f525d7fa99029b274fab49d66143dac84/>
 
-### Chore
-
- - <csr-id-81c0d07f525d7fa99029b274fab49d66143dac84/> bump irox to 0.7.0
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release.
+ - 45 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -252,10 +318,6 @@
 ## v0.6.6 (2024-10-29)
 
 <csr-id-84d13eff3a81f03f343719ea3695df03de0e4f37/>
-
-### Chore
-
- - <csr-id-84d13eff3a81f03f343719ea3695df03de0e4f37/> bump irox to 0.6.6
 
 ### Commit Statistics
 
@@ -281,10 +343,6 @@
 ## v0.6.5 (2024-10-24)
 
 <csr-id-7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7/>
-
-### Chore
-
- - <csr-id-7a50d13f09fc090dbb5a7f12ec8d633c6a6c82f7/> bump irox version for release
 
 ### New Features
 
@@ -316,10 +374,6 @@
 ## v0.6.4 (2024-08-01)
 
 <csr-id-97de4b9c115e3dff3df7124026ab795836b9bc34/>
-
-### Chore
-
- - <csr-id-97de4b9c115e3dff3df7124026ab795836b9bc34/> bump irox version to 0.6.4 for release
 
 ### Commit Statistics
 
@@ -355,7 +409,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release over the course of 3 calendar days.
- - 39 days passed between releases.
+ - 40 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -407,6 +461,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
+ - 1 day passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -430,15 +485,12 @@
 
  - <csr-id-2e5149d286a7ead907d90e4bb706666729a64b38/> add bits to top level irox & readme
 
-### Refactor (BREAKING)
-
- - <csr-id-8c5ee8e97b862addcef770e7106398e8fac85e06/> rename exports to be the same as the features
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 17 commits contributed to the release.
+ - 145 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -509,10 +561,6 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### New Features
 
  - <csr-id-ef0104e35cd65ce46edb81f8643d4fbc271d1e4d/> new irog-log logging crate
@@ -522,6 +570,7 @@
 <csr-read-only-do-not-edit/>
 
  - 27 commits contributed to the release.
+ - 31 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -608,7 +657,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
- - 7 days passed between releases.
+ - 8 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -633,8 +682,7 @@
 
 ### Chore
 
- - <csr-id-3300f2ad844907609b1fc6cdaa5b632ae28cde95/> adding raymarine-sonar converter to irox
- - <csr-id-3ebb2f1f68bb1cb598bcdf651fd0656702e03aaf/> adding missing modules to lib
+ - <csr-id-00320f3fb6efbd58f5ae49dba4dd5fc62fd4b35a/> update to locked dep versions
 
 ### New Features
 
@@ -644,9 +692,9 @@
 
 <csr-read-only-do-not-edit/>
 
- - 6 commits contributed to the release over the course of 6 calendar days.
- - 19 days passed between releases.
- - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 7 commits contributed to the release over the course of 6 calendar days.
+ - 20 days passed between releases.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -662,6 +710,7 @@
     - New GPX reader/writer module ([`b378b9d`](https://github.com/spmadden/irox/commit/b378b9da294474e73936e4e52bba9ae103fc1590))
     - Adding raymarine-sonar converter to irox ([`3300f2a`](https://github.com/spmadden/irox/commit/3300f2ad844907609b1fc6cdaa5b632ae28cde95))
     - Adding missing modules to lib ([`3ebb2f1`](https://github.com/spmadden/irox/commit/3ebb2f1f68bb1cb598bcdf651fd0656702e03aaf))
+    - Update to locked dep versions ([`00320f3`](https://github.com/spmadden/irox/commit/00320f3fb6efbd58f5ae49dba4dd5fc62fd4b35a))
 </details>
 
 ## v0.2.0 (2023-09-17)
@@ -670,11 +719,6 @@
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
 <csr-id-6fa2e180f0c44bb4cbf76738acdda5631ecea20e/>
 <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/>
-
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
@@ -685,11 +729,6 @@
 ### Bug Fixes
 
  - <csr-id-22537981c6fdd413869998f6af0dd0b727fb1d4e/> switch main module to use workspace paths
-
-### Other
-
- - <csr-id-6fa2e180f0c44bb4cbf76738acdda5631ecea20e/> remove '*' versions
- - <csr-id-49d55665ffd9ebcfe0394e40cb36bcc35a6a72f9/> update metadata, prepare for release
 
 ### Commit Statistics
 
