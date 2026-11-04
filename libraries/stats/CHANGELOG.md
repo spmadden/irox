@@ -1,6 +1,58 @@
 
 
 
+## v0.4.0 (2026-11-04)
+
+### Chore
+
+ - <csr-id-691776a610c7e169cdbf888f4d18892a5cf2377c/> fix lints & bump to 1.89
+
+### New Features
+
+ - <csr-id-cd9d32cab6ff575fc43dab26bf2963c09ccdd998/> impl Display for quick Summary stats
+ - <csr-id-c7719423cb3f949225c0df8e644e79ed61e6cb8b/> adding new SummarizingIterator to create a summary of a slice of numbers
+
+### Bug Fixes
+
+ - <csr-id-464515ccff90d46933ea157afbca4754050ca159/> fix feature error for wasm32 targets
+
+### Refactor
+
+ - <csr-id-695ec4c194cdfede682930361151147818ffc6cd/> move stats examples to break dep cycle
+ - <csr-id-c41491ac9b55af7167eb7ec9704cfa1bc35e83b0/> rejigger FloatExt to not require a type value
+ - <csr-id-159001f900b2ca97dd398671a85c548c90fc07c4/> move eframe behind feature
+
+### New Features (BREAKING)
+
+ - <csr-id-170a4ac732fd9524798c20960fbe7106a76e65e9/> bump egui to 0.34
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 9 commits contributed to the release.
+ - 613 days passed between releases.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Move stats examples to break dep cycle ([`695ec4c`](https://github.com/spmadden/irox/commit/695ec4c194cdfede682930361151147818ffc6cd))
+    - Release irox-enums_derive v0.3.0, safety bump 29 crates ([`b5c9e4a`](https://github.com/spmadden/irox/commit/b5c9e4aca7410c9d0c2cb670f49c9dd9dc711bf3))
+    - Rejigger FloatExt to not require a type value ([`c41491a`](https://github.com/spmadden/irox/commit/c41491ac9b55af7167eb7ec9704cfa1bc35e83b0))
+    - Bump egui to 0.34 ([`170a4ac`](https://github.com/spmadden/irox/commit/170a4ac732fd9524798c20960fbe7106a76e65e9))
+    - Fix feature error for wasm32 targets ([`464515c`](https://github.com/spmadden/irox/commit/464515ccff90d46933ea157afbca4754050ca159))
+    - Move eframe behind feature ([`159001f`](https://github.com/spmadden/irox/commit/159001f900b2ca97dd398671a85c548c90fc07c4))
+    - Fix lints & bump to 1.89 ([`691776a`](https://github.com/spmadden/irox/commit/691776a610c7e169cdbf888f4d18892a5cf2377c))
+    - Impl Display for quick Summary stats ([`cd9d32c`](https://github.com/spmadden/irox/commit/cd9d32cab6ff575fc43dab26bf2963c09ccdd998))
+    - Adding new SummarizingIterator to create a summary of a slice of numbers ([`c771942`](https://github.com/spmadden/irox/commit/c7719423cb3f949225c0df8e644e79ed61e6cb8b))
+</details>
+
 ## v0.3.5 (2025-03-01)
 
 ### Chore
@@ -21,7 +73,7 @@
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 13 calendar days.
+ - 5 commits contributed to the release over the course of 13 calendar days.
  - 17 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -33,6 +85,7 @@
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release irox-stats v0.3.5 ([`16b35a4`](https://github.com/spmadden/irox/commit/16b35a4fc648cc22c1caf6af0f986886d4b26a22))
     - Push more onto the stack in tsdf ([`112ec8d`](https://github.com/spmadden/irox/commit/112ec8d3c36abf521c95fa4685682d320d617287))
     - Add Debug implementation for Summary struct ([`e3b63be`](https://github.com/spmadden/irox/commit/e3b63bef4f213c78a8047afd446e9bc21a7c525d))
     - Cleanup remaining misc lints ([`e77e9a5`](https://github.com/spmadden/irox/commit/e77e9a5d2460581f0f4140a350ca5fe0b283cc05))
@@ -55,7 +108,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release.
- - 2 days passed between releases.
+ - 3 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -102,16 +155,12 @@
 
 <csr-id-dd46f2088abb692774a56d900fb986fd3fa425f0/>
 
-### Chore
-
- - <csr-id-dd46f2088abb692774a56d900fb986fd3fa425f0/> add lifetime to squash lint warning
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
- - 9 days passed between releases.
+ - 10 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -157,11 +206,6 @@
 <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/>
 <csr-id-7957bd7ac707c9c6bfe0ba2fd32612341fd8cb57/>
 
-### Chore
-
- - <csr-id-45a936a015f24871d007c91f9051377a3dfc1fe5/> cleanup some unused egui features
- - <csr-id-8852ee8e0dfa88b92d0c5ff0d5f1ba6b30da18ca/> fix lints around using Arc<Vec<T>> instead of Arc<[T]>
-
 ### Documentation
 
  - <csr-id-af1182afe32faf36f9f00954b0cf92dee60f8c8b/> hopefully fix the stats/units docsrs builds
@@ -192,10 +236,6 @@
  - <csr-id-6e5e222a6a72cf565c8da73bb4bb157dfcd409dd/> updating examples from breaking api changes
  - <csr-id-a535cafdcbbcb6644fb57b402997bf49b2e00539/> clean up some issues with streaming min/max and points
 
-### Other
-
- - <csr-id-7957bd7ac707c9c6bfe0ba2fd32612341fd8cb57/> Update readme & some documentation for the stats module
-
 ### New Features (BREAKING)
 
  - <csr-id-cf18819735eecc7e8512ec587f59fcbed385d712/> return usize instead of () in WriteToBEBits
@@ -205,7 +245,7 @@
 <csr-read-only-do-not-edit/>
 
  - 27 commits contributed to the release over the course of 36 calendar days.
- - 41 days passed between releases.
+ - 42 days passed between releases.
  - 25 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -249,10 +289,6 @@
 
 <csr-id-f0cb38d6ad407000405cecc9d94ed9157d639faa/>
 
-### Chore
-
- - <csr-id-f0cb38d6ad407000405cecc9d94ed9157d639faa/> clean up lints in stats
-
 ### New Features
 
  - <csr-id-ba92c8669b749a681057904e57c2697c70b7a250/> Samples, Points, Rects, Windows, and some graphing
@@ -262,7 +298,7 @@
 <csr-read-only-do-not-edit/>
 
  - 3 commits contributed to the release.
- - 1 day passed between releases.
+ - 2 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -295,6 +331,7 @@
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release over the course of 20 calendar days.
+ - 45 days passed between releases.
  - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -315,10 +352,6 @@
 ## v0.2.7 (2024-10-29)
 
 <csr-id-2747f689e2206435cdd1ee8bab43ad9442415f20/>
-
-### Chore
-
- - <csr-id-2747f689e2206435cdd1ee8bab43ad9442415f20/> update deps
 
 ### New Features
 
@@ -348,10 +381,6 @@
 ## v0.2.6 (2024-10-24)
 
 <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/>
-
-### Chore
-
- - <csr-id-a35975360f42880d6e74ceb4443ccd4093c27975/> fixup lints & formatting
 
 ### New Features
 
@@ -434,15 +463,12 @@
  - <csr-id-b2f572d459b23fb761eff24daafda319ac8ecc7a/> add eps value to tests
  - <csr-id-2a25738da0f48bc7436054295dadaba15da6b64a/> add version to stats dep to quiet warning
 
-### Other
-
- - <csr-id-46dc6bfb95b3860eba5f9eb47394c92acd5ac502/> updating docs for stats
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 7 commits contributed to the release over the course of 2 calendar days.
+ - 29 days passed between releases.
  - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -465,10 +491,6 @@
 ## v0.2.3 (2024-03-03)
 
 <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/>
-
-### Chore
-
- - <csr-id-0fc37b1a2d545e8d6479443f2a55b3ad64bf5a39/> fixup newline formatting
 
 ### Commit Statistics
 
@@ -494,15 +516,12 @@
 
 <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/>
 
-### Chore
-
- - <csr-id-88ebfb5deea5508ca54f4aaab62f6fd5a36f531c/> pivot to using Cargo.toml workspace lints
-
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 3 calendar days.
+ - 53 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -533,7 +552,7 @@
 <csr-read-only-do-not-edit/>
 
  - 4 commits contributed to the release over the course of 12 calendar days.
- - 19 days passed between releases.
+ - 20 days passed between releases.
  - 3 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -554,11 +573,6 @@
 
 <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/>
 <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/>
-
-### Chore
-
- - <csr-id-80d2b88bdcb553faaeafc09673c31d7ebedafd19/> update cargo.tomls to add repository
- - <csr-id-1a365333397b02a5f911d0897c3bf0c80f6c2b80/> setting up blank changelogs for the modules
 
 ### New Features
 
