@@ -112,7 +112,7 @@ cms = { version = "0.2.3", default-features = false, features = [] }
 ecdsa = { version = "0.17.0", default-features = false, features = [] }
 p384 = { version = "0.14.0", default-features = false, features = [] }
 rsa = { version = "0.10.0-rc.19", default-features = false, features = [] }
-tokio = { version = "=1.53.2", default-features = false, features = [] }
+tokio = { version = "^1.53.0", default-features = false, features = [] }
 tokio-postgres = { version = "=0.7.18", default-features = false, features = ["array-impls"] }
 postgres-native-tls = { version = "=0.5.3", default-features = false, features = [] }
 native-tls = { version = "=0.2.18", default-features = false, features = ["vendored"] }
