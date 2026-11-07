@@ -2332,6 +2332,7 @@ dependencies = [
  "irox-bits",
  "irox-egui-extras",
  "irox-log",
+ "irox-stats",
  "irox-time",
  "irox-tools",
  "irox-units",

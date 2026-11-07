@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 //!
-//!
+//! Examples that don't fit anywhere else
 //!
 
 #![forbid(unsafe_code)]
