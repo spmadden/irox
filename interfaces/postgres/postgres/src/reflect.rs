@@ -2,9 +2,10 @@
 // Copyright 2026 IROX Contributors
 //
 
+use crate as irox_postgres;
 use crate::connection::DbConn;
 use crate::error::Error;
-use irox_pgderive::PostgresImplGet;
+use crate::PostgresList;
 use irox_types::{DynamicallySizedValue, Primitives, VariableValue};
 use std::collections::BTreeMap;
 use tokio_postgres::types::{FromSql, Kind, Type};
@@ -38,7 +39,7 @@ impl<'a> FromSql<'a> for Nullable {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, PostgresImplGet)]
+#[derive(Debug, Default, Clone, PartialEq, PostgresList)]
 #[query = r#"
 SELECT  c.*,
         td.description AS table_description,
