@@ -230,7 +230,7 @@ impl FDPSimulationApp {
 
 impl eframe::App for FDPSimulationApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             self.search_widget.show(ui);
             self.search_widget
                 .process(self.widget.sim.graph.borrow_mut().deref_mut());

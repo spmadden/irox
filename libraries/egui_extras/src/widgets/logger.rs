@@ -2,6 +2,7 @@
 // Copyright 2026 IROX Contributors
 //
 
+use egui::scroll_area::DragScroll;
 use egui::{Color32, RichText};
 use egui_extras::Column;
 use irox_imagery::colortheme::{ONE_HALF_DARK, ONE_HALF_LIGHT};
@@ -120,7 +121,7 @@ impl LoggerWidget {
             .striped(true)
             .stick_to_bottom(true)
             // .auto_shrink(false)
-            .drag_to_scroll(false)
+            .drag_to_scroll(DragScroll::OnTouch)
             .resizable(true)
             .column(Column::auto_with_initial_suggestion(200.).at_least(150.))
             .column(Column::auto_with_initial_suggestion(200.).at_least(50.))

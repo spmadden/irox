@@ -100,7 +100,7 @@ impl App for ToolFrame {
         self.frame_history
             .on_new_frame(ui.ctx().input(|i| i.time), frame.info().cpu_usage);
 
-        Panel::top(Id::new("top_panel")).show_inside(ui, |ui| {
+        Panel::top(Id::unique("top_panel")).show(ui, |ui| {
             menu::MenuBar::new().ui(ui, |ui| {
                 if !self.disable_file_menu {
                     ui.menu_button("File", |ui| {
@@ -156,7 +156,7 @@ impl App for ToolFrame {
                 self.child.menu(ui);
             });
         });
-        Panel::bottom(Id::new("bottom_panel")).show_inside(ui, |ui| {
+        Panel::bottom(Id::unique("bottom_panel")).show(ui, |ui| {
             ui.horizontal(|ui| {
                 if self.show_rendering_stats {
                     self.frame_history.ui(ui);
@@ -164,7 +164,7 @@ impl App for ToolFrame {
 
                 self.child.bottom_bar(ui);
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    egui::widgets::global_theme_preference_switch(ui);
+                    egui::widgets::global_theme_preference_buttons(ui);
                 });
             });
         });
@@ -175,7 +175,7 @@ impl App for ToolFrame {
                 .open(&mut self.style_ui)
                 .show(ui.ctx(), |ui| {
                     let mut theme = ui.ctx().options(|o| o.theme_preference);
-                    theme.radio_buttons(ui);
+                    theme.buttons(ui);
                     if theme != ui.ctx().options(|o| o.theme_preference) {
                         ui.ctx().set_theme(theme);
                     }

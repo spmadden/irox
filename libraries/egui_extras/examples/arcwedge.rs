@@ -55,7 +55,7 @@ impl TestApp {
 
 impl App for TestApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             Grid::new("arcwedge_grid").show(ui, |ui| {
                 Slider::new(&mut self.start_angle, 0.0..=360.0)
                     .text("Start Angle")
@@ -87,7 +87,7 @@ impl App for TestApp {
                 ui.end_row();
             });
             let mut wedgeset = ArcWedgeSet {
-                identifier: Id::new("wedge1"),
+                identifier: Id::unique("wedge1"),
                 size: self.size,
                 wedges: vec![],
             };

@@ -123,7 +123,7 @@ impl TestApp {
 impl App for TestApp {
     #[allow(clippy::indexing_slicing)]
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             ComboBox::new("chooser", "Color Map").show_index(
                 ui,
                 &mut self.selected_colorset,

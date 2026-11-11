@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2024-2026 IROX Contributors
 //
 
 use eframe::emath::Align;
@@ -56,7 +56,7 @@ impl TestApp {
 }
 impl App for TestApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             ui.with_layout(Layout::top_down(Align::Max), |ui| {
                 self.log_plot.show(ui);
             });

@@ -62,7 +62,7 @@ impl TestApp {
 }
 impl eframe::App for TestApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             if let Some(img) = &self.img {
                 Scene::new()
                     .zoom_range(0.0..=f32::INFINITY)

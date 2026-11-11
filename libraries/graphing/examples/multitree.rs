@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 #![allow(clippy::print_stdout)]
@@ -193,11 +193,11 @@ impl eframe::App for FDPSimulationApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
         Panel::left("left")
             .resizable(true)
-            .show_animated_inside(ui, self.is_expanded, |ui| {
+            .show_collapsible(ui, &mut self.is_expanded, |ui| {
                 let graph = self.widget.sim.graph.borrow();
                 TreeListWidget::new(graph.deref()).ui(ui);
             });
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             self.widget.show(ui);
         });
     }

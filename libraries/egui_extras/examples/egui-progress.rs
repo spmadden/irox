@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use std::fs::OpenOptions;
@@ -115,7 +115,7 @@ impl App for ProgressApp {
             });
             self.prog.ui(ui);
         });
-        CentralPanel::default().show_inside(ui, |_ui| {});
+        CentralPanel::default().show(ui, |_ui| {});
     }
 }
 

@@ -77,7 +77,7 @@ impl Default for ToastInnerState {
         }
     }
 }
-static_init!(get_toast_count, Id, Id::new("TOAST_COUNT"));
+static_init!(get_toast_count, Id, Id::unique("TOAST_COUNT"));
 pub struct Toast {
     pub id: Identifier,
     pub title: String,

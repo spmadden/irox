@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use egui::Window;
@@ -181,7 +181,7 @@ impl eframe::App for FDPSimulationApp {
                 self.myriel.show(ui);
                 ui.take_available_space();
             });
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             self.widget.show(ui);
         });
     }

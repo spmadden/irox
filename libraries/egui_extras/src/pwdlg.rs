@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use egui::emath::Align;
-use egui::{Id, Key, Layout, Modifiers, TextEdit, Ui, Vec2, ViewportCommand, Widget};
+use egui::{IdSalt, Key, Layout, Modifiers, TextEdit, Ui, Vec2, ViewportCommand, Widget};
 use irox_tools::cfg_feature_eframe;
 use log::error;
 use std::sync::mpsc::Sender;
@@ -39,28 +39,37 @@ impl DialogWidget {
     /// Renders a password dialog that displays an password-masked input and a
     /// prompt
     pub fn render_password(&mut self, ui: &mut egui::Ui) {
-        {
-            let ctx = ui.ctx();
-            if self.options.dialog_type.is_input() && ctx.cumulative_pass_nr() == 0 {
-                ctx.memory_mut(|m| {
-                    m.request_focus(Id::new("pwdlg-inp"));
-                });
-            }
-        }
         ui.vertical_centered(|ui| {
             ui.allocate_ui_with_layout(
                 Vec2::new(150., 0.),
                 Layout::left_to_right(Align::TOP),
                 |ui| {
                     ui.label(self.options.prompt.as_deref().unwrap_or_default());
-                    let _resp = TextEdit::singleline(&mut self.input)
-                        .id(Id::new("pwdlg-inp"))
+                    let tew = TextEdit::singleline(&mut self.input)
+                        .id_source(IdSalt::new("pwdlg-inp"))
                         .password(true)
                         .clip_text(true)
                         .min_size(Vec2::new(150., 0.))
                         .desired_width(100f32)
-                        .hint_text("hunter2")
-                        .ui(ui);
+                        .hint_text("hunter2");
+                    let resp = tew.ui(ui);
+                    {
+                        let ctx = ui.ctx();
+                        if self.options.dialog_type.is_input() {
+                            let needs_focus = ctx.memory_mut(|mem| {
+                                let focused: &mut bool = mem.data.get_temp_mut_or_default(resp.id);
+                                if !*focused {
+                                    *focused = true;
+                                    return true;
+                                }
+                                false
+                            });
+                            if needs_focus {
+                                resp.request_focus();
+                            }
+                        }
+                    }
+
                     if ui
                         .ctx()
                         .input_mut(|v| v.consume_key(Modifiers::NONE, Key::Enter))
@@ -165,7 +174,7 @@ impl DialogWidget {
 cfg_feature_eframe! {
     impl eframe::App for DialogWidget {
         fn ui(&mut self, outer: &mut Ui, _frame: &mut eframe::Frame) {
-            egui::CentralPanel::default().show_inside(outer, |ui| {
+            egui::CentralPanel::default().show(outer, |ui| {
                self.show(ui);
             });
         }

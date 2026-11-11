@@ -13,7 +13,7 @@ impl<T: Into<irox_tools::identifier::Identifier>> From<T> for Identifier {
     fn from(value: T) -> Self {
         let internal = value.into();
         Self {
-            external: egui::Id::new(&internal),
+            external: egui::Id::unique(&internal),
             internal,
         }
     }

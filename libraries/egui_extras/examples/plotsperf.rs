@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use eframe::egui_wgpu::{WgpuConfiguration, WgpuSetup, WgpuSetupCreateNew};
 use eframe::wgpu::Backends;
-use eframe::{wgpu, App, CreationContext, Frame, HardwareAcceleration, Renderer};
+use eframe::{wgpu, App, CreationContext, Frame, Renderer};
 use egui::{CentralPanel, Context, ThemePreference, Ui, Vec2, ViewportBuilder};
 use irox_egui_extras::logplot::{
     x_axis_time_millis_formatter, y_axis_units_formatter, Axis, AxisAlignmentMode, AxisUserData,
@@ -55,10 +55,8 @@ pub fn main() {
     let native_options = eframe::NativeOptions {
         viewport,
         renderer: Renderer::Wgpu,
-        hardware_acceleration: HardwareAcceleration::Preferred,
         // multisampling: 2,
         wgpu_options,
-        vsync: true,
         ..Default::default()
     };
 
@@ -332,7 +330,7 @@ impl Drop for TestApp {
 
 impl App for TestApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             let num_plots = self.plots.len();
             let rem = ui.available_size();
             let each = Vec2::new(rem.x / 2., rem.y / num_plots as f32);

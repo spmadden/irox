@@ -73,10 +73,10 @@ members = [
 ]
 
 [workspace.dependencies]
-egui = { version = "^0.34", default-features = false }
-egui_extras = { version = "^0.34", default-features = false }
-eframe = { version = "^0.34", default-features = false }
-emath = { version = "^0.34", default-features = false }
+egui = { version = "^0.37", default-features = false }
+egui_extras = { version = "^0.37", default-features = false }
+eframe = { version = "^0.37", default-features = false }
+emath = { version = "^0.37", default-features = false }
 ehttp = { version = "0.7.0", default-features = false }
 profiling = { version = "^1.0", features = ["profile-with-puffin"] }
 puffin = { version = "^0.20.0", features = [] }
@@ -100,10 +100,10 @@ xml = { version = "^0.8", features = [] }
 human-panic = { version = "^2.0", features = [] }
 num_cpus = { version = "1.16.0", features = [] }
 git2 = { version = "0.21.0", default-features = false, features = ["vendored-libgit2"] }
-wasm-bindgen = { version = "=0.2.108", default-features = false, features = [] }
-wasm-bindgen-test = { version = "=0.3.58", default-features = false, features = [] }
-wasm-bindgen-futures = "=0.4.58"
-web-sys = { version = "=0.3.85" }
+wasm-bindgen = { version = "=0.2.126", default-features = false, features = [] }
+wasm-bindgen-test = { version = "=0.3.76", default-features = false, features = [] }
+wasm-bindgen-futures = "=0.4.76"
+web-sys = { version = "=0.3.103" }
 criterion = { version = "0.5", default-features = false, features = [] }
 core_affinity = "0.8"
 toml = "0.8"

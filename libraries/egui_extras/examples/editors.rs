@@ -67,7 +67,7 @@ impl TestApp {
 
 impl App for TestApp {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             self.show(ui);
         });
     }

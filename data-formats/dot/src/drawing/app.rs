@@ -263,7 +263,7 @@ impl Node {
 impl eframe::App for App {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
         self.init(ui.ctx());
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             ui.with_layout(Layout::left_to_right(Align::TOP), |ui| {
                 ui.label("Search:");
                 if ui.text_edit_singleline(&mut self.search).changed() {

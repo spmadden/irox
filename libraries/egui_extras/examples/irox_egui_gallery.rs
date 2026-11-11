@@ -307,7 +307,7 @@ impl App for TestApp {
             state != ToastState::Done
         });
 
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             ui.with_layout(Layout::top_down(Align::Max), |ui| {
                 ui.toggle_value(&mut self.show_bars, "Progressbars");
                 #[cfg(feature = "serde")]
