@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2025 IROX Contributors
+// Copyright 2025-2026 IROX Contributors
 //
 
 use std::fmt::Debug;
@@ -89,14 +89,14 @@ impl MBTiles {
         create_mbtiles_db(path, options)
     }
 
-    pub fn get_tile(&self, tile_column: u64, tile_row: u64, zoom_level: u64) -> Result<Vec<u8>> {
+    pub fn get_tile(&self, tile_column: u64, tile_row: u64, zoom_level: u8) -> Result<Vec<u8>> {
         let mut st = self.connection.prepare_cached(
             "select tile_data from tiles where
         tile_column = :tile_column and tile_row = :tile_row and zoom_level = :zoom_level;",
         )?;
         let mut rows = st.query(named_params![
-            ":tile_column": tile_column,
-            ":tile_row": tile_row,
+            ":tile_column": tile_column as i64,
+            ":tile_row": tile_row as i64,
             ":zoom_level": zoom_level
         ])?;
 
@@ -126,9 +126,9 @@ impl MBTiles {
             values (:index, :tile_row, :tile_column, :zoom_level, :tile_data);",
         )?;
         st.execute(named_params! {
-            ":index": index,
-            ":tile_row": tile_row,
-            ":tile_column": tile_column,
+            ":index": index as i64,
+            ":tile_row": tile_row as i64,
+            ":tile_column": tile_column as i64,
             ":zoom_level": zoom_level,
             ":tile_data": tile_data.as_ref(),
         })?;

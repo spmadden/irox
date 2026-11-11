@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright 2024 IROX Contributors
+// Copyright 2024-2026 IROX Contributors
 //
 
 use std::{fmt::Display, num::ParseIntError};
@@ -39,7 +39,7 @@ impl Error {
         Err(Error::NotMBTiles(error.to_string()))
     }
 
-    pub fn tile_not_found<T>(tile_column: u64, tile_row: u64, zoom_level: u64) -> Result<T> {
+    pub fn tile_not_found<T>(tile_column: u64, tile_row: u64, zoom_level: u8) -> Result<T> {
         Err(Error::TileNotFound(format!(
             "Tile x({tile_column}) y({tile_row}) z({zoom_level}) not found"
         )))
