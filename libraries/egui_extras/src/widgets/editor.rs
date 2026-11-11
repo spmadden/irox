@@ -2,6 +2,9 @@
 // Copyright 2025-2026 IROX Contributors
 //
 
+mod restrictedvalues;
+pub use restrictedvalues::*;
+
 use egui::{Checkbox, Color32, Frame, Ui, Widget};
 pub use irox_types::fields::*;
 
@@ -10,14 +13,14 @@ pub struct EditorResponse {
     pub response: egui::Response,
 }
 
-pub trait Editor {
+pub trait Editor<'a> {
     type Value: Clone + Default;
-    fn show(&self, field: &mut Field<Self::Value>, ui: &mut Ui) -> EditorResponse;
+    fn show(&self, field: &'a mut Field<Self::Value>, ui: &'a mut Ui) -> EditorResponse;
 }
 
 pub struct BooleanEditor;
 
-impl Editor for BooleanEditor {
+impl Editor<'_> for BooleanEditor {
     type Value = bool;
 
     fn show(&self, field: &mut Field<bool>, ui: &mut Ui) -> EditorResponse {
