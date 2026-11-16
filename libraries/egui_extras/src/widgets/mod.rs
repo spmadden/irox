@@ -15,3 +15,6 @@ mod path;
 pub mod toast;
 
 pub use path::*;
+
+/// Slippy maps backed by egui image loaders.
+pub mod slippy_map;

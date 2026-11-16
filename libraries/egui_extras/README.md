@@ -53,3 +53,39 @@ Wraps your App impl to automatically persist your App state to disk. Requires fe
 
 Allows you to compose multiple Apps together. The `update` method will be called sequentially, in the order the apps
 are provided.
+
+### OpenStreetMap slippy-map example
+
+```sh
+cargo run -p irox-egui-extras --example slippy_map --features eframe,glow
+```
+
+The native example registers an asynchronous HTTP/PNG image loader using the
+existing workspace `ehttp` and `irox-imagery` dependencies. It uses XYZ row
+numbering for OpenStreetMap, displays attribution, and sends an application
+User-Agent. Drag to pan and scroll or pinch to zoom.
+
+Tiles are cached on disk for seven days. Set `IROX_OSM_CACHE_DIR` to choose a
+persistent cache directory; otherwise the example uses `irox-osm-tiles` in the
+system temporary directory. Keep that directory between runs to avoid repeat
+downloads. Errors appear above the map. Internet access and a graphical desktop
+are required. Follow the [OpenStreetMap tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
+
+Set the map's tile width with `SlippyMap::new(url).tile_size(512)` or
+`map.set_tile_size(512)`. The default is 256 PNG pixels. Tile dimensions are converted to egui points using
+the current pixels-per-point scale (including display DPI and egui UI zoom).
+Panning, zoom anchoring, visible tile selection, and retained tiles use this size.
+To configure the example for a 512-pixel tile size:
+
+```sh
+IROX_MAP_TILE_SIZE=512 cargo run -p irox-egui-extras --example slippy_map --features eframe,glow
+```
+
+OpenStreetMap's standard endpoint returns 256-pixel PNGs, so leave its tile size
+at the default 256 for native pixel sizing. The 512 setting demonstrates the
+configuration for a server returning 512-pixel PNGs; it does not change the
+server's URL or image resolution. At two screen pixels per egui point, a
+512-pixel tile occupies 256 points at an integer map zoom level.
+
+See [slippy-map integration and troubleshooting](doc/slippy_map.md) for coordinate
+contracts, loader/cache ownership, transition behavior, limitations, and tests.

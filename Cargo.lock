@@ -2205,6 +2205,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui_extras",
+ "ehttp",
  "glow",
  "irox-app-helpers",
  "irox-bits",

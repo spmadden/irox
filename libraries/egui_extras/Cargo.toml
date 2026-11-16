@@ -54,6 +54,7 @@ wasm-bindgen-futures.workspace = true
 web-sys.workspace = true
 
 [dev-dependencies]
+ehttp.workspace = true
 eframe = { workspace = true, default-features = false, features = ["default_fonts", "persistence"] }
 egui = { workspace = true, default-features = false, features = ["rayon", "persistence"] }
 irox-time = { workspace = true, features = ["std"] }
@@ -112,3 +113,7 @@ required-features = ["eframe", "wgpu", "serde"]
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "slippy_map"
+required-features = ["eframe", "glow"]
