@@ -5,9 +5,9 @@
 pub mod chunks;
 pub mod idat;
 
-use crate::png::chunks::{GAMA, IDAT, IHDR, PHYS, SRGB};
+use crate::png::chunks::{GAMA, IDAT, IHDR, PHYS, PLTE, SRGB};
 use crate::png::idat::IDATStream;
-use crate::{BoxedImage, Color, ColorDepth, ImageError, ImageMut};
+use crate::{BoxedImage, Color, ColorDepth, ImageError, ImageMut, IndexedColor, MaybeIndexed};
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;
 use core::fmt::{Debug, Formatter};
@@ -61,20 +61,23 @@ impl PNGFile {
             self.ihdr.height as usize,
             Color::Raw([0, 0, 0, 0]),
         );
+        let mut plte = None;
         let chunks = self
             .chunks
             .drain(..)
-            .filter_map(|chunk| {
-                if let ChunkType::IDAT(idat) = chunk {
-                    Some(idat.data)
-                } else {
+            .filter_map(|chunk| match chunk {
+                ChunkType::IDAT(idat) => Some(idat.data),
+                ChunkType::PLTE(data) => {
+                    plte = Some(data);
                     None
                 }
+                _ => None,
             })
             .collect::<VecDeque<_>>();
         let iter = IDATStream::new(chunks);
         let inflater = Inflater::new_zlib(BitsWrapper::Owned(iter));
         let mut decoder = BitStreamDecoder::new(BitsWrapper::Owned(inflater.to_bits()));
+        let colortype: PNGColorType = self.ihdr.color_type.try_into()?;
         let depth = match self.ihdr.bit_depth {
             1 => ColorDepth::OneBitPerColor,
             2 => ColorDepth::TwoBitPerColor,
@@ -85,14 +88,17 @@ impl PNGFile {
                 return Err(BitsError::new(BitsErrorKind::FormatError, "Invalid bit depth").into())
             }
         };
-        let colortype: PNGColorType = self.ihdr.color_type.try_into()?;
+        let indexed = match plte {
+            Some(data) => MaybeIndexed::Indexed(depth, IndexedColor { index: data.data }),
+            None => MaybeIndexed::Raw(depth),
+        };
         for y in 0..self.ihdr.height {
             decoder.read_u32_bits(8)?; // skip filter byte
             for x in 0..self.ihdr.width {
                 img.set_pixel_value(
                     x as usize,
                     y as usize,
-                    colortype.read_from(&depth, &mut decoder)?,
+                    colortype.read_from(&indexed, &mut decoder)?,
                 )?;
             }
         }
@@ -110,15 +116,13 @@ pub enum PNGColorType {
 impl PNGColorType {
     pub fn read_from<T: Bits>(
         &self,
-        depth: &ColorDepth,
+        depth: &MaybeIndexed,
         decoder: &mut BitStreamDecoder<T>,
     ) -> Result<Color, BitsError> {
         match self {
             PNGColorType::RGB => Ok(Color::RGB(depth.next_rgb_pixel(decoder)?)),
-            PNGColorType::RGBA => Ok(Color::ARGB(depth.next_rgba_pixel(decoder)?)),
-            PNGColorType::Indexed => {
-                todo!()
-            }
+            PNGColorType::RGBA => Ok(Color::ARGB(depth.next_argb_pixel(decoder)?)),
+            PNGColorType::Indexed => Ok(Color::RGB(depth.next_color_part(decoder)?.as_rgb())),
             PNGColorType::Grayscale => Ok(Color::Greyscale(depth.next_greyscale_pixel(decoder)?)),
             PNGColorType::GrayscaleAlpha => {
                 todo!()
@@ -151,6 +155,7 @@ pub enum ChunkType {
     IDAT(IDAT),
     GAMA(GAMA),
     SRGB(SRGB),
+    PLTE(PLTE),
     IEND(),
     Unknown {
         chunk_type: u32,
@@ -178,6 +183,7 @@ impl Debug for ChunkType {
             ChunkType::PHYS(phys) => f.debug_struct("PHYS").field("data", &phys).finish(),
             ChunkType::GAMA(gama) => f.debug_struct("GAMA").field("data", &gama).finish(),
             ChunkType::SRGB(srgb) => f.debug_struct("SRGB").field("data", &srgb).finish(),
+            ChunkType::PLTE(plte) => f.debug_struct("PLTE").field("data", &plte).finish(),
             ChunkType::IDAT(idat) => f
                 .debug_struct("IDAT")
                 .field("data len", &idat.data.len())
@@ -231,6 +237,11 @@ impl ChunkType {
                 let srgb = SRGB::parse_from(&mut data.as_slice())?;
                 Ok(Self::SRGB(srgb))
             }
+            0x504C5445 => {
+                // PLTE
+                let plte = PLTE::parse_from(&mut data.as_slice())?;
+                Ok(Self::PLTE(plte))
+            }
             0x49454E44 => {
                 // IEND
                 Ok(Self::IEND())
@@ -252,7 +263,7 @@ mod test {
 
     #[test]
     pub fn test() -> Result<(), ImageError> {
-        let data = include_bytes!("../../assets/Ap5j5mb.png");
+        let data = include_bytes!("../../assets/0.png");
         let file = PNGFile::read_from(&mut BitsWrapper::Owned(data.as_slice()))?;
         println!("{file:#?}");
         let img = file.to_image()?;

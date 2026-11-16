@@ -3,7 +3,7 @@
 //
 
 use core::fmt::Formatter;
-use irox_bits::{BitStreamDecoder, Bits, BitsError};
+use irox_bits::{BitStreamDecoder, Bits, BitsError, BitsErrorKind};
 use irox_tools::cfg_feature_egui;
 
 #[cfg(not(feature = "std"))]
@@ -15,6 +15,12 @@ pub struct RGBColor {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
+}
+impl From<[u8; 3]> for RGBColor {
+    fn from(value: [u8; 3]) -> Self {
+        let [red, green, blue] = value;
+        RGBColor { red, green, blue }
+    }
 }
 impl RGBColor {
     pub const fn new(red: u8, green: u8, blue: u8) -> RGBColor {
@@ -68,6 +74,17 @@ pub struct ARGBColor {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
+}
+impl From<[u8; 4]> for ARGBColor {
+    fn from(value: [u8; 4]) -> Self {
+        let [alpha, red, green, blue] = value;
+        Self {
+            alpha,
+            red,
+            green,
+            blue,
+        }
+    }
 }
 impl ARGBColor {
     pub fn to_rgb(&self) -> RGBColor {
@@ -247,6 +264,10 @@ impl Color {
             }
         }
     }
+    pub const fn as_rgb(&self) -> RGBColor {
+        let [r, g, b] = self.rgb_values();
+        RGBColor::new(r, g, b)
+    }
     #[must_use]
     pub const fn rgb_values(&self) -> [u8; 3] {
         match self {
@@ -344,6 +365,75 @@ impl core::fmt::Display for Color {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let vals = self.rgb_values();
         irox_tools::hex::to_hex_fmt(&vals, f)
+    }
+}
+pub enum MaybeIndexed {
+    Indexed(ColorDepth, IndexedColor),
+    Raw(ColorDepth),
+}
+impl MaybeIndexed {
+    pub fn next_color_part<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<Color, BitsError> {
+        match self {
+            MaybeIndexed::Indexed(depth, ic) => ic.next_indexed_color(inp, depth),
+            MaybeIndexed::Raw(depth) => depth.next_rgb_pixel(inp).map(RGBColor::as_color),
+        }
+    }
+    pub fn next_argb_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<ARGBColor, BitsError> {
+        match self {
+            MaybeIndexed::Indexed(depth, indexed) => {
+                let raw = indexed.next_indexed_color(inp, depth)?;
+                Ok(raw.argb_values().into())
+            }
+            MaybeIndexed::Raw(depth) => depth.next_argb_pixel(inp),
+        }
+    }
+    pub fn next_rgb_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<RGBColor, BitsError> {
+        match self {
+            MaybeIndexed::Indexed(depth, indexed) => {
+                let raw = indexed.next_indexed_color(inp, depth)?;
+                Ok(raw.rgb_values().into())
+            }
+            MaybeIndexed::Raw(depth) => depth.next_rgb_pixel(inp),
+        }
+    }
+    pub fn next_greyscale_pixel<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+    ) -> Result<Greyscale8Bit, BitsError> {
+        match self {
+            MaybeIndexed::Indexed(depth, indexed) => {
+                let raw = indexed.next_indexed_color(inp, depth)?;
+                Ok(Greyscale8Bit {
+                    value: raw.rgb_values()[0],
+                })
+            }
+            MaybeIndexed::Raw(depth) => depth.next_greyscale_pixel(inp),
+        }
+    }
+}
+pub struct IndexedColor {
+    pub index: Vec<Color>,
+}
+impl IndexedColor {
+    pub fn next_indexed_color<T: Bits>(
+        &self,
+        inp: &mut BitStreamDecoder<T>,
+        depth: &ColorDepth,
+    ) -> Result<Color, BitsError> {
+        let raw = depth.next_raw_color_part(inp)?;
+        self.index
+            .get(raw as usize)
+            .copied()
+            .ok_or_else(|| BitsError::new(BitsErrorKind::FormatError, "Invalid index"))
     }
 }
 

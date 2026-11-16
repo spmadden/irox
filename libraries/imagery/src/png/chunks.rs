@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright 2026 IROX Contributors
 //
+use crate::Color;
 use alloc::vec::Vec;
+use irox_bits::Error;
 use irox_structs::Struct;
 
 #[derive(Debug, Clone, PartialEq, Struct)]
@@ -35,4 +37,19 @@ pub struct SRGB {
 #[derive(Debug, Clone, PartialEq)]
 pub struct IDAT {
     pub data: Vec<u8>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct PLTE {
+    pub data: Vec<Color>,
+}
+impl PLTE {
+    pub fn parse_from(data: &mut &[u8]) -> Result<Self, Error> {
+        let mut out = Vec::with_capacity(256);
+        for rgb in data.as_chunks::<3>().0 {
+            out.push(Color::rgb_array(rgb));
+        }
+
+        Ok(Self { data: out })
+    }
 }
