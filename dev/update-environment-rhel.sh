@@ -15,4 +15,4 @@ if [[ ! `command -v rustup` ]]; then
 fi
 
 rustup update
-dnf install gcc-c++ make perl-FindBin perl-IPC-Cmd perl-File-Compare perl-File-Copy openssl-devel cmake
+sudo dnf install gcc-c++ make perl-FindBin perl-IPC-Cmd perl-File-Compare perl-File-Copy openssl-devel cmake perl-Time-Piece
