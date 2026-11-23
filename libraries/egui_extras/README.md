@@ -9,6 +9,27 @@ Features
 
 ### Widgets:
 
+#### Field editors
+
+`irox_egui_extras::widgets` includes typed field editors for nullable booleans,
+string arrays, unique values, and single-select relations. Unique Values takes a
+slice of existing strings and offers editable autocomplete or a restricted
+dropdown. Value Relation takes caller-ordered key/label pairs and stores the key.
+Each editor returns the validity and change status of the current field value.
+The library works with native and WebAssembly egui applications.
+
+Set `FieldDescriptor::help_description` to show help when hovering over the
+field label or control. `RestrictedValueDropdown::new` and
+`UniqueValuesEditor::restricted` borrow plain value slices.
+Pass a slice of `RestrictedValue` options to `RestrictedValueDropdown::with_options`
+or `UniqueValuesEditor::restricted_with_options` to supply per-option help.
+
+The native form example shows all four editors.
+
+```sh
+cargo run -p irox-egui-extras --example editors --features eframe,wgpu
+```
+
 #### EGUI/Serde Serializer for Debugging Objects visually:
 
 <img src="doc/serde_test.png" width="254" height="610"/>
