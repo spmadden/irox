@@ -132,7 +132,7 @@ where
     let (text, missing_key) = match (selected, &field.value) {
         (Some((_, label, _)), _) => (label.to_string(), false),
         (None, Some(key)) => (format!("Unavailable: {key}"), true),
-        (None, None) => ("".to_owned(), false),
+        (None, None) => (String::new(), false),
     };
     if !ui.is_enabled() {
         let response = ui
@@ -150,8 +150,7 @@ where
     )
     .selected_text(text)
     .show_ui(ui, |ui| {
-        if field.descriptor.nullable && ui.selectable_label(field.value.is_none(), "").clicked()
-        {
+        if field.descriptor.nullable && ui.selectable_label(field.value.is_none(), "").clicked() {
             ui.close();
             return field.value.take().is_some();
         }

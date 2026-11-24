@@ -426,17 +426,20 @@ mod tests {
         ctx.add_texture_loader(loader.clone());
         let mut map = SlippyMap::new("{z}/{x}/{y}");
         let frame = |map: &mut SlippyMap| {
-            ctx.run_ui(
+            let mut output = ctx.run_ui(
                 egui::RawInput {
                     screen_rect: Some(Rect::from_min_size(pos2(0.0, 0.0), vec2(512.0, 512.0))),
                     ..Default::default()
                 },
                 |ui| {
-                    egui::CentralPanel::default().show_inside(ui, |ui| {
+                    egui::CentralPanel::default().show(ui, |ui| {
                         ui.add(&mut *map);
                     });
                 },
-            )
+            );
+            // This test inspects paint shapes without rendering textures.
+            output.textures_delta.clear();
+            output
         };
         map.set_view(0.5, 0.5, 2.0);
         let _ = frame(&mut map);

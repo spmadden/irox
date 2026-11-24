@@ -164,7 +164,7 @@ struct MapApp {
 
 impl eframe::App for MapApp {
     fn ui(&mut self, ui: &mut Ui, _: &mut eframe::Frame) {
-        egui::CentralPanel::default().show_inside(ui, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             ui.label("Drag to pan. Scroll or pinch to zoom.");
             ui.horizontal(|ui| {
                 ui.hyperlink_to(
